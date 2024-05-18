@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "PastoralDosAcolitosECoroinhas",
+    "slug": "PastoralDosAcolitosECoroinhas",
+    "version": "1.0.1.1",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "PastoralDosAcolitosECoroinhas",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.paroquiasantocura.acolitoscoroinhas"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./src/app/fonts/Inter-Thin.ttf",
+            "./src/app/fonts/Inter-SemiBold.ttf",
+            "./src/app/fonts/Inter-Regular.ttf",
+            "./src/app/fonts/Inter-Medium.ttf",
+            "./src/app/fonts/Inter-Light.ttf",
+            "./src/app/fonts/Inter-ExtraLight.ttf",
+            "./src/app/fonts/Inter-ExtraBold.ttf",
+            "./src/app/fonts/Inter-Bold.ttf"
+          ]
+        }
+      ]
+
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4c301d8f-95c3-4bf2-97f2-402294818554"
+      }
+    }
+  }
+}
