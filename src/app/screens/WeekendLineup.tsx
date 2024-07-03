@@ -105,7 +105,7 @@ export default function LineupOptions(){
 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{WeekendLineupScreen.generateOptions.allRandom = true}}/>
+                    <CheckBox checked={false} press={()=>{WeekendLineupScreen.generateOptions.allRandom = !WeekendLineupScreen.generateOptions.allRandom}}/>
                 </View>
                 
                 <TextButton text="Gerar escala" press={()=>{

@@ -65,7 +65,7 @@ export default function LineupOptions(){
                 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = true}}/>
+                    <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = !MonthlyLineupScreen.generateOptions.allRandom}}/>
                 </View>
                 
                 <View style={{paddingTop:20}}>
@@ -151,6 +151,8 @@ export default function LineupOptions(){
                     LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Librífero","Cruciferário"]
                 }
 
+                
+                
                 if(MonthlyLineupScreen.generateOptions.allRandom){
                     LineupScreenOptions.lineups = []
                     LineupScreenOptions.days = days
@@ -167,17 +169,43 @@ export default function LineupOptions(){
                     LineupScreenOptions.lineups = []
                     LineupScreenOptions.days = days
                     LineupScreenOptions.daysNames = daysNames
+                    
+                    /*
                     for(let i = 0; i < days.length;i++){
                         loadAcolyteData()
                         let newLineup = GenerateLineup(weekend,days[i],roles)
                         LineupScreenOptions.lineups.push(newLineup)
                         console.log("Lineup of day: "+days[i])
                         console.log(newLineup)
+                    */
+                    
+                    // Mapa<"fim_de_semana"> -> Mapa<"dia_da_semana"> -> Lineup do dia
+                    let generatedLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
+
+                    let weekends = Array.from(MonthlyLineupScreen.generateOptions.monthDays.keys())
+                    
+                    for(let i = 0; i < weekends.length;i++){
+                        let weekendKey = weekends[i]
+                        let curWeekend = MonthlyLineupScreen.generateOptions.monthDays.get(weekendKey)
+                        
+                        generatedLineups.set(weekendKey,new Array<Lineup>)
+                        
+                        if(curWeekend != undefined){
+                            for(let k = 0; k < curWeekend.length;k++){
+                                let curDay:string = curWeekend[k]
+                                
+                                let newLineup = GenerateLineup(weekendKey,curDay,roles)
+                                generatedLineups.get(weekendKey)?.push(newLineup)
+                            }
+                        }
+                        
+
                     }
                 }
                 
-                LineupScreenOptions.lineupType="Weekend"
-                router.push("/screens/LineupScreen")  
+                LineupScreenOptions.lineupType = "Month"
+                router.push("/screens/LineupScreen")
+                
             }}
                 buttonStyle={{alignSelf:"center"}}/>
             </View>
@@ -187,7 +215,6 @@ export default function LineupOptions(){
     }
     
 function ToggleDay(weekend:any,day:any){
-    
     
     let days = MonthlyLineupScreen.generateOptions.monthDays
     console.log("Start day: ")

@@ -1,5 +1,5 @@
 import { View, Image, Text, Modal, ScrollView } from "react-native"
-import { ImageButton, TextButton } from "../classes/NewComps"
+import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
 import { SingleLineupScreen } from "./SingleLineup"
 import { router } from "expo-router"
 import { Global } from "../Global"
@@ -34,6 +34,8 @@ export class LineupScreenOptions{
     static days = ["sabado","domingoAM","domingoPM"]
     static daysNames = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     static lineups:Array<Lineup> = []
+    static monthLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
+    
 }
 
 let isSwitching = false
@@ -68,7 +70,9 @@ export default function LineupScreen(){
     let weekendLineups = []
 
 
-    if(LineupScreenOptions.lineupType=="Weekend"){
+    let monthAcolytes:Map<string,Map<string,Array<any>>>
+
+    if(LineupScreenOptions.lineupType == "Weekend"){
         console.log("Weekend screen")
         console.log("Days: ")
         console.log(LineupScreenOptions.days)
@@ -87,6 +91,35 @@ export default function LineupScreen(){
             weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[i]} acolytes={weekendAcolytes.get(curDay)} key={i}/>)
             
         }
+    }
+
+
+    // DESENVOLVENDO
+    /*
+    if(LineupScreenOptions.lineupType == "Month"){
+        console.log("Weekend screen")
+        console.log("Days: ")
+        console.log(LineupScreenOptions.days)
+        
+        for(let i = 0;i < LineupScreenOptions.days.length;i++){
+            console.log("Adding lineups process "+(i+1)+"/"+LineupScreenOptions.days.length)
+            let curDay = LineupScreenOptions.days[i]
+            let line = LineupScreenOptions.lineups[i]
+            let acolytes:Array<any> = []
+            
+            for(let h = 0;h < LineupScreenOptions.roles.length; h++){
+                acolytes.push(<LineupAcolyte text={rolesNames[h]} role={roles[h]} key={h} lineup={line}/>)
+            }
+    
+            weekendAcolytes.set(curDay,acolytes)
+            weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[i]} acolytes={weekendAcolytes.get(curDay)} key={i}/>)
+            
+        }
+    }
+    */
+   
+    if(LineupScreenOptions.lineupType == "Month"){
+
     }
     
 
@@ -108,25 +141,46 @@ export default function LineupScreen(){
             <ScrollView style={{flex:1}}>
                 <UpperBar/>
                 <View style={{flex:1}}>
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Sábado - 19h</Text>
-                    </View>
-
-                    {weekendAcolytes.get("sabado")}
-
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 08h</Text>
-                    </View>
-
-                    {weekendAcolytes.get("domingoAM")}
-
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 19h</Text>
-                    </View>
-
-                    {weekendAcolytes.get("domingoPM")}
+                    <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
+                    <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
+                    <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
                 </View>
             </ScrollView>
+        )
+    }
+   
+    if(LineupScreenOptions.lineupType == "Month"){
+        return(
+            <View style={{flex:1}}>
+                <UpperBar/>
+                
+                <View style={{flex:1, flexDirection:"row"}}>
+                
+                    <View style={{flex:0.5, flexDirection:"column"}}>
+                        <View style={{flex:0.5,flexDirection:"row",backgroundColor:"green"}}>
+                            {/*Primeiro Fim de semana*/}
+
+                        </View>
+                        
+                        <View style={{flex:0.5,flexDirection:"row",backgroundColor:"red"}}>
+                            {/*Segundo Fim de semana*/}
+                        
+                        </View>
+                    </View>
+
+                    <View style={{flex:0.5, flexDirection:"column"}}>
+                        <View style={{flex:0.5,flexDirection:"row",backgroundColor:"blue"}}>
+                            {/*Terceiro Fim de semana*/}
+
+                        </View>
+                        
+                        <View style={{flex:0.5,flexDirection:"row",backgroundColor:"yellow"}}>
+                            {/*Quarto Fim de semana*/}
+                        </View>
+                    </View>
+                </View>
+            </View>
+            
         )
     }
     
@@ -253,9 +307,14 @@ function SwitchAcolytes(switching:Acolyte,switched:Acolyte,switchingRole:string,
 
 function WeekendLineup(props:any){
     return(
-        <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                <Text style={{fontSize:24,alignSelf:"center"}}>Sábado</Text>
+        <View style={{flex:1}}>
+            <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                <Text style={{fontSize:24,alignSelf:"center"}}>props.day</Text>
+            </View>
+
+            {props.aco}
         </View>
+        
        
     )
 }

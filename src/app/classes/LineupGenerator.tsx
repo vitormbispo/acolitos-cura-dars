@@ -77,63 +77,15 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
             generalPriority.get("high-priority").push(curAcolyte)
             console.log("Added to high priority!")
         }
-        else if(curAcolyte.priority <= 2){
+        else if(curAcolyte.priority >= 2){
             generalPriority.get("medium-priority").push(curAcolyte)
             console.log("Added to medium priority!")
-        }
-        else if(curAcolyte.priority > 2){
-            generalPriority.get("low-priority").push(curAcolyte)
-            console.log("Added to low priority!")
         }
     }
 
     let chosenAcolytes = []
     let priorityNum = 0
 
-    // Prioridade por horário
-    let dayPriority = new Map()
-    let dayPriorities = []
-
-    
-
-    for(let i = 0; i < acolytes.length;i++){
-        let curAcolyte = acolytes[i]
-        let curPriority = curAcolyte.weekendPriority[day]
-        
-        console.log("Checking day priority of acolyte: "+curAcolyte.nick)
-        console.log("Day priority: "+curPriority)
-
-        // Colocar no mapa
-        if(dayPriority.get(curPriority) == undefined){
-            dayPriority.set(curPriority, new Array<Acolyte>())
-            dayPriority.get(curPriority).push(curAcolyte)
-        }
-        else{
-            dayPriority.get(curPriority).push(curAcolyte)
-        }
-
-        if(dayPriorities.length==0){
-            dayPriorities.push(curPriority)
-        }
-        else{
-            for(let j = 0; j < dayPriorities.length; j++){
-                if(dayPriorities[j] == curPriority){
-                    break
-                }
-                
-                if(j == dayPriorities.length-1){
-                    dayPriorities.push(curPriority)
-                }
-                
-            }
-        }
-
-    }
-
-    console.log("Day priorities: ")
-    console.log(dayPriority)
-
-    let organizedDayPriorities = SortArrayByNumber(dayPriorities)
 
     // Pegar a quantidade máxima de acólitos com maior prioridade geral
     let priorityAcolytes:Array<Acolyte> = []
@@ -160,7 +112,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
         }
         
         else{
-            console.log("Not enough acolytes!")
+            //console.log("Not enough acolytes!")
             break
         }
     }
@@ -168,48 +120,11 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
     console.log("Most priorited acolytes: ")
     console.log(priorityAcolytes)
     
-    // Se tiver separando por dia, escolher os acólitos com maior prioridade
-    prioritySortingFinished = false
-    let maxPriorityAcolytes:Array<Acolyte> = new Array<Acolyte>()
+    
+   
 
-    while(!prioritySortingFinished){
-        let dayPriorityArray = dayPriority.get(organizedDayPriorities[dayPriorityNum])
-        
-        if(dayPriorityArray!=undefined){
-            for(let i = 0; i < priorityAcolytes.length;i++){
-                for(let j = 0; j < dayPriorityArray.length;j++){
-    
-                    let priorityAcolyte = priorityAcolytes[i]
-                    let dayPriorityAcolyte = dayPriorityArray[j]
-    
-                    console.log("i = "+i+" j = "+j)
-                    console.log("Comparing acolyte by priority: "+priorityAcolyte.nick+ " with acolyte by day priority: "+dayPriorityAcolyte.nick)
-                    
-                    if(priorityAcolyte == dayPriorityAcolyte){
-                        console.log("They are the same! Adding to full priority")
-                        maxPriorityAcolytes.push(priorityAcolyte)
-                        break
-                    }
-                }
-            }
-    
-            if(maxPriorityAcolytes.length<roles.length){
-                dayPriorityNum++
-                continue
-            }
-            else{
-                prioritySortingFinished = true
-            }
-        }
-        else{
-            console.log("Not enough acolytes for max priority!")
-            break
-        }
-        
-    }
     
     // SEM BASE NO DIA
-    if(day=="Outro"){
         priorityNum = 0
         // Escolhendo acólitos com maior prioridade sem base no dia
         while(chosenAcolytes.length < roles.length){
@@ -242,12 +157,12 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
                         priorityNum++
                     }
                     else{
-                        console.error("Not enough acolytes for full lineup!")
+                        //console.error("Not enough acolytes for full lineup!")
                         break
                     }
                 }
                 else{
-                    console.error("Not enough acolytes for full lineup!")
+                    //console.error("Not enough acolytes for full lineup!")
                     break
                 }
                 
@@ -257,38 +172,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
         console.log("The chosen acolytes are: ")
         console.log(chosenAcolytes)
         
-    }
 
-    else{
-        console.log("Acolytes with max priority: ")
-        console.log(maxPriorityAcolytes)
-        console.log("First element: ")
-        console.log(maxPriorityAcolytes[0])
-
-        while(chosenAcolytes.length < roles.length){
-            
-            if(maxPriorityAcolytes.length<=0){
-                console.log("Not enough acolytes! breaking")
-                break    
-            }
-
-            let chosenNumber = randomNumber(0,maxPriorityAcolytes.length-1)
-            let cur = maxPriorityAcolytes[chosenNumber]
-            console.log("Acolyte chosen! "+ cur)
-            
-            
-            
-            chosenAcolytes.push(cur)
-            maxPriorityAcolytes.splice(maxPriorityAcolytes.indexOf(cur),1)
-
-            
-        }
-
-        console.log("Chosen acolytes: ")
-        console.log(chosenAcolytes)
-    }
-    
-    
     
     
 
@@ -387,7 +271,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
         AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
         
         if(chosenAcolytes.length<=0 && i < roles.length){
-            console.error("Not enogh acolytes for full lineup!")
+            //console.error("Not enogh acolytes for full lineup!")
             break
         }
     } 
