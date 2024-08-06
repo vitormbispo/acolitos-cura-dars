@@ -305,7 +305,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
     
 }
 
-export function GenerateRandomLineup(roles:string[]):Lineup{
+export function GenerateRandomLineup(roles:string[],weekend="Outro",day="Outro"):Lineup{
     interface RolesDict{
         [key:string]:any
     }
@@ -346,8 +346,8 @@ export function GenerateRandomLineup(roles:string[]):Lineup{
         generatedLineup.acolytes.push(chosen[curRole])
     }
     
-    generatedLineup.day = "Outro"
-    generatedLineup.weekend = "Outro"
+    generatedLineup.day = day
+    generatedLineup.weekend = weekend
 
     
     return generatedLineup

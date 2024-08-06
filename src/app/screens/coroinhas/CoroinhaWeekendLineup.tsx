@@ -16,7 +16,9 @@ export class CoroinhaWeekendLineupScreen{
         "day":null,
         "allowOut":false,
         "allRandom":false,
-        "solemnity":false
+        "solemnity":false,
+        "reduced":false,
+        "celebration":false
     }
 }
 
@@ -27,6 +29,10 @@ export default function LineupOptions(){
     let days:Array<any> = ["sabado","domingoAM","domingoPM"]
     let daysNames:Array<any> = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     CoroinhaWeekendLineupScreen.generateOptions.allRandom = false
+    CoroinhaWeekendLineupScreen.generateOptions.solemnity = false
+    CoroinhaWeekendLineupScreen.generateOptions.reduced = false
+    CoroinhaWeekendLineupScreen.generateOptions.celebration = false
+    CoroinhaWeekendLineupScreen.generateOptions.allowOut = false
     let[liturgicalColor,setColor] = useState("red")
     return(
         <View style={{flex:1}}>
@@ -100,16 +106,44 @@ export default function LineupOptions(){
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
                     <CheckBox checked={false} press={()=>{CoroinhaWeekendLineupScreen.generateOptions.allRandom = !CoroinhaWeekendLineupScreen.generateOptions.allRandom}}/>
                 </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
+                    <CheckBox checked={false} press={()=>{CoroinhaWeekendLineupScreen.generateOptions.reduced = !CoroinhaWeekendLineupScreen.generateOptions.reduced}}/>
+                </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Celebração</Text>
+                    <CheckBox checked={false} press={()=>{CoroinhaWeekendLineupScreen.generateOptions.celebration = !CoroinhaWeekendLineupScreen.generateOptions.celebration}}/>
+                </View>
                 
                 <TextButton text="Gerar escala" press={()=>{
 
                 
-                // Definir funções se for solenidade ou não
-                let roles = []
-                roles = ["donsD","donsE","cestD","cestE"]
-                CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
-                CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
-                
+            // Definir funções se for solenidade ou não, escala reduzida ou celebração
+            let roles = []
+            if(CoroinhaWeekendLineupScreen.generateOptions.reduced && !CoroinhaWeekendLineupScreen.generateOptions.celebration){
+                roles = ["donsD","donsE"]
+                CoroinhaLineupScreenOptions.roles = ["donsD","donsE"]
+                CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E."]
+            }
+            else if(CoroinhaWeekendLineupScreen.generateOptions.celebration){
+                roles = ["cestD","cestE"]
+                CoroinhaLineupScreenOptions.roles = ["cestD","cestE"]
+                CoroinhaLineupScreenOptions.rolesNames = ["Cestinho D.","Cestinho E."]
+            }
+            else{
+                if(CoroinhaWeekendLineupScreen.generateOptions.solemnity){
+                    roles = ["donsD","donsE","cestD","cestE"]
+                    CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+                    CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+                }
+                else{
+                    roles = ["donsD","donsE","cestD","cestE"]
+                    CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+                    CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+                }
+            }
 
                 if(CoroinhaWeekendLineupScreen.generateOptions.allRandom){
                     CoroinhaLineupScreenOptions.lineups = []

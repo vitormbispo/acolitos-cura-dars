@@ -32,7 +32,12 @@ export class CoroinhaLineupScreenOptions{
 
     static days = ["sabado","domingoAM","domingoPM"]
     static daysNames = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
+    static daysMaps:Map<string,string> = new Map<string,string>([
+        ["sabado","Sábado - 19h"],
+        ["domingoAM","Domingo - 08h"],
+        ["domingoPM","Domingo - 19h"]])
     static lineups:Array<CoroinhaLineup> = []
+    static monthLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
 }
 
 let isSwitching = false
@@ -65,6 +70,8 @@ export default function LineupScreen(){
     let weekendCoroinhas:Map<string,Array<any>> = new Map<string,Array<any>>()
     let weekendLineups = []
 
+    let monthCoroinhas:Map<string,Map<string,Array<any>>> = new Map<string,Map<string,Array<any>>>()
+
     if(CoroinhaLineupScreenOptions.lineupType=="Weekend"){
         console.log("Weekend screen")
         console.log("Days: ")
@@ -85,6 +92,43 @@ export default function LineupScreen(){
             
         }
     }
+    if(CoroinhaLineupScreenOptions.lineupType == "Month"){
+        console.log("Month screen")
+        console.log("Days: ")
+        console.log(CoroinhaLineupScreenOptions.days)
+        let weekends = Array.from(CoroinhaLineupScreenOptions.monthLineups.keys())
+
+        for(let i = 0; i < weekends.length;i++){
+            let curWeekendKey = weekends[i] // Dias do fim de semana atual
+            let curWeekend = CoroinhaLineupScreenOptions.monthLineups.get(curWeekendKey) // Lineups do fim de semana
+            
+            if(curWeekend!=undefined){
+                for(let j = 0;j < curWeekend.length;j++){
+                
+                    console.log("Adding lineups process "+(j+1)+"/"+CoroinhaLineupScreenOptions.days.length)
+                    let line = curWeekend[j]
+
+                    let curDay = line.day
+                    let acolytes:Array<any> = []
+                    
+                    for(let k = 0;k < CoroinhaLineupScreenOptions.roles.length; k++){
+                        console.log("Key is: "+((i*100)+(j*10)+k))
+                        acolytes.push(<LineupCoroinha text={rolesNames[k]} role={roles[k]} key={(i*100)+(j*10)+k} lineup={line}/>)
+                    }
+            
+                    if(monthCoroinhas.get(curWeekendKey) != undefined){
+                        monthCoroinhas.get(curWeekendKey)?.set(curDay,acolytes)
+                    }
+                    else{
+                        monthCoroinhas.set(curWeekendKey,new Map<string,Array<any>>)
+                        monthCoroinhas.get(curWeekendKey)?.set(curDay,acolytes)
+                    }
+                    
+                    weekendLineups.push(<WeekendLineup name={CoroinhaLineupScreenOptions.daysNames[j]} acolytes={weekendCoroinhas.get(curDay)} key={600+j}/>)                  
+                }
+            }
+        }
+    }
 
     if(CoroinhaLineupScreenOptions.lineupType == "Single"){
         return(
@@ -97,6 +141,7 @@ export default function LineupScreen(){
             </View>
         )
     }
+
     if(CoroinhaLineupScreenOptions.lineupType == "Weekend"){
         return(
             <ScrollView style={{flex:1}}>
@@ -123,6 +168,29 @@ export default function LineupScreen(){
             </ScrollView>
         )
     }
+
+    if(CoroinhaLineupScreenOptions.lineupType == "Month"){
+        console.log("Mothtly lineup")
+        console.log(CoroinhaLineupScreenOptions.monthLineups)
+        console.log(Array.from(CoroinhaLineupScreenOptions.monthLineups.keys()))
+
+        let array = Array.from(CoroinhaLineupScreenOptions.monthLineups.keys())
+        console.log("Array:")
+        console.log(array)
+
+        console.log(monthCoroinhas)
+        
+        return(
+            <View style={{flex:1}}>
+                <UpperBar/>
+                
+                
+                <MonthLineups weekends={array} monthCor={monthCoroinhas}/>
+                
+            </View>
+            
+        )
+    }
     
 }
 
@@ -143,10 +211,7 @@ export const UpperBar = () => {
     )
 }
 
-
-export function LineupCoroinha(props:any) {
-    
-    
+export function LineupCoroinha(props:any) {   
     return(
         <View style={{flex:1,flexDirection:"row",alignSelf:"center",alignItems:"center"}}>
             <Text style={textStyles.functionTitle}>{props.text} - </Text>
@@ -240,10 +305,42 @@ function SwitchCoroinhas(switching:Coroinha,switched:Coroinha,switchingRole:stri
 }
 
 function WeekendLineup(props:any){
+
     return(
-        <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                <Text style={{fontSize:24,alignSelf:"center"}}>Sábado</Text>
+        <View style={{flex:1}}>
+            <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                <Text style={{fontSize:24,alignSelf:"center"}}>{props.day}</Text>
+            </View>
+
+            {props.cor}
         </View>
+        
        
+    )
+}
+
+function MonthLineups(props:any){
+    console.log(props.monthCor)
+    let allWeekends:Array<any> = new Array<any>
+    for(let i = 0; i < props.weekends.length; i++){
+        let curWkKey = props.weekends[i] // Chave do fim de semana atual
+        let curWk = props.monthCor.get(curWkKey) // Retorna uma lista de LineupCoroinhas
+
+       
+        for(let h = 0; h < Array.from(curWk.keys()).length;h++){
+            let curDay:any = Array.from(curWk.keys())[h] // Chave do dia
+            let dayName:string =((i+1)+"° "+CoroinhaLineupScreenOptions.daysMaps.get(curDay))
+
+            let newWeekend = <WeekendLineup day={dayName} cor={curWk.get(curDay)} key={(i*10)+h}/>
+            allWeekends.push(newWeekend)
+        }
+        
+    }
+    console.log("Weekend lineups: ")
+    console.log(allWeekends)
+    return(
+        <ScrollView style={{flex:1}}>
+            {allWeekends}
+        </ScrollView>
     )
 }

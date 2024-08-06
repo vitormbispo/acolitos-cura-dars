@@ -1,17 +1,13 @@
 import { View,Image,Text } from "react-native"
-import { Global } from "../Global"
-import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
-import { Lineup } from "../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
+import { Global } from "@/src/app/Global"
+import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "@/src/app/classes/NewComps"
+import { CoroinhaLineup } from "@/src/app/classes/CoroinhaLineup"
+import { GenerateLineup, GenerateRandomLineup } from "@/src/app/classes/CoroinhaLineupGenerator"
 import { router } from "expo-router"
-import { StyleSheet } from "react-native"
-import { Acolyte, AcolyteData } from "../classes/AcolyteData"
 import { useState } from "react"
-import { LineupScreenOptions } from "./LineupScreen"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { loadAcolyteData } from ".."
+import { CoroinhaLineupScreenOptions } from "@/src/app/screens/coroinhas/CoroinhaLineupScreen"
 
-export class MonthlyLineupScreen{
+export class CoroinhaMonthlyLineupScreen{
     static curLineup:any = null
 
     static generateOptions= {
@@ -20,7 +16,9 @@ export class MonthlyLineupScreen{
         "allowOut":false,
         "allRandom":false,
         "solemnity":false,
-        "monthDays":new Map<string,Array<string>>()
+        "monthDays":new Map<string,Array<string>>(),
+        "reduced":false,
+        "celebration":false
     }
 }
 
@@ -33,9 +31,11 @@ export default function LineupOptions(){
     
     let[liturgicalColor,setColor] = useState("red")
 
-    MonthlyLineupScreen.generateOptions.allRandom = false
-    MonthlyLineupScreen.generateOptions.solemnity = false
-    MonthlyLineupScreen.generateOptions.allowOut = false
+    CoroinhaMonthlyLineupScreen.generateOptions.allRandom = false
+    CoroinhaMonthlyLineupScreen.generateOptions.solemnity = false
+    CoroinhaMonthlyLineupScreen.generateOptions.reduced = false
+    CoroinhaMonthlyLineupScreen.generateOptions.celebration = false
+    CoroinhaMonthlyLineupScreen.generateOptions.allowOut = false
     DefaultMonthDays()
 
     return(
@@ -65,7 +65,17 @@ export default function LineupOptions(){
                 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = !MonthlyLineupScreen.generateOptions.allRandom}}/>
+                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.allRandom = !CoroinhaMonthlyLineupScreen.generateOptions.allRandom}}/>
+                </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
+                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.reduced = !CoroinhaMonthlyLineupScreen.generateOptions.reduced}}/>
+                </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Celebração</Text>
+                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.celebration = !CoroinhaMonthlyLineupScreen.generateOptions.celebration}}/>
                 </View>
                 
                 <View style={{paddingTop:20}}>
@@ -140,32 +150,43 @@ export default function LineupOptions(){
                 
                 // Definir funções se for solenidade ou não
                 let roles = []
-                if(MonthlyLineupScreen.generateOptions.solemnity){
-                    roles = ["cero1","cero2","turib","navet","libri","cruci"]
-                    LineupScreenOptions.roles = ["cero1","cero2","turib","navet","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Turiferário","Naveteiro","Librífero","Cruciferário"]
+                if(CoroinhaMonthlyLineupScreen.generateOptions.reduced && !CoroinhaMonthlyLineupScreen.generateOptions.celebration){
+                    roles = ["donsD","donsE"]
+                    CoroinhaLineupScreenOptions.roles = ["donsD","donsE"]
+                    CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E."]
+                }
+                else if(CoroinhaMonthlyLineupScreen.generateOptions.celebration){
+                    roles = ["cestD","cestE"]
+                    CoroinhaLineupScreenOptions.roles = ["cestD","cestE"]
+                    CoroinhaLineupScreenOptions.rolesNames = ["Cestinho D.","Cestinho E."]
                 }
                 else{
-                    roles = ["cero1","cero2","libri","cruci"]
-                    LineupScreenOptions.roles = ["cero1","cero2","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Librífero","Cruciferário"]
+                    if(CoroinhaMonthlyLineupScreen.generateOptions.solemnity){
+                        roles = ["donsD","donsE","cestD","cestE"]
+                        CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+                        CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+                    }
+                    else{
+                        roles = ["donsD","donsE","cestD","cestE"]
+                        CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+                        CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+                    }
                 }
-
                 
-                let generatedLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
+                let generatedLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
 
-                if(MonthlyLineupScreen.generateOptions.allRandom){
-                    LineupScreenOptions.lineups = []
-                    LineupScreenOptions.days = days
-                    LineupScreenOptions.daysNames = daysNames
+                if(CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
+                    CoroinhaLineupScreenOptions.lineups = []
+                    CoroinhaLineupScreenOptions.days = days
+                    CoroinhaLineupScreenOptions.daysNames = daysNames
                           
-                    let weekends = Array.from(MonthlyLineupScreen.generateOptions.monthDays.keys())
+                    let weekends = Array.from(CoroinhaMonthlyLineupScreen.generateOptions.monthDays.keys())
                     
                     for(let i = 0; i < weekends.length;i++){
                         let weekendKey = weekends[i] // Finais de semana
-                        let curWeekend = MonthlyLineupScreen.generateOptions.monthDays.get(weekendKey) // Dias no fim de semana
+                        let curWeekend = CoroinhaMonthlyLineupScreen.generateOptions.monthDays.get(weekendKey) // Dias no fim de semana
                         
-                        generatedLineups.set(weekendKey,new Array<Lineup>)
+                        generatedLineups.set(weekendKey,new Array<CoroinhaLineup>)
                         
                         if(curWeekend != undefined){
                             for(let k = 0; k < curWeekend.length;k++){
@@ -180,18 +201,18 @@ export default function LineupOptions(){
                 }
 
                 else{
-                    LineupScreenOptions.lineups = []
-                    LineupScreenOptions.days = days
-                    LineupScreenOptions.daysNames = daysNames
+                    CoroinhaLineupScreenOptions.lineups = []
+                    CoroinhaLineupScreenOptions.days = days
+                    CoroinhaLineupScreenOptions.daysNames = daysNames
                     
                     
-                    let weekends = Array.from(MonthlyLineupScreen.generateOptions.monthDays.keys())
+                    let weekends = Array.from(CoroinhaMonthlyLineupScreen.generateOptions.monthDays.keys())
                     
                     for(let i = 0; i < weekends.length;i++){
                         let weekendKey = weekends[i] // Finais de semana
-                        let curWeekend = MonthlyLineupScreen.generateOptions.monthDays.get(weekendKey) // Dias no fim de semana
+                        let curWeekend = CoroinhaMonthlyLineupScreen.generateOptions.monthDays.get(weekendKey) // Dias no fim de semana
                         
-                        generatedLineups.set(weekendKey,new Array<Lineup>)
+                        generatedLineups.set(weekendKey,new Array<CoroinhaLineup>)
                         
                         if(curWeekend != undefined){
                             for(let k = 0; k < curWeekend.length;k++){
@@ -201,15 +222,13 @@ export default function LineupOptions(){
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                             }
                         }
-                        
-
                     }
                 }
                 console.log("---MONTHLY LINEUP COMPLETED---")
                 console.log(generatedLineups)
-                LineupScreenOptions.lineupType = "Month"
-                LineupScreenOptions.monthLineups = generatedLineups
-                router.push("/screens/LineupScreen")
+                CoroinhaLineupScreenOptions.lineupType = "Month"
+                CoroinhaLineupScreenOptions.monthLineups = generatedLineups
+                router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
             }}
                 buttonStyle={{alignSelf:"center"}}/>
@@ -221,7 +240,7 @@ export default function LineupOptions(){
     
 function ToggleDay(weekend:any,day:any){
     
-    let days = MonthlyLineupScreen.generateOptions.monthDays
+    let days = CoroinhaMonthlyLineupScreen.generateOptions.monthDays
     console.log("Start day: ")
     console.log(days)
 
@@ -271,8 +290,8 @@ function ToggleDay(weekend:any,day:any){
         let wk = days.get(weekend)
         wk?.push(day)
     }
-    MonthlyLineupScreen.generateOptions.monthDays = days
-    console.log(MonthlyLineupScreen.generateOptions.monthDays)
+    CoroinhaMonthlyLineupScreen.generateOptions.monthDays = days
+    console.log(CoroinhaMonthlyLineupScreen.generateOptions.monthDays)
 }
 
 function DefaultMonthDays(){
@@ -283,7 +302,7 @@ function DefaultMonthDays(){
     days.set("3rdWE",["sabado","domingoAM","domingoPM"])
     days.set("4thWE",["sabado","domingoAM","domingoPM"])
 
-    MonthlyLineupScreen.generateOptions.monthDays = days
+    CoroinhaMonthlyLineupScreen.generateOptions.monthDays = days
 
 
 }
@@ -306,7 +325,7 @@ export const UpperBar = () => {
             padding:26,
             paddingRight:40,
             paddingLeft:40,
-            resizeMode:"contain"}}  source={require("../item_icons/escala_icomdpi.png")}/>
+            resizeMode:"contain"}}  source={require("@/src/app/item_icons/escala_icomdpi.png")}/>
             <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
         </View>
     )

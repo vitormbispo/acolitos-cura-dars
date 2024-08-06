@@ -19,14 +19,22 @@ export default function LineupOptions(){
         "day":null,
         "allowOut":false,
         "allRandom":false,
-        
-        
+        "solemnity":false,
+        "monthDays":new Map<string,Array<string>>(),
+        "reduced":false,
+        "celebration":false     
     }
 
     let [weekend,setWeekend] = useState("1stWE")
     let[day,setDay] = useState("sabado")
     
     let[liturgicalColor,setColor] = useState("red")
+
+    generateOptions.allRandom = false
+    generateOptions.solemnity = false
+    generateOptions.reduced = false
+    generateOptions.celebration = false
+    generateOptions.allowOut = false
     return(
         <View style={{flex:1}}>
             <UpperBar/>
@@ -73,16 +81,47 @@ export default function LineupOptions(){
 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{generateOptions.allRandom = true}}/>
+                    <CheckBox checked={false} press={()=>{generateOptions.allRandom = !generateOptions.allRandom}}/>
+                </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
+                    <CheckBox checked={false} press={()=>{generateOptions.reduced = !generateOptions.reduced}}/>
+                </View>
+
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Celebração</Text>
+                    <CheckBox checked={false} press={()=>{generateOptions.celebration = !generateOptions.celebration}}/>
                 </View>
                 
                 <TextButton text="Gerar escala" press={()=>{
                 console.log("Generating lineup with weekend = "+weekend)
                 console.log("Generating lineup with day = "+day)
                 
-                let roles = ["donsD","donsE","cestD","cestE"]
-                CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
-                CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+// Definir funções se for solenidade ou não, escala reduzida ou celebração
+let roles = []
+if(generateOptions.reduced && !generateOptions.celebration){
+    roles = ["donsD","donsE"]
+    CoroinhaLineupScreenOptions.roles = ["donsD","donsE"]
+    CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E."]
+}
+else if(generateOptions.celebration){
+    roles = ["cestD","cestE"]
+    CoroinhaLineupScreenOptions.roles = ["cestD","cestE"]
+    CoroinhaLineupScreenOptions.rolesNames = ["Cestinho D.","Cestinho E."]
+}
+else{
+    if(generateOptions.solemnity){
+        roles = ["donsD","donsE","cestD","cestE"]
+        CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+        CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+    }
+    else{
+        roles = ["donsD","donsE","cestD","cestE"]
+        CoroinhaLineupScreenOptions.roles = ["donsD","donsE","cestD","cestE"]
+        CoroinhaLineupScreenOptions.rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
+    }
+}
                 if(generateOptions.allRandom){
                     CoroinhaLineupScreenOptions.lineups = []
                     CoroinhaLineupScreenOptions.lineups.push(GenerateRandomLineup(roles))

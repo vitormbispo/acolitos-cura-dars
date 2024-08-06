@@ -24,6 +24,13 @@ export default function LineupOptions(){
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala de fim de semana"
                 link="/screens/coroinhas/CoroinhaWeekendLineup"/>
+        <LinkRowImageButton textStyle=
+                {{paddingLeft:10, 
+                fontFamily:"Inter-Light",
+                fontSize:20}}
+                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                text ="Gerar escala mensal"
+                link="/screens/coroinhas/CoroinhaMonthLineup"/>
     </View>
    )
 }

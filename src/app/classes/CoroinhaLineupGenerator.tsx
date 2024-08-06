@@ -297,7 +297,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
     
 }
 
-export function GenerateRandomLineup(roles:string[]):CoroinhaLineup{
+export function GenerateRandomLineup(roles:string[],weekend:string="Outro",day:string="Outro"):CoroinhaLineup{
     interface RolesDict{
         [key:string]:any
     }
@@ -338,8 +338,8 @@ export function GenerateRandomLineup(roles:string[]):CoroinhaLineup{
         generatedLineup.coroinhas.push(chosen[curRole])
     }
 
-    generatedLineup.day = "Outro"
-    generatedLineup.weekend = "Outro"
+    generatedLineup.day = day
+    generatedLineup.weekend = weekend
     return generatedLineup
 }
 function randomNumber(min:any, max:any) {
