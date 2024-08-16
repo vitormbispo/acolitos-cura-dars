@@ -18,7 +18,7 @@
     "@react-navigation/native": "^6.0.2",
     "@types/react-native": "^0.73.0",
     "eas": "^0.1.0",
-    "expo": "^50.0.15",
+    "expo": "^51.0.28",
     "expo-constants": "~15.4.5",
     "expo-dev-client": "~3.3.11",
     "expo-font": "~11.10.3",
