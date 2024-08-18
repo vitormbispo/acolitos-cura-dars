@@ -1,5 +1,5 @@
 import { View, Image, Text, Modal, ScrollView, } from "react-native"
-import Clipboard from '@react-native-clipboard/clipboard';
+import  Clipboard from "expo-clipboard"
 import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
 import { SingleLineupScreen } from "./SingleLineup"
 import { router } from "expo-router"
@@ -10,6 +10,7 @@ import { GenerateLineup } from "../classes/LineupGenerator"
 import { useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup } from "../classes/Lineup"
+import { GenerateLineupPrompt } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -181,6 +182,10 @@ export default function LineupScreen(){
             <View style={{flex:1}}>
                 <UpperBar/>         
                 <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
+                
+                <View style={{alignContent:"center",alignItems:"center",padding:10}}>
+                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" onPress={()=>Clipboard.setStringAsync("")}/>
+                </View> 
             </View>
             
         )
@@ -274,9 +279,7 @@ export function LineupAcolyte(props:any) {
                 router.push("/screens/AcolyteSelectScreen")
             }}/>
 
-            <TextButton buttonStyle={{alignSelf:"center"}} text="Gerar prompt Gemini" press={()=>{
-                    Clipboard.set
-                    }}/>
+            
 
 
         </View>
