@@ -10,7 +10,7 @@ import { GenerateLineup } from "../classes/LineupGenerator"
 import { useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup } from "../classes/Lineup"
-import { GenerateLineupPrompt } from "../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -184,7 +184,9 @@ export default function LineupScreen(){
                 <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
                 
                 <View style={{alignContent:"center",alignItems:"center",padding:10}}>
-                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" onPress={()=>Clipboard.setStringAsync("")}/>
+                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{CopyToClipboard("Sus")
+                        console.log("Copied.")
+                    }}/>
                 </View> 
             </View>
             

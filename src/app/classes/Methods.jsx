@@ -1,6 +1,6 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Lineup } from "./Lineup";
-
+import Clipboard from "expo-clipboard"
 class PromptLineup{
     lines =[[]]
 }
@@ -84,11 +84,16 @@ export function GenerateLineupPrompt(lines){
         finalPrompt += roles[i]+" "
     }
 
-    finalPrompt += ". Agora, na sequência seguinte, considere que o que está entre chaves é o título de cada linha. Preencha a linha com os nomes dentro do parenteses após o título e entre colchetes, colocando em uma nova coluna cada nome  separado por ponto e vírgula. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ;: "
+    finalPrompt += ". Agora, na sequência seguinte, considere que o que está entre chaves é o título de cada linha. Preencha a linha com os nomes dentro do parenteses após o título e entre colchetes, colocando em uma nova coluna cada nome  separado por ponto e vírgula. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; : "
     for(let i = 0; i < prompts.length;i++){
         finalPrompt += prompts[i]
     }
     
     return finalPrompt
 }
-        
+
+export const CopyToClipboard = async (text) => {
+    let clipboard = new Clipboard()
+
+    clipboard.setString("LoL")
+}
