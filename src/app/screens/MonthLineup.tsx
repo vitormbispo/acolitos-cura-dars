@@ -10,6 +10,7 @@ import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { loadAcolyteData } from ".."
+import { GenerateLineupPrompt } from "../classes/Methods"
 
 export class MonthlyLineupScreen{
     static curLineup:any = null
@@ -43,20 +44,6 @@ export default function LineupOptions(){
             <UpperBar/>
             
             <View style={{flex:1}}>
-                {/*}
-                <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                    <Text style={Global.textStyles.dataSection}>-Celebração</Text>
-                </View>
-                
-                <View style={{flexDirection:"row"}}>
-                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");console.log("green "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");console.log("red "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");console.log("pink "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");console.log("white "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
-                </View>
-                {*/}
-
 
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
@@ -153,6 +140,7 @@ export default function LineupOptions(){
 
                 
                 let generatedLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
+                let allLineups:Array<Lineup> = new Array<Lineup>()
 
                 if(MonthlyLineupScreen.generateOptions.allRandom){
                     LineupScreenOptions.lineups = []
@@ -199,6 +187,7 @@ export default function LineupOptions(){
                                 
                                 let newLineup = GenerateLineup(weekendKey,curDay,roles)
                                 generatedLineups.get(weekendKey)?.push(newLineup)
+                                allLineups.push(newLineup)
                             }
                         }
                         
@@ -206,9 +195,10 @@ export default function LineupOptions(){
                     }
                 }
                 console.log("---MONTHLY LINEUP COMPLETED---")
-                console.log(generatedLineups)
+                console.log(GenerateLineupPrompt(allLineups))
                 LineupScreenOptions.lineupType = "Month"
                 LineupScreenOptions.monthLineups = generatedLineups
+                LineupScreenOptions.allLineups = allLineups
                 router.push("/screens/LineupScreen")
                 
             }}

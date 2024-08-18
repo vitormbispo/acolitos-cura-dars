@@ -1,4 +1,5 @@
-import { View, Image, Text, Modal, ScrollView } from "react-native"
+import { View, Image, Text, Modal, ScrollView, } from "react-native"
+import Clipboard from '@react-native-clipboard/clipboard';
 import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
 import { SingleLineupScreen } from "./SingleLineup"
 import { router } from "expo-router"
@@ -39,7 +40,7 @@ export class LineupScreenOptions{
         ["domingoPM","Domingo - 19h"]])
     static lineups:Array<Lineup> = []
     static monthLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
-    
+    static allLineups:Array<Lineup> = new Array<Lineup>()
 }
 
 let isSwitching = false
@@ -272,6 +273,10 @@ export function LineupAcolyte(props:any) {
                 AcolyteSelectScreenOptions.lineup = props.lineup
                 router.push("/screens/AcolyteSelectScreen")
             }}/>
+
+            <TextButton buttonStyle={{alignSelf:"center"}} text="Gerar prompt Gemini" press={()=>{
+                    Clipboard.set
+                    }}/>
 
 
         </View>

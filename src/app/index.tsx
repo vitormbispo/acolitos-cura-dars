@@ -13,6 +13,7 @@ import {Link} from "expo-router"
 import { GenerateLineup } from "./classes/LineupGenerator"
 import { CoroinhaData } from "./classes/CoroinhaData"
 import { AcolyteData } from "./classes/AcolyteData"
+import { OrganizeAcolyteArrayAlpha } from "./classes/Methods"
 //import { LineUpData } from "./classes/LineupData"
 //import { Home } from "../screens/HomeScreen"
 
@@ -112,9 +113,8 @@ export default function App() {
         loadAcolyteData()
         loadCoroinhaData()
 
-        
-        
-        
+        AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
+   
         console.log("Lineup!")
         appStarted = true
     }

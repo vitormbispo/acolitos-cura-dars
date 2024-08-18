@@ -45,4 +45,6 @@ export class Acolyte {
 
 export class AcolyteData{
     static allAcolytes: Acolyte[] = []
+
+    
 }
