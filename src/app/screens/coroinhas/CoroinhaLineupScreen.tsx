@@ -8,6 +8,7 @@ import { GenerateLineup } from "@/src/app/classes/LineupGenerator"
 import { Coroinha } from "../../classes/CoroinhaData"
 import { CoroinhaSelectScreenOptions } from "./CoroinhaSelectScreen"
 import { CoroinhaLineup } from "../../classes/CoroinhaLineup"
+import { CopyToClipboard, GenerateLineupPrompt } from "../../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -38,6 +39,7 @@ export class CoroinhaLineupScreenOptions{
         ["domingoPM","Domingo - 19h"]])
     static lineups:Array<CoroinhaLineup> = []
     static monthLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
+    static allLineups:Array<CoroinhaLineup> = new Array<CoroinhaLineup>()
 }
 
 let isSwitching = false
@@ -183,10 +185,16 @@ export default function LineupScreen(){
         return(
             <View style={{flex:1}}>
                 <UpperBar/>
-                
-                
                 <MonthLineups weekends={array} monthCor={monthCoroinhas}/>
                 
+                <View style={{alignContent:"center",alignItems:"center",padding:10}}>
+                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
+                        console.log(CoroinhaLineupScreenOptions.roles)
+                        console.log(CoroinhaLineupScreenOptions.allLineups)
+                        CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
+                        console.log("Copied.")
+                    }}/>
+                </View> 
             </View>
             
         )

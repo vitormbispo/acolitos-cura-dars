@@ -184,7 +184,9 @@ export default function LineupScreen(){
                 <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
                 
                 <View style={{alignContent:"center",alignItems:"center",padding:10}}>
-                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{CopyToClipboard("Sus")
+                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
+                        console.log(LineupScreenOptions.roles)
+                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
                         console.log("Copied.")
                     }}/>
                 </View> 

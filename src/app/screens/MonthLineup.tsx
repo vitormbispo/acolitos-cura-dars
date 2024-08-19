@@ -161,6 +161,7 @@ export default function LineupOptions(){
                                 
                                 let newLineup = GenerateRandomLineup(roles,weekendKey,curDay)
                                 generatedLineups.get(weekendKey)?.push(newLineup)
+                                allLineups.push(newLineup)
                             }
                         }
                         
@@ -195,7 +196,6 @@ export default function LineupOptions(){
                     }
                 }
                 console.log("---MONTHLY LINEUP COMPLETED---")
-                console.log(GenerateLineupPrompt(allLineups))
                 LineupScreenOptions.lineupType = "Month"
                 LineupScreenOptions.monthLineups = generatedLineups
                 LineupScreenOptions.allLineups = allLineups

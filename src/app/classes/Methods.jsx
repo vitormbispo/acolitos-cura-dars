@@ -1,6 +1,6 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Lineup } from "./Lineup";
-import Clipboard from "expo-clipboard"
+import * as Clipboard from 'expo-clipboard';
 class PromptLineup{
     lines =[[]]
 }
@@ -60,7 +60,7 @@ export function GetAcolyteIndex(acolyte){
     return -1
 }
 
-export function GenerateLineupPrompt(lines){
+export function GenerateLineupPrompt(lines,rolesNames,roles){
     let str = ""
     let names = {"1stWE":"1˚", "2ndWE": "2˚", "3rdWE": "3˚", "4thWE":"4˚", "5thWE":"5˚",
                  "sabado":"Sab. - 19h","domingoAM": "Dom. - 08h","domingoPM": "Dom. - 19h"}
@@ -70,21 +70,30 @@ export function GenerateLineupPrompt(lines){
         let curLineup = lines[i]
         let lineupName = names[curLineup.weekend] + " " + names[curLineup.day]
         
-        let acolytes = ""
+        let acolytes = []
+        acolytes.length = roles.length
         
-        for(let j = 0; j < curLineup.acolytes.length;j++){
-            acolytes += curLineup.acolytes[j].nick + "; "
+        console.log("Acolytes before: "+acolytes)
+        for(let j = 0; j < roles.length; j++){
+            acolytes[j] = curLineup.line.get(roles[j])
         }
-        prompts.push("{"+lineupName+"}"+"["+acolytes+"]")
-    }
-    let roles = ["Ceroferário 1","Ceroferário 2","Librífero","Cruciferário"]
-    let finalPrompt = "Construa uma tabela com os títulos das colunas sendo, respectivamente: "
 
-    for (let i = 0; i < roles.length;i++){ //Adiciona as colunas com as funções
-        finalPrompt += roles[i]+" "
+        let acolytesNicks = ""
+
+        for(let j = 0; j < acolytes.length; j++){
+            acolytesNicks += acolytes[j].nick+";"
+        }
+
+        prompts.push("{"+lineupName+"}"+"["+acolytesNicks+"]")
+    }
+    
+    let finalPrompt = "Construa uma tabela de escala de serviço com os títulos das colunas (funções) sendo, respectivamente: "
+
+    for (let i = 0; i < rolesNames.length;i++){ //Adiciona as colunas com as funções
+        finalPrompt += rolesNames[i]+", "
     }
 
-    finalPrompt += ". Agora, na sequência seguinte, considere que o que está entre chaves é o título de cada linha. Preencha a linha com os nomes dentro do parenteses após o título e entre colchetes, colocando em uma nova coluna cada nome  separado por ponto e vírgula. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; : "
+    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela: "
     for(let i = 0; i < prompts.length;i++){
         finalPrompt += prompts[i]
     }
@@ -93,7 +102,6 @@ export function GenerateLineupPrompt(lines){
 }
 
 export const CopyToClipboard = async (text) => {
-    let clipboard = new Clipboard()
-
-    clipboard.setString("LoL")
+    await Clipboard.setStringAsync(text)
+    
 }

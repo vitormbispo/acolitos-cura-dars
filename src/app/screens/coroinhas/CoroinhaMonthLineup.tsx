@@ -174,6 +174,7 @@ export default function LineupOptions(){
                 }
                 
                 let generatedLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
+                let allLineups:Array<CoroinhaLineup> = new Array<CoroinhaLineup>()
 
                 if(CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
                     CoroinhaLineupScreenOptions.lineups = []
@@ -194,6 +195,7 @@ export default function LineupOptions(){
                                 
                                 let newLineup = GenerateRandomLineup(roles,weekendKey,curDay)
                                 generatedLineups.get(weekendKey)?.push(newLineup)
+                                allLineups.push(newLineup)
                             }
                         }
                         
@@ -220,6 +222,7 @@ export default function LineupOptions(){
                                 
                                 let newLineup = GenerateLineup(weekendKey,curDay,roles)
                                 generatedLineups.get(weekendKey)?.push(newLineup)
+                                allLineups.push(newLineup)
                             }
                         }
                     }
@@ -228,6 +231,10 @@ export default function LineupOptions(){
                 console.log(generatedLineups)
                 CoroinhaLineupScreenOptions.lineupType = "Month"
                 CoroinhaLineupScreenOptions.monthLineups = generatedLineups
+                
+                CoroinhaLineupScreenOptions.allLineups = allLineups
+                console.log("AllLineups: ")
+                console.log(CoroinhaLineupScreenOptions.allLineups)
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
             }}
