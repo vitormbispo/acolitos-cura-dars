@@ -2,11 +2,12 @@ import { View,Image,Text } from "react-native"
 import { Global } from "@/src/app/Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "@/src/app/classes/NewComps"
 import { Lineup } from "@/src/app/classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "@/src/app/classes/CoroinhaLineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "@/src/app/classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
 import { useState } from "react"
 import { CoroinhaLineupScreenOptions } from "./CoroinhaLineupScreen"
+import { FlexToCoroinhaLineup } from "../../classes/Methods"
 
 export class CoroinhaSingleLineupScreen{
     static curLineup:any = null
@@ -124,11 +125,11 @@ else{
 }
                 if(generateOptions.allRandom){
                     CoroinhaLineupScreenOptions.lineups = []
-                    CoroinhaLineupScreenOptions.lineups.push(GenerateRandomLineup(roles))
+                    CoroinhaLineupScreenOptions.lineups.push(FlexToCoroinhaLineup(GenerateRandomLineup(roles,"coroinha",weekend,day)))
                 }
                 else{
                     CoroinhaLineupScreenOptions.lineups = []
-                    CoroinhaLineupScreenOptions.lineups.push(GenerateLineup(weekend,day,roles))
+                    CoroinhaLineupScreenOptions.lineups.push(FlexToCoroinhaLineup(GenerateLineup(weekend,day,roles,"coroinha")))
                 }
                 
                 console.log(CoroinhaSingleLineupScreen.curLineup)

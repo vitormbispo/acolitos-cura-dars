@@ -2,7 +2,7 @@ import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
 import { Lineup } from "../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
 import { Acolyte, AcolyteData } from "../classes/AcolyteData"
@@ -10,7 +10,7 @@ import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { loadAcolyteData } from ".."
-import { GenerateLineupPrompt } from "../classes/Methods"
+import { FlexToAcolyteLineup, GenerateLineupPrompt, ResetAllLastWeekend } from "../classes/Methods"
 
 export class MonthlyLineupScreen{
     static curLineup:any = null
@@ -159,7 +159,7 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = GenerateRandomLineup(roles,weekendKey,curDay)
+                                let newLineup = FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekendKey,curDay))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
@@ -186,19 +186,19 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = GenerateLineup(weekendKey,curDay,roles)
+                                let newLineup = FlexToAcolyteLineup(GenerateLineup(weekendKey,curDay,roles,"acolito"))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
                         }
-                        
-
                     }
                 }
                 console.log("---MONTHLY LINEUP COMPLETED---")
                 LineupScreenOptions.lineupType = "Month"
                 LineupScreenOptions.monthLineups = generatedLineups
                 LineupScreenOptions.allLineups = allLineups
+                
+
                 router.push("/screens/LineupScreen")
                 
             }}

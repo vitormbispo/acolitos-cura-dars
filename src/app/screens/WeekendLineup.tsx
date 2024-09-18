@@ -2,7 +2,7 @@ import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
 import { Lineup } from "../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
 import { Acolyte, AcolyteData } from "../classes/AcolyteData"
@@ -10,6 +10,7 @@ import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { loadAcolyteData } from ".."
+import { FlexToAcolyteLineup } from "../classes/Methods"
 
 export class WeekendLineupScreen{
     static curLineup:any = null
@@ -130,7 +131,7 @@ export default function LineupOptions(){
                     LineupScreenOptions.daysNames = daysNames
                     for(let i = 0; i < days.length;i++){
                         loadAcolyteData()
-                        let newLineup = GenerateRandomLineup(roles)
+                        let newLineup = FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekend,days[i]))
                         LineupScreenOptions.lineups.push(newLineup)
                         console.log("Lineup of day: "+days[i])
                         console.log(newLineup)
@@ -142,7 +143,7 @@ export default function LineupOptions(){
                     LineupScreenOptions.daysNames = daysNames
                     for(let i = 0; i < days.length;i++){
                         loadAcolyteData()
-                        let newLineup = GenerateLineup(weekend,days[i],roles)
+                        let newLineup = FlexToAcolyteLineup(GenerateLineup(weekend,days[i],roles,"acolito"))
                         LineupScreenOptions.lineups.push(newLineup)
                         console.log("Lineup of day: "+days[i])
                         console.log(newLineup)

@@ -41,6 +41,8 @@ export class Acolyte {
     weekendPriority:DispDict={"sabado":0,"domingoPM":0,"domingoAM":0}
 
     onLineup = true
+
+    lastWeekend = ""
 }
 
 export class AcolyteData{

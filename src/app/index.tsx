@@ -100,6 +100,7 @@ const loadCoroinhaData = async() => {
     try {
         coroinhaData = await AsyncStorage.getItem("CoroinhaData")
         CoroinhaData.allCoroinhas = JSON.parse(coroinhaData)
+        OrganizeAcolyteArrayAlpha(CoroinhaData.allCoroinhas)
     } catch (error) {
         console.log(error)
     }

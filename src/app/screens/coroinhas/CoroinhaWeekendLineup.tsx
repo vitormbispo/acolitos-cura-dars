@@ -2,11 +2,13 @@ import { View,Image,Text } from "react-native"
 import { Global } from "../../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../../classes/NewComps"
 import { Lineup } from "../../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../../classes/CoroinhaLineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "../../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
 import { useState } from "react"
 import { CoroinhaLineupScreenOptions } from "@/src/app/screens/coroinhas/CoroinhaLineupScreen"
+import { FlexToCoroinhaLineup, ResetAllLastWeekend } from "../../classes/Methods"
+import { CoroinhaData } from "../../classes/CoroinhaData"
 
 export class CoroinhaWeekendLineupScreen{
     static curLineup:any = null
@@ -150,7 +152,7 @@ export default function LineupOptions(){
                     CoroinhaLineupScreenOptions.days = days
                     CoroinhaLineupScreenOptions.daysNames = daysNames
                     for(let i = 0; i < days.length;i++){
-                        let newLineup = GenerateRandomLineup(roles)
+                        let newLineup = FlexToCoroinhaLineup(GenerateRandomLineup(roles,"coroinha",weekend,days[i]))
                         CoroinhaLineupScreenOptions.lineups.push(newLineup)
                     }
                 }
@@ -159,11 +161,15 @@ export default function LineupOptions(){
                     CoroinhaLineupScreenOptions.days = days
                     CoroinhaLineupScreenOptions.daysNames = daysNames
                     for(let i = 0; i < days.length;i++){
-                        let newLineup = GenerateLineup(weekend,days[i],roles)
+                        let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekend,days[i],roles,"coroinha"))
                         CoroinhaLineupScreenOptions.lineups.push(newLineup)
                     }
                 }
-                
+
+                if(!CoroinhaWeekendLineupScreen.generateOptions.allRandom){
+                    ResetAllLastWeekend(CoroinhaData.allCoroinhas)
+                }
+
                 CoroinhaLineupScreenOptions.lineupType="Weekend"
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")  
             }}

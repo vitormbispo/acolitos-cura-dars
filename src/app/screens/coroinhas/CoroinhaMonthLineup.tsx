@@ -2,10 +2,12 @@ import { View,Image,Text } from "react-native"
 import { Global } from "@/src/app/Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "@/src/app/classes/NewComps"
 import { CoroinhaLineup } from "@/src/app/classes/CoroinhaLineup"
-import { GenerateLineup, GenerateRandomLineup } from "@/src/app/classes/CoroinhaLineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "@/src/app/classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { useState } from "react"
 import { CoroinhaLineupScreenOptions } from "@/src/app/screens/coroinhas/CoroinhaLineupScreen"
+import { FlexToCoroinhaLineup, ResetAllLastWeekend } from "../../classes/Methods"
+import { CoroinhaData } from "../../classes/CoroinhaData"
 
 export class CoroinhaMonthlyLineupScreen{
     static curLineup:any = null
@@ -147,7 +149,9 @@ export default function LineupOptions(){
 
                 <TextButton text="Gerar escala" press={()=>{
 
-                
+                if(!CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
+                    ResetAllLastWeekend(CoroinhaData.allCoroinhas)
+                }
                 // Definir funções se for solenidade ou não
                 let roles = []
                 if(CoroinhaMonthlyLineupScreen.generateOptions.reduced && !CoroinhaMonthlyLineupScreen.generateOptions.celebration){
@@ -193,7 +197,7 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = GenerateRandomLineup(roles,weekendKey,curDay)
+                                let newLineup = FlexToCoroinhaLineup(GenerateRandomLineup(roles,"coroinha",weekendKey,curDay))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
@@ -220,7 +224,7 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = GenerateLineup(weekendKey,curDay,roles)
+                                let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekendKey,curDay,roles,"coroinha"))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
@@ -235,6 +239,11 @@ export default function LineupOptions(){
                 CoroinhaLineupScreenOptions.allLineups = allLineups
                 console.log("AllLineups: ")
                 console.log(CoroinhaLineupScreenOptions.allLineups)
+
+                if(!CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
+                    ResetAllLastWeekend(CoroinhaData.allCoroinhas)
+                }
+
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
             }}

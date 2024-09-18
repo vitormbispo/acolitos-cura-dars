@@ -1,9 +1,16 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
+import { CoroinhaLineup } from "./CoroinhaLineup";
 import { Lineup } from "./Lineup";
 import * as Clipboard from 'expo-clipboard';
+
 class PromptLineup{
     lines =[[]]
 }
+
+// Globais
+export let coroinhaRoles = ["donsD","donsE","cestD","cestE"]
+export let acolyteRoles = ["cero1","cero2","cruci","libri","turib","navet"]
+
 export function OrganizeAcolyteArrayAlpha(array){
     let j = array.length-1
     let aux = array[0]
@@ -15,7 +22,6 @@ export function OrganizeAcolyteArrayAlpha(array){
         array[j] = aux
 
         j--
-
     }
 
     return array
@@ -59,6 +65,29 @@ export function GetAcolyteIndex(acolyte){
     }
     return -1
 }
+
+export function GetMemberIndex(member,list){
+    let chosen = -1
+    let i = 0
+
+    while(i < list.length && chosen == -1){
+        if(list[i].name == member.name){
+            chosen = i
+        } 
+        i++
+    }
+    return chosen
+}
+
+/** Remove um membro da lista.
+ * 
+ * @param {*} member Membro a ser removido da lista
+ * @param {*} list Lista alvo
+ */
+export function RemoveMemberFromList(member,list){
+    list.splice(GetMemberIndex(member,list),1)
+}
+
 
 export function GenerateLineupPrompt(lines,rolesNames,roles){
     let str = ""
@@ -104,4 +133,129 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
 export const CopyToClipboard = async (text) => {
     await Clipboard.setStringAsync(text)
     
+}
+
+
+/** Organiza a lista de números em ordem crescente.
+ * 
+ * @param array Lista de números
+ */
+export function SortByNumber(array){
+    let j = 0
+    for(let i = 0; i < array.length; i++){
+        let aux = Number(array[array.length-1])
+        let greatestIndex = GetGreatestNumIndex(array,j,array.length)
+        
+        array[array.length-1] = Number(array[greatestIndex])
+        array[greatestIndex] = aux
+    }
+}
+/** Encontra o índice do maior valor numérico da lista. Transforma strings em números
+ * 
+ * @param array Lista de números a ser organizada. Número ou string
+ * @param start Índice inicial
+ * @param end Índice final
+ * @returns O índice do maior número da lista
+ */
+export function GetGreatestNumIndex(array,start,end){
+    let great = start
+    for(let i = start; i < end; i++){
+        if(Number(array[i]) > Number(array[great])){
+            great = i
+            continue
+        }
+    }
+    return great
+}
+
+/**
+ * Gera um número aleaório entre o mínimo e máximo.
+ * @param {Number} min Mínimo
+ * @param {Number} max Máximo
+ * @returns 
+ */
+export function RandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+/** Escolhe um elemento aleatório na lista
+ * 
+ * @param {*} array Lista
+ * @returns 
+ */
+export function GetRandom(array){
+    return array[RandomNumber(0,array.length-1)]
+}
+
+export function ResetAllLastWeekend(members){
+    members.forEach((member) => {
+        console.log("Reseting last weekend from ",member.nick)
+        member.lastWeekend = ""
+        console.log("Result: ",member.lastWeekend)
+    })
+}
+
+/** Converte uma escala flexível para uma escala de coroinha. Retorna null caso a escala possua chaves de funções que não são de coroinhas
+ * 
+ * @param {*} lineup Escala a ser convertida
+ */
+export function FlexToCoroinhaLineup(lineup){
+    
+    let lineKeys = Array.from(lineup.line.keys())
+    lineKeys.forEach((key) => {
+        if(GetIndexFromArray(key,coroinhaRoles) == -1){ // Chave do mapa a ser convetido não é de função de coroinha
+            console.error("Invalid lineup type!")
+            return null
+        }
+    })
+
+    let converted = new CoroinhaLineup()
+    
+    converted.coroinhas = lineup.members
+
+    lineKeys.forEach((key) => {
+        converted.line.set(key,lineup.line.get(key))
+    })
+    
+    converted.day = lineup.day
+    converted.weekend = lineup.weekend
+
+    return converted
+}
+
+/** Converte uma escala flexível para uma escala de acólito. Retorna null caso a escala possua chaves de funções que não são de acólitos
+ * 
+ * @param {*} lineup Escala a ser convertida
+ */
+export function FlexToAcolyteLineup(lineup){
+    
+    let lineKeys = Array.from(lineup.line.keys())
+    lineKeys.forEach((key) => {
+        if(GetIndexFromArray(key,acolyteRoles) == -1){ // Chave do mapa a ser convetido não é de função de acólito
+            console.error("Invalid lineup type!")
+            return null
+        }
+    })
+
+    let converted = new Lineup()
+    
+    converted.coroinhas = lineup.members
+
+    lineKeys.forEach((key) => {
+        converted.line.set(key,lineup.line.get(key))
+    })
+    
+    converted.day = lineup.day
+    converted.weekend = lineup.weekend
+
+    return converted
+}
+
+export function GetIndexFromArray(obj,array){
+    for(let i = 0; i < array.length; i++){
+        if(array[i] == obj){
+            return i
+        }
+    }
+
+    return -1
 }

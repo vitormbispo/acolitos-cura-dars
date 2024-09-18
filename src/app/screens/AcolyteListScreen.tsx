@@ -25,15 +25,16 @@ export default function List(){
             <UpperBar/>
 
         <ScrollView style={{flex:1}}>
-        <LinkRowImageButton link={"/screens/NewAcolyte"} 
-            textStyle=
-                {{paddingLeft:10, 
-                fontFamily:"Inter-Light",
-                fontSize:20}} 
-                
-            text="- Adicionar novo acólito!"
-            img={require("../item_icons/add_ico.png")}
-            />
+            <LinkRowImageButton link={"/screens/NewAcolyte"} 
+                textStyle=
+                    {{paddingLeft:10, 
+                    fontFamily:"Inter-Light",
+                    fontSize:20}} 
+                    
+                text="- Adicionar novo acólito!"
+                img={require("../item_icons/add_ico.png")}
+                press={()=>{}}
+                />
             
             {acolytes}
             

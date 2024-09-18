@@ -9,7 +9,7 @@ export class Lineup{
     line = new Map<string,Acolyte>()
     acolytes:any=[]
 
-    day:any
-    weekend:any
+    day:string = ""
+    weekend:string = ""
 }
 

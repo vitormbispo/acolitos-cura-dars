@@ -4,367 +4,422 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SingleLineupScreen } from "../screens/SingleLineup";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
+import { GetRandom, RemoveMemberFromList as RemoveCoroinha, SortByNumber } from "./Methods";
 
 
 export function GenerateLineup(weekend:any=null,day:any=null,roles:string[]){
-    interface RolesDict{
-    [key:string]:any
+    // FEITO: Algoritmo está mais limpo, legível, eficiente e curto
+    // TODO: Bolar alguma forma de manter o rodízio de dias, mas aleatorizar as escalações,
+    //       principalmente as escalações "quadradas" (4 funções, total de coroinhas múltiplo de 4)
+    
+    // Excluir coroinhas fora de escala e incompatíveis com dia e horário
+    
+    let coroinhas = CoroinhaData.allCoroinhas.slice()
+    
+    console.log("Before 1st removal")
+    coroinhas.forEach((coroinha) =>{
+        console.log(coroinha.nick)
+    })
+    coroinhas = RemoveUnvailable(coroinhas,day,weekend)
+    console.log("\n After")
+    coroinhas.forEach((coroinha) =>{
+        console.log(coroinha.nick)
+    })
+    
+
+    // Excluir coroinhas que já estão nesse fim de semana
+    if(weekend != "Outro"){
+        coroinhas = RemoveIfAlreadyOnWeekend(coroinhas,weekend,roles.length)
+    }
+    console.log("\n After")
+    coroinhas.forEach((coroinha) =>{
+        console.log(coroinha.nick)
+    })
+
+    // Fazer um mapa com os coroinhas por prioridade geral
+    let generalPriority = new Map()
+    OrganizeByPriority(generalPriority,coroinhas)
+    generalPriority = SortPriorityMap(generalPriority)
+
+    // Fazer um mapa com os coroinhas por prioridade horária
+    let dayPriority = new Map()
+    OrganizeByDayPriority(dayPriority,coroinhas,day)
+    dayPriority = SortPriorityMap(dayPriority)
+
+    // Escolher coroinhas com prioridade máxima (dia + geral)
+    let maxPriority:Array<Coroinha> = []
+    if(day == "Outro"){
+        maxPriority = GeneralPrioritizedCoroinhas(generalPriority,roles.length)
+    }
+    else{
+        maxPriority = PrioritizedCoroinhas(generalPriority,dayPriority,roles.length)
+    }
+
+    // Escolher funções para cada coroinha e montar na classe Lineup.
+    let newLineup:CoroinhaLineup = new CoroinhaLineup()
+    
+    roles.forEach((role) => {
+        let chosenCoroinhas = GetRolePrioritizedCoroinhas(maxPriority,role)
+
+        let coroinha:Coroinha = GetRandom(chosenCoroinhas)
+        coroinha.rodizio[role] = 4
+
+        ReduceAllFunctionCooldown(coroinha,1)
+        newLineup.line.set(role,coroinha)
+        newLineup.coroinhas.push(coroinha)
+        
+        RemoveCoroinha(coroinha,maxPriority)
+    })
+    
+    newLineup.day = day
+    newLineup.weekend = weekend
+
+    newLineup.coroinhas.forEach((cor:Coroinha) => {
+        cor.priority = 4
+        cor.weekendPriority[day] = 4
+        cor.lastWeekend = weekend
+    });
+
+    // Ajustar prioridades
+    if(day != "Outro"){
+        ReduceAllDayPriority(newLineup.coroinhas,day,1)
+        ReduceAllGeneralPriority(newLineup.coroinhas,1)
+    }
+    // Saída
+    return newLineup   
 }
 
-
-    //const roles:string[] = ["donsD","donsE","cestD","cestE"]
-    const chosen:Map<string,any> = new Map<string,any>()
+/** Gera uma nova escala aleatória podendo se basear em dia e fim de semana ou não. 
+ * Não afeta e nem leva em conta nenhum tipo de preferência e prioridade, apenas disponibilidade.
+ *  
+ * @param roles Funções
+ * @param weekend Fim de semana
+ * @param day Dia
+ * @returns Uma nova escala aleatória
+ */
+export function GenerateRandomLineup(roles:string[],weekend:string="Outro",day:string="Outro"):CoroinhaLineup{
     let coroinhas = CoroinhaData.allCoroinhas.slice()
-    let allChosenCoroinhas:Array<Coroinha> = new Array<Coroinha>()
+    let availableCoroinhas = []
 
-    for(let i = 0; i < roles.length; i++){
-        chosen.set(roles[i],null)
+    availableCoroinhas = RemoveUnvailable(coroinhas,"Outro","Outro")
+
+    let generatedLineup = new CoroinhaLineup()
+    for(let i = 0; i < roles.length;i++){
+        let curRole = roles[i]
+        let curCor = GetRandom(availableCoroinhas)
+
+        generatedLineup.line.set(curRole,curCor)
+        generatedLineup.coroinhas.push(curCor)
+        availableCoroinhas.splice(availableCoroinhas.indexOf(curCor),1)
     }
 
-    console.log("Weekend: "+weekend)
-    console.log("Day: "+day)
-    // Remover coroinhas não escaláveis
-    let coroinhasToRemove = coroinhas.slice()
+    generatedLineup.day = day
+    generatedLineup.weekend = weekend
+    return generatedLineup
+}
+
+/**
+ * Remove os coroinhas que não estão disponíveis no dia e fim de semana ou que estão fora da escala.
+ * @param {Array<Coroinha>} coroinhas lista de coroinhas @param {string} day dia @param {string} weekend fim de semana 
+ */
+function RemoveUnvailable(coroinhas:Array<Coroinha>,day:string,weekend:string){
+    let availableCoroinhas = []
 
     for(let i = 0; i < coroinhas.length;i++){
         let curCoroinha = coroinhas[i]
 
-        console.log("Checking availability of: "+curCoroinha.nick)
-
-        if(!curCoroinha.onLineup){
-            coroinhasToRemove.splice(i,1)
-            console.log("Coroinha out of lineup, removing it.")
-        }
-
-        if(day != "Outro" && weekend != "Outro"){
-            
-            console.log("Filtering for day")
-            console.log("Weekend: "+weekend+" / "+curCoroinha.disp[weekend])
-
-            if(!curCoroinha.disp[weekend][day]){
-                console.log("Coroinha \""+curCoroinha.nick+"\" not available for this lineup, removing it!")
-                coroinhasToRemove.splice(i,1)
-                
-            }
-        }
-
-        coroinhas = coroinhasToRemove
-    }
-    
-    console.log("Generating new lineup!")
-
-    // Prioridade geral
-    let generalPriority = new Map()
-    let generalPriorities = ["high-priority","medium-priority","low-priority"]
-    
-    generalPriority.set("high-priority",new Array<Coroinha>())
-    generalPriority.set("medium-priority",new Array<Coroinha>())
-    generalPriority.set("low-priority",new Array<Coroinha>())
-
-    for(let i = 0; i < coroinhas.length;i++){
-        let curCoroinha = coroinhas[i]
-        
-        console.log("Checking priority of coroinha: "+curCoroinha.nick)
-        console.log("Priority: "+curCoroinha.priority)
-
-        if(curCoroinha.priority <= 1){
-            generalPriority.get("high-priority").push(curCoroinha)
-            console.log("Added to high priority!")
-        }
-        else if(curCoroinha.priority == 2){
-            generalPriority.get("medium-priority").push(curCoroinha)
-            console.log("Added to medium priority!")
-        }
-        else if(curCoroinha.priority > 2){
-            generalPriority.get("low-priority").push(curCoroinha)
-            console.log("Added to low priority!")
-        }
-    }
-
-    let chosenCoroinhas = []
-    let priorityNum = 0
-
-
-    // Pegar a quantidade máxima de coroinhas com maior prioridade geral
-    let priorityCoroinhas:Array<Coroinha> = []
-    let prioritySortingFinished = false
-    let dayPriorityNum = 0
-    
-
-    priorityNum = 0
-    while(!prioritySortingFinished){
-        let priorityArray = generalPriority.get(generalPriorities[priorityNum])
-        
-        if(priorityArray != undefined){
-            for(let i = 0; i < priorityArray.length;i++){
-                priorityCoroinhas.push(priorityArray[i])
-            }
-    
-            if(priorityCoroinhas.length < roles.length){
-                priorityNum++
-                continue   
+        if(curCoroinha.onLineup){
+            if(day != "Outro" && weekend != "Outro"){
+                if(curCoroinha.disp[weekend][day]){
+                    availableCoroinhas.push(curCoroinha)
+                }
             }
             else{
-                prioritySortingFinished = true
+                availableCoroinhas.push(curCoroinha)
             }
-        }
-        
-        else{
-            console.log("Not enough coroinhas!")
-            break
+            
         }
     }
+    return availableCoroinhas
+}
 
+/** Retorna uma lista sem os coroinhas que já foram escalados nesse fim de semana.
+ * Caso a lista seja menor do que a quantidade necessária de coroinhas, os coroinhas
+ * removidos serão readicionados à lista de disponíveis, levando em conta prioridade geral,
+ * até que ela atinja a quantidade mínima.
+ * Com o parâmetro de aleatoriedade Aleatoriedade for verdadeiro, escolherá coroinhas aleatórios que foram removidos. Quando falso, escolherá os coroinhas com maior prioridade que foram removidos
+ * 
+ * @param coroinhas Lista de coroinhas
+ * @param weekend Final de semana
+ * @param min Mínimo de coroinhas necessários
+ * @param randomness Aleatoriedade
+ * @returns Lista com os coroinhas disponíveis
+ */
+function RemoveIfAlreadyOnWeekend(coroinhas:Array<Coroinha>,weekend:string,min:number,randomness:boolean = true){
+    let removed:Array<Coroinha> = []
+    let available:Array<Coroinha> = []
     
-    // SEM BASE NO DIA
-    priorityNum = 0
-    // Escolhendo coroinhas com maior prioridade sem base no dia
-    while(chosenCoroinhas.length < roles.length){
-        
-
-        let curPriority:Array<Coroinha> = generalPriority.get(generalPriorities[priorityNum])
-        
-        if(curPriority == undefined){
-            console.error("Any priority category found!")
-            break
+    coroinhas.forEach((coroinha) =>{
+        if(coroinha.lastWeekend == weekend){
+            console.log(coroinha.nick, " is on this weekend!!!!")
+            console.log(coroinha.lastWeekend,"/",weekend)
+            removed.push(coroinha)
         }
-        if(curPriority.length<=0){
-            priorityNum++
-            continue
+        else{
+            console.log(coroinha.nick," not on this weekend. Available!")
+            available.push(coroinha)
+        }
+    })
+
+    let i = 0
+    while(available.length < min && i < removed.length){ 
+        let coroinha = null
+        if(randomness){
+            coroinha = GetRandom(removed)
+        }
+        else{
+            coroinha = GetRandom(GetPrioritizedCoroinhas(removed))
+        }
+        available.push(coroinha)
+        RemoveCoroinha(coroinha,removed)
+        i++
+    }
+
+    return available
+}
+
+/**
+ * Separa os coroinhas dentro do mapa de prioridade geral.
+ * @param priorityMap Mapa com as prioridades
+ * @param coroinhas Todos os coroinhas
+ */
+function OrganizeByPriority(priorityMap:Map<string,Array<Coroinha>>,coroinhas:Array<Coroinha>){
+    
+    for(let i = 0; i < coroinhas.length;i++){
+        let curCoroinha = coroinhas[i]
+        
+        if(curCoroinha.priority < 0){
+            let map = priorityMap.get("very-high-priority")
+            if(map != undefined){
+                map!.push(curCoroinha)
+            }
+            else{
+                priorityMap.set("very-high-priority",[curCoroinha])
+            }
+        }
+        if(curCoroinha.priority >= 0 && curCoroinha.priority <= 3){
+            let map = priorityMap.get("high-priority")
+            if(map != undefined){
+                map!.push(curCoroinha)
+            }
+            else{
+                priorityMap.set("high-priority",[curCoroinha])
+            }
         }
 
-        console.log("Checking priority: "+generalPriorities[priorityNum])
-        console.log("The priority array is: ")
-        console.log(curPriority)
-        
-        let chsn = curPriority[randomNumber(0,curPriority.length-1)] // Coroinha aleatório na prioridade atual escolhido
-        console.log("Chosen coroinha with priority "+generalPriorities[priorityNum]+": "+chsn.nick)
+        else if(curCoroinha.priority > 3){
+            let map = priorityMap.get("low-priority")
+            if(map != undefined){
+                map!.push(curCoroinha)
+            }
+            else{
+                priorityMap.set("low-priority",[curCoroinha])
+            }
+            
+        }
+    }
+}
 
-        chosenCoroinhas.push(chsn) // Passando para a array dos escolhidos
-        curPriority.splice(curPriority.indexOf(chsn),1) // Removendo da array de prioridade
+/** Organiza o mapa de prioridades da maior para a menor prioridade.
+ * 
+ * @param priorityMap Mapa de prioridades
+ */
+function SortPriorityMap(priorityMap:Map<string,Array<Coroinha>>){
+    let sorted:Map<string,Array<Coroinha>> = new Map<string,Array<Coroinha>>()
+    let priorities = ["very-high-priority","high-priority","low-priority"] // Prioridades em ordem
 
-        if(curPriority.length<=0){ // Se acabar os coroinhas na prioridade atual, passa pra próxima
-            if(generalPriority.get(generalPriorities[priorityNum+1]) != undefined){
-                if(generalPriority.get(generalPriorities[priorityNum+1]).length>0){
-                    priorityNum++
+    priorities.forEach((priority) => {
+        let array = priorityMap.get(priority)
+        if(priorityMap.get(priority) != undefined){
+            sorted.set(priority,array!)
+        }
+    })
+    
+    return sorted
+}
+
+/**
+ * Separa os coroinhas dentro do mapa de prioridade diária.
+ * @param priorityMap Mapa com as prioridades
+ * @param coroinhas Todos os coroinhas
+ * @param day Dia da escala
+ */
+function OrganizeByDayPriority(priorityMap:Map<string,Array<Coroinha>>,coroinhas:Array<Coroinha>,day:string){
+    coroinhas.forEach((coroinha) =>{
+        let priority:number = coroinha.weekendPriority[day]
+        if(priority < 0){
+            let map:Array<Coroinha>|undefined = priorityMap.get("very-high-priority")
+            if(map == undefined){
+                priorityMap.set("very-high-priority",[coroinha])
+            }
+            else{
+                map.push(coroinha)
+            }
+        }
+        if(priority >= 0 && priority <= 2){
+            let map:Array<Coroinha>|undefined = priorityMap.get("high-priority")
+            if(map == undefined){
+                priorityMap.set("high-priority",[coroinha])
+            }
+            else{
+                map.push(coroinha)
+            }
+        }
+        if(priority > 2){
+            let map:Array<Coroinha>|undefined = priorityMap.get("low-priority")
+            if(map == undefined){
+                priorityMap.set("low-priority",[coroinha])
+            }
+            else{
+                map.push(coroinha)
+            }
+        }
+    })
+}
+
+/** Seleciona os coroinhas com maior prioridade levando em conta as prioridades gerais e diárias já separadas.
+ * Esta seleção prioriza a prioridade geral em seguida a prioridade diária.
+ * 
+ * @param genPriority Mapa com as prioridades gerais
+ * @param dayPriority Mapa com as prioridade diárias
+ * @param amount Quantidade de coroinhas desejada
+ * @returns Uma lista de coroinhas com a maior priorade possível baseada na prioridade geral e diária.
+ */
+
+function PrioritizedCoroinhas(genPriority:Map<any,any>,dayPriority:Map<any,any>,amount:number){
+    let dayKeys = Array.from(dayPriority.keys())
+    let priorities = Array.from(genPriority.keys())
+
+    let prioritized:Array<Coroinha> = [] // Coroinhas com prioridade máxima
+    let curGenPrio = 0 // Prioridade geral sendo checada
+    let curDayPrio = 0 // Prioridade diária sendo checada
+
+    while(prioritized.length < amount){ // Enquanto não houver a quantidade desejada de coroinhas escolhidos:
+        let genArray = genPriority.get(priorities[curGenPrio]) // Lista atual da prioridade geral
+        let dayArray = dayPriority.get(dayKeys[curDayPrio]) // Lista atual da prioridade diária
+
+        for(let i = 0; i < genArray.length;i++){
+            let genCoroinha = genArray[i]
+            
+            for(let j = 0; j < dayArray.length; j++){
+                let dayCoroinha = dayArray[j]
+                if(genCoroinha == dayCoroinha){ // Se encontrou iguais, é porque têm a maior prioridade possível nas duas listas
+                    prioritized.push(genCoroinha)
+                }
+            }
+        }
+
+        if(prioritized.length < amount){
+            if(curDayPrio < dayKeys.length-1){
+                curDayPrio++
+                continue
+            }
+            else{
+                if(curGenPrio < priorities.length-1){
+                    curGenPrio++
+                    curDayPrio = 0
+                    continue
                 }
                 else{
                     console.error("Not enough coroinhas for full lineup!")
                     break
                 }
             }
-            else{
-                console.error("Not enough coroinhas for full lineup!")
-                break
-            }
-            
-            
         }
-        
-        //console.log("The chosen coroinhas are: ")
-        //console.log(chosenCoroinhas)
-        
     }
 
-
-    
-    
-    //Separação por função
-    for(let i = 0; i < roles.length;i++){
-        let rolePriority = new Map() // Mapa que liga classifica coroinhas de acordo com sua prioridade
-        let priorities:any[] = []   // Prioridades encontradas
-        let organizedPriorities:any[] = [] // Prioridades em ordem
-        let key = roles[i] // Função atual
-
-        console.log("Filtering coroinhas by priority on role: "+roles[i]+". Process: "+i+"/"+(roles.length-1))
-       
-        //Separar coroinhas por prioridade
-        for(let h = 0;h < chosenCoroinhas.length;h++){
-            let curCoroinha = chosenCoroinhas[h]
-            let priority = curCoroinha.rodizio[key]
-            
-            console.log("Separating coroinhas: "+curCoroinha.name+" with priority "+priority)
-            console.log("Priorities size: ",priorities.length)
-            
-            if(priorities.length == 0){
-                console.log("Separated: "+curCoroinha.name)
-                priorities.push(priority) // Cria nova prioridade
-                rolePriority.set(priority,new Array<Coroinha>()) // Cria nova chave de prioridade
-                rolePriority.get(priority).push(curCoroinha)  // Adiciona o coroinha a ela
-                console.log("Priorities: ")
-                console.log(priorities)
-                continue
-            }
-            
-            for(let z = 0; z < priorities.length;z++){
-                console.log("Priority: "+z)
-
-                if(priority == priorities[z]){
-                    rolePriority.get(priority).push(curCoroinha)
-                    break
-                }
-                else if(z>=priorities.length-1){
-                    console.log("Separated: "+curCoroinha.name)
-                    priorities.push(priority) // Cria nova prioridade
-                    rolePriority.set(priority,new Array<Coroinha>()) // Cria nova chave de prioridade
-                    rolePriority.get(priority).push(curCoroinha)  // Adiciona o coroinha a ela
-                    console.log("Priorities: ")
-                    console.log(priorities)
-                    break
-                }
-            }
-            
-            
-            
-        }
-
-        
-        console.log("Role priority: ")
-        console.log(rolePriority)
-
-        //Organizar prioridades por ordem numérica
-        
-        organizedPriorities = SortArrayByNumber(priorities)
-
-        console.log("Priorities organized! ")
-        console.log(organizedPriorities)
-
-        let priorityCoroinhas = rolePriority.get(organizedPriorities[0]) // Coroinhas com maior prioridade (Array<Coroinha>)
-        console.log("Coroinhas with priority: ")
-        console.log(priorityCoroinhas)
-
-
-        let chosenIndex = randomNumber(0,priorityCoroinhas.length-1)
-        console.log("Chosen index: "+chosenIndex)
-
-        let chosenForFunction:Coroinha = priorityCoroinhas[chosenIndex]
-        chosen.set(key,chosenForFunction)
-        
-        console.log("Chosen coroinha for function \""+key+ "\": "+chosen.get(key).nick)
-        chosenCoroinhas.splice(chosenCoroinhas.indexOf(chosen.get(key)),1)
-
-        allChosenCoroinhas.push(chosenForFunction)
-        
-        let coroinhaOnList = CoroinhaData.allCoroinhas[CoroinhaData.allCoroinhas.indexOf(chosenForFunction)]
-        
-        // Definir Rodizio
-
-        coroinhaOnList.oldRodizio = JSON.parse(JSON.stringify(coroinhaOnList.rodizio))
-        coroinhaOnList.oldPriority = JSON.parse(JSON.stringify(coroinhaOnList.priority))
-        coroinhaOnList.oldWeekendPriority = JSON.parse(JSON.stringify(coroinhaOnList.weekendPriority))
-
-        coroinhaOnList.rodizio[key] = 4
-        coroinhaOnList.priority = 3
-
-        
-        if(day!="Outro"){
-            coroinhaOnList.weekendPriority[day] = 3
-        }
-        
-        ReduceAllFunctionCooldown(CoroinhaData.allCoroinhas[CoroinhaData.allCoroinhas.indexOf(chosenForFunction)],1)
-
-        AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
-        
-        if(allChosenCoroinhas.length<=0 && i < roles.length){
-            console.error("Not enogh coroinhas for full lineup!")
-            console.log("lenght: "+chosenCoroinhas.length)
-            break
-        }
-    } 
-
-    console.log("!!!---LINEUP FINISHED---!!!")
-    console.log(chosen)
-
-    let generatedLineup = new CoroinhaLineup()
-
-    console.log("Lineup created")
-    generatedLineup.coroinhas = []
-    
-    for(let i = 0; i < roles.length;i++){
-        let curRole = roles[i]
-        console.log("Current role: "+curRole)
-
-        generatedLineup.line.set(curRole,chosen.get(curRole))
-        generatedLineup.coroinhas.push(chosen.get(curRole))
-    }
-
-    generatedLineup.day = day
-    generatedLineup.weekend = weekend
-
-    ReduceAllGeneralPriority(allChosenCoroinhas,1)
-    ReduceAllDayPriority(allChosenCoroinhas,day,1)
-    return generatedLineup
-    
+    return prioritized
 }
 
-export function GenerateRandomLineup(roles:string[],weekend:string="Outro",day:string="Outro"):CoroinhaLineup{
-    interface RolesDict{
-        [key:string]:any
+/** Seleciona os coroinhas com maior prioridade levando em conta apenas as prioridades gerais.
+ * 
+ * @param genPriority Mapa com as prioridades gerais
+ * @param amount Quantidade mínima de coroinhas desejada
+ * @returns Uma lista de coroinhas priorizados.
+ */
+function GeneralPrioritizedCoroinhas(genPriority:Map<any,any>,amount:number){
+    let prioritized:Array<Coroinha> = []
+    let curGenPrio = 0
+    let genKeys = Array.from(genPriority.keys())
+    while(prioritized.length < amount){
+        let genArray = genPriority.get(genKeys[curGenPrio])
+        
+        genArray.array.forEach((coroinha:Coroinha) => {
+            prioritized.push(coroinha)
+        });
     }
-    console.log("GENERATING RANDOM LINEUP")
-    //const roles:string[] = ["donsD","donsE","cestD","cestE"]
-    const chosen:RolesDict = {"donsD":null,"donsE":null,"cestD":null,"cestE":null}
-    let coroinhas = CoroinhaData.allCoroinhas.slice()
-    let allChosenCoroinhas:Array<Coroinha> = new Array<Coroinha>()
-    let coroinhasToRemove = coroinhas.slice()
 
-    for(let i = 0; i < coroinhas.length;i++){
-        let curCoroinha = coroinhas[i]
+    return prioritized
+}
 
-        console.log("Checking availability of: "+curCoroinha.nick)
+/** Retorna uma lista com os coroinhas que possuem a maior prioridade por função.
+ * 
+ * @param coroinhas Lista de coroinhas
+ * @param role Função
+ * @returns Lista com os coroinhas com maior prioridade na função
+ */
+function GetRolePrioritizedCoroinhas(coroinhas:Array<Coroinha>,role:string){
+    let prioritized:Array<Coroinha> = []
+    let smallest:number = coroinhas[0].rodizio[role]
 
-        if(!curCoroinha.onLineup){
-            coroinhasToRemove.splice(i,1)
-            console.log("Coroinha out of lineup, removing it.")
+    coroinhas.forEach((coroinha) => {
+        let prio = coroinha.rodizio[role]
+        if(prio < smallest){
+            smallest = prio
         }
-    }
+    })
 
-    let availableCoroinhas = coroinhas.slice()
-    for(let i = 0; i < roles.length;i++){
-        let curRole = roles[i]
-        let chosenIndex = randomNumber(0,availableCoroinhas.length-1)
-        let curCor = availableCoroinhas[chosenIndex]
+    coroinhas.forEach((coroinha)=>{
+        if(coroinha.rodizio[role] == smallest){
+            prioritized.push(coroinha)
+        }
+    })
 
-        chosen[curRole] = curCor
-        availableCoroinhas.splice(availableCoroinhas.indexOf(curCor),1)
-    }
-
-    let generatedLineup = new CoroinhaLineup()
-
-    for(let i = 0; i < roles.length;i++){
-        let curRole = roles[i]
-
-        generatedLineup.line.set(curRole,chosen[curRole])
-        generatedLineup.coroinhas.push(chosen[curRole])
-    }
-
-    generatedLineup.day = day
-    generatedLineup.weekend = weekend
-    return generatedLineup
-}
-function randomNumber(min:any, max:any) {
-    return Math.floor(Math.random() * (max - min) + min);
+    return prioritized
 }
 
+/** Reduz as prioridades de função de um coroinha por um determinado peso.
+ * 
+ * @param cor Coroinha
+ * @param weight Peso
+ */
 function ReduceAllFunctionCooldown(cor:Coroinha,weight:number){
     cor.rodizio["donsD"]-=weight
     cor.rodizio["donsE"]-=weight
     cor.rodizio["cestD"]-=weight
     cor.rodizio["cestE"]-=weight
-
-    cor.priority-=weight
 }
-
+/** Reduz a prioridade geral de todos os coroinhas, salvo exceções, por determinado peso
+ * 
+ * @param exceptions Exceções
+ * @param weight Peso
+ */
 function ReduceAllGeneralPriority(exceptions:Array<Coroinha>,weight:number){
     for(let i =0; i < CoroinhaData.allCoroinhas.length;i++){
         let curCoroinha = CoroinhaData.allCoroinhas[i]
 
         if(!HasCoroinha(curCoroinha,exceptions)){
-            curCoroinha.priority-=weight
+            curCoroinha.priority = curCoroinha.priority-1
         }
     }
 }
 
+/**
+ * Reduz a prioridade diária de todos os coroinhas por determinado peso, salvo excessões.
+ * @param exceptions Excessões
+ * @param day Dia
+ * @param weight Peso
+ */
 function ReduceAllDayPriority(exceptions:Array<Coroinha>,day:string,weight:number){
     for(let i =0; i < CoroinhaData.allCoroinhas.length;i++){
         let curCoroinha = CoroinhaData.allCoroinhas[i]
@@ -375,6 +430,12 @@ function ReduceAllDayPriority(exceptions:Array<Coroinha>,day:string,weight:numbe
     }
 }
 
+/** Verifica se na lista há ou não um determinado coroinha
+ * 
+ * @param cor Coroinha a procurar
+ * @param array Lista de coroinhas
+ * @returns Coroinha está na lista
+ */
 function HasCoroinha(cor:Coroinha,array:Array<Coroinha>): Boolean{
     for(let i = 0; i < array.length;i++){
         if(array[i] == cor){
@@ -385,38 +446,27 @@ function HasCoroinha(cor:Coroinha,array:Array<Coroinha>): Boolean{
     return false
 }
 
-export function SortArrayByNumber(array:Array<number>): Array<number>{
-        
-        let toOrganize = array.slice()
-        let organized = []
-        console.log("To organize: ")
-        console.log(toOrganize)
+/** Retorna uma lista com os coroinhas com maior prioridade geral.
+ * 
+ * @param coroinhas Lista de coroinhas
+ * @returns Coroinhas priorizados
+ */
+function GetPrioritizedCoroinhas(coroinhas:Array<Coroinha>){
+    let prioritized:Array<Coroinha> = []
+    let smallest:number = coroinhas[0].priority
 
-        while(organized.length < array.length){
-            let smallestNumber = 999
-            
-
-            for(let x = 0;x < toOrganize.length;x++){
-                console.log("Organizing Item: "+toOrganize[x])
-                if(x == 0){
-                    console.log("Is first number! Setting as smallest... "+toOrganize[x])
-                    smallestNumber = toOrganize[x]
-                    continue
-                }
-                
-                if(toOrganize[x] < smallestNumber){
-                    console.log("Is smaller! Updating smallest number...")
-                    smallestNumber = toOrganize[x]
-                }
-            }
-
-            console.log("The smallest number is: "+smallestNumber)
-            organized.push(smallestNumber)
-            toOrganize.splice(toOrganize.indexOf(smallestNumber),1)
-
-            console.log("New to organize: ")
-            console.log(toOrganize)
+    coroinhas.forEach((coroinha) => {
+        let prio = coroinha.priority
+        if(prio < smallest){
+            smallest = prio
         }
+    })
 
-        return(organized)
+    coroinhas.forEach((coroinha)=>{
+        if(coroinha.priority == smallest){
+            prioritized.push(coroinha)
+        }
+    })
+
+    return prioritized
 }

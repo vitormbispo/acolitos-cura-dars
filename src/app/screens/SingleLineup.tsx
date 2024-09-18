@@ -2,12 +2,13 @@ import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
 import { Lineup } from "../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
 import { Acolyte } from "../classes/AcolyteData"
 import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
+import { FlexToAcolyteLineup } from "../classes/Methods"
 
 export class SingleLineupScreen{
     
@@ -105,11 +106,11 @@ export default function LineupOptions(){
 
                 if(SingleLineupScreen.generateOptions.allRandom){
                     LineupScreenOptions.lineups = []
-                    LineupScreenOptions.lineups.push(GenerateRandomLineup(roles))
+                    LineupScreenOptions.lineups.push(FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekend,day)))
                 }
                 else{
                     LineupScreenOptions.lineups = []
-                    LineupScreenOptions.lineups.push(GenerateLineup(weekend,day,roles))
+                    LineupScreenOptions.lineups.push(FlexToAcolyteLineup(GenerateLineup(weekend,day,roles,"acolito")))
                 }
                 
                 console.log(SingleLineupScreen.curLineup,

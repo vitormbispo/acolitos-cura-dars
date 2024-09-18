@@ -67,4 +67,11 @@ export class Global{
         screenName: "Tela inicial",
         iconPath: "../item_icons/home_icomdpi.png"
     }
+
+    static lastScreen = {
+        scrollXPos: 0,
+        scrollYPos:0
+    }
+
+    static nextGroup = 0
 }
