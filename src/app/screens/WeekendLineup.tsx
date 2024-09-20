@@ -10,7 +10,7 @@ import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { loadAcolyteData } from ".."
-import { FlexToAcolyteLineup } from "../classes/Methods"
+import { FlexToAcolyteLineup, ResetAllLastWeekend } from "../classes/Methods"
 
 export class WeekendLineupScreen{
     static curLineup:any = null
@@ -150,6 +150,10 @@ export default function LineupOptions(){
                     }
                 }
                 
+                if(!WeekendLineupScreen.generateOptions.allRandom){
+                    ResetAllLastWeekend(AcolyteData.allAcolytes)   // Reseta o último fim de semana de todos os acólitos
+                }
+
                 LineupScreenOptions.lineupType="Weekend"
                 router.push("/screens/LineupScreen")  
             }}

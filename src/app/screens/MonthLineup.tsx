@@ -198,7 +198,10 @@ export default function LineupOptions(){
                 LineupScreenOptions.monthLineups = generatedLineups
                 LineupScreenOptions.allLineups = allLineups
                 
-
+                if(!MonthlyLineupScreen.generateOptions.allRandom){
+                    ResetAllLastWeekend(AcolyteData.allAcolytes)
+                }
+                
                 router.push("/screens/LineupScreen")
                 
             }}

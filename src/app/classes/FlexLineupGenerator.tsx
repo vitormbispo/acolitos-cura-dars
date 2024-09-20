@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SingleLineupScreen } from "../screens/SingleLineup";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
-import { GetRandom, RemoveMemberFromList as RemoveMember, SortByNumber } from "./Methods";
+import { GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, SortByNumber } from "./Methods";
 import { FlexLineup } from "./FlexLineup";
 
 
@@ -17,7 +17,11 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
 
     // TODO: Resolver clássico bug do 'rodizio' of undefined (eu vou ficar louco :D). Agora está acontecendo
     // Ao criar 3 escalas de acólitos de solenidade seguidas como single lineup no mesmo dia e horário. Não sei mais se
-    // é só um erro com a atribuição de prioridades, mas está próximo.
+    // é só um erro com a atribuição de prioridades, mas está próximo. UPDATE: Bug simplesmente não aconteceu mais :D.
+    // Logo temos um código roleta russa que pode bugar do nada e sabe se lá como vai debugar isso.
+    // TODO Por algum raio de motivo, as prioridades não estão sendo atualizadas. 
+    // Provavelmente porque está sendo usado uma cópia da lista, fazer funções que alterem os membros na lista original
+    // com os novos dados dos membros da lista clonada.
 
 
     // Excluir membros fora de escala e incompatíveis com dia e horário
@@ -89,6 +93,8 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         member.priority = 4
         member.weekendPriority[day] = 4
         member.lastWeekend = weekend
+
+        //CommitMemberInfo(member)
     });
 
     // Ajustar prioridades
@@ -96,6 +102,15 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         ReduceAllDayPriority(newLineup.members,day,1,type)
         ReduceAllGeneralPriority(newLineup.members,1,type)
     }
+
+    // Salvar listas
+    if(type == "coroinha"){
+        SaveCoroinhaData()
+    } 
+    else{
+        SaveAcolyteData()
+    }
+
     // Saída
     return newLineup   
 }
@@ -188,14 +203,18 @@ function RemoveIfAlreadyOnWeekend(members:Array<Coroinha|Acolyte>,weekend:string
         }
     })
 
-    let i = 0
-    while(available.length < min && i < removed.length){ 
+    // Caso ainda não tenha sido atingido o número mínimo de membros, adiciona novos membros até que o mínimo seja
+    // atingido ou se esgotem os membros disponíveis.
+    let i = 0 // Índice
+    let maxChecks = removed.length // Quantidade máxima de checagens (checar até o fim da lista de removidos)
+    
+    while(available.length < min && i < maxChecks){ 
         let member = null
         if(randomness){
             member = GetRandom(removed)
         }
         else{
-            member = GetRandom(GetPrioritizedCoroinhas(removed))
+            member = GetRandom(GetPrioritizedMembers(removed))
         }
         available.push(member)
         RemoveMember(member,removed)
@@ -501,12 +520,12 @@ function HasMember(member:Coroinha|Acolyte,array:Array<Coroinha|Acolyte>): Boole
  * @param members Lista de coroinhas
  * @returns Coroinhas priorizados
  */
-function GetPrioritizedCoroinhas(members:Array<Coroinha|Acolyte>){
+function GetPrioritizedMembers(members:Array<Coroinha|Acolyte>){
     let prioritized:Array<Coroinha|Acolyte> = []
     let smallest:number = members[0].priority
 
-    members.forEach((coroinha) => {
-        let prio = coroinha.priority
+    members.forEach((member) => {
+        let prio = member.priority
         if(prio < smallest){
             smallest = prio
         }
@@ -519,4 +538,31 @@ function GetPrioritizedCoroinhas(members:Array<Coroinha|Acolyte>){
     })
 
     return prioritized
+}
+
+/** Aplica as mudanças feitas em uma cópia de membro no membro original.
+ * 
+ * @param member Membro
+ */
+function CommitMemberInfo(member:Coroinha|Acolyte){
+    let originalList:Array<Coroinha|Acolyte> = [] // Lista de membro original (acólitos ou coroinhas)
+    let indexOnOriginal:number = 0 // Índice do membro na lista original
+    
+    if(member.TYPE == "Coroinha"){
+        originalList = CoroinhaData.allCoroinhas
+    }
+    
+    else if(member.TYPE == "Acolyte"){
+        originalList = AcolyteData.allAcolytes
+    }
+
+    else{
+        console.error("Failed to commit member info. Invalid member type. Expected: \"Coroinha\" or \"Acolyte\", got \"",member.TYPE,"\"")
+    }
+
+    indexOnOriginal = GetMemberIndex(member,originalList)
+   
+    if(indexOnOriginal != -1){
+        originalList[indexOnOriginal] = member
+    }
 }

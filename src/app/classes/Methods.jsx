@@ -1,7 +1,9 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
+import { Coroinha, CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
 import { Lineup } from "./Lineup";
 import * as Clipboard from 'expo-clipboard';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class PromptLineup{
     lines =[[]]
@@ -175,7 +177,7 @@ export function GetGreatestNumIndex(array,start,end){
  * @returns 
  */
 export function RandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.round(Math.random() * (max - min) + min);
 }
 /** Escolhe um elemento aleatório na lista
  * 
@@ -258,4 +260,12 @@ export function GetIndexFromArray(obj,array){
     }
 
     return -1
+}
+
+export function SaveAcolyteData(){
+    AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
+}
+
+export function SaveCoroinhaData(){
+    AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
 }

@@ -7,6 +7,8 @@ interface DispDict{
     [key:string]:any
 }
 export class Acolyte {
+    TYPE = "Acolyte"
+    
     name=""
     nick=""
     
