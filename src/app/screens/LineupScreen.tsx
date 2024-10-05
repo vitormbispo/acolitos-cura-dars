@@ -4,13 +4,13 @@ import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
 import { SingleLineupScreen } from "./SingleLineup"
 import { router } from "expo-router"
 import { Global } from "../Global"
-import { Acolyte } from "../classes/AcolyteData"
+import { Acolyte, AcolyteData } from "../classes/AcolyteData"
 import { StyleSheet } from "react-native"
 import { GenerateLineup } from "../classes/LineupGenerator"
 import { useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup } from "../classes/Lineup"
-import { CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
+import { BuildMonthLineup, BuildWeekendLineup, CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -161,6 +161,9 @@ export default function LineupScreen(){
                     <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
                     <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
                     <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
+                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                        AcolyteData.allWeekendLineups.push(BuildWeekendLineup(LineupScreenOptions.allLineups))
+                    }}/>
                 </View>
             </ScrollView>
         )
@@ -189,6 +192,10 @@ export default function LineupScreen(){
                         CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
                         console.log("Copied.")
                     }}/>
+
+                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                        AcolyteData.allMonthLineups.push(BuildMonthLineup(LineupScreenOptions.allLineups))
+                    }}/>
                 </View> 
             </View>
             
@@ -216,8 +223,6 @@ export const UpperBar = () => {
 }
 
 export function LineupAcolyte(props:any) {
-    
-
     let [subsAcolyte,setSubs] = useState(false)
     return(
         <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center",alignContent:"center"}}>
@@ -268,7 +273,6 @@ export function LineupAcolyte(props:any) {
                     replaced.priority=4
                     replaced.weekendPriority[props.lineup.day]=3
 
-
                     props.lineup.line.set(props.role,replaced)
                     props.lineup.acolytes.splice(props.lineup.acolytes.indexOf(replacing),1)
                     props.lineup.acolytes.push(replaced)
@@ -282,10 +286,6 @@ export function LineupAcolyte(props:any) {
                 AcolyteSelectScreenOptions.lineup = props.lineup
                 router.push("/screens/AcolyteSelectScreen")
             }}/>
-
-            
-
-
         </View>
     )
 }
@@ -313,7 +313,6 @@ function SwitchAcolytes(switching:Acolyte,switched:Acolyte,switchingRole:string,
         switched.rodizio[switchingRole]=switched.oldRodizio[switchingRole]
     }
     
-
     switchingLineup.line.set(switchingRole,switched)
     switchedLineup.line.set(switchedRole,switching)
 }

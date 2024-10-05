@@ -1,7 +1,7 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
-import { Lineup } from "./Lineup";
+import { Lineup, MonthLineup, WeekendLineup } from "./Lineup";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -262,6 +262,42 @@ export function GetIndexFromArray(obj,array){
     return -1
 }
 
+export function BuildWeekendLineup(lineups){
+    let newLineup = new WeekendLineup()
+    
+    lineups.forEach((line) => {
+        newLineup.set(line.weekend,line)
+    })
+
+    return newLineup
+}
+
+export function BuildMonthLineup(lineups){
+    let newLineup = new MonthLineup()
+
+    lineups.forEach((lineup) => {
+        let weekendMap = newLineup.lines.get(lineup.weekend)
+        
+        if(weekendMap != undefined){
+            weekendMap.set(lineup.day,lineup)
+        }
+        else{
+            newLineup.lines.set(lineup.weekend,new Map())
+            weekendMap = newLineup.lines.get(lineup.weekend)
+            weekendMap.set(lineup.day,lineup)
+        }
+        
+    })
+
+    return newLineup
+}
+
+
+export function ShufflePriorities(members){
+    members.forEach((member) => {
+        member.priority = RandomNumber(0,4)
+    })
+}
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
 }
@@ -269,3 +305,4 @@ export function SaveAcolyteData(){
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
 }
+

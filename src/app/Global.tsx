@@ -73,5 +73,12 @@ export class Global{
         scrollYPos:0
     }
 
-    static nextGroup = 0
+    
+}
+
+enum Weekend{
+    First,
+    Second,
+    Third,
+    Forth
 }

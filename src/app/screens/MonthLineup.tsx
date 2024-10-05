@@ -1,7 +1,7 @@
 import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
-import { Lineup } from "../classes/Lineup"
+import { Lineup, MonthLineup } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
@@ -21,7 +21,9 @@ export class MonthlyLineupScreen{
         "allowOut":false,
         "allRandom":false,
         "solemnity":false,
-        "monthDays":new Map<string,Array<string>>()
+        "monthDays":new Map<string,Array<string>>(),
+        "randomness":0,
+        "dayRotation":true
     }
 }
 
@@ -33,6 +35,7 @@ export default function LineupOptions(){
     let daysNames:Array<any> = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     
     let[liturgicalColor,setColor] = useState("red")
+    let[randomness,setRandomness] = useState(0)
 
     MonthlyLineupScreen.generateOptions.allRandom = false
     MonthlyLineupScreen.generateOptions.solemnity = false
@@ -49,12 +52,47 @@ export default function LineupOptions(){
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
                 </View>
                 
+                {/* < Opções de aleatoriedade > */}
+                <Text style = {[Global.textStyles.dataText,{padding:10}]}>Aleatoriedade</Text>
+                <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
+                        <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
+                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),console.log("Randomness: ",randomness),MonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
+                        <SingleCheck img={CheckImage(randomness,-1)} checked={randomness == -1} press={()=>{setRandomness(-1),MonthlyLineupScreen.generateOptions.randomness = -1}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
+                        <SingleCheck img={CheckImage(randomness,0)} checked={randomness == 0} press={()=>{setRandomness(0),MonthlyLineupScreen.generateOptions.randomness = 0}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
+                        <SingleCheck img={CheckImage(randomness,1)} checked={randomness == 1} press={()=>{setRandomness(1),MonthlyLineupScreen.generateOptions.randomness = 1}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
+                        <SingleCheck img={CheckImage(randomness,2)} checked={randomness == 2} press={()=>{setRandomness(2),MonthlyLineupScreen.generateOptions.randomness = 2}}/>
+                    </View>
+                </View>
+                {/* </ Opções de aleatoriedade > */}
                 
-                <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
+
+                <View style={{flexDirection:"row",alignItems:"center",flex:0.3,padding:10}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
                     <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = !MonthlyLineupScreen.generateOptions.allRandom}}/>
                 </View>
-                
+
+                <View style={{flexDirection:"row",alignItems:"center",flex:0.2,padding:10}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Rodízio diário</Text>
+                    <CheckBox checked={true} press={()=>{MonthlyLineupScreen.generateOptions.dayRotation = !MonthlyLineupScreen.generateOptions.dayRotation}}/>
+                </View>
+
                 <View style={{paddingTop:20}}>
                     <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:100}}>
                         <Text style={{flex:1}}>Sábado - 19h</Text>
@@ -186,7 +224,13 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = FlexToAcolyteLineup(GenerateLineup(weekendKey,curDay,roles,"acolito"))
+                                let newLineup = FlexToAcolyteLineup(GenerateLineup(
+                                    weekendKey,
+                                    curDay,
+                                    roles,
+                                    "acolito",
+                                    MonthlyLineupScreen.generateOptions.randomness,
+                                    MonthlyLineupScreen.generateOptions.dayRotation))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }

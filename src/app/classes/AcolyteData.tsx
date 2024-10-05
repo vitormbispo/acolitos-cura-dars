@@ -1,3 +1,4 @@
+import { Lineup, MonthLineup, WeekendLineup } from "./Lineup"
 
 interface RolesDict{
     [key:string]:any
@@ -49,6 +50,7 @@ export class Acolyte {
 
 export class AcolyteData{
     static allAcolytes: Acolyte[] = []
-
-    
+    static allLineups: Lineup[] = []
+    static allWeekendLineups: WeekendLineup[] = []
+    static allMonthLineups: MonthLineup[] = []
 }

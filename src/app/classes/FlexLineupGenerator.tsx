@@ -1,7 +1,8 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
-import { GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, SortByNumber } from "./Methods";
+import { GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, ShufflePriorities, SortByNumber } from "./Methods";
 import { FlexLineup } from "./FlexLineup";
+
 
 /** Gera uma nova escala flexível de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
  * Leva em conta a disponibiliade e as prioridades diárias, de funções e gerais.
@@ -12,9 +13,11 @@ import { FlexLineup } from "./FlexLineup";
  * @param type Tipo
  * @returns {FlexLineup|null} Nova escala flexível montada
  */
-export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type:string):FlexLineup|null{
+export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type:string,randomness:number = 2, dayRotation:boolean = true):FlexLineup|null{
     // Excluir membros fora de escala e incompatíveis com dia e horário
     // TODO corrigir erro quando não há membros suficiente disponíves. (Está dando erro na função de selecionar membro por prioridade de função)
+    
+    console.log("Generating lineup with randomness: ",randomness," and dayRotation: ",dayRotation)
     let members:Array<Coroinha|Acolyte> = []
 
     if(type == "coroinha"){
@@ -28,6 +31,11 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         return null
     }
 
+    if(randomness > 0){
+        ShufflePriorities(members)
+    }
+    
+
     members = RemoveUnvailable(members,day,weekend)
 
     // Excluir membros que já estão nesse fim de semana
@@ -37,7 +45,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
     
     // Fazer um mapa com os membros por prioridade geral
     let generalPriority = new Map()
-    OrganizeByPriority(generalPriority,members)
+    OrganizeByPriority(generalPriority,members,randomness)
     generalPriority = SortPriorityMap(generalPriority)
 
     // Fazer um mapa com os membros por prioridade horária
@@ -47,7 +55,8 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
 
     // Escolher membros com prioridade máxima (dia + geral)
     let maxPriority:Array<Coroinha|Acolyte> = []
-    if(day == "Outro"){
+    if(day == "Outro" || !dayRotation){
+        console.log("Other day")
         maxPriority = GeneralPrioritizedMembers(generalPriority,roles.length)
     }
     else{
@@ -214,7 +223,7 @@ function RemoveIfAlreadyOnWeekend(members:Array<Coroinha|Acolyte>,weekend:string
  * @param {Map<string,Array<Coroinha|Acolyte>>} priorityMap Mapa com as prioridades
  * @param {Array<Coroinha|Acolyte>} members Todos os membros
  */
-function OrganizeByPriority(priorityMap:Map<string,Array<Coroinha|Acolyte>>,members:Array<Coroinha|Acolyte>){
+function OrganizeByPriority(priorityMap:Map<string,Array<Coroinha|Acolyte>>,members:Array<Coroinha|Acolyte>,randomness:number){
     
     for(let i = 0; i < members.length;i++){
         let curMember = members[i]
@@ -228,7 +237,7 @@ function OrganizeByPriority(priorityMap:Map<string,Array<Coroinha|Acolyte>>,memb
                 priorityMap.set("very-high-priority",[curMember])
             }
         }
-        if(curMember.priority >= 0 && curMember.priority <= 3){
+        if(curMember.priority >= 0 && curMember.priority <= 3 + randomness){
             let map = priorityMap.get("high-priority")
             if(map != undefined){
                 map!.push(curMember)
@@ -238,7 +247,7 @@ function OrganizeByPriority(priorityMap:Map<string,Array<Coroinha|Acolyte>>,memb
             }
         }
 
-        else if(curMember.priority > 3){
+        else if(curMember.priority > 3 + randomness){
             let map = priorityMap.get("low-priority")
             if(map != undefined){
                 map!.push(curMember)
@@ -368,17 +377,28 @@ function PrioritizedMembers(genPriority:Map<any,any>,dayPriority:Map<any,any>,am
  * @returns {Array<Coroinha|Acolyte>} Uma lista de membros priorizados.
  */
 function GeneralPrioritizedMembers(genPriority:Map<any,any>,amount:number):Array<Coroinha|Acolyte>{
-    let prioritized:Array<Coroinha|Acolyte> = []
-    let curGenPrio = 0
-    let genKeys = Array.from(genPriority.keys())
-    while(prioritized.length < amount){
-        let genArray = genPriority.get(genKeys[curGenPrio])
-        
-        genArray.array.forEach((member:Coroinha|Acolyte) => {
-            prioritized.push(member)
-        });
-    }
+    let priorities = Array.from(genPriority.keys())
 
+    let prioritized:Array<Coroinha|Acolyte> = [] // Cembros com prioridade máxima
+    let curGenPrio = 0 // Prioridade geral sendo checada
+
+    while(prioritized.length < amount){ // Enquanto não houver a quantidade desejada de membros escolhidos:
+        let genArray = genPriority.get(priorities[curGenPrio]) // Lista atual da prioridade geral
+
+        if(genArray != undefined){
+            genArray.forEach((member:Acolyte|Coroinha) => {
+                prioritized.push(member)
+            })
+        }
+        else if(curGenPrio < priorities.length-1){
+            curGenPrio++
+            continue
+        }
+        else{
+            console.error("Not enough members!")
+            break
+        }
+    }
     return prioritized
 }
 
