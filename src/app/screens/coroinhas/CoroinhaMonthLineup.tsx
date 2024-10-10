@@ -1,4 +1,4 @@
-import { View,Image,Text } from "react-native"
+import { View,Image,Text, ScrollView } from "react-native"
 import { Global } from "@/src/app/Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "@/src/app/classes/NewComps"
 import { CoroinhaLineup } from "@/src/app/classes/CoroinhaLineup"
@@ -8,6 +8,7 @@ import { useState } from "react"
 import { CoroinhaLineupScreenOptions } from "@/src/app/screens/coroinhas/CoroinhaLineupScreen"
 import { FlexToCoroinhaLineup, ResetAllLastWeekend } from "../../classes/Methods"
 import { CoroinhaData } from "../../classes/CoroinhaData"
+import { MonthlyLineupScreen } from "../MonthLineup"
 
 export class CoroinhaMonthlyLineupScreen{
     static curLineup:any = null
@@ -20,7 +21,9 @@ export class CoroinhaMonthlyLineupScreen{
         "solemnity":false,
         "monthDays":new Map<string,Array<string>>(),
         "reduced":false,
-        "celebration":false
+        "celebration":false,
+        "dayRotation":true,
+        "randomness":0
     }
 }
 
@@ -32,6 +35,7 @@ export default function LineupOptions(){
     let daysNames:Array<any> = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     
     let[liturgicalColor,setColor] = useState("red")
+    let[randomness,setRandomness] = useState(0)
 
     CoroinhaMonthlyLineupScreen.generateOptions.allRandom = false
     CoroinhaMonthlyLineupScreen.generateOptions.solemnity = false
@@ -44,7 +48,7 @@ export default function LineupOptions(){
         <View style={{flex:1}}>
             <UpperBar/>
             
-            <View style={{flex:1}}>
+            <ScrollView style={{flex:1}}>
                 {/*}
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Celebração</Text>
@@ -58,29 +62,65 @@ export default function LineupOptions(){
                     <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
                 </View>
                 {*/}
-
-
+                
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
                 </View>
                 
+                {/* < Opções de aleatoriedade > */}
+                <Text style = {[Global.textStyles.dataText,{padding:10}]}>Aleatoriedade</Text>
+                <View style={{flexDirection:"row",alignItems:"center",flex:0.3,alignContent:"center"}}>
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
+                        <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
+                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),console.log("Randomness: ",randomness),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
+                        <SingleCheck img={CheckImage(randomness,-1)} checked={randomness == -1} press={()=>{setRandomness(-1),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -1}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
+                        <SingleCheck img={CheckImage(randomness,0)} checked={randomness == 0} press={()=>{setRandomness(0),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 0}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
+                        <SingleCheck img={CheckImage(randomness,1)} checked={randomness == 1} press={()=>{setRandomness(1),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 1}}/>
+                    </View>
+                    
+                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
+                        <SingleCheck img={CheckImage(randomness,2)} checked={randomness == 2} press={()=>{setRandomness(2),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 2}}/>
+                    </View>
+                </View>
+                {/* </ Opções de aleatoriedade > */}
                 
-                <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.allRandom = !CoroinhaMonthlyLineupScreen.generateOptions.allRandom}}/>
-                </View>
+                <View style ={{flex:1}}>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
+                        <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.allRandom = !CoroinhaMonthlyLineupScreen.generateOptions.allRandom}}/>
+                    </View>
 
-                <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
-                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.reduced = !CoroinhaMonthlyLineupScreen.generateOptions.reduced}}/>
-                </View>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Rodízio diário</Text>
+                        <CheckBox checked={true} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.dayRotation = !CoroinhaMonthlyLineupScreen.generateOptions.dayRotation}}/>
+                    </View>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
+                        <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.reduced = !CoroinhaMonthlyLineupScreen.generateOptions.reduced}}/>
+                    </View>
 
-                <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Celebração</Text>
-                    <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.celebration = !CoroinhaMonthlyLineupScreen.generateOptions.celebration}}/>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Celebração</Text>
+                        <CheckBox checked={false} press={()=>{CoroinhaMonthlyLineupScreen.generateOptions.celebration = !CoroinhaMonthlyLineupScreen.generateOptions.celebration}}/>
+                    </View>
                 </View>
                 
-                <View style={{paddingTop:20}}>
+                
+                
+                <View style={{paddingTop:20,flex:1}}>
                     <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:100}}>
                         <Text style={{flex:1}}>Sábado - 19h</Text>
                         <Text style={{flex:1}}>Domingo - 08h</Text>
@@ -224,7 +264,7 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekendKey,curDay,roles,"coroinha"))
+                                let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekendKey,curDay,roles,"coroinha",MonthlyLineupScreen.generateOptions.randomness,MonthlyLineupScreen.generateOptions.dayRotation))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
@@ -246,9 +286,9 @@ export default function LineupOptions(){
 
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
-            }}
+                }}
                 buttonStyle={{alignSelf:"center"}}/>
-            </View>
+            </ScrollView>
 
         </View>
         )

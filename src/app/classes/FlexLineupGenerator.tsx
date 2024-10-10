@@ -55,6 +55,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
 
     // Escolher membros com prioridade máxima (dia + geral)
     let maxPriority:Array<Coroinha|Acolyte> = []
+    
     if(day == "Outro" || !dayRotation){
         console.log("Other day")
         maxPriority = GeneralPrioritizedMembers(generalPriority,roles.length)

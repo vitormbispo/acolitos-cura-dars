@@ -1,4 +1,4 @@
-import { View,Image,Text } from "react-native"
+import { View,Image,Text, ScrollView } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
 import { Lineup, MonthLineup } from "../classes/Lineup"
@@ -46,7 +46,7 @@ export default function LineupOptions(){
         <View style={{flex:1}}>
             <UpperBar/>
             
-            <View style={{flex:1}}>
+            <ScrollView style={{flex:1}}>
 
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
@@ -82,16 +82,18 @@ export default function LineupOptions(){
                 </View>
                 {/* </ Opções de aleatoriedade > */}
                 
+                <View style={{flex:1}}>
+                    <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
+                        <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = !MonthlyLineupScreen.generateOptions.allRandom}}/>
+                    </View>
 
-                <View style={{flexDirection:"row",alignItems:"center",flex:0.3,padding:10}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
-                    <CheckBox checked={false} press={()=>{MonthlyLineupScreen.generateOptions.allRandom = !MonthlyLineupScreen.generateOptions.allRandom}}/>
+                    <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Rodízio diário</Text>
+                        <CheckBox checked={true} press={()=>{MonthlyLineupScreen.generateOptions.dayRotation = !MonthlyLineupScreen.generateOptions.dayRotation}}/>
+                    </View>
                 </View>
-
-                <View style={{flexDirection:"row",alignItems:"center",flex:0.2,padding:10}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Rodízio diário</Text>
-                    <CheckBox checked={true} press={()=>{MonthlyLineupScreen.generateOptions.dayRotation = !MonthlyLineupScreen.generateOptions.dayRotation}}/>
-                </View>
+                
 
                 <View style={{paddingTop:20}}>
                     <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:100}}>
@@ -248,9 +250,9 @@ export default function LineupOptions(){
                 
                 router.push("/screens/LineupScreen")
                 
-            }}
+                }}
                 buttonStyle={{alignSelf:"center"}}/>
-            </View>
+            </ScrollView>
 
         </View>
         )
