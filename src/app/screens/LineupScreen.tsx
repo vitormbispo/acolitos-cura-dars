@@ -9,8 +9,8 @@ import { StyleSheet } from "react-native"
 import { GenerateLineup } from "../classes/LineupGenerator"
 import { useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
-import { Lineup } from "../classes/Lineup"
-import { BuildMonthLineup, BuildWeekendLineup, CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
+import { Lineup, StructuredLineup } from "../classes/Lineup"
+import { CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -29,7 +29,7 @@ const textStyles = StyleSheet.create({
 })
 
 export class LineupScreenOptions{
-    static lineupType = "Single"
+    static lineupType = "Single" // Tipo da escala
     static roles = ["cero1","cero2","cruci","turib","navet","libri"]
     static rolesNames = ["Ceroferario 1","Ceroferario 2","Cruciferário","Turiferário","Naveteiro","Librífero"]
 
@@ -42,6 +42,35 @@ export class LineupScreenOptions{
     static lineups:Array<Lineup> = []
     static monthLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
     static allLineups:Array<Lineup> = new Array<Lineup>()
+
+    static loaded:boolean = false; // A escala exibida é carregada?
+    static loadedLineIndex:number = 0; // Índice da escala carregada
+
+    public static SaveLineup(){
+        let line = new StructuredLineup()
+    
+        line.allLineups = LineupScreenOptions.allLineups
+        line.days = LineupScreenOptions.days
+        line.daysNames = LineupScreenOptions.daysNames
+        line.lineupType = LineupScreenOptions.lineupType
+        line.lineups = LineupScreenOptions.lineups
+        line.monthLineups = LineupScreenOptions.monthLineups
+        line.roles = LineupScreenOptions.roles
+        line.rolesNames = LineupScreenOptions.rolesNames
+    
+        return line;
+    }
+    
+    public static LoadLineup(line){
+        LineupScreenOptions.allLineups = line.allLineups
+        LineupScreenOptions.days = line.days
+        LineupScreenOptions.daysNames = line.daysNames
+        LineupScreenOptions.lineupType = line.lineupType 
+        LineupScreenOptions.lineups = line.lineups
+        LineupScreenOptions.monthLineups = line.monthLineups
+        LineupScreenOptions.roles = line.roles 
+        LineupScreenOptions.rolesNames = line.rolesNames
+    }
 }
 
 let isSwitching = false
@@ -57,6 +86,9 @@ let acolyteSwitchedLineup:Lineup
 let isReplacing = false
 let replaced:Acolyte
 let replacing:Acolyte
+
+
+// TODO: Adicionar opção de excluir escala do histórico. Portar feature para os coroinhas.
 
 export default function LineupScreen(){
     Global.currentScreen.screenName = "Escala"
@@ -77,13 +109,8 @@ export default function LineupScreen(){
 
     let monthAcolytes:Map<string,Map<string,Array<any>>> = new Map<string,Map<string,Array<any>>>()
 
-    if(LineupScreenOptions.lineupType == "Weekend"){
-        console.log("Weekend screen")
-        console.log("Days: ")
-        console.log(LineupScreenOptions.days)
-        
+    if(LineupScreenOptions.lineupType == "Weekend"){       
         for(let i = 0;i < LineupScreenOptions.days.length;i++){
-            console.log("Adding lineups process "+(i+1)+"/"+LineupScreenOptions.days.length)
             let curDay = LineupScreenOptions.days[i]
             let line = LineupScreenOptions.lineups[i]
             let acolytes:Array<any> = []
@@ -102,9 +129,6 @@ export default function LineupScreen(){
     // DESENVOLVENDO
     
     if(LineupScreenOptions.lineupType == "Month"){
-        console.log("Month screen")
-        console.log("Days: ")
-        console.log(LineupScreenOptions.days)
         let weekends = Array.from(LineupScreenOptions.monthLineups.keys())
 
         for(let i = 0; i < weekends.length;i++){
@@ -114,14 +138,13 @@ export default function LineupScreen(){
             if(curWeekend!=undefined){
                 for(let j = 0;j < curWeekend.length;j++){
                 
-                    console.log("Adding lineups process "+(j+1)+"/"+LineupScreenOptions.days.length)
+
                     let line = curWeekend[j]
 
                     let curDay = line.day
                     let acolytes:Array<any> = []
                     
                     for(let k = 0;k < LineupScreenOptions.roles.length; k++){
-                        console.log("Key is: "+((i*100)+(j*10)+k))
                         acolytes.push(<LineupAcolyte text={rolesNames[k]} role={roles[k]} key={(i*100)+(j*10)+k} lineup={line}/>)
                     }
             
@@ -148,6 +171,15 @@ export default function LineupScreen(){
             
                 <View style={{flex:1,paddingLeft:20}}>
                     {lineupAcolytes}
+                    
+                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                        if(!LineupScreenOptions.loaded){
+                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                        }
+                        else{
+                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                        }
+                    }}/>
                 </View>
             </View>
         )
@@ -162,7 +194,12 @@ export default function LineupScreen(){
                     <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
                     <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
                     <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
-                        AcolyteData.allWeekendLineups.push(BuildWeekendLineup(LineupScreenOptions.allLineups))
+                        if(!LineupScreenOptions.loaded){
+                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                        }
+                        else{
+                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                        }
                     }}/>
                 </View>
             </ScrollView>
@@ -170,16 +207,7 @@ export default function LineupScreen(){
     }
    
     if(LineupScreenOptions.lineupType == "Month"){
-        console.log("Mothtly lineup")
-        console.log(LineupScreenOptions.monthLineups)
-        console.log(Array.from(LineupScreenOptions.monthLineups.keys()))
-
         let array = Array.from(LineupScreenOptions.monthLineups.keys())
-        console.log("Array:")
-        console.log(array)
-
-        console.log("Pre aco: ")
-        console.log(monthAcolytes)
         
         return(
             <View style={{flex:1}}>
@@ -188,13 +216,17 @@ export default function LineupScreen(){
                 
                 <View style={{alignContent:"center",alignItems:"center",padding:10}}>
                     <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
-                        console.log(LineupScreenOptions.roles)
                         CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
-                        console.log("Copied.")
                     }}/>
 
                     <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
-                        AcolyteData.allMonthLineups.push(BuildMonthLineup(LineupScreenOptions.allLineups))
+                        if(!LineupScreenOptions.loaded){
+                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                        }
+                        else{
+                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                        }
+                        
                     }}/>
                 </View> 
             </View>
@@ -231,14 +263,9 @@ export function LineupAcolyte(props:any) {
             <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/switch_ico.png")} imgStyle={Global.styles.buttonIcons} press={()=>{
                 let thisAcolyte = GetRoleAcolyte(props.role,props.lineup)
                 if(!isSwitching){
-                    console.log("Start switching: ")
-                    console.log("Lineup")
-                    console.log(props.lineup)
                     switchingAcolyte = thisAcolyte
                     switchingAcolyteRole = props.role
                     switchingAcolyteLineup = props.lineup
-                    console.log("Switching acolyte in lineup: ")
-                    console.log(switchingAcolyteLineup)
                     isSwitching = true
                 }
                 else if(isSwitching){
@@ -255,17 +282,17 @@ export function LineupAcolyte(props:any) {
                 isReplacing = true
                 let thisAcolyte = GetRoleAcolyte(props.role,props.lineup)
                 replacing = thisAcolyte
-                console.log("Replacing: "+thisAcolyte.nick)
+
                 AcolyteSelectScreenOptions.selectMode="Single"
                 AcolyteSelectScreenOptions.selected = []
                 
                 AcolyteSelectScreenOptions.action = ()=>{
-                    console.log("Replacing is: "+replacing.nick)
+  
                     if(replacing != null){
                         replacing.rodizio[props.role]=replacing.oldRodizio[props.role]
                         replacing.priority=replacing.oldPriority
                         replacing.weekendPriority=replacing.oldWeekendPriority
-                        console.log("Replacing OK")
+
                     }
                                       
                     replaced = AcolyteSelectScreenOptions.selected[0]
@@ -276,12 +303,10 @@ export function LineupAcolyte(props:any) {
                     props.lineup.line.set(props.role,replaced)
                     props.lineup.acolytes.splice(props.lineup.acolytes.indexOf(replacing),1)
                     props.lineup.acolytes.push(replaced)
-                    console.log(props.lineup.line)
+            
                     router.back()
                 }
                 AcolyteSelectScreenOptions.excludedAcolytes=props.lineup.acolytes
-                console.log("Excluded: ")
-                
                 Global.currentScreen={screenName:"Selecione - Substituição",iconPath:""}
                 AcolyteSelectScreenOptions.lineup = props.lineup
                 router.push("/screens/AcolyteSelectScreen")
@@ -333,8 +358,6 @@ function WeekendLineup(props:any){
 }
 
 function MonthLineups(props:any){
-    console.log("Aco")
-    console.log(props.monthAco)
     let allWeekends:Array<any> = new Array<any>
     for(let i = 0; i < props.weekends.length; i++){
         let curWkKey = props.weekends[i] // Chave do fim de semana atual
@@ -350,11 +373,11 @@ function MonthLineups(props:any){
         }
         
     }
-    console.log("Weekend lineups: ")
-    console.log(allWeekends)
+    
     return(
         <ScrollView style={{flex:1}}>
             {allWeekends}
         </ScrollView>
     )
 }
+

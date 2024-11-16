@@ -35,7 +35,6 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         ShufflePriorities(members)
     }
     
-
     members = RemoveUnvailable(members,day,weekend)
 
     // Excluir membros que já estão nesse fim de semana

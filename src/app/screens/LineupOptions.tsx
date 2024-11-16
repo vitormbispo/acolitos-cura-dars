@@ -32,6 +32,16 @@ export default function LineupOptions(){
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala mensal"
                 link="/screens/MonthLineup"/>
+        
+        <LinkRowImageButton textStyle=
+                {{paddingLeft:10, 
+                fontFamily:"Inter-Light",
+                fontSize:20}}
+                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                text ="Histórico de escalas"
+                link="/screens/LineupListScreen"/>
+
+        
     </View>
    )
 }

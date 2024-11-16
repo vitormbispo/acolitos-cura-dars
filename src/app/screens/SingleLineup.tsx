@@ -114,8 +114,10 @@ export default function LineupOptions(){
                 }
                 
                 console.log(SingleLineupScreen.curLineup,
+                LineupScreenOptions.loaded = false,
                 router.push("/screens/LineupScreen"),
                 LineupScreenOptions.lineupType="Single"
+
                 )
                 }} buttonStyle={{alignSelf:"center"}}/>
             </View>

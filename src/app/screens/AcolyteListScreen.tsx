@@ -2,11 +2,27 @@ import { View,Image,Text, ScrollView } from "react-native";
 import { Global } from "../Global";
 import { ImageButton,LinkImageButton, LinkRowImageButton, RowAcolyte, RowImageButton } from "../classes/NewComps";
 import { AcolyteData } from "../classes/AcolyteData";
+import { useRef, useState } from "react";
 
+
+export class AcolyteList{
+    static scrollPos = 0;
+    static scrollRef = null;
+}
 export default function List(){
     
     Global.currentScreen={screenName:"Acólitos",iconPath:""}
     
+    const[scrollPosition, setScrollPosition] = useState(AcolyteList.scrollPos);
+    const scrollViewRef = useRef(AcolyteList.scrollRef);
+
+    const handleScroll = (event:any) => {
+        let pos = event.nativeEvent.contentOffset.y
+        setScrollPosition(pos);
+        AcolyteList.scrollPos = pos;
+        AcolyteList.scrollRef = scrollViewRef;
+    }
+
     const acolytes = []
     if(AcolyteData.allAcolytes!=null){
         for(let i =0;i<AcolyteData.allAcolytes.length;i++){
@@ -24,7 +40,11 @@ export default function List(){
         <View style={{flex:1,flexDirection:"column"}}>
             <UpperBar/>
 
-        <ScrollView style={{flex:1}}>
+        <ScrollView 
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+        style={{flex:1}}>
             <LinkRowImageButton link={"/screens/NewAcolyte"} 
                 textStyle=
                     {{paddingLeft:10, 

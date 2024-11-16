@@ -13,7 +13,6 @@ export class Acolyte {
     name=""
     nick=""
     
-    
     rodizio:RolesDict={"cero1":0,
     "cero2":0,
     "cruci":0,
@@ -53,4 +52,5 @@ export class AcolyteData{
     static allLineups: Lineup[] = []
     static allWeekendLineups: WeekendLineup[] = []
     static allMonthLineups: MonthLineup[] = []
+    static allEverLineups = [];
 }

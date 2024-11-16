@@ -35,7 +35,7 @@ export function LinkImageButton(props:any) {
 
 export function RowImageButton(props:any){
     return(
-      <TouchableOpacity style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
+      <TouchableOpacity onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
         <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
         <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20}}>{props.text}</Text>       
       </TouchableOpacity>

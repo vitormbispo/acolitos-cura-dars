@@ -220,6 +220,7 @@ export default function LineupOptions(){
                 let generatedLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
                 let allLineups:Array<CoroinhaLineup> = new Array<CoroinhaLineup>()
 
+                // Gerando escala aleatória
                 if(CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
                     CoroinhaLineupScreenOptions.lineups = []
                     CoroinhaLineupScreenOptions.days = days
@@ -245,7 +246,8 @@ export default function LineupOptions(){
                         
                     }
                 }
-
+                
+                // Não aleatória
                 else{
                     CoroinhaLineupScreenOptions.lineups = []
                     CoroinhaLineupScreenOptions.days = days
@@ -271,14 +273,10 @@ export default function LineupOptions(){
                         }
                     }
                 }
-                console.log("---MONTHLY LINEUP COMPLETED---")
-                console.log(generatedLineups)
                 CoroinhaLineupScreenOptions.lineupType = "Month"
                 CoroinhaLineupScreenOptions.monthLineups = generatedLineups
                 
                 CoroinhaLineupScreenOptions.allLineups = allLineups
-                console.log("AllLineups: ")
-                console.log(CoroinhaLineupScreenOptions.allLineups)
 
                 if(!CoroinhaMonthlyLineupScreen.generateOptions.allRandom){
                     ResetAllLastWeekend(CoroinhaData.allCoroinhas)

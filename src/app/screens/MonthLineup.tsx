@@ -243,6 +243,7 @@ export default function LineupOptions(){
                 LineupScreenOptions.lineupType = "Month"
                 LineupScreenOptions.monthLineups = generatedLineups
                 LineupScreenOptions.allLineups = allLineups
+                LineupScreenOptions.loaded = false
                 
                 if(!MonthlyLineupScreen.generateOptions.allRandom){
                     ResetAllLastWeekend(AcolyteData.allAcolytes)

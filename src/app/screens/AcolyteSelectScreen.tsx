@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { SingleLineupScreen } from "./SingleLineup";
 import { Lineup } from "../classes/Lineup";
+import { Coroinha } from "../classes/CoroinhaData";
 
 export class AcolyteSelectScreenOptions{
     static excludedAcolytes:Array<Acolyte> = []
@@ -20,47 +21,23 @@ export default function List(){
     
     const acolytes = []
     let lineup = AcolyteSelectScreenOptions.lineup
-    if(AcolyteData.allAcolytes!=null){
-        for(let i =0;i<AcolyteData.allAcolytes.length;i++){
+    console.log("AColyte select screen")
+
+    let all = AcolyteData.allAcolytes
+    if(all != null){
+        for(let i = 0; i < all.length;i++){
+            let curAco = all[i]
             
-            let curAco = AcolyteData.allAcolytes[i]
-            
-            for(let h = 0; h < AcolyteSelectScreenOptions.excludedAcolytes.length; h++){
-                console.log("H Process: "+h+"/"+(AcolyteSelectScreenOptions.excludedAcolytes.length-1))
-                if(curAco == AcolyteSelectScreenOptions.excludedAcolytes[h]){
-                    console.log("Current coroinha: "+curAco.nick+" already chosen! Excluding...")
-                    break
-                }
-                if(!curAco.onLineup){
-                    console.log("Current coroinha: "+curAco.nick+" out of lineup, excluding...")
-                    break
-                }
-                
-                if(lineup.day != "Outro" && lineup.weekend != "Outro"){
-                    if(!curAco.disp[lineup.weekend][lineup.day]){
-                        console.log("Current coroinha: "+curAco.nick+" dont have availability to this day, excluding...")
-                        console.log("The weekend is: "+lineup.weekend," The day is: "+lineup.day)
-                        console.log("Current acolyte availability")
-                        console.log(curAco.disp)
-                        console.log("True or false: "+curAco.disp[lineup.weekend][lineup.day])
-                        break
-                    }
-                }
-                
-                if(h >= AcolyteSelectScreenOptions.excludedAcolytes.length-1){
-                    console.log("Coroinha: "+curAco.nick+" added to the list.")
-                    acolytes.push(<SelectableRowAcolyte nick={AcolyteData.allAcolytes[i].nick} id={i} img={require("@/src/app/shapes/coroinha_ico.png")} key={i} textStyle=
+            if(!isExcluded(curAco) && isDayAvailable && curAco.onLineup){
+                acolytes.push(<SelectableRowAcolyte nick={curAco.nick} id={i} img={require("@/src/app/item_icons/users_icomdpi.png")} key={i} textStyle=
                     {{fontFamily:"Inter-Bold",
                       fontSize:20
                     }} 
-                    acolyte={AcolyteData.allAcolytes[i]}/>)
-                    
-                }
+                    acolyte={curAco}/>)
             }
-            
-            
         }
     }
+
 
     return(
         
@@ -131,3 +108,24 @@ function SelectableRowAcolyte(props:any){
       </TouchableOpacity>
     )
   }
+
+function isExcluded(member){
+    for(let h = 0; h < AcolyteSelectScreenOptions.excludedAcolytes.length;h++){
+        console.log("Comparing: "+member.name+" with "+AcolyteSelectScreenOptions.excludedAcolytes[h].name)
+        if(member == AcolyteSelectScreenOptions.excludedAcolytes[h]){
+            
+            return true
+        }
+    }
+    
+    return false
+}
+
+function isDayAvailable(member:Acolyte|Coroinha,line){
+    if(line.day != "Outro" && line.weekend != "Outro"){
+        return member.disp[line.weekend][line.day]
+    }
+    else{
+        return true
+    }
+}

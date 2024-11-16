@@ -104,7 +104,6 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
         let acolytes = []
         acolytes.length = roles.length
         
-        console.log("Acolytes before: "+acolytes)
         for(let j = 0; j < roles.length; j++){
             acolytes[j] = curLineup.line.get(roles[j])
         }
@@ -190,9 +189,7 @@ export function GetRandom(array){
 
 export function ResetAllLastWeekend(members){
     members.forEach((member) => {
-        console.log("Reseting last weekend from ",member.nick)
         member.lastWeekend = ""
-        console.log("Result: ",member.lastWeekend)
     })
 }
 
@@ -240,7 +237,7 @@ export function FlexToAcolyteLineup(lineup){
 
     let converted = new Lineup()
     
-    converted.coroinhas = lineup.members
+    converted.acolytes = lineup.members
 
     lineKeys.forEach((key) => {
         converted.line.set(key,lineup.line.get(key))
@@ -261,38 +258,6 @@ export function GetIndexFromArray(obj,array){
 
     return -1
 }
-
-export function BuildWeekendLineup(lineups){
-    let newLineup = new WeekendLineup()
-    
-    lineups.forEach((line) => {
-        newLineup.set(line.weekend,line)
-    })
-
-    return newLineup
-}
-
-export function BuildMonthLineup(lineups){
-    let newLineup = new MonthLineup()
-
-    lineups.forEach((lineup) => {
-        let weekendMap = newLineup.lines.get(lineup.weekend)
-        
-        if(weekendMap != undefined){
-            weekendMap.set(lineup.day,lineup)
-        }
-        else{
-            newLineup.lines.set(lineup.weekend,new Map())
-            weekendMap = newLineup.lines.get(lineup.weekend)
-            weekendMap.set(lineup.day,lineup)
-        }
-        
-    })
-
-    return newLineup
-}
-
-
 export function ShufflePriorities(members){
     members.forEach((member) => {
         member.priority = RandomNumber(0,4)

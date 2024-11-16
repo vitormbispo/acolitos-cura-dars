@@ -155,6 +155,7 @@ export default function LineupOptions(){
                 }
 
                 LineupScreenOptions.lineupType="Weekend"
+                LineupScreenOptions.loaded = false
                 router.push("/screens/LineupScreen")  
             }}
                 buttonStyle={{alignSelf:"center"}}/>

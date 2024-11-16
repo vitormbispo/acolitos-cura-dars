@@ -14,22 +14,11 @@ import { GenerateLineup } from "./classes/LineupGenerator"
 import { CoroinhaData } from "./classes/CoroinhaData"
 import { AcolyteData } from "./classes/AcolyteData"
 import { OrganizeAcolyteArrayAlpha } from "./classes/Methods"
-//import { LineUpData } from "./classes/LineupData"
-//import { Home } from "../screens/HomeScreen"
-
-//import {Acolyte} from "../app/classes/AcolyteData"
-//import { AcolyteData } from "../app/classes/AcolyteData"
-
-//var lineupData = new LineUpData()
-//var acolyteData = null
 
 
-var acolyteData: any
-var coroinhaData: any
-var currentScreen = {
-    screenName: "Tela inicial",
-    iconPath: "./item_icons/home_icomdpi.png"
-}
+let acolyteData: any
+let coroinhaData: any
+
 
 const ICON_IMAGES = {
     home:require("./item_icons/home_icomdpi.png"),
@@ -37,44 +26,7 @@ const ICON_IMAGES = {
     escalas:require("./item_icons/escala_icomdpi.png")  
 }
 
-const styles = StyleSheet.create({
-    icons: {
-        width:64,
-        height:64,
-        padding:26,
-        paddingRight:10,
-        paddingLeft:10,
-        resizeMode:"contain"
-    },
-    buttonIcons: {
-        width:64,
-        height:64,
-        resizeMode:"contain"
-    },
-    rowContainer:{
-        flex:0.1,
-        flexDirection:"row",
-        alignContent:"center",
-        alignItems:"center",
-        backgroundColor: '#FFEBA4'
-    },
-    columnContainer:{
-        flex:0.1,
-        flexDirection:"column",
-        alignContent:"center",
-        alignItems:"center"
-    }
-})
-
-const textStyles = StyleSheet.create({
-    menuTitle:{
-        fontFamily:"Inter-Light",
-        fontSize:20,
-        paddingLeft:20
-    }
-})
-
-var appStarted = false;
+let appStarted = false;
 
 const saveAcolyteData = async() => {
     try {
@@ -116,13 +68,12 @@ export default function App() {
 
         AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
    
-        console.log("Lineup!")
         appStarted = true
     }
     
-    console.log("Acolytes: "+AcolyteData.allAcolytes)
 
     return (
+      
       <Home/>
       
     );

@@ -61,7 +61,7 @@ export default function Home(){
             {UpperBar()}
             
             <View style={{flex:1}}>
-
+            
             </View>
             <View style = {{alignSelf:"flex-end"}}>
                 <Image source={require("@/src/app/shapes/LowerBarCoroinhas.png")} style = {{width:420,height:125}}/>
@@ -82,8 +82,6 @@ export function AppBody(){
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
         <EscalaDiaria dayTitle="Sábado - 10/02 - 19h"/>
         <EscalaDiaria/>
-
-        <TextButton text="Gerar Escala!" sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press = {()=>{GenerateLineup()}}/>
         <TextButton text="Clear AsyncStorage." sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
         
     </View>
