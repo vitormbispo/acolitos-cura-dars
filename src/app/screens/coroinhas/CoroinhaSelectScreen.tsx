@@ -7,6 +7,7 @@ import { Coroinha, CoroinhaData } from "@/src/app/classes/CoroinhaData";
 import { CoroinhaSingleLineupScreen } from "./CoroinhaSingleLineup";
 import { CoroinhaLineup } from "../../classes/CoroinhaLineup";
 import { CoroinhaLineupScreenOptions } from "./CoroinhaLineupScreen";
+import { Acolyte } from "../../classes/AcolyteData";
 
 export class CoroinhaSelectScreenOptions{
     static excludedCoroinhas:Array<Coroinha> = []
@@ -19,50 +20,23 @@ export class CoroinhaSelectScreenOptions{
 export default function List(){
     
     const coroinhas = []
-    //let lineup = CoroinhaSingleLineupScreen.curLineup
-    
-    console.log("All coroinhas size: "+CoroinhaData.allCoroinhas.length)
-    console.log("Excluded coroinhas size: "+CoroinhaSelectScreenOptions.excludedCoroinhas.length)
-    if(CoroinhaData.allCoroinhas!=null){
-        for(let i =0; i <CoroinhaData.allCoroinhas.length;i++){
-            
-            let curCor = CoroinhaData.allCoroinhas[i]
-            console.log("Checking process: "+i+"/"+(CoroinhaData.allCoroinhas.length-1))
-            console.log("Checking for substitute: "+curCor.nick)
+    let lineup = CoroinhaSelectScreenOptions.lineup
+    console.log("AColyte select screen")
 
-            for(let h = 0; h < CoroinhaSelectScreenOptions.excludedCoroinhas.length; h++){
-                console.log("H Process: "+h+"/"+(CoroinhaSelectScreenOptions.excludedCoroinhas.length-1))
-                if(curCor == CoroinhaSelectScreenOptions.excludedCoroinhas[h]){
-                    console.log("Current coroinha: "+curCor.nick+" already chosen! Excluding...")
-                    break
-                }
-                if(!curCor.onLineup){
-                    console.log("Current coroinha: "+curCor.nick+" out of lineup, excluding...")
-                    break
-                }
-                
-                if(CoroinhaSelectScreenOptions.lineup.day != "Outro" && CoroinhaSelectScreenOptions.lineup.weekend != "Outro"){
-                    if(!curCor.disp[CoroinhaSelectScreenOptions.lineup.weekend][CoroinhaSelectScreenOptions.lineup.day]){
-                        console.log("Current coroinha: "+curCor.nick+" dont have availability to this day, excluding...")
-                        break
-                    }
-                }
-                
-                if(h >= CoroinhaSelectScreenOptions.excludedCoroinhas.length-1){
-                    console.log("Coroinha: "+curCor.nick+" added to the list.")
-                    coroinhas.push(<SelectableRowCoroinha nick={CoroinhaData.allCoroinhas[i].nick} id={i} img={require("@/src/app/shapes/coroinha_ico.png")} key={i} textStyle=
+    let all = CoroinhaData.allCoroinhas
+    if(all != null){
+        for(let i = 0; i < all.length;i++){
+            let curCoroinha = all[i]
+            
+            if(!isExcluded(curCoroinha) && isDayAvailable && curCoroinha.onLineup){
+                coroinhas.push(<SelectableRowCoroinha nick={curCoroinha.nick} coroinha={curCoroinha} id={i} img={require("@/src/app/shapes/coroinha_ico.png")} key={i} textStyle=
                     {{fontFamily:"Inter-Bold",
                       fontSize:20
                     }} 
-                    coroinha={CoroinhaData.allCoroinhas[i]}/>)
-                    
-                }
+                    acolyte={curCoroinha}/>)
             }
-            
         }
     }
-    
-    
     
     return(
         
@@ -130,3 +104,24 @@ function SelectableRowCoroinha(props:any){
       </TouchableOpacity>
     )
   }
+
+  function isExcluded(member){
+    for(let h = 0; h < CoroinhaSelectScreenOptions.excludedCoroinhas.length;h++){
+        console.log("Comparing: "+member.name+" with "+CoroinhaSelectScreenOptions.excludedCoroinhas[h].name)
+        if(member == CoroinhaSelectScreenOptions.excludedCoroinhas[h]){
+            
+            return true
+        }
+    }
+    
+    return false
+}
+
+function isDayAvailable(member:Acolyte|Coroinha,line){
+    if(line.day != "Outro" && line.weekend != "Outro"){
+        return member.disp[line.weekend][line.day]
+    }
+    else{
+        return true
+    }
+}

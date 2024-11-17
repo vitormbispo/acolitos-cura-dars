@@ -21,7 +21,6 @@ export default function List(){
     
     const acolytes = []
     let lineup = AcolyteSelectScreenOptions.lineup
-    console.log("AColyte select screen")
 
     let all = AcolyteData.allAcolytes
     if(all != null){
@@ -86,9 +85,6 @@ function SelectableRowAcolyte(props:any){
         if(AcolyteSelectScreenOptions.selectMode == "Single"){
             
             AcolyteSelectScreenOptions.selected.push(props.acolyte)
-            console.log("Pushed: "+props.acolyte.nick)
-            console.log("Selected: ")
-            console.log(AcolyteSelectScreenOptions.selected)
             AcolyteSelectScreenOptions.action()
         }
         if(AcolyteSelectScreenOptions.selectMode == "Multiple"){
@@ -111,7 +107,6 @@ function SelectableRowAcolyte(props:any){
 
 function isExcluded(member){
     for(let h = 0; h < AcolyteSelectScreenOptions.excludedAcolytes.length;h++){
-        console.log("Comparing: "+member.name+" with "+AcolyteSelectScreenOptions.excludedAcolytes[h].name)
         if(member == AcolyteSelectScreenOptions.excludedAcolytes[h]){
             
             return true

@@ -10,7 +10,7 @@ import { GenerateLineup } from "../classes/LineupGenerator"
 import { useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
-import { CopyToClipboard, GenerateLineupPrompt } from "../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt, SaveAcolyteData } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -29,6 +29,7 @@ const textStyles = StyleSheet.create({
 })
 
 export class LineupScreenOptions{
+    static name = "Nova escala"
     static lineupType = "Single" // Tipo da escala
     static roles = ["cero1","cero2","cruci","turib","navet","libri"]
     static rolesNames = ["Ceroferario 1","Ceroferario 2","Cruciferário","Turiferário","Naveteiro","Librífero"]
@@ -57,7 +58,7 @@ export class LineupScreenOptions{
         line.monthLineups = LineupScreenOptions.monthLineups
         line.roles = LineupScreenOptions.roles
         line.rolesNames = LineupScreenOptions.rolesNames
-    
+        line.name = LineupScreenOptions.name
         return line;
     }
     
@@ -70,6 +71,7 @@ export class LineupScreenOptions{
         LineupScreenOptions.monthLineups = line.monthLineups
         LineupScreenOptions.roles = line.roles 
         LineupScreenOptions.rolesNames = line.rolesNames
+        LineupScreenOptions.name = line.name
     }
 }
 
@@ -87,8 +89,6 @@ let isReplacing = false
 let replaced:Acolyte
 let replacing:Acolyte
 
-
-// TODO: Adicionar opção de excluir escala do histórico. Portar feature para os coroinhas.
 
 export default function LineupScreen(){
     Global.currentScreen.screenName = "Escala"
@@ -171,38 +171,59 @@ export default function LineupScreen(){
             
                 <View style={{flex:1,paddingLeft:20}}>
                     {lineupAcolytes}
-                    
-                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                </View>
+
+                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10, flexDirection:"row"}}>
+                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
+                    }}/>
+
+                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
                         if(!LineupScreenOptions.loaded){
-                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                            SaveAcolyteData()
                         }
                         else{
-                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            SaveAcolyteData()
                         }
+                        
                     }}/>
-                </View>
+                </View> 
             </View>
         )
     }
 
     if(LineupScreenOptions.lineupType == "Weekend"){
         return(
-            <ScrollView style={{flex:1}}>
-                <UpperBar/>
-                <View style={{flex:1}}>
-                    <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
-                    <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
-                    <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
-                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+            <View style={{flex:1}}>
+                <ScrollView style={{flex:1}}>
+                    <UpperBar/>
+                    <View style={{flex:1}}>
+                        <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
+                        <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
+                        <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
+                    </View>
+                </ScrollView>
+
+                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
+                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
+                    }}/>
+
+                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
                         if(!LineupScreenOptions.loaded){
-                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                            SaveAcolyteData()
                         }
                         else{
-                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            SaveAcolyteData()
                         }
+                        
                     }}/>
-                </View>
-            </ScrollView>
+                </View> 
+            </View>
         )
     }
    
@@ -214,17 +235,19 @@ export default function LineupScreen(){
                 <UpperBar/>         
                 <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
                 
-                <View style={{alignContent:"center",alignItems:"center",padding:10}}>
-                    <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
+                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
+                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
                         CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
                     }}/>
 
-                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
                         if(!LineupScreenOptions.loaded){
-                            AcolyteData.allEverLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allEverLineups)
+                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                            SaveAcolyteData()
                         }
                         else{
-                            AcolyteData.allEverLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                            SaveAcolyteData()
                         }
                         
                     }}/>
@@ -250,6 +273,13 @@ export const UpperBar = () => {
             paddingLeft:40,
             resizeMode:"contain"}}  source={require("../item_icons/escala_icomdpi.png")}/>
             <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
+
+            {LineupScreenOptions.loaded && // Se for uma escala carregada, aparece a opção de deletar.
+            
+            <View style={{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
+                <ImageButton img={require("@/src/app/shapes/delete_ico.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} press={()=>{EraseLineup(LineupScreenOptions.loadedLineIndex),SaveAcolyteData(),router.back()}}/>
+            </View>
+            }
         </View>
     )
 }
@@ -381,3 +411,10 @@ function MonthLineups(props:any){
     )
 }
 
+/**
+ * Exclui uma escala da lista do histórico de escalas dado o índice.
+ * @param index Índice a ser excluído
+ */
+function EraseLineup(index:number){
+    AcolyteData.allLineups.splice(index,1)
+}

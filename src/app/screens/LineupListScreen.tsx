@@ -25,7 +25,7 @@ export default function LineupListScreen(){
 export function FetchLineupList(){
     let lineups = []
     let index = 0;
-    AcolyteData.allEverLineups.forEach((line) =>{
+    AcolyteData.allLineups.forEach((line) =>{
         lineups.push(<RowImageButton img={require("@/src/app/item_icons/escala_icomdpi.png")} text={line.name} key={index} press={(i = this.key)=>{LineupScreenOptions.LoadLineup(line), LineupScreenOptions.loaded=true,LineupScreenOptions.loadedLineIndex=i, router.push("/screens/LineupScreen")}}/>)
         index++;
     })

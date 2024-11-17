@@ -113,12 +113,12 @@ export default function LineupOptions(){
                     LineupScreenOptions.lineups.push(FlexToAcolyteLineup(GenerateLineup(weekend,day,roles,"acolito")))
                 }
                 
-                console.log(SingleLineupScreen.curLineup,
                 LineupScreenOptions.loaded = false,
-                router.push("/screens/LineupScreen"),
-                LineupScreenOptions.lineupType="Single"
+                LineupScreenOptions.lineupType="Single",
+                router.push("/screens/LineupScreen")
+                
 
-                )
+                
                 }} buttonStyle={{alignSelf:"center"}}/>
             </View>
 

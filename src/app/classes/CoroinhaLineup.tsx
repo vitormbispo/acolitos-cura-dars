@@ -13,3 +13,15 @@ export class CoroinhaLineup{
     day:any
     weekend:any
 }
+
+export class WeekendLineup{
+    TYPE = "weekend"
+    lines = new Map<string,CoroinhaLineup>
+}
+
+export class MonthLineup{
+    name = "NewLineup"
+    TYPE = "Month"
+    lines = new Map<string,Array<CoroinhaLineup>>()
+    monthLines = []
+}

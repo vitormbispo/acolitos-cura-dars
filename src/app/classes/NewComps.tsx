@@ -88,9 +88,9 @@ router.push("/screens/coroinhas/CoroinhaProfile")
 export function TextButton(props:any) {
   return (
     
-      <TouchableOpacity style={props.buttonStyle} onPress={props.press}>
-          <Image source={require("@/src/app/shapes/button0.png")} style={{height:64, width:128, position:"absolute"}}/>
-          <Text style={[{textAlign:"center",textAlignVertical:"center",width:128,height:64,fontFamily:props.familyFont, fontSize:props.sizeFont},props.textStyle]}>{props.text}</Text>
+      <TouchableOpacity style={props.buttonStyle+{alignItems:"center"}} onPress={props.press}>
+          <Image source={require("@/src/app/shapes/button0.png")} style={{height:64, width:128, position:"absolute",alignSelf:"center"}}/>
+          <Text style={[{alignSelf:"center",textAlign:"center",textAlignVertical:"center",width:128,height:64,fontFamily:props.familyFont, fontSize:props.sizeFont},props.textStyle]}>{props.text}</Text>
       </TouchableOpacity>
       
     );

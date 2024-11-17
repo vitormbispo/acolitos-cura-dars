@@ -1,5 +1,6 @@
 import { Acolyte } from "./AcolyteData";
 import { Coroinha } from "./CoroinhaData";
+import { CoroinhaLineup } from "./CoroinhaLineup";
 
 interface RolesDict{
     [key:string]:any
@@ -38,8 +39,8 @@ export class StructuredLineup{
         ["sabado","Sábado - 19h"],
         ["domingoAM","Domingo - 08h"],
         ["domingoPM","Domingo - 19h"]])
-    lineups:Array<Lineup> = []
-    monthLineups:Map<string,Array<Lineup>> = new Map<string,Array<Lineup>>()
-    allLineups:Array<Lineup> = new Array<Lineup>()
+    lineups:Array<Lineup|CoroinhaLineup> = []
+    monthLineups:Map<string,Array<Lineup|CoroinhaLineup>> = new Map<string,Array<Lineup|CoroinhaLineup>>()
+    allLineups:Array<Lineup|CoroinhaLineup> = new Array<Lineup|CoroinhaLineup>()
 }
 

@@ -49,8 +49,7 @@ export class Acolyte {
 
 export class AcolyteData{
     static allAcolytes: Acolyte[] = []
-    static allLineups: Lineup[] = []
     static allWeekendLineups: WeekendLineup[] = []
     static allMonthLineups: MonthLineup[] = []
-    static allEverLineups = [];
+    static allLineups = [];
 }

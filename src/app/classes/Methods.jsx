@@ -265,9 +265,11 @@ export function ShufflePriorities(members){
 }
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(AcolyteData.allLineups))
 }
 
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups))
 }
 

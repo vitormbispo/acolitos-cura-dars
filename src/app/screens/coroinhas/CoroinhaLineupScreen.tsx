@@ -5,10 +5,11 @@ import { router } from "expo-router"
 import { Global } from "@/src/app/Global"
 import { StyleSheet } from "react-native"
 import { GenerateLineup } from "@/src/app/classes/LineupGenerator"
-import { Coroinha } from "../../classes/CoroinhaData"
+import { Coroinha, CoroinhaData } from "../../classes/CoroinhaData"
 import { CoroinhaSelectScreenOptions } from "./CoroinhaSelectScreen"
 import { CoroinhaLineup } from "../../classes/CoroinhaLineup"
-import { CopyToClipboard, GenerateLineupPrompt } from "../../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt, SaveCoroinhaData } from "../../classes/Methods"
+import { StructuredLineup } from "../../classes/Lineup"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -27,6 +28,7 @@ const textStyles = StyleSheet.create({
 })
 
 export class CoroinhaLineupScreenOptions{
+    static lineName = "Nova escala"
     static lineupType = "Single"
     static roles = ["donsD","donsE","cestD","cestE"]
     static rolesNames = ["Dons D.","Dons E.","Cestinho D.","Cestinho E."]
@@ -40,6 +42,36 @@ export class CoroinhaLineupScreenOptions{
     static lineups:Array<CoroinhaLineup> = []
     static monthLineups:Map<string,Array<CoroinhaLineup>> = new Map<string,Array<CoroinhaLineup>>()
     static allLineups:Array<CoroinhaLineup> = new Array<CoroinhaLineup>()
+    
+    static loaded:boolean = false
+    static loadedLineIndex:number = 0
+
+    public static SaveLineup(){
+        let line = new StructuredLineup()
+    
+        line.allLineups = CoroinhaLineupScreenOptions.allLineups
+        line.days = CoroinhaLineupScreenOptions.days
+        line.daysNames = CoroinhaLineupScreenOptions.daysNames
+        line.lineupType = CoroinhaLineupScreenOptions.lineupType
+        line.lineups = CoroinhaLineupScreenOptions.lineups
+        line.monthLineups = CoroinhaLineupScreenOptions.monthLineups
+        line.roles = CoroinhaLineupScreenOptions.roles
+        line.rolesNames = CoroinhaLineupScreenOptions.rolesNames
+        line.name = CoroinhaLineupScreenOptions.lineName
+        return line;
+    }
+    
+    public static LoadLineup(line){
+        CoroinhaLineupScreenOptions.allLineups = line.allLineups
+        CoroinhaLineupScreenOptions.days = line.days
+        CoroinhaLineupScreenOptions.daysNames = line.daysNames
+        CoroinhaLineupScreenOptions.lineupType = line.lineupType 
+        CoroinhaLineupScreenOptions.lineups = line.lineups
+        CoroinhaLineupScreenOptions.monthLineups = line.monthLineups
+        CoroinhaLineupScreenOptions.roles = line.roles 
+        CoroinhaLineupScreenOptions.rolesNames = line.rolesNames
+        CoroinhaLineupScreenOptions.lineName = line.name
+    }
 }
 
 let isSwitching = false
@@ -55,6 +87,8 @@ let coroinhaSwitchedLineup:CoroinhaLineup
 let isReplacing = false
 let replaced:Coroinha
 let replacing:Coroinha
+
+
 
 export default function LineupScreen(){
     Global.currentScreen.screenName = "Escala"
@@ -140,6 +174,25 @@ export default function LineupScreen(){
                 <View style={{flex:1,paddingLeft:20}}>
                     {lineupCoroinhas}
                 </View>
+
+                <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
+                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                        console.log(CoroinhaLineupScreenOptions.roles)
+                        console.log(CoroinhaLineupScreenOptions.allLineups)
+                        CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
+                        console.log("Copied.")
+                    }}/>
+                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                        if(!CoroinhaLineupScreenOptions.loaded){
+                            CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
+                            SaveCoroinhaData()
+                        }
+                        else{
+                            CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
+                            SaveCoroinhaData()
+                        }
+                    }}/>
+                </View> 
             </View>
         )
     }
@@ -167,6 +220,25 @@ export default function LineupScreen(){
 
                     {weekendCoroinhas.get("domingoPM")}
                 </View>
+                
+                <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
+                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                        console.log(CoroinhaLineupScreenOptions.roles)
+                        console.log(CoroinhaLineupScreenOptions.allLineups)
+                        CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
+                        console.log("Copied.")
+                    }}/>
+                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                        if(!CoroinhaLineupScreenOptions.loaded){
+                            CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
+                            SaveCoroinhaData()
+                        }
+                        else{
+                            CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
+                            SaveCoroinhaData()
+                        }
+                    }}/>
+                </View> 
             </ScrollView>
         )
     }
@@ -187,12 +259,22 @@ export default function LineupScreen(){
                 <UpperBar/>
                 <MonthLineups weekends={array} monthCor={monthCoroinhas}/>
                 
-                <View style={{alignContent:"center",alignItems:"center",padding:10}}>
+                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
                     <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
                         console.log(CoroinhaLineupScreenOptions.roles)
                         console.log(CoroinhaLineupScreenOptions.allLineups)
                         CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
                         console.log("Copied.")
+                    }}/>
+                    <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
+                        if(!CoroinhaLineupScreenOptions.loaded){
+                            CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
+                            SaveCoroinhaData()
+                        }
+                        else{
+                            CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
+                            SaveCoroinhaData()
+                        }
                     }}/>
                 </View> 
             </View>
@@ -215,13 +297,21 @@ export const UpperBar = () => {
             paddingLeft:40,
             resizeMode:"contain"}}  source={require("@/src/app/item_icons/escala_icomdpi.png")}/>
             <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
+            {CoroinhaLineupScreenOptions.loaded && // Se for uma escala carregada, aparece a opção de deletar.
+            
+            <View style={{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
+                <ImageButton img={require("@/src/app/shapes/delete_ico.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} press={()=>{EraseLineup(CoroinhaLineupScreenOptions.loadedLineIndex),SaveCoroinhaData(),router.back()}}/>
+            </View>
+            }
+
+            
         </View>
     )
 }
 
 export function LineupCoroinha(props:any) {   
     return(
-        <View style={{flex:1,flexDirection:"row",alignSelf:"center",alignItems:"center"}}>
+        <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center"}}>
             <Text style={textStyles.functionTitle}>{props.text} - </Text>
             <Text style={textStyles.coroinhaNick}>{CheckCoroinha(props.lineup.line.get(props.role))}</Text>
             
@@ -344,11 +434,18 @@ function MonthLineups(props:any){
         }
         
     }
-    console.log("Weekend lineups: ")
-    console.log(allWeekends)
+
     return(
         <ScrollView style={{flex:1}}>
             {allWeekends}
         </ScrollView>
     )
+}
+
+/**
+ * Exclui uma escala da lista do histórico de escalas dado o índice.
+ * @param index Índice a ser excluído
+ */
+function EraseLineup(index:number){
+    CoroinhaData.allLineups.splice(index,1)
 }

@@ -17,8 +17,9 @@ import { OrganizeAcolyteArrayAlpha } from "./classes/Methods"
 
 
 let acolyteData: any
+let acolyteLineups: any
 let coroinhaData: any
-
+let coroinhaLineups:any
 
 const ICON_IMAGES = {
     home:require("./item_icons/home_icomdpi.png"),
@@ -28,21 +29,12 @@ const ICON_IMAGES = {
 
 let appStarted = false;
 
-const saveAcolyteData = async() => {
-    try {
-        await AsyncStorage.setItem(
-          'AcolyteData',
-          acolyteData,
-        );
-      } catch (error) {
-        // Error saving data
-      }
-}
-
 export const loadAcolyteData = async() => {
     try {
         acolyteData = await AsyncStorage.getItem("AcolyteData")
+        acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         AcolyteData.allAcolytes = JSON.parse(acolyteData)
+        //AcolyteData.allLineups = JSON.parse(acolyteLineups)
     } catch (error) {
         console.log(error)
     }
@@ -51,7 +43,11 @@ export const loadAcolyteData = async() => {
 const loadCoroinhaData = async() => {
     try {
         coroinhaData = await AsyncStorage.getItem("CoroinhaData")
+        coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
         CoroinhaData.allCoroinhas = JSON.parse(coroinhaData)
+        //CoroinhaData.allLineups = JSON.parse(coroinhaLineups)
+
+        
         OrganizeAcolyteArrayAlpha(CoroinhaData.allCoroinhas)
     } catch (error) {
         console.log(error)
@@ -66,6 +62,19 @@ export default function App() {
         loadAcolyteData()
         loadCoroinhaData()
 
+        if (CoroinhaData.allCoroinhas == null){
+            CoroinhaData.allCoroinhas = []
+        }
+        if (CoroinhaData.allLineups == null){
+            CoroinhaData.allLineups = []
+        }
+
+        if (AcolyteData.allAcolytes == null){
+            AcolyteData.allAcolytes = []
+        }
+        if (AcolyteData.allLineups == null){
+            AcolyteData.allLineups = []
+        }
         AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
    
         appStarted = true

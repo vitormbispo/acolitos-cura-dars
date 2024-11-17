@@ -48,4 +48,7 @@ export class Coroinha {
 
 export class CoroinhaData{
     static allCoroinhas: Coroinha[] = []
+    static allLineups: any[] = []
 }
+
+
