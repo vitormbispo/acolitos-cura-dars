@@ -6,7 +6,7 @@ import { CheckBox, DeepCopyArray, ImageButton, LinkImageButton, RowImageButton, 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useNavigation } from "expo-router";
 import { useState } from "react";
-import { OrganizeAcolyteArrayAlpha, GetAcolyteByName, GetAcolyteIndex} from "../classes/Methods"
+import { OrganizeMemberArrayAlpha, GetAcolyteByName, GetAcolyteIndex} from "../classes/Methods"
 import AcolyteProfile, { AcolyteProfileScreen } from "./AcolyteProfile";
 
 
@@ -156,7 +156,7 @@ export default function EditAcolyte(){
                 
                 <TextButton buttonStyle={{alignSelf:"center"}} text="Concluir" press={()=>{
                     AcolyteData.allAcolytes[EditAcolyteScreen.id] = currentData
-                    AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
+                    AcolyteData.allAcolytes = OrganizeMemberArrayAlpha(AcolyteData.allAcolytes)
 
                     AcolyteProfileScreen.id = GetAcolyteIndex(GetAcolyteByName(currentData.name))
                     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
@@ -202,7 +202,7 @@ export const UpperBar = () => {
 
 export function EraseAcolyte(id:number){
     AcolyteData.allAcolytes.splice(id,1)
-    AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
+    AcolyteData.allAcolytes = OrganizeMemberArrayAlpha(AcolyteData.allAcolytes)
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
     router.back()
     router.back()

@@ -5,7 +5,7 @@ import { Acolyte, AcolyteData } from "../classes/AcolyteData";
 import { CheckBox, TextButton } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { OrganizeAcolyteArrayAlpha } from "../classes/Methods"
+import { OrganizeMemberArrayAlpha } from "../classes/Methods"
 
 
 var currentData:Acolyte = new Acolyte()
@@ -164,7 +164,7 @@ function SubmitNewAcolyte(){
     
 
     AcolyteData.allAcolytes = AcolyteData.allAcolytes.concat(newAco)
-    AcolyteData.allAcolytes = OrganizeAcolyteArrayAlpha(AcolyteData.allAcolytes)
+    AcolyteData.allAcolytes = OrganizeMemberArrayAlpha(AcolyteData.allAcolytes)
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
 
     router.back()

@@ -1,7 +1,5 @@
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
-import { EscalaDiaria, ImageButton, TextButton, LinkImageButton } from "../classes/NewComps";
-import { Link } from "expo-router";
-import { GenerateLineup } from "../classes/LineupGenerator";
+import { ImageButton, TextButton, LinkImageButton } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Global } from "../Global";
 
@@ -80,8 +78,6 @@ export default function Home(){
 export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-        <EscalaDiaria dayTitle="Sábado - 10/02 - 19h"/>
-        <EscalaDiaria/>
 
         <TextButton text="Clear AsyncStorage." sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
         

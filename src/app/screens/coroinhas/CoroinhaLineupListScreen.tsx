@@ -28,7 +28,7 @@ export function FetchLineupList(){
     console.log("All")
     console.log(CoroinhaData.allLineups)
     CoroinhaData.allLineups.forEach((line) =>{
-        lineups.push(<RowImageButton img={require("@/src/app/item_icons/escala_icomdpi.png")} text={line.name} key={index} press={(i = this.key)=>{CoroinhaLineupScreenOptions.LoadLineup(line), CoroinhaLineupScreenOptions.loaded=true,CoroinhaLineupScreenOptions.loadedLineIndex=i, router.push("/screens/coroinhas/CoroinhaLineupScreen")}}/>)
+        lineups.push(<RowImageButton img={require("@/src/app/item_icons/escala_icomdpi.png")} text={line.name} key={index} press={(i = this.key)=>{CoroinhaLineupScreenOptions.LoadLineup(line), CoroinhaLineupScreenOptions.loaded=true,CoroinhaLineupScreenOptions.loadedLineIndex=i,CoroinhaLineupScreenOptions.scrollPos = 0, router.push("/screens/coroinhas/CoroinhaLineupScreen")}}/>)
         index++;
     })
     return lineups

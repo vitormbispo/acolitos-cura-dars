@@ -7,7 +7,15 @@ import { CoroinhaProfileScreen } from "../screens/coroinhas/CoroinhaProfile";
 import { CoroinhaData } from "./CoroinhaData";
 import { Global } from "../Global";
 
-
+/**
+ * Botão com imagem
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * buttonStyle = Estilo do componente TouchableOpacity     
+ * press = Ação quando o botão é pressionado     
+ * @returns
+ */
 export function ImageButton(props:any) {
   return (
     
@@ -17,6 +25,16 @@ export function ImageButton(props:any) {
       );
   }
 
+  /**
+ * Botão com imagem e link para outra tela
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * buttonStyle = Estilo do componente TouchableOpacity     
+ * press = Ação quando o botão é pressionado     
+ * link = Link para outra tela        
+ * @returns
+ */
 export function LinkImageButton(props:any) {
   if(props.press == undefined){
       props.press = ()=>{}
@@ -33,15 +51,36 @@ export function LinkImageButton(props:any) {
       );
   }
 
+/**
+ * Botão com imagem que ocupa uma linha inteira
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * rowStyle = Estilo do componente TouchableOpacity     
+ * text = Texto escrito na linha
+ * press = Ação quando o botão é pressionado         
+ * @returns
+ */
 export function RowImageButton(props:any){
     return(
       <TouchableOpacity onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
-        <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
+        <Image source={props.img} style={[{width:64,height:64,resizeMode:"contain"},props.imgStyle]}/>
         <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20}}>{props.text}</Text>       
       </TouchableOpacity>
     )
   }
 
+/**
+ * Botão com imagem que ocupa uma linha inteira e possui link para outra tela.
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * rowStyle = Estilo do componente TouchableOpacity     
+ * text = Texto escrito na linha
+ * press = Ação quando o botão é pressionado       
+ * link = Link para outra tela  
+ * @returns
+ */
   export function LinkRowImageButton(props:any){
     return(
         <TouchableOpacity style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => router.push(props.link)}>
@@ -51,6 +90,15 @@ export function RowImageButton(props:any){
     )
   }
 
+  /**
+   * Botão em formato de linha para representar um acólito.
+   * @param props Propriedade:
+   * id = Índice do acólito na lista principal.
+   * img = Imagem     
+   * nick = Apelido do acólito
+   * textStyle = Estilo do texto
+   * @returns 
+   */
 export function RowAcolyte(props:any){
 return(
   <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => OpenAcolyteProfile(props.id)}>
@@ -59,32 +107,54 @@ return(
   </TouchableOpacity>
 )
 }
-
+  /**
+   * Botão em formato de linha para representar um coroinha.
+   * @param props Propriedade:
+   * id = Índice do coroinha na lista principal.
+   * img = Imagem     
+   * nick = Apelido do coroinha
+   * textStyle = Estilo do texto
+   * @returns 
+   */
 export function RowCoroinha(props:any){
 return(
-  <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() =>   {OpenCoroinhaProfile(props.id)
-    console.log("ID is: "+CoroinhaProfileScreen.id)
-    console.log("Coroinha is: "+CoroinhaData.allCoroinhas[CoroinhaProfileScreen.id].nick)}
+  <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() =>   {OpenCoroinhaProfile(props.id)}
   }>
     <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
     <Text style={props.textStyle}>{props.nick}</Text>
   </TouchableOpacity>
-)
+  )
 }
 
+/**
+ * Abre o perfil do acólito de índice *id* na lista geral.
+ * @param id Índice
+ */
 function OpenAcolyteProfile(id:any){
-console.log("Opening: "+AcolyteData.allAcolytes[id].nick)
-router.push("/screens/AcolyteProfile")
-AcolyteProfileScreen.id = id
+  router.push("/screens/AcolyteProfile")
+  AcolyteProfileScreen.id = id
 }
 
+/**
+ * Abre o perfil do coroinha de índice *id* na lista geral.
+ * @param id Índice
+ */
 function OpenCoroinhaProfile(id:any){
-CoroinhaProfileScreen.id = id
-console.log(CoroinhaData.allCoroinhas[id].disp)
-router.push("/screens/coroinhas/CoroinhaProfile")
-
+  CoroinhaProfileScreen.id = id
+  router.push("/screens/coroinhas/CoroinhaProfile")
 }
 
+/** Botão com texto
+ * 
+ * @param props Propriedades:
+   * text = Texto      
+   * familyFont = Família da fonte do texto     
+   * sizeFonte = Tamanho do texto     
+   * press = Ação ao tocar     
+   * textStyle = Estilo do texto     
+   * buttonStyle = Estilo da TouchableOpacity
+ * @returns 
+ */
 export function TextButton(props:any) {
   return (
     
@@ -96,31 +166,22 @@ export function TextButton(props:any) {
     );
 }
 
-export function EscalaDiaria(props:any){
-  return(
-      <View style={{paddingVertical:10, alignSelf:"center", height:160,width:300}}>
-        <Image source={require("@/src/app/shapes/escala_box.png")} style={{width:300,height:160,position:"absolute"}}/>
-        <Text style={props.titleStyle}>{props.dayTitle}</Text>
-      </View>
-      
-  )
-}
-
+/**
+ * Botão em formato de caixa de checagem.
+ * @param props Propriedades:
+ * checked = caixa marcada ou não.     
+ * press = ação ao pressionar     
+ * @returns 
+ */
 export function CheckBox(props:any){
-  
-  var img = props.checked ? require("@/src/app/shapes/check_true.png") : require("@/src/app/shapes/check_false.png")
-  
+
   const[check,setChecked] = props.checked ? useState(1) : useState(0)
   const images = [require("@/src/app/shapes/check_false.png"),require("@/src/app/shapes/check_true.png")]
   
   const changeImage = () =>{
-    if(check === 1){
-      setChecked(0)
-    }
-    else{
-      setChecked(1)
-    }
+    setChecked((check === 1) ? 0 : 1)
   }
+
   return(
   <TouchableOpacity style={{flex:1}} onPress={()=>{
     props.press()
@@ -131,10 +192,16 @@ export function CheckBox(props:any){
   )
 }
 
+/**
+ * Botão no formato caixa de checagem única
+ * @param props Propriedades:
+ * press = Ação ao tocar     
+ * topText = Texto acima da caixa     
+ * img = Imagem
+ * @returns 
+ */
 export function SingleCheck(props:any){
   
-
-  const[img,setImg] = useState(require("@/src/app/shapes/check_false.png"))
   return(
     <TouchableOpacity style={{flex:1}} onPress={()=>{
       props.press()}}>
@@ -148,11 +215,19 @@ export function SingleCheck(props:any){
   )
 }
 
+/**
+ * 
+ * @param props Propriedades:
+ * checked = Checado ou não     
+ * color = Cor     
+ * press = Ação ao pressionar
+ * 
+ * @returns 
+ */
 export function SingleCheckColor(props:any){
   
   const[check,setChecked] = useState(props.checked)
   const[liturgicalColors,setColor] = useState(props.color)
-  const[img,setImg] = useState(require("@/src/app/shapes/check_false.png"))
 
   const checkNum = check ? 1 : 0
   const images:any = {
@@ -174,6 +249,15 @@ export function SingleCheckColor(props:any){
   )
 }
 
+/**
+ * Caixa de checagem sem interação.
+ * @param props Propriedades = 
+ * boxStyle = Estilo do contêiner     
+ * imageStyle = Estilo da imagem     
+ * enabled = Ativado
+ * 
+ * @returns 
+ */
 export function VisualCheckBox(props:any){
 
   return(
@@ -187,6 +271,11 @@ export function VisualCheckBox(props:any){
   )
 }
 
+/**
+ * Faz uma cópia real da *array* dada.
+ * @param array Lista
+ * @returns 
+ */
 export function DeepCopyArray(array:Array<any>):Array<any>{
     let newArray = new Array<any>
     for(let i = 0; i < array.length;i++){
@@ -196,6 +285,12 @@ export function DeepCopyArray(array:Array<any>):Array<any>{
     return newArray
 }
 
+/**
+ * Barra superior
+ * @param props Propriedades     
+ * icon = Ícone
+ * @returns 
+ */
 export function UpperBar(props:any){
   return(
       <View style = {Global.styles.rowContainer}>

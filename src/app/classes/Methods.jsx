@@ -1,24 +1,25 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
-import { Coroinha, CoroinhaData } from "./CoroinhaData";
+import { CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
-import { Lineup, MonthLineup, WeekendLineup } from "./Lineup";
+import { Lineup } from "./Lineup";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-class PromptLineup{
-    lines =[[]]
-}
-
 // Globais
-export let coroinhaRoles = ["donsD","donsE","cestD","cestE"]
-export let acolyteRoles = ["cero1","cero2","cruci","libri","turib","navet"]
+export let coroinhaRoles = ["donsD","donsE","cestD","cestE"] // Funções coroinhas
+export let acolyteRoles = ["cero1","cero2","cruci","libri","turib","navet"] // Funções acóitos
 
-export function OrganizeAcolyteArrayAlpha(array){
+/**
+ * Organiza a *array* de membros em ordem alfabética.
+ * @param {Array<Coroinha|Acolyte>} array Lista com os membros
+ * @returns 
+ */
+export function OrganizeMemberArrayAlpha(array){
     let j = array.length-1
     let aux = array[0]
     
     while(j > 0){
-        let index = LastAcolyteByNameIndex(array.slice(0,j+1))
+        let index = LastMemberByNameIndex(array.slice(0,j+1))
         aux = array[index]
         array[index] = array[j]
         array[j] = aux
@@ -29,7 +30,12 @@ export function OrganizeAcolyteArrayAlpha(array){
     return array
 }
 
-export function LastAcolyteByNameIndex(array){
+/** Encontra o índice do último membro da *array* na ordem alfabética
+ * 
+ * @param {Array<Coroinha|Acolyte>} array Lista de membros
+ * @returns 
+ */
+export function LastMemberByNameIndex(array){
     let last = 0
     for(let i = 0; i < array.length;i++){
         let curAco = array[i]
@@ -41,6 +47,11 @@ export function LastAcolyteByNameIndex(array){
     return last
 }
 
+/**
+ * Encontra um acólito na lista geral com determinado nome ou null caso o acólito não exista.
+ * @param {string} name Nome do acólito
+ * @returns 
+ */
 export function GetAcolyteByName(name){
     for(let i = 0; i < AcolyteData.allAcolytes.length; i++){
         let curAco = AcolyteData.allAcolytes[i]
@@ -53,6 +64,11 @@ export function GetAcolyteByName(name){
     return null
 }
 
+/**
+ * Encontra o índice do acólito dado ou -1 caso o acólito não esteja na lista.
+ * @param {Acolyte} acolyte 
+ * @returns 
+ */
 export function GetAcolyteIndex(acolyte){
     if(acolyte != null){
         for(let i = 0; i < AcolyteData.allAcolytes.length;i++){
@@ -68,6 +84,12 @@ export function GetAcolyteIndex(acolyte){
     return -1
 }
 
+/**
+ * Encontra o índice do membro em determinada lista.
+ * @param {Coroinha|Acolyte} member Mebro
+ * @param {Array<Coroinha|Acolyte>} list Lista a procurar
+ * @returns 
+ */
 export function GetMemberIndex(member,list){
     let chosen = -1
     let i = 0
@@ -90,9 +112,14 @@ export function RemoveMemberFromList(member,list){
     list.splice(GetMemberIndex(member,list),1)
 }
 
-
+/**
+ * Gera um prompt Gemini para se gerar uma planilha no Google Sheets.
+ * @param {*} lines Escalas
+ * @param {*} rolesNames Nomes das funções
+ * @param {*} roles Funções
+ * @returns 
+ */
 export function GenerateLineupPrompt(lines,rolesNames,roles){
-    let str = ""
     let names = {"1stWE":"1˚", "2ndWE": "2˚", "3rdWE": "3˚", "4thWE":"4˚", "5thWE":"5˚",
                  "sabado":"Sab. - 19h","domingoAM": "Dom. - 08h","domingoPM": "Dom. - 19h"}
     
@@ -101,17 +128,17 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
         let curLineup = lines[i]
         let lineupName = names[curLineup.weekend] + " " + names[curLineup.day]
         
-        let acolytes = []
-        acolytes.length = roles.length
+        let members = []
+        members.length = roles.length
         
         for(let j = 0; j < roles.length; j++){
-            acolytes[j] = curLineup.line.get(roles[j])
+            members[j] = curLineup.line.get(roles[j])
         }
 
         let acolytesNicks = ""
 
-        for(let j = 0; j < acolytes.length; j++){
-            acolytesNicks += acolytes[j].nick+";"
+        for(let j = 0; j < members.length; j++){
+            acolytesNicks += members[j].nick+";"
         }
 
         prompts.push("{"+lineupName+"}"+"["+acolytesNicks+"]")
@@ -123,7 +150,7 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
         finalPrompt += rolesNames[i]+", "
     }
 
-    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela: "
+    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela. Construa a tabela por completo: "
     for(let i = 0; i < prompts.length;i++){
         finalPrompt += prompts[i]
     }
@@ -131,6 +158,10 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
     return finalPrompt
 }
 
+/**
+ * Copia o texto para a área de transferência do aparelho.
+ * @param {*} text Texto
+ */
 export const CopyToClipboard = async (text) => {
     await Clipboard.setStringAsync(text)
     
@@ -187,6 +218,10 @@ export function GetRandom(array){
     return array[RandomNumber(0,array.length-1)]
 }
 
+/**
+ * Reinicia o último final de semana de todos os membros da lista.
+ * @param {*} members Lista de membros
+ */
 export function ResetAllLastWeekend(members){
     members.forEach((member) => {
         member.lastWeekend = ""
@@ -273,3 +308,20 @@ export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups))
 }
 
+export function MapToObject(map){
+    let newObj = new Object()
+    for(const [key,val] of map){
+        newObj[key] = val
+    }
+    return newObj
+}
+
+export function ObjectToMap(obj){
+    let newMap = new Map()
+    for(const key in obj){
+        if(obj.hasOwn(key)){
+            map.set(key,obj[key])
+        }
+    }
+    return map
+}

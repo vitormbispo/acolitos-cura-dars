@@ -2,10 +2,9 @@ import { Acolyte } from "./AcolyteData";
 import { Coroinha } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
 
-interface RolesDict{
-    [key:string]:any
-}
-
+/**
+ * Classe base de uma escala de acólitos
+ */
 export class Lineup{
     TYPE = "single"
     line = new Map<string,Acolyte>()
@@ -15,18 +14,9 @@ export class Lineup{
     weekend:string = ""
 }
 
-export class WeekendLineup{
-    TYPE = "weekend"
-    lines = new Map<string,Lineup>
-}
-
-export class MonthLineup{
-    name = "NewLineup"
-    TYPE = "Month"
-    lines = new Map<string,Array<Lineup>>()
-    monthLines = []
-}
-
+/**
+ * Classe para uma escala montada a ser exibida na tela de escalas.
+ */
 export class StructuredLineup{
     name = "NewLineup"
     lineupType = "Single" // Tipo da escala

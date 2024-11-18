@@ -282,6 +282,10 @@ export default function LineupOptions(){
                     ResetAllLastWeekend(CoroinhaData.allCoroinhas)
                 }
 
+                CoroinhaLineupScreenOptions.scrollPos = 0
+                CoroinhaLineupScreenOptions.scrollRef = null
+                CoroinhaLineupScreenOptions.loaded = false
+                
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
                 }}

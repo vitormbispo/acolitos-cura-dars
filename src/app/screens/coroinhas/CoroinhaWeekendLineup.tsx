@@ -9,6 +9,7 @@ import { useState } from "react"
 import { CoroinhaLineupScreenOptions } from "@/src/app/screens/coroinhas/CoroinhaLineupScreen"
 import { FlexToCoroinhaLineup, ResetAllLastWeekend } from "../../classes/Methods"
 import { CoroinhaData } from "../../classes/CoroinhaData"
+import { CoroinhaSelectScreenOptions } from "./CoroinhaSelectScreen"
 
 export class CoroinhaWeekendLineupScreen{
     static curLineup:any = null
@@ -171,6 +172,9 @@ export default function LineupOptions(){
                 }
 
                 CoroinhaLineupScreenOptions.lineupType="Weekend"
+                CoroinhaLineupScreenOptions.scrollPos = 0
+                CoroinhaLineupScreenOptions.scrollRef = null
+                CoroinhaLineupScreenOptions.loaded = false
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")  
             }}
                 buttonStyle={{alignSelf:"center"}}/>

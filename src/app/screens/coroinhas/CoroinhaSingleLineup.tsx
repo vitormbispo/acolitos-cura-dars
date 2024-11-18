@@ -134,6 +134,10 @@ else{
                 
                 console.log(CoroinhaSingleLineupScreen.curLineup)
                 CoroinhaLineupScreenOptions.lineupType="Single"
+                CoroinhaLineupScreenOptions.scrollPos = 0
+                CoroinhaLineupScreenOptions.scrollRef = null
+                CoroinhaLineupScreenOptions.loaded = false
+                
                 router.push("/screens/coroinhas/CoroinhaLineupScreen")
                 
                 }} buttonStyle={{alignSelf:"center"}}/>

@@ -4,12 +4,12 @@ import { CoroinhaSingleLineupScreen } from "@/src/app/screens/coroinhas/Coroinha
 import { router } from "expo-router"
 import { Global } from "@/src/app/Global"
 import { StyleSheet } from "react-native"
-import { GenerateLineup } from "@/src/app/classes/LineupGenerator"
 import { Coroinha, CoroinhaData } from "../../classes/CoroinhaData"
 import { CoroinhaSelectScreenOptions } from "./CoroinhaSelectScreen"
 import { CoroinhaLineup } from "../../classes/CoroinhaLineup"
 import { CopyToClipboard, GenerateLineupPrompt, SaveCoroinhaData } from "../../classes/Methods"
 import { StructuredLineup } from "../../classes/Lineup"
+import { useRef, useState } from "react"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -72,6 +72,10 @@ export class CoroinhaLineupScreenOptions{
         CoroinhaLineupScreenOptions.rolesNames = line.rolesNames
         CoroinhaLineupScreenOptions.lineName = line.name
     }
+    
+    // Rolagem
+    static scrollPos = 0
+    static scrollRef = null
 }
 
 let isSwitching = false
@@ -93,6 +97,17 @@ let replacing:Coroinha
 export default function LineupScreen(){
     Global.currentScreen.screenName = "Escala"
     
+    //Rolagem
+    const[scrollPosition, setScrollPosition] = useState(CoroinhaLineupScreenOptions.scrollPos);
+    const scrollViewRef = useRef(CoroinhaLineupScreenOptions.scrollRef);
+
+    const handleScroll = (event:any) => {
+        let pos = event.nativeEvent.contentOffset.y
+        setScrollPosition(pos);
+        CoroinhaLineupScreenOptions.scrollPos = pos;
+        CoroinhaLineupScreenOptions.scrollRef = scrollViewRef;
+    }
+
     let roles = CoroinhaLineupScreenOptions.roles
     let rolesNames = CoroinhaLineupScreenOptions.rolesNames
     let lineupCoroinhas = []
@@ -186,6 +201,8 @@ export default function LineupScreen(){
                         if(!CoroinhaLineupScreenOptions.loaded){
                             CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
                             SaveCoroinhaData()
+                            CoroinhaLineupScreenOptions.loaded = true
+                            CoroinhaLineupScreenOptions.loadedLineIndex = 0
                         }
                         else{
                             CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
@@ -199,77 +216,79 @@ export default function LineupScreen(){
 
     if(CoroinhaLineupScreenOptions.lineupType == "Weekend"){
         return(
-            <ScrollView style={{flex:1}}>
+            <View style={{flex:1}}>
                 <UpperBar/>
-                <View style={{flex:1}}>
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Sábado - 19h</Text>
-                    </View>
-
-                    {weekendCoroinhas.get("sabado")}
-
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 08h</Text>
-                    </View>
-
-                    {weekendCoroinhas.get("domingoAM")}
-
-                    <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                        <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 19h</Text>
-                    </View>
-
-                    {weekendCoroinhas.get("domingoPM")}
-                </View>
+                <ScrollView ref={scrollViewRef}
+                 onScroll={handleScroll}
+                 onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+                 style={{flex:1}}>
                 
+                    <View style={{flex:1}}>
+                        <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                            <Text style={{fontSize:24,alignSelf:"center"}}>Sábado - 19h</Text>
+                        </View>
+
+                        {weekendCoroinhas.get("sabado")}
+
+                        <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                            <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 08h</Text>
+                        </View>
+
+                        {weekendCoroinhas.get("domingoAM")}
+
+                        <View style ={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                            <Text style={{fontSize:24,alignSelf:"center"}}>Domingo - 19h</Text>
+                        </View>
+
+                        {weekendCoroinhas.get("domingoPM")}
+                    </View>
+                    
+                </ScrollView>
+
                 <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
-                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                        console.log(CoroinhaLineupScreenOptions.roles)
-                        console.log(CoroinhaLineupScreenOptions.allLineups)
-                        CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
-                        console.log("Copied.")
-                    }}/>
-                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
-                        if(!CoroinhaLineupScreenOptions.loaded){
-                            CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
-                            SaveCoroinhaData()
-                        }
-                        else{
-                            CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
-                            SaveCoroinhaData()
-                        }
-                    }}/>
+                        <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                            console.log(CoroinhaLineupScreenOptions.roles)
+                            console.log(CoroinhaLineupScreenOptions.allLineups)
+                            CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
+                            console.log("Copied.")
+                        }}/>
+                        <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                            console.log("Salvando")
+                            if(!CoroinhaLineupScreenOptions.loaded){
+                                CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
+                                SaveCoroinhaData()
+                                CoroinhaLineupScreenOptions.loaded = true
+                                CoroinhaLineupScreenOptions.loadedLineIndex = 0
+                            }
+                            else{
+                                CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
+                                SaveCoroinhaData()
+                            }
+                        }}/>
                 </View> 
-            </ScrollView>
+                
+            </View>
         )
     }
 
     if(CoroinhaLineupScreenOptions.lineupType == "Month"){
-        console.log("Mothtly lineup")
-        console.log(CoroinhaLineupScreenOptions.monthLineups)
-        console.log(Array.from(CoroinhaLineupScreenOptions.monthLineups.keys()))
-
         let array = Array.from(CoroinhaLineupScreenOptions.monthLineups.keys())
-        console.log("Array:")
-        console.log(array)
-
-        console.log(monthCoroinhas)
         
         return(
             <View style={{flex:1}}>
                 <UpperBar/>
                 <MonthLineups weekends={array} monthCor={monthCoroinhas}/>
                 
-                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
+                <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
                     <TextButton buttonStyle={{}} text="Gerar prompt Gemini" press={()=>{
-                        console.log(CoroinhaLineupScreenOptions.roles)
-                        console.log(CoroinhaLineupScreenOptions.allLineups)
                         CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
-                        console.log("Copied.")
                     }}/>
                     <TextButton buttonStyle={{}} text="Salvar escalas" press={()=>{
                         if(!CoroinhaLineupScreenOptions.loaded){
                             CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
                             SaveCoroinhaData()
+                            CoroinhaLineupScreenOptions.loaded = true
+                            CoroinhaLineupScreenOptions.loadedLineIndex = 0
                         }
                         else{
                             CoroinhaData.allLineups[CoroinhaLineupScreenOptions.loadedLineIndex] = CoroinhaLineupScreenOptions.SaveLineup()
@@ -419,6 +438,16 @@ function WeekendLineup(props:any){
 
 function MonthLineups(props:any){
     console.log(props.monthCor)
+    const[scrollPosition, setScrollPosition] = useState(CoroinhaLineupScreenOptions.scrollPos);
+    const scrollViewRef = useRef(CoroinhaLineupScreenOptions.scrollRef);
+
+    const handleScroll = (event:any) => {
+        let pos = event.nativeEvent.contentOffset.y
+        setScrollPosition(pos);
+        CoroinhaLineupScreenOptions.scrollPos = pos;
+        CoroinhaLineupScreenOptions.scrollRef = scrollViewRef;
+    }
+
     let allWeekends:Array<any> = new Array<any>
     for(let i = 0; i < props.weekends.length; i++){
         let curWkKey = props.weekends[i] // Chave do fim de semana atual
@@ -436,7 +465,11 @@ function MonthLineups(props:any){
     }
 
     return(
-        <ScrollView style={{flex:1}}>
+        <ScrollView 
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+        style={{flex:1}}>
             {allWeekends}
         </ScrollView>
     )

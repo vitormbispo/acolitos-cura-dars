@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useNavigation } from "expo-router";
 import { useState } from "react";
 import { Coroinha } from "@/src/app/classes/CoroinhaData";
-import { OrganizeAcolyteArrayAlpha } from "../../classes/Methods";
+import { OrganizeMemberArrayAlpha } from "../../classes/Methods";
 
 
 var currentData:Coroinha = new Coroinha()
@@ -168,7 +168,7 @@ export default function EditAcolyte(){
                 
                 <TextButton buttonStyle={{alignSelf:"center"}} text="Concluir" press={()=>{
                     CoroinhaData.allCoroinhas[EditCoroinhaScreen.id] = currentData
-                    OrganizeAcolyteArrayAlpha(CoroinhaData.allCoroinhas)
+                    OrganizeMemberArrayAlpha(CoroinhaData.allCoroinhas)
                     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
                     router.back()
                     
@@ -207,7 +207,7 @@ export const UpperBar = () => {
 
 export function EraseCoroinha(id:number){
     CoroinhaData.allCoroinhas.splice(id,1)
-    OrganizeAcolyteArrayAlpha(CoroinhaData.allCoroinhas)
+    OrganizeMemberArrayAlpha(CoroinhaData.allCoroinhas)
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
     router.back()
     router.back()

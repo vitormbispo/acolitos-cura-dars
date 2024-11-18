@@ -1,16 +1,13 @@
 import { View, Image, Text, Modal, ScrollView, } from "react-native"
-import  Clipboard from "expo-clipboard"
 import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
-import { SingleLineupScreen } from "./SingleLineup"
 import { router } from "expo-router"
 import { Global } from "../Global"
 import { Acolyte, AcolyteData } from "../classes/AcolyteData"
 import { StyleSheet } from "react-native"
-import { GenerateLineup } from "../classes/LineupGenerator"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
-import { CopyToClipboard, GenerateLineupPrompt, SaveAcolyteData } from "../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt, MapToObject, SaveAcolyteData } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -59,6 +56,7 @@ export class LineupScreenOptions{
         line.roles = LineupScreenOptions.roles
         line.rolesNames = LineupScreenOptions.rolesNames
         line.name = LineupScreenOptions.name
+
         return line;
     }
     
@@ -73,6 +71,10 @@ export class LineupScreenOptions{
         LineupScreenOptions.rolesNames = line.rolesNames
         LineupScreenOptions.name = line.name
     }
+
+    // Rolagem da tela
+    static scrollPos = 0
+    static scrollRef = null
 }
 
 let isSwitching = false
@@ -93,6 +95,18 @@ let replacing:Acolyte
 export default function LineupScreen(){
     Global.currentScreen.screenName = "Escala"
     
+    // Rolagem
+
+    const[scrollPosition, setScrollPosition] = useState(LineupScreenOptions.scrollPos);
+    const scrollViewRef = useRef(LineupScreenOptions.scrollRef);
+
+    const handleScroll = (event:any) => {
+        let pos = event.nativeEvent.contentOffset.y
+        setScrollPosition(pos);
+        LineupScreenOptions.scrollPos = pos;
+        LineupScreenOptions.scrollRef = scrollViewRef;
+    }
+
     let roles = LineupScreenOptions.roles
     let rolesNames = LineupScreenOptions.rolesNames
     let lineupAcolytes = []
@@ -182,6 +196,8 @@ export default function LineupScreen(){
                         if(!LineupScreenOptions.loaded){
                             AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
                             SaveAcolyteData()
+                            LineupScreenOptions.loaded = true
+                            LineupScreenOptions.loadedLineIndex = 0
                         }
                         else{
                             AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
@@ -197,7 +213,11 @@ export default function LineupScreen(){
     if(LineupScreenOptions.lineupType == "Weekend"){
         return(
             <View style={{flex:1}}>
-                <ScrollView style={{flex:1}}>
+                <ScrollView 
+                 ref={scrollViewRef}
+                 onScroll={handleScroll}
+                 onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+                 style={{flex:1}}>
                     <UpperBar/>
                     <View style={{flex:1}}>
                         <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
@@ -215,6 +235,8 @@ export default function LineupScreen(){
                         if(!LineupScreenOptions.loaded){
                             AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
                             SaveAcolyteData()
+                            LineupScreenOptions.loaded = true
+                            LineupScreenOptions.loadedLineIndex = 0
                         }
                         else{
                             AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
@@ -244,6 +266,8 @@ export default function LineupScreen(){
                         if(!LineupScreenOptions.loaded){
                             AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
                             SaveAcolyteData()
+                            LineupScreenOptions.loaded = true
+                            LineupScreenOptions.loadedLineIndex = 0
                         }
                         else{
                             AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
@@ -404,8 +428,24 @@ function MonthLineups(props:any){
         
     }
     
+    // Rolagem
+
+    const[scrollPosition, setScrollPosition] = useState(LineupScreenOptions.scrollPos);
+    const scrollViewRef = useRef(LineupScreenOptions.scrollRef);
+
+    const handleScroll = (event:any) => {
+        let pos = event.nativeEvent.contentOffset.y
+        setScrollPosition(pos);
+        LineupScreenOptions.scrollPos = pos;
+        LineupScreenOptions.scrollRef = scrollViewRef;
+    }
+
     return(
-        <ScrollView style={{flex:1}}>
+        <ScrollView  
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+        style={{flex:1}}>
             {allWeekends}
         </ScrollView>
     )

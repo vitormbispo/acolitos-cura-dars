@@ -5,7 +5,7 @@ import { Coroinha, CoroinhaData } from "@/src/app/classes/CoroinhaData";
 import { CheckBox, TextButton } from "@/src/app/classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { OrganizeAcolyteArrayAlpha } from "../../classes/Methods";
+import { OrganizeMemberArrayAlpha } from "../../classes/Methods";
 
 
 var currentData:Coroinha = new Coroinha()
@@ -177,7 +177,7 @@ function SubmitNewCoroinha(){
     newCor.parents = currentData.parents
 
     CoroinhaData.allCoroinhas = CoroinhaData.allCoroinhas.concat(newCor)
-    OrganizeAcolyteArrayAlpha(CoroinhaData.allCoroinhas)
+    OrganizeMemberArrayAlpha(CoroinhaData.allCoroinhas)
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
 
     router.back()

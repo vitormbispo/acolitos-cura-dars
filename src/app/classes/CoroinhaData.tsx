@@ -1,51 +1,49 @@
-
-interface RolesDict{
-    [key:string]:any
-}
-
-interface DispDict{
-    [key:string]:any
-}
+/**
+ * Classe base do coroinha
+ */
 export class Coroinha {
-    TYPE = "Coroinha"
+    TYPE = "Coroinha" // Tipo de memobro
     
-    name=""
-    nick=""
-    parents=""
+    name="" // Nome
+    nick="" // Apelido
+    parents="" // Responsáveis
     
-    rodizio:RolesDict={"donsE":0,
+    rodizio={"donsE":0, // Rodízio de função
     "donsD":0,
     "cestE":0,
     "cestD":0,
     }
     
-    oldRodizio:RolesDict={"donsE":0,
-    "donsD":0,
+    oldRodizio={"donsE":0, // Velho rodízio de função
+    "donsD":0, 
     "cestE":0,
     "cestD":0,
     }
 
-    
-    disp:DispDict={
+    // Disponibilidade
+    disp={ 
         "1stWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "2ndWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "3rdWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "4thWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "5thWE":{"sabado":true,"domingoPM":true,"domingoAM":true}
     }
-    contact=""
+    contact="" // Contato
 
-    priority=0
-    oldPriority=0
-    oldWeekendPriority:DispDict={"sabado":0,"domingoPM":0,"domingoAM":0}
+    priority=0 // Prioridade
+    oldPriority=0 // Velha prioridade
 
-    weekendPriority:DispDict={"sabado":0,"domingoPM":0,"domingoAM":0}
+    weekendPriority={"sabado":0,"domingoPM":0,"domingoAM":0} // Prioridade de dia
+    oldWeekendPriority={"sabado":0,"domingoPM":0,"domingoAM":0} // Velha prioridade de dia
+    
+    onLineup = true // Escalável
 
-    onLineup = true
-
-    lastWeekend = ""
+    lastWeekend = "" // Último fim de semana servido
 }
 
+/**
+ * Dados dos coroinhas
+ */
 export class CoroinhaData{
     static allCoroinhas: Coroinha[] = []
     static allLineups: any[] = []
