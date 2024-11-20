@@ -1,7 +1,7 @@
 import { View,Image,Text, ScrollView } from "react-native"
 import { Global } from "../Global"
 import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
-import { Lineup, MonthLineup } from "../classes/Lineup"
+import { Lineup } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
 import { StyleSheet } from "react-native"
@@ -57,7 +57,7 @@ export default function LineupOptions(){
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
                         <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),console.log("Randomness: ",randomness),MonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),MonthlyLineupScreen.generateOptions.randomness = -2}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
@@ -239,7 +239,6 @@ export default function LineupOptions(){
                         }
                     }
                 }
-                console.log("---MONTHLY LINEUP COMPLETED---")
                 LineupScreenOptions.lineupType = "Month"
                 LineupScreenOptions.monthLineups = generatedLineups
                 LineupScreenOptions.allLineups = allLineups
@@ -262,47 +261,31 @@ export default function LineupOptions(){
 function ToggleDay(weekend:any,day:any){
     
     let days = MonthlyLineupScreen.generateOptions.monthDays
-    console.log("Start day: ")
-    console.log(days)
 
     if(days.get(weekend) != undefined){
         let wk:any = days.get(weekend)
-        console.log("WK: "+wk)
-        console.log("Size: "+wk.length)
         
         if(wk.length>0){
-            console.log("Valid weekend")
-            
             for(let i = 0; i < wk.length; i++){
                 let curDay = wk[i]
-                console.log("Index: "+i+" Size: "+wk.length)
-                console.log("Cur day: "+curDay+" Day: "+day)
+
                 if(curDay == day){ //Se já tiver remove
                     wk.splice(i,1)
-                    console.log("Removeee")
-                    console.log("New wk: ")
-                    console.log(wk)
-                    console.log("Wk length: ")
-                    console.log(wk.length)
                     
-                    if(wk.length == 0){
-                        console.log("Deleting key: "+weekend)
+                    if(wk.length == 0){ // Se não houver mais dias, remove o fim de semana.
                         days.delete(weekend)
-                        console.log("Deleted? "+days.has(weekend))
                     }
                     break
                 }
 
-                if(i>=wk.length-1){ //Se nao adiciona
+                if(i>=wk.length-1){ //Se não adiciona
                     wk.push(day)
-                    console.log("Day added")
                     break
                 }
             }
         }
         else{
             wk.push(day)
-            console.log("Day added")
         }
         
     }
@@ -312,7 +295,6 @@ function ToggleDay(weekend:any,day:any){
         wk?.push(day)
     }
     MonthlyLineupScreen.generateOptions.monthDays = days
-    console.log(MonthlyLineupScreen.generateOptions.monthDays)
 }
 
 function DefaultMonthDays(){

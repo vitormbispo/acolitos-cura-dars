@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CoroinhaData } from "./classes/CoroinhaData"
 import { AcolyteData } from "./classes/AcolyteData"
-import { OrganizeMemberArrayAlpha } from "./classes/Methods"
+import { OrganizeMemberArrayAlpha, reviver } from "./classes/Methods"
 
 
 let acolyteData: any
@@ -24,8 +24,8 @@ export const loadAcolyteData = async() => {
         acolyteData = await AsyncStorage.getItem("AcolyteData")
         acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         AcolyteData.allAcolytes = JSON.parse(acolyteData)
-        AcolyteData.allLineups = JSON.parse(acolyteLineups)
-        AcolyteData.ConvertLineObjectToMap()
+        AcolyteData.allLineups = JSON.parse(acolyteLineups,reviver)
+        
 
     } catch (error) {
         console.log(error)
@@ -37,7 +37,7 @@ const loadCoroinhaData = async() => {
         coroinhaData = await AsyncStorage.getItem("CoroinhaData")
         coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
         CoroinhaData.allCoroinhas = JSON.parse(coroinhaData)
-        CoroinhaData.allLineups = JSON.parse(coroinhaLineups)
+        CoroinhaData.allLineups = JSON.parse(coroinhaLineups,reviver)
 
         
         OrganizeMemberArrayAlpha(CoroinhaData.allCoroinhas)

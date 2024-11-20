@@ -300,12 +300,12 @@ export function ShufflePriorities(members){
 }
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(AcolyteData.allLineups))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(AcolyteData.allLineups,replacer))
 }
 
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups,replacer))
 }
 
 export function MapToObject(map){
@@ -324,4 +324,25 @@ export function ObjectToMap(obj){
         }
     }
     return map
+}
+
+export function replacer(key, value){
+    if(value instanceof Map){
+        return{
+            dataType: "Map",
+            value: Array.from(value.entries())
+        }
+    }
+    else{
+        return value
+    }
+}
+
+export function reviver(key,value){
+    if(typeof value === "object" && value !== null){
+        if(value.dataType === "Map"){
+            return new Map(value.value)
+        }
+    }
+    return value  
 }

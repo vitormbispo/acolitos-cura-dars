@@ -10,10 +10,6 @@ export class CoroinhaProfileScreen{
 }
 
 export default function CoroinhaProfile() {
-    console.log("ON SCREEN")
-    console.log("ID is: "+CoroinhaProfileScreen.id)
-    console.log("Coroinha is: "+CoroinhaData.allCoroinhas[0])
-    
     Global.currentScreen = {screenName:"Coroinha - "+CoroinhaData.allCoroinhas[CoroinhaProfileScreen.id].nick,iconPath:""}
     var curCoroinha = CoroinhaData.allCoroinhas[CoroinhaProfileScreen.id]
     
@@ -176,8 +172,7 @@ export const UpperBar = () => {
             resizeMode:"contain"}}  source={require("@/src/app/shapes/coroinha_ico.png")}/>
             <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
             <View style={{flex:1,justifyContent:"flex-end",flexDirection:"row",paddingRight:10}}>
-                <LinkImageButton img={require("@/src/app/shapes/edit_icomdpi.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} link={"/screens/coroinhas/EditCoroinha"} press={()=>{EditCoroinhaScreen.id = CoroinhaProfileScreen.id
-                    console.log("Setting edit id to: "+CoroinhaProfileScreen.id)}
+                <LinkImageButton img={require("@/src/app/shapes/edit_icomdpi.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} link={"/screens/coroinhas/EditCoroinha"} press={()=>{EditCoroinhaScreen.id = CoroinhaProfileScreen.id}
                 }/>
             </View>
             

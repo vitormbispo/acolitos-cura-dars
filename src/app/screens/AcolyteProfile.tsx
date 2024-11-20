@@ -165,8 +165,7 @@ export const UpperBar = () => {
             resizeMode:"contain"}}  source={require("../item_icons/users_icomdpi.png")}/>
             <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
             <View style={{flex:1,justifyContent:"flex-end",flexDirection:"row",paddingRight:10}}>
-                <LinkImageButton img={require("@/src/app/shapes/edit_icomdpi.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} link={"/screens/EditAcolyte"} press={()=>{EditAcolyteScreen.id = AcolyteProfileScreen.id
-                    console.log("Setting edit id to: "+AcolyteProfileScreen.id)}
+                <LinkImageButton img={require("@/src/app/shapes/edit_icomdpi.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} link={"/screens/EditAcolyte"} press={()=>{EditAcolyteScreen.id = AcolyteProfileScreen.id}
                 }/>
             </View>
             

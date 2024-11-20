@@ -47,19 +47,4 @@ export class Acolyte {
 export class AcolyteData{ 
     static allAcolytes: Acolyte[] = []
     static allLineups = [];
-
-    public static ConvertLineObjectToMap(){
-        console.log("Starting conversion")
-        console.log("Length: ",this.allLineups.length)
-        
-        for(let i = 0; i < this.allLineups.length;i++){
-            let curStructLines = this.allLineups[i].lineups
-
-            for(let h = 0; h < curStructLines.length;h++){
-                let line = curStructLines.line
-                console.log("Line: ",line)
-                curStructLines.line =  new Map(Object.entries(line))
-            }
-        }
-    }
 }

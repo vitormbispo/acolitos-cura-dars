@@ -42,21 +42,6 @@ export default function LineupOptions(){
             
             
             <View style={{flex:1}}>
-                {/*}
-                <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                    <Text style={Global.textStyles.dataSection}>-Celebração</Text>
-                </View>
-                
-                <View style={{flexDirection:"row"}}>
-                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");console.log("green "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");console.log("red "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");console.log("pink "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");console.log("white "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
-                </View>
-                
-                {*/}
-
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
                 </View>
@@ -96,8 +81,6 @@ export default function LineupOptions(){
                 </View>
                 
                 <TextButton text="Gerar escala" press={()=>{
-                console.log("Generating lineup with weekend = "+weekend)
-                console.log("Generating lineup with day = "+day)
                 
 // Definir funções se for solenidade ou não, escala reduzida ou celebração
 let roles = []
@@ -132,7 +115,6 @@ else{
                     CoroinhaLineupScreenOptions.lineups.push(FlexToCoroinhaLineup(GenerateLineup(weekend,day,roles,"coroinha")))
                 }
                 
-                console.log(CoroinhaSingleLineupScreen.curLineup)
                 CoroinhaLineupScreenOptions.lineupType="Single"
                 CoroinhaLineupScreenOptions.scrollPos = 0
                 CoroinhaLineupScreenOptions.scrollRef = null

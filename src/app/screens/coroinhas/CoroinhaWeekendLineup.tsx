@@ -42,21 +42,6 @@ export default function LineupOptions(){
             <UpperBar/>
             
             <View style={{flex:1}}>
-                {/*}
-                <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                    <Text style={Global.textStyles.dataSection}>-Celebração</Text>
-                </View>
-                
-                <View style={{flexDirection:"row"}}>
-                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");console.log("green "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");console.log("red "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");console.log("pink "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");console.log("white "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
-                </View>
-                {*/}
-
-
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
                 </View>

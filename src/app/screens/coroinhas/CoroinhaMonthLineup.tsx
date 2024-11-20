@@ -49,20 +49,6 @@ export default function LineupOptions(){
             <UpperBar/>
             
             <ScrollView style={{flex:1}}>
-                {/*}
-                <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                    <Text style={Global.textStyles.dataSection}>-Celebração</Text>
-                </View>
-                
-                <View style={{flexDirection:"row"}}>
-                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");console.log("green "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");console.log("red "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");console.log("pink "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");console.log("white "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
-                </View>
-                {*/}
-                
                 <View style={{height:80,backgroundColor:"#9BFFF9"}}>
                     <Text style={Global.textStyles.dataSection}>-Opções</Text>
                 </View>
@@ -72,7 +58,7 @@ export default function LineupOptions(){
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.3,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
                         <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),console.log("Randomness: ",randomness),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -2}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
@@ -299,47 +285,31 @@ export default function LineupOptions(){
 function ToggleDay(weekend:any,day:any){
     
     let days = CoroinhaMonthlyLineupScreen.generateOptions.monthDays
-    console.log("Start day: ")
-    console.log(days)
 
     if(days.get(weekend) != undefined){
         let wk:any = days.get(weekend)
-        console.log("WK: "+wk)
-        console.log("Size: "+wk.length)
         
         if(wk.length>0){
-            console.log("Valid weekend")
-            
             for(let i = 0; i < wk.length; i++){
                 let curDay = wk[i]
-                console.log("Index: "+i+" Size: "+wk.length)
-                console.log("Cur day: "+curDay+" Day: "+day)
+
                 if(curDay == day){ //Se já tiver remove
                     wk.splice(i,1)
-                    console.log("Removeee")
-                    console.log("New wk: ")
-                    console.log(wk)
-                    console.log("Wk length: ")
-                    console.log(wk.length)
                     
                     if(wk.length == 0){
-                        console.log("Deleting key: "+weekend)
                         days.delete(weekend)
-                        console.log("Deleted? "+days.has(weekend))
                     }
                     break
                 }
 
                 if(i>=wk.length-1){ //Se nao adiciona
                     wk.push(day)
-                    console.log("Day added")
                     break
                 }
             }
         }
         else{
             wk.push(day)
-            console.log("Day added")
         }
         
     }
@@ -349,7 +319,6 @@ function ToggleDay(weekend:any,day:any){
         wk?.push(day)
     }
     CoroinhaMonthlyLineupScreen.generateOptions.monthDays = days
-    console.log(CoroinhaMonthlyLineupScreen.generateOptions.monthDays)
 }
 
 function DefaultMonthDays(){

@@ -45,11 +45,11 @@ export default function LineupOptions(){
                 </View>
                 
                 <View style={{flexDirection:"row"}}>
-                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");console.log("green "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");console.log("red "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");console.log("pink "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");console.log("white "+liturgicalColor)}}/>
-                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");console.log("purple "+liturgicalColor)}}/>
+                    <SingleCheckColor color={"green"} check={liturgicalColor == "green" ? true : false} press={()=>{setColor("green");}}/>
+                    <SingleCheckColor color={"red"} check={liturgicalColor == "red" ? true : false} press={()=>{setColor("red");}}/>
+                    <SingleCheckColor color={"pink"} check={liturgicalColor == "pink" ? true : false} press={()=>{setColor("pink");}}/>
+                    <SingleCheckColor color={"white"} check={liturgicalColor == "white" ? true : false} press={()=>{setColor("white");}}/>
+                    <SingleCheckColor color={"purple"} check={liturgicalColor == "purple" ? true : false} press={()=>{setColor("purple");}}/>
                 </View>
                 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
@@ -89,8 +89,6 @@ export default function LineupOptions(){
                 
                 
                 <TextButton text="Gerar escala" press={()=>{
-                console.log("Generating lineup with weekend = "+weekend)
-                console.log("Generating lineup with day = "+day)
                 
                 let roles = []
                 if(SingleLineupScreen.generateOptions.solemnity){

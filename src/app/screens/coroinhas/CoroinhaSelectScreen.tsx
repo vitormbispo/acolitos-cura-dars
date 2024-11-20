@@ -21,7 +21,6 @@ export default function List(){
     
     const coroinhas = []
     let lineup = CoroinhaSelectScreenOptions.lineup
-    console.log("AColyte select screen")
 
     let all = CoroinhaData.allCoroinhas
     if(all != null){
@@ -82,7 +81,6 @@ function SelectableRowCoroinha(props:any){
         checkBox = <VisualCheckBox checked={checked} imageStyle={{alignSelf:"flex-end"}} />
     return(
       <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => {
-        console.log("Select mode is: "+CoroinhaSelectScreenOptions.selectMode)
         if(CoroinhaSelectScreenOptions.selectMode == "Single"){
             CoroinhaSelectScreenOptions.selected.push(props.coroinha)
             CoroinhaSelectScreenOptions.action()
@@ -107,9 +105,7 @@ function SelectableRowCoroinha(props:any){
 
   function isExcluded(member){
     for(let h = 0; h < CoroinhaSelectScreenOptions.excludedCoroinhas.length;h++){
-        console.log("Comparing: "+member.name+" with "+CoroinhaSelectScreenOptions.excludedCoroinhas[h].name)
-        if(member == CoroinhaSelectScreenOptions.excludedCoroinhas[h]){
-            
+        if(member == CoroinhaSelectScreenOptions.excludedCoroinhas[h]){   
             return true
         }
     }

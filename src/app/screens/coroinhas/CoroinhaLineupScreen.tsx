@@ -123,13 +123,8 @@ export default function LineupScreen(){
 
     let monthCoroinhas:Map<string,Map<string,Array<any>>> = new Map<string,Map<string,Array<any>>>()
 
-    if(CoroinhaLineupScreenOptions.lineupType=="Weekend"){
-        console.log("Weekend screen")
-        console.log("Days: ")
-        console.log(CoroinhaLineupScreenOptions.days)
-        
+    if(CoroinhaLineupScreenOptions.lineupType=="Weekend"){       
         for(let i = 0;i < CoroinhaLineupScreenOptions.days.length;i++){
-            console.log("Adding lineups process "+(i+1)+"/"+CoroinhaLineupScreenOptions.days.length)
             let curDay = CoroinhaLineupScreenOptions.days[i]
             let line = CoroinhaLineupScreenOptions.lineups[i]
             let coroinhas:Array<any> = []
@@ -144,9 +139,6 @@ export default function LineupScreen(){
         }
     }
     if(CoroinhaLineupScreenOptions.lineupType == "Month"){
-        console.log("Month screen")
-        console.log("Days: ")
-        console.log(CoroinhaLineupScreenOptions.days)
         let weekends = Array.from(CoroinhaLineupScreenOptions.monthLineups.keys())
 
         for(let i = 0; i < weekends.length;i++){
@@ -156,14 +148,12 @@ export default function LineupScreen(){
             if(curWeekend!=undefined){
                 for(let j = 0;j < curWeekend.length;j++){
                 
-                    console.log("Adding lineups process "+(j+1)+"/"+CoroinhaLineupScreenOptions.days.length)
                     let line = curWeekend[j]
 
                     let curDay = line.day
                     let acolytes:Array<any> = []
                     
                     for(let k = 0;k < CoroinhaLineupScreenOptions.roles.length; k++){
-                        console.log("Key is: "+((i*100)+(j*10)+k))
                         acolytes.push(<LineupCoroinha text={rolesNames[k]} role={roles[k]} key={(i*100)+(j*10)+k} lineup={line}/>)
                     }
             
@@ -192,10 +182,7 @@ export default function LineupScreen(){
 
                 <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
                     <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                        console.log(CoroinhaLineupScreenOptions.roles)
-                        console.log(CoroinhaLineupScreenOptions.allLineups)
                         CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
-                        console.log("Copied.")
                     }}/>
                     <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
                         if(!CoroinhaLineupScreenOptions.loaded){
@@ -247,13 +234,9 @@ export default function LineupScreen(){
 
                 <View style={{flexDirection:"row",alignSelf:"center",alignContent:"center",alignItems:"center",padding:10}}>
                         <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                            console.log(CoroinhaLineupScreenOptions.roles)
-                            console.log(CoroinhaLineupScreenOptions.allLineups)
                             CopyToClipboard(GenerateLineupPrompt(CoroinhaLineupScreenOptions.allLineups,CoroinhaLineupScreenOptions.rolesNames,CoroinhaLineupScreenOptions.roles))
-                            console.log("Copied.")
                         }}/>
                         <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
-                            console.log("Salvando")
                             if(!CoroinhaLineupScreenOptions.loaded){
                                 CoroinhaData.allLineups = [CoroinhaLineupScreenOptions.SaveLineup()].concat(CoroinhaData.allLineups)
                                 SaveCoroinhaData()
@@ -380,7 +363,6 @@ export function LineupCoroinha(props:any) {
                     router.back()
                 }
                 CoroinhaSelectScreenOptions.excludedCoroinhas = props.lineup.coroinhas
-                console.log("Excluded: ")
                 Global.currentScreen={screenName:"Selecione - Substituição",iconPath:""}
                 CoroinhaSelectScreenOptions.lineup = props.lineup
                 router.push("/screens/coroinhas/CoroinhaSelectScreen")
@@ -437,7 +419,6 @@ function WeekendLineup(props:any){
 }
 
 function MonthLineups(props:any){
-    console.log(props.monthCor)
     const[scrollPosition, setScrollPosition] = useState(CoroinhaLineupScreenOptions.scrollPos);
     const scrollViewRef = useRef(CoroinhaLineupScreenOptions.scrollRef);
 
