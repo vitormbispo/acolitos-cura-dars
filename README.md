@@ -13,4 +13,4 @@ O aplicativo foi pensado para atender as necessidades da coordenação da pastor
 
 ## Instalação
 
-Instale a versão mais recente dispoível na aba releases ou compile uma nova versão utilizando o eas-build.
+Instale a versão mais recente disponível na aba releases ou compile uma nova versão utilizando o eas-build.
