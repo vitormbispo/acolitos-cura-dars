@@ -1,6 +1,6 @@
 import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
-import { LinkRowImageButton, RowImageButton } from "../classes/NewComps"
+import { LinkRowImageButton} from "../classes/NewComps"
 
 
 export default function LineupOptions(){
@@ -40,11 +40,10 @@ export default function LineupOptions(){
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Histórico de escalas"
                 link="/screens/LineupListScreen"/>
-
-        
     </View>
    )
 }
+
 export const UpperBar = () => {
     return(
         <View style = {Global.styles.rowContainer}>

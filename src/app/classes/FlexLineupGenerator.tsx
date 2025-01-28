@@ -20,22 +20,21 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
     console.log("Generating lineup with randomness: ",randomness," and dayRotation: ",dayRotation)
     let members:Array<Coroinha|Acolyte> = []
 
-    if(type == "coroinha"){
-        members = CoroinhaData.allCoroinhas.slice()
-    }
-    else if(type == "acolito"){
-        members = AcolyteData.allAcolytes.slice()
-    }
-    else{
-        console.error("Invalid type.")
-        return null
+    
+    switch(type){
+        case "coroinha" : members = CoroinhaData.allCoroinhas.slice(); break;
+        case "acolito" : members = AcolyteData.allAcolytes.slice(); break;
+        default: 
+            console.error("Invalid type.");
+            return null;
+    
     }
 
     if(randomness > 0){
         ShufflePriorities(members)
     }
     
-    members = RemoveUnvailable(members,day,weekend)
+    members = RemoveUnvailable(members,day,weekend) // Remover membros indisponíveis
 
     // Excluir membros que já estão nesse fim de semana
     if(weekend != "Outro"){
@@ -119,11 +118,13 @@ export function GenerateRandomLineup(roles:string[],type:string,weekend:string="
     
     let members:Array<Coroinha|Acolyte> = []
 
-    if(type == "coroinha"){
-        members = CoroinhaData.allCoroinhas.slice()
-    }
-    else if(type == "acolito"){
-        members = AcolyteData.allAcolytes.slice()
+    switch(type){
+        case "coroinha" : members = CoroinhaData.allCoroinhas.slice(); break;
+        case "acolito" : members = AcolyteData.allAcolytes.slice(); break;
+        default: 
+            console.error("Invalid type.");
+            return null;
+    
     }
 
     let availableMembers = []

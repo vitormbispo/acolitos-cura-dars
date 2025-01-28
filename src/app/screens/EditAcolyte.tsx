@@ -2,12 +2,12 @@ import { View,Text,Image, TextInput, Modal } from "react-native"
 import { Global } from "../Global"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Acolyte, AcolyteData } from "../classes/AcolyteData";
-import { CheckBox, DeepCopyArray, ImageButton, LinkImageButton, RowImageButton, TextButton } from "../classes/NewComps";
+import { CheckBox, ImageButton, TextButton } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useNavigation } from "expo-router";
 import { useState } from "react";
 import { OrganizeMemberArrayAlpha, GetAcolyteByName, GetAcolyteIndex} from "../classes/Methods"
-import AcolyteProfile, { AcolyteProfileScreen } from "./AcolyteProfile";
+import { AcolyteProfileScreen } from "./AcolyteProfile";
 
 
 var currentData:Acolyte = new Acolyte()
@@ -22,8 +22,6 @@ export default function EditAcolyte(){
     let curAco = acolytesClone[EditAcolyteScreen.id]
     Global.currentScreen = {screenName:"Editando - "+curAco.nick,iconPath:""}
     
-
-    const navigation = useNavigation()
 
     let [popupVisible,setPopupVisible] = useState(true)
     return(
@@ -162,22 +160,13 @@ export default function EditAcolyte(){
                     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
                     router.back()
                     
-                    }}/>
-                
-
-                
-                
+                    }}/>          
         </KeyboardAwareScrollView>
-        
-        
-
-
     )
 }
 
 
 export const UpperBar = () => {
-    const navigation = useNavigation()
     return(
         <View style = {{flex:0.1,
             flexDirection:"row",
@@ -200,6 +189,10 @@ export const UpperBar = () => {
     )
 }
 
+/**
+ * Apaga o acólito com o determinado ID e volta à lista de acólitos
+ * @param id 
+ */
 export function EraseAcolyte(id:number){
     AcolyteData.allAcolytes.splice(id,1)
     AcolyteData.allAcolytes = OrganizeMemberArrayAlpha(AcolyteData.allAcolytes)

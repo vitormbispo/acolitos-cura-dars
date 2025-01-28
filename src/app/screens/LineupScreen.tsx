@@ -1,5 +1,5 @@
-import { View, Image, Text, Modal, ScrollView, } from "react-native"
-import { ImageButton, RowAcolyte, TextButton } from "../classes/NewComps"
+import { View, Image, Text, ScrollView, } from "react-native"
+import { ImageButton, TextButton } from "../classes/NewComps"
 import { router } from "expo-router"
 import { Global } from "../Global"
 import { Acolyte, AcolyteData } from "../classes/AcolyteData"
@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native"
 import { useRef, useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
-import { CopyToClipboard, GenerateLineupPrompt, MapToObject, SaveAcolyteData } from "../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt, SaveAcolyteData } from "../classes/Methods"
 
 const textStyles = StyleSheet.create({
     functionTitle:{
@@ -44,6 +44,10 @@ export class LineupScreenOptions{
     static loaded:boolean = false; // A escala exibida é carregada?
     static loadedLineIndex:number = 0; // Índice da escala carregada
 
+    /**
+     * Salva os dados da lineup
+     * @returns 
+     */
     public static SaveLineup(){
         let line = new StructuredLineup()
     
@@ -60,6 +64,10 @@ export class LineupScreenOptions{
         return line;
     }
     
+    /**
+     * Carrega os dados da lineup:
+     * @param line 
+     */
     public static LoadLineup(line){
         LineupScreenOptions.allLineups = line.allLineups
         LineupScreenOptions.days = line.days
@@ -113,9 +121,7 @@ export default function LineupScreen(){
 
 
     if(LineupScreenOptions.lineupType=="Single"){
-        for(let i = 0; i < roles.length;i++){
-            lineupAcolytes.push(<LineupAcolyte text={rolesNames[i]} role={roles[i]} key={i} lineup={LineupScreenOptions.lineups[0]}/>)
-        }
+        
     }
 
     let weekendAcolytes:Map<string,Array<any>> = new Map<string,Array<any>>()
@@ -123,165 +129,157 @@ export default function LineupScreen(){
 
     let monthAcolytes:Map<string,Map<string,Array<any>>> = new Map<string,Map<string,Array<any>>>()
 
-    if(LineupScreenOptions.lineupType == "Weekend"){       
-        for(let i = 0;i < LineupScreenOptions.days.length;i++){
-            let curDay = LineupScreenOptions.days[i]
-            let line = LineupScreenOptions.lineups[i]
-            let acolytes:Array<any> = []
-            
-            for(let h = 0;h < LineupScreenOptions.roles.length; h++){
-                acolytes.push(<LineupAcolyte text={rolesNames[h]} role={roles[h]} key={h} lineup={line}/>)
-            }
-    
-            weekendAcolytes.set(curDay,acolytes)
-            weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[i]} acolytes={weekendAcolytes.get(curDay)} key={i}/>)
-            
-        }
-    }
-
-
-    // DESENVOLVENDO
-    
-    if(LineupScreenOptions.lineupType == "Month"){
-        let weekends = Array.from(LineupScreenOptions.monthLineups.keys())
-
-        for(let i = 0; i < weekends.length;i++){
-            let curWeekendKey = weekends[i] // Dias do fim de semana atual
-            let curWeekend = LineupScreenOptions.monthLineups.get(curWeekendKey) // Lineups do fim de semana
-            
-            if(curWeekend!=undefined){
-                for(let j = 0;j < curWeekend.length;j++){
-                
-
-                    let line = curWeekend[j]
-
-                    let curDay = line.day
-                    let acolytes:Array<any> = []
-                    
-                    for(let k = 0;k < LineupScreenOptions.roles.length; k++){
-                        acolytes.push(<LineupAcolyte text={rolesNames[k]} role={roles[k]} key={(i*100)+(j*10)+k} lineup={line}/>)
-                    }
-            
-                    if(monthAcolytes.get(curWeekendKey) != undefined){
-                        monthAcolytes.get(curWeekendKey)?.set(curDay,acolytes)
-                    }
-                    else{
-                        monthAcolytes.set(curWeekendKey,new Map<string,Array<any>>)
-                        monthAcolytes.get(curWeekendKey)?.set(curDay,acolytes)
-                    }
-                    
-                    weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[j]} acolytes={weekendAcolytes.get(curDay)} key={600+j}/>)
-                    
+    switch(LineupScreenOptions.lineupType){
+        case "Single":
+        // Lógica:    
+            for(let i = 0; i < roles.length;i++){
+                    lineupAcolytes.push(<LineupAcolyte text={rolesNames[i]} role={roles[i]} key={i} lineup={LineupScreenOptions.lineups[0]}/>)
                 }
-            }
-        }
-    }
-    
-    
-    if(LineupScreenOptions.lineupType == "Single"){
-        return(
-            <View style={{flex:1}}>
-                <UpperBar/>
-            
-                <View style={{flex:1,paddingLeft:20}}>
-                    {lineupAcolytes}
-                </View>
-
-                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10, flexDirection:"row"}}>
-                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
-                    }}/>
-
-                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
-                        if(!LineupScreenOptions.loaded){
-                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
-                            SaveAcolyteData()
-                            LineupScreenOptions.loaded = true
-                            LineupScreenOptions.loadedLineIndex = 0
-                        }
-                        else{
-                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
-                            SaveAcolyteData()
-                        }
-                        
-                    }}/>
-                </View> 
-            </View>
-        )
-    }
-
-    if(LineupScreenOptions.lineupType == "Weekend"){
-        return(
-            <View style={{flex:1}}>
-                <ScrollView 
-                 ref={scrollViewRef}
-                 onScroll={handleScroll}
-                 onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
-                 style={{flex:1}}>
+        // Tela:
+            return(
+                <View style={{flex:1}}>
                     <UpperBar/>
-                    <View style={{flex:1}}>
-                        <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
-                        <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
-                        <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
-                    </View>
-                </ScrollView>
-
-                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
-                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
-                    }}/>
-
-                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
-                        if(!LineupScreenOptions.loaded){
-                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
-                            SaveAcolyteData()
-                            LineupScreenOptions.loaded = true
-                            LineupScreenOptions.loadedLineIndex = 0
-                        }
-                        else{
-                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
-                            SaveAcolyteData()
-                        }
-                        
-                    }}/>
-                </View> 
-            </View>
-        )
-    }
-   
-    if(LineupScreenOptions.lineupType == "Month"){
-        let array = Array.from(LineupScreenOptions.monthLineups.keys())
-        
-        return(
-            <View style={{flex:1}}>
-                <UpperBar/>         
-                <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
                 
-                <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
-                    <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
-                        CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
-                    }}/>
+                    <View style={{flex:1,paddingLeft:20}}>
+                        {lineupAcolytes}
+                    </View>
 
-                    <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
-                        if(!LineupScreenOptions.loaded){
-                            AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
-                            SaveAcolyteData()
-                            LineupScreenOptions.loaded = true
-                            LineupScreenOptions.loadedLineIndex = 0
+                    <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10, flexDirection:"row"}}>
+                        <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                            CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
+                        }}/>
+
+                        <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                            if(!LineupScreenOptions.loaded){
+                                AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                                SaveAcolyteData()
+                                LineupScreenOptions.loaded = true
+                                LineupScreenOptions.loadedLineIndex = 0
+                            }
+                            else{
+                                AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                                SaveAcolyteData()
+                            }
+                        }}/>
+                    </View> 
+                </View>
+            )
+        
+        case "Weekend":
+        // Lógica:
+            for(let i = 0;i < LineupScreenOptions.days.length;i++){
+                let curDay = LineupScreenOptions.days[i]
+                let line = LineupScreenOptions.lineups[i]
+                let acolytes:Array<any> = []
+                
+                for(let h = 0;h < LineupScreenOptions.roles.length; h++){
+                    acolytes.push(<LineupAcolyte text={rolesNames[h]} role={roles[h]} key={h} lineup={line}/>)
+                }
+        
+                weekendAcolytes.set(curDay,acolytes)
+                weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[i]} acolytes={weekendAcolytes.get(curDay)} key={i}/>)
+            }
+        // Tela:
+            return(
+                <View style={{flex:1}}>
+                    <ScrollView 
+                    ref={scrollViewRef}
+                    onScroll={handleScroll}
+                    onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
+                    style={{flex:1}}>
+                        <UpperBar/>
+                        <View style={{flex:1}}>
+                            <WeekendLineup aco={weekendAcolytes.get("sabado")} day={"Sábado - 19h"}/>
+                            <WeekendLineup aco={weekendAcolytes.get("domingoAM")} day={"Domingo - 8h"}/>
+                            <WeekendLineup aco={weekendAcolytes.get("domingoPM")} day={"Domingo - 19h"}/>
+                        </View>
+                    </ScrollView>
+
+                    <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
+                        <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                            CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
+                        }}/>
+
+                        <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                            if(!LineupScreenOptions.loaded){
+                                AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                                SaveAcolyteData()
+                                LineupScreenOptions.loaded = true
+                                LineupScreenOptions.loadedLineIndex = 0
+                            }
+                            else{
+                                AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                                SaveAcolyteData()
+                            }
+                            
+                        }}/>
+                    </View> 
+                </View>
+            )
+        
+        case "Month":
+        // Lógica: 
+            let weekends = Array.from(LineupScreenOptions.monthLineups.keys())
+
+            for(let i = 0; i < weekends.length;i++){
+                let curWeekendKey = weekends[i] // Dias do fim de semana atual
+                let curWeekend = LineupScreenOptions.monthLineups.get(curWeekendKey) // Lineups do fim de semana
+                
+                if(curWeekend!=undefined){
+                    for(let j = 0;j < curWeekend.length;j++){
+                    
+
+                        let line = curWeekend[j]
+
+                        let curDay = line.day
+                        let acolytes:Array<any> = []
+                        
+                        for(let k = 0;k < LineupScreenOptions.roles.length; k++){
+                            acolytes.push(<LineupAcolyte text={rolesNames[k]} role={roles[k]} key={(i*100)+(j*10)+k} lineup={line}/>)
+                        }
+                
+                        if(monthAcolytes.get(curWeekendKey) != undefined){
+                            monthAcolytes.get(curWeekendKey)?.set(curDay,acolytes)
                         }
                         else{
-                            AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
-                            SaveAcolyteData()
+                            monthAcolytes.set(curWeekendKey,new Map<string,Array<any>>)
+                            monthAcolytes.get(curWeekendKey)?.set(curDay,acolytes)
                         }
                         
-                    }}/>
-                </View> 
-            </View>
+                        weekendLineups.push(<WeekendLineup name={LineupScreenOptions.daysNames[j]} acolytes={weekendAcolytes.get(curDay)} key={600+j}/>)
+                        
+                    }
+                }
+            }   
+        // Tela 
+            let array = Array.from(LineupScreenOptions.monthLineups.keys())
             
-        )
-    }
-    
+            return(
+                <View style={{flex:1}}>
+                    <UpperBar/>         
+                    <MonthLineups weekends={array} monthAco={monthAcolytes}/>  
+                    
+                    <View style={{alignSelf:"center",alignContent:"center",alignItems:"center",padding:10,flexDirection:"row"}}>
+                        <TextButton buttonStyle={{padding:10}} text="Gerar prompt Gemini" press={()=>{
+                            CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.allLineups,LineupScreenOptions.rolesNames,LineupScreenOptions.roles))
+                        }}/>
 
+                        <TextButton buttonStyle={{padding:10}} text="Salvar escalas" press={()=>{
+                            if(!LineupScreenOptions.loaded){
+                                AcolyteData.allLineups = [LineupScreenOptions.SaveLineup()].concat(AcolyteData.allLineups)
+                                SaveAcolyteData()
+                                LineupScreenOptions.loaded = true
+                                LineupScreenOptions.loadedLineIndex = 0
+                            }
+                            else{
+                                AcolyteData.allLineups[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
+                                SaveAcolyteData()
+                            }
+                        }}/>
+                    </View> 
+                </View>
+            )
+    }
 }
 
 export const UpperBar = () => {
@@ -309,7 +307,6 @@ export const UpperBar = () => {
 }
 
 export function LineupAcolyte(props:any) {
-    let [subsAcolyte,setSubs] = useState(false)
     return(
         <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center",alignContent:"center"}}>
             <Text style={textStyles.functionTitle}>{props.text} - </Text>
@@ -322,7 +319,7 @@ export function LineupAcolyte(props:any) {
                     switchingAcolyteLineup = props.lineup
                     isSwitching = true
                 }
-                else if(isSwitching){
+                else{
                     acolyteSwitched = thisAcolyte
                     acolyteSwitchedRole = props.role
                     acolyteSwitchedLineup = props.lineup
@@ -368,6 +365,13 @@ export function LineupAcolyte(props:any) {
         </View>
     )
 }
+
+/**
+ * Checa se o acólito existe ou não e retorna seu apelido caso exista,
+ * Retorna "-Sem escala-" caso contrário.
+ * @param aco Acólito
+ * @returns string
+ */
 function CheckAcolyte(aco:Acolyte): string{
     if(aco != null){
         return aco.nick
@@ -377,10 +381,26 @@ function CheckAcolyte(aco:Acolyte): string{
     }
 }
 
+/**
+ * Retorna o acólito escalado em determinada função em determinada escala
+ * @param role Função
+ * @param lineup Escala
+ * @returns 
+ */
 function GetRoleAcolyte(role:string,lineup:any){
     return lineup.line.get(role)
     
 }
+
+/**
+ * Troca os acólitos
+ * @param switching Acótico a ser trocado
+ * @param switched Acólito que substituirá
+ * @param switchingRole Função do acólito a ser trocado
+ * @param switchedRole Função do acólito que substituirá
+ * @param switchingLineup Escala a ser trocado
+ * @param switchedLineup Escala que substituirá
+ */
 function SwitchAcolytes(switching:Acolyte,switched:Acolyte,switchingRole:string,switchedRole:string,switchingLineup:Lineup,switchedLineup:Lineup){
     
     if(switching != null){
@@ -411,6 +431,13 @@ function WeekendLineup(props:any){
     )
 }
 
+/**
+ * Tela da escala mensal
+ * @param props
+ * weekends: chaves do Map de finais de semana
+ * monthAco: mapa com os fins de semana do mês e suas escalas
+ * @returns 
+ */
 function MonthLineups(props:any){
     let allWeekends:Array<any> = new Array<any>
     for(let i = 0; i < props.weekends.length; i++){

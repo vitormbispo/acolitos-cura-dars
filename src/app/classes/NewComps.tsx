@@ -289,13 +289,14 @@ export function DeepCopyArray(array:Array<any>):Array<any>{
  * Barra superior
  * @param props Propriedades     
  * icon = Ícone
+ * screenName = Nome da tela
  * @returns 
  */
 export function UpperBar(props:any){
   return(
       <View style = {Global.styles.rowContainer}>
           <Image style = {[Global.styles.buttonIcons]} source={props.icon}/>
-          <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
+          <Text style = {Global.textStyles.menuTitle}>- {props.screenName}</Text>
       </View>
   )
 }

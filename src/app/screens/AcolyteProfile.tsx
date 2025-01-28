@@ -1,7 +1,7 @@
 import { View,Text,Image, ScrollView } from "react-native"
 import { Global } from "../Global"
 import { AcolyteData } from "../classes/AcolyteData"
-import { ImageButton, LinkImageButton, VisualCheckBox } from "../classes/NewComps"
+import { LinkImageButton, VisualCheckBox } from "../classes/NewComps"
 import { EditAcolyteScreen } from "./EditAcolyte"
 
 
@@ -102,7 +102,8 @@ export default function AcolyteProfile() {
                             <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
                             <VisualCheckBox enabled={curAcolyte.onLineup}/>
                         </View>
-                 </View>  
+                 </View>
+
                  <View style={{flex:0.1,backgroundColor:"#9BFFF9",height:80}}>
                     <Text style={Global.textStyles.dataSection}>-Rodízio-</Text>
                  </View>
@@ -110,8 +111,8 @@ export default function AcolyteProfile() {
                 <View style={{padding:10,flexDirection:"row"}}>
                     <Text style={{fontFamily:"Inter-Bold",fontSize:20,alignSelf:"center"}}>Geral: </Text>
                     <Text style={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}>{curAcolyte.priority}</Text>
-
                 </View>
+
                 <View style={{flexDirection:"row",flex:1}}>
                     <View style={{flex:1}}>
                         <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Vela 1</Text>
@@ -142,12 +143,9 @@ export default function AcolyteProfile() {
                         <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Naveta</Text>
                         <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curAcolyte.rodizio["navet"]}</Text>
                     </View>
-                    
                 </View> 
-                
             </ScrollView>
         </View>
-        
     )
 }
 

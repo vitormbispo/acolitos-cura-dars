@@ -6,14 +6,16 @@ import { ImageButton } from "../classes/NewComps";
 import { RandomNumber } from "../classes/Methods";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
+
 export class LineupList{
     static lines = [];
 }
+// Tela
 export default function LineupListScreen(){
     let lines = FetchLineupList();
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")}/>
+            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName="Escalas"/>
             <ScrollView style={{flex:1}}>
                 {lines}
             </ScrollView>
@@ -22,6 +24,10 @@ export default function LineupListScreen(){
     )
 }
 
+/**
+ * Monta a lista de escalas em componentes RowImageButton
+ * @returns Array
+ */
 export function FetchLineupList(){
     let lineups = []
     let index = 0;

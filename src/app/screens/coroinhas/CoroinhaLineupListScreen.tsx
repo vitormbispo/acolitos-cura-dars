@@ -13,7 +13,7 @@ export default function LineupListScreen(){
     let lines = FetchLineupList();
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")}/>
+            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName="Escalas"/>
             <ScrollView style={{flex:1}}>
                 {lines}
             </ScrollView>

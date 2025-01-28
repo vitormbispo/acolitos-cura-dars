@@ -129,15 +129,11 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
         let lineupName = names[curLineup.weekend] + " " + names[curLineup.day]
         
         let members = []
+        let acolytesNicks = ""
         members.length = roles.length
         
         for(let j = 0; j < roles.length; j++){
             members[j] = curLineup.line.get(roles[j])
-        }
-
-        let acolytesNicks = ""
-
-        for(let j = 0; j < members.length; j++){
             acolytesNicks += members[j].nick+";"
         }
 
@@ -233,7 +229,6 @@ export function ResetAllLastWeekend(members){
  * @param {*} lineup Escala a ser convertida
  */
 export function FlexToCoroinhaLineup(lineup){
-    
     let lineKeys = Array.from(lineup.line.keys())
     lineKeys.forEach((key) => {
         if(GetIndexFromArray(key,coroinhaRoles) == -1){ // Chave do mapa a ser convetido não é de função de coroinha
@@ -284,6 +279,13 @@ export function FlexToAcolyteLineup(lineup){
     return converted
 }
 
+
+/**
+ * Retorna o índice de algo na array
+ * @param {*} obj Objeto
+ * @param {*} array Array
+ * @returns Índice
+ */
 export function GetIndexFromArray(obj,array){
     for(let i = 0; i < array.length; i++){
         if(array[i] == obj){
@@ -293,38 +295,33 @@ export function GetIndexFromArray(obj,array){
 
     return -1
 }
+
+/**
+ * Define as prioridades de todos os membros da lista para uma prioridade aleatória entre 0 e 4.
+ * @param {*} members Lista de membros
+ */
 export function ShufflePriorities(members){
     members.forEach((member) => {
         member.priority = RandomNumber(0,4)
     })
 }
+
+/**
+ * Salva os dados dos acólitos localmente.
+ */
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
     AsyncStorage.setItem("AcolyteLineups",JSON.stringify(AcolyteData.allLineups,replacer))
 }
 
+/**
+ * Salva os dados dos coroinhas localmente.
+ */
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups,replacer))
 }
 
-export function MapToObject(map){
-    let newObj = new Object()
-    for(const [key,val] of map){
-        newObj[key] = val
-    }
-    return newObj
-}
-
-export function ObjectToMap(obj){
-    let newMap = new Map()
-    for(const key in obj){
-        if(obj.hasOwn(key)){
-            map.set(key,obj[key])
-        }
-    }
-    return map
-}
 
 export function replacer(key, value){
     if(value instanceof Map){

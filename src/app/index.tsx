@@ -6,10 +6,10 @@ import { AcolyteData } from "./classes/AcolyteData"
 import { OrganizeMemberArrayAlpha, reviver } from "./classes/Methods"
 
 
-let acolyteData: any
-let acolyteLineups: any
-let coroinhaData: any
-let coroinhaLineups:any
+//let acolyteData: any
+//let acolyteLineups: any
+//let coroinhaData: any
+//let coroinhaLineups:any
 
 const ICON_IMAGES = {
     home:require("./item_icons/home_icomdpi.png"),
@@ -19,10 +19,13 @@ const ICON_IMAGES = {
 
 let appStarted = false;
 
+/**
+ * Carrega os dados dos acólitos.
+ */
 export const loadAcolyteData = async() => {
     try {
-        acolyteData = await AsyncStorage.getItem("AcolyteData")
-        acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
+        let acolyteData = await AsyncStorage.getItem("AcolyteData")
+        let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         AcolyteData.allAcolytes = JSON.parse(acolyteData)
         AcolyteData.allLineups = JSON.parse(acolyteLineups,reviver)
         
@@ -32,20 +35,21 @@ export const loadAcolyteData = async() => {
     }
 }
 
+/**
+ * Carrega os dados dos coroinhas.
+ */
 const loadCoroinhaData = async() => {
     try {
-        coroinhaData = await AsyncStorage.getItem("CoroinhaData")
-        coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
+        let coroinhaData = await AsyncStorage.getItem("CoroinhaData")
+        let coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
         CoroinhaData.allCoroinhas = JSON.parse(coroinhaData)
         CoroinhaData.allLineups = JSON.parse(coroinhaLineups,reviver)
 
-        
         OrganizeMemberArrayAlpha(CoroinhaData.allCoroinhas)
     } catch (error) {
         console.log(error)
     }
 }
-
 
 export default function App() {
     if(!appStarted){
