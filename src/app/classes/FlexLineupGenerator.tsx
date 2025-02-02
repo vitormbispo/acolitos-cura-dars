@@ -1,7 +1,8 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
-import { GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, ShufflePriorities, SortByNumber } from "./Methods";
+import { DistinctRandomNumbers, GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, ShufflePriorities, SortByNumber } from "./Methods";
 import { FlexLineup } from "./FlexLineup";
+import List from "../screens/AcolyteListScreen";
 
 
 /** Gera uma nova escala flexível de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
@@ -29,10 +30,6 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
             return null;
     
     }
-
-    if(randomness > 0){
-        ShufflePriorities(members)
-    }
     
     members = RemoveUnvailable(members,day,weekend) // Remover membros indisponíveis
 
@@ -41,69 +38,24 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         members = RemoveIfAlreadyOnWeekend(members,weekend,roles.length)
     }
     
-    // Fazer um mapa com os membros por prioridade geral
-    let generalPriority = new Map()
-    OrganizeByPriority(generalPriority,members,randomness)
-    generalPriority = SortPriorityMap(generalPriority)
+    for(let i = 0; i < members.length; i++){
+        CalculateScore(members[i],day,weekend)
+    }
 
-    // Fazer um mapa com os membros por prioridade horária
-    let dayPriority = new Map()
-    OrganizeByDayPriority(dayPriority,members,day)
-    dayPriority = SortPriorityMap(dayPriority)
+    let sortedScoreMembers:Array<Acolyte|Coroinha> = [];
+    for(let i = 0; i < members.length;i++){
+        InsertSortedByScore(members[i],sortedScoreMembers)
+    }
 
-    // Escolher membros com prioridade máxima (dia + geral)
-    let maxPriority:Array<Coroinha|Acolyte> = []
+    let chosenMembers:Array<Acolyte|Coroinha> = [] // Lista de membros selecionados
+    let chosenQuant:number = (roles.length*2) < sortedScoreMembers.length ? roles.length*2 : sortedScoreMembers.length // Quantidade de membros a selecionar
+    let chosenIndexes = DistinctRandomNumbers(0,chosenQuant-1,chosenQuant)
+
+    for(let i = 0; i < chosenIndexes.length;i++){
+        chosenMembers.push(sortedScoreMembers[chosenIndexes[i]])
+    }
     
-    if(day == "Outro" || !dayRotation){
-        console.log("Other day")
-        maxPriority = GeneralPrioritizedMembers(generalPriority,roles.length)
-    }
-    else{
-        maxPriority = PrioritizedMembers(generalPriority,dayPriority,roles.length)
-    }
-
-    // Escolher funções para cada membro e montar na classe FlexLineup.
-    let newLineup:FlexLineup = new FlexLineup()
     
-    roles.forEach((role) => {
-        let chosenMembers:Array<Coroinha|Acolyte> = GetRolePrioritizedMembers(maxPriority,role)
-
-        let member:Coroinha|Acolyte = GetRandom(chosenMembers)
-
-        member.rodizio[role] = roles.length
-        
-        ReduceAllFunctionCooldown(member,1,type)
-        newLineup.line.set(role,member)
-        newLineup.members.push(member)
-        
-        RemoveMember(member,maxPriority)
-    })
-    
-    newLineup.day = day
-    newLineup.weekend = weekend
-
-    newLineup.members.forEach((member:Coroinha|Acolyte) => {
-        member.priority = 4
-        member.weekendPriority[day] = 4
-        member.lastWeekend = weekend
-    });
-
-    // Ajustar prioridades
-    if(day != "Outro"){
-        ReduceAllDayPriority(newLineup.members,day,1,type)
-        ReduceAllGeneralPriority(newLineup.members,1,type)
-    }
-
-    // Salvar listas
-    if(type == "coroinha"){
-        SaveCoroinhaData()
-    } 
-    else{
-        SaveAcolyteData()
-    }
-
-    // Saída
-    return newLineup   
 }
 
 /** Gera uma nova escala flexível aleatória podendo se basear em dia e fim de semana ou não. 
@@ -144,6 +96,39 @@ export function GenerateRandomLineup(roles:string[],type:string,weekend:string="
     generatedLineup.day = day
     generatedLineup.weekend = weekend
     return generatedLineup
+}
+
+export function CalculateScore(member:Acolyte|Coroinha,day:string,weekend:string){
+    let finalScore:number = 0
+    
+    finalScore += member.priority*2
+    finalScore += member.weekendPriority[day]
+
+    member.score = finalScore;
+
+}
+/**
+ * Insere um novo membro na lista de forma ordenada por score.
+ * ESSA FUNÇÃO SÓ DEVE SER UTILIZADA EM LISTAS ORDENADAS POR SCORE.
+ * @param member Membro
+ * @param array Lista ORDENADA POR SCORE
+ *  
+ */
+export function InsertSortedByScore(member:Acolyte|Coroinha,array:Array<Acolyte|Coroinha>){
+    let insertPos:number = 0 // Posição a inserir o novo membro ordenado.
+    
+    if(array.length == 0){ // Array vazia, apenas push
+        array.push(member)
+        return
+    }
+
+    for(let i = 0; i < array.length; i ++){
+        if(member.score > array[i].score){ // Encontrou primeira posição menor.
+            insertPos = i
+            break
+        }
+    }
+    array.splice(insertPos,0,member) // Insere ordenado na posição
 }
 
 /**

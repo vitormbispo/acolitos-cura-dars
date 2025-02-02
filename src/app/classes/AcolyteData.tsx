@@ -2,33 +2,36 @@
  * Classe base do acólito
  */
 export class Acolyte {
-    TYPE = "Acolyte" // Tipo de membro
+    TYPE:string = "Acolyte" // Tipo de membro
     
-    name="" // Nome
-    nick="" // Apelido
+    name:string="" // Nome
+    nick:string="" // Apelido
     
-    rodizio={"cero1":0, // Rodízio de função
+    rodizio:object={"cero1":0, // Rodízio de função
     "cero2":0,
     "cruci":0,
     "turib":0,
     "navet":0,
     "libri":0,
 }
-    oldRodizio={"cero1":0, // Velho rodízio de função
+    oldRodizio:object={"cero1":0, // Velho rodízio de função
     "cero2":0,
     "cruci":0,
     "turib":0,
     "navet":0,
     "libri":0,
 }
-    disp={ // Disponibilidade
+    disp:object={ // Disponibilidade
         "1stWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "2ndWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "3rdWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "4thWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
         "5thWE":{"sabado":true,"domingoPM":true,"domingoAM":true}
     }
-    contact="" // Contato
+    contact:string="" // Contato
+
+    
+    score:number = 0
 
     priority=0 // Prioridade geral
     oldPriority=0 // Velha prioridade geral

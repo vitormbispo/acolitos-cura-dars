@@ -205,6 +205,25 @@ export function GetGreatestNumIndex(array,start,end){
 export function RandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 }
+
+/**
+ * Gera uma lista de números aleatórios distintos entre o intervalo
+ * @param {*} min Mínimo do intervalo
+ * @param {*} max Máximo do intervalo
+ * @param {*} quant Tamanho da lista
+ * @returns 
+ */
+export function DistinctRandomNumbers(min,max,quant){
+    let numbers = []
+    
+    while(numbers.length < quant || numbers.length <= max-min){
+        rand = RandomNumber(min, max)
+        if(!numbers.includes(rand)){
+            numbers.append(rand)
+        }
+    }
+    return numbers
+}
 /** Escolhe um elemento aleatório na lista
  * 
  * @param {*} array Lista

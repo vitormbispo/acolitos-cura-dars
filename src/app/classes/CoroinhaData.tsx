@@ -30,6 +30,7 @@ export class Coroinha {
     }
     contact="" // Contato
 
+    score = 0
     priority=0 // Prioridade
     oldPriority=0 // Velha prioridade
 
