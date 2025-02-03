@@ -214,16 +214,23 @@ export function RandomNumber(min, max) {
  * @returns 
  */
 export function DistinctRandomNumbers(min,max,quant){
-    let numbers = []
     
-    while(numbers.length < quant || numbers.length <= max-min){
-        rand = RandomNumber(min, max)
-        if(!numbers.includes(rand)){
-            numbers.append(rand)
-        }
+    if(quant > (max-min)+1){
+        console.error("Quantidade de números maior que o intervalo.")
+        return []
     }
-    return numbers
+    
+    let numbers = new Set()
+
+    while(numbers.size < quant){
+        numbers.add(RandomNumber(min,max))
+    }
+
+    return Array.from(numbers);
 }
+
+
+
 /** Escolhe um elemento aleatório na lista
  * 
  * @param {*} array Lista

@@ -1,6 +1,6 @@
 import { Acolyte, AcolyteData } from "./AcolyteData";
 import { Coroinha, CoroinhaData } from "./CoroinhaData";
-import { DistinctRandomNumbers, GetMemberIndex, GetRandom, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, ShufflePriorities, SortByNumber } from "./Methods";
+import { DistinctRandomNumbers, GetMemberIndex, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, ShufflePriorities, SortByNumber } from "./Methods";
 import { FlexLineup } from "./FlexLineup";
 import List from "../screens/AcolyteListScreen";
 
@@ -15,9 +15,6 @@ import List from "../screens/AcolyteListScreen";
  * @returns {FlexLineup|null} Nova escala flexível montada
  */
 export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type:string,randomness:number = 2, dayRotation:boolean = true):FlexLineup|null{
-    // Excluir membros fora de escala e incompatíveis com dia e horário
-    // TODO corrigir erro quando não há membros suficiente disponíves. (Está dando erro na função de selecionar membro por prioridade de função)
-    
     console.log("Generating lineup with randomness: ",randomness," and dayRotation: ",dayRotation)
     let members:Array<Coroinha|Acolyte> = []
 
@@ -38,14 +35,16 @@ export function GenerateLineup(weekend:any=null,day:any=null,roles:string[],type
         members = RemoveIfAlreadyOnWeekend(members,weekend,roles.length)
     }
     
-    for(let i = 0; i < members.length; i++){
-        CalculateScore(members[i],day,weekend)
-    }
+    members.forEach((member)=>{
+        CalculateScore(member,day)
+    })
 
-    let sortedScoreMembers:Array<Acolyte|Coroinha> = [];
-    for(let i = 0; i < members.length;i++){
-        InsertSortedByScore(members[i],sortedScoreMembers)
-    }
+    let sortedScoreMembers:Array<Acolyte|Coroinha> = []; // Lista ordenada por score.
+    
+    members.forEach((member)=>{
+        InsertSortedByScore(member,sortedScoreMembers) // Insere ordenado
+    })
+    
 
     let chosenMembers:Array<Acolyte|Coroinha> = [] // Lista de membros selecionados
     let chosenQuant:number = (roles.length*2) < sortedScoreMembers.length ? roles.length*2 : sortedScoreMembers.length // Quantidade de membros a selecionar
@@ -85,12 +84,13 @@ export function GenerateRandomLineup(roles:string[],type:string,weekend:string="
 
     let generatedLineup = new FlexLineup()
     for(let i = 0; i < roles.length;i++){
-        let curRole = roles[i]
-        let curMember = GetRandom(availableMembers)
-
+        let curRole:string = roles[i]
+        let curMemberIndex:number = RandomNumber(0,availableMembers.length-1)
+        let curMember:Acolyte|Coroinha = availableMembers[curMemberIndex]
+        
         generatedLineup.line.set(curRole,curMember)
         generatedLineup.members.push(curMember)
-        availableMembers.splice(availableMembers.indexOf(curMember),1)
+        availableMembers.splice(curMemberIndex,1)
     }
 
     generatedLineup.day = day
@@ -98,14 +98,13 @@ export function GenerateRandomLineup(roles:string[],type:string,weekend:string="
     return generatedLineup
 }
 
-export function CalculateScore(member:Acolyte|Coroinha,day:string,weekend:string){
+export function CalculateScore(member:Acolyte|Coroinha,day:string){
     let finalScore:number = 0
     
     finalScore += member.priority*2
     finalScore += member.weekendPriority[day]
 
     member.score = finalScore;
-
 }
 /**
  * Insere um novo membro na lista de forma ordenada por score.
