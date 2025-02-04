@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CoroinhaData } from "./classes/CoroinhaData"
 import { AcolyteData } from "./classes/AcolyteData"
-import { OrganizeMemberArrayAlpha, reviver } from "./classes/Methods"
+import { DistinctRandomNumbers, OrganizeMemberArrayAlpha, reviver } from "./classes/Methods"
 
 
 //let acolyteData: any
@@ -77,7 +77,6 @@ export default function App() {
         appStarted = true
     }
     
-
     return (
       
       <Home/>

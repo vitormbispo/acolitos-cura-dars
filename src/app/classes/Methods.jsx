@@ -240,6 +240,22 @@ export function GetRandom(array){
     return array[RandomNumber(0,array.length-1)]
 }
 
+/** Verifica se na lista há ou não um determinado membro.
+ * 
+ * @param member Membro a procurar
+ * @param array Lista de membros
+ * @returns Membro está na lista
+ */
+export function HasMember(member,array) {
+    for(let i = 0; i < array.length;i++){
+        if(array[i] == member){
+            return true
+        }
+    }
+
+    return false
+}
+
 /**
  * Reinicia o último final de semana de todos os membros da lista.
  * @param {*} members Lista de membros
@@ -305,6 +321,23 @@ export function FlexToAcolyteLineup(lineup){
     return converted
 }
 
+/**
+ * Embaralha os elementos da array. 
+ * @param array Array<any>
+ */
+export function ShuffleArray(array){
+    auxIndex = 0
+    aux = array[auxIndex]
+    
+    for(let i = 0; i < array.length; i++){
+        let newIndex = RandomNumber(0,array.length-1)
+        auxIndex = newIndex
+        aux = array[auxIndex]
+
+        array[newIndex] = array[i]
+        array[i] = aux
+    }
+}
 
 /**
  * Retorna o índice de algo na array

@@ -1,16 +1,22 @@
 import { View,Image,Text, ScrollView } from "react-native"
 import { Global } from "../Global"
-import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
+import { CheckBox, SingleCheck, TextButton } from "../classes/NewComps"
 import { Lineup } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
-import { StyleSheet } from "react-native"
-import { Acolyte, AcolyteData } from "../classes/AcolyteData"
+import { AcolyteData } from "../classes/AcolyteData"
 import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { loadAcolyteData } from ".."
 import { FlexToAcolyteLineup, GenerateLineupPrompt, ResetAllLastWeekend } from "../classes/Methods"
+
+
+enum Randomness{
+    LOW = 1,
+    MEDIUM_LOW = 1.3,
+    MEDIUM = 1.6,
+    MEDIUM_HIGH = 1.7,
+    HIGH = 2
+}
 
 export class MonthlyLineupScreen{
     static curLineup:any = null
@@ -22,7 +28,7 @@ export class MonthlyLineupScreen{
         "allRandom":false,
         "solemnity":false,
         "monthDays":new Map<string,Array<string>>(),
-        "randomness":0,
+        "randomness":Randomness.MEDIUM,
         "dayRotation":true
     }
 }
@@ -57,27 +63,27 @@ export default function LineupOptions(){
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
                         <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),MonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.LOW)} checked={randomness == Randomness.LOW} press={()=>{setRandomness(Randomness.LOW),MonthlyLineupScreen.generateOptions.randomness = Randomness.LOW}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-1)} checked={randomness == -1} press={()=>{setRandomness(-1),MonthlyLineupScreen.generateOptions.randomness = -1}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_LOW)} checked={randomness == Randomness.MEDIUM_LOW} press={()=>{setRandomness(Randomness.MEDIUM_LOW),MonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM_LOW}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
-                        <SingleCheck img={CheckImage(randomness,0)} checked={randomness == 0} press={()=>{setRandomness(0),MonthlyLineupScreen.generateOptions.randomness = 0}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM)} checked={randomness == Randomness.MEDIUM} press={()=>{setRandomness(Randomness.MEDIUM),MonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,1)} checked={randomness == 1} press={()=>{setRandomness(1),MonthlyLineupScreen.generateOptions.randomness = 1}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_HIGH)} checked={randomness == Randomness.MEDIUM_HIGH} press={()=>{setRandomness(Randomness.MEDIUM_HIGH),MonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM_HIGH}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,2)} checked={randomness == 2} press={()=>{setRandomness(2),MonthlyLineupScreen.generateOptions.randomness = 2}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.HIGH)} checked={randomness == Randomness.HIGH} press={()=>{setRandomness(Randomness.HIGH),MonthlyLineupScreen.generateOptions.randomness = Randomness.HIGH}}/>
                     </View>
                 </View>
                 {/* </ Opções de aleatoriedade > */}

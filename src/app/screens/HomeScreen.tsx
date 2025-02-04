@@ -1,7 +1,8 @@
-import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, View, Image, Text, StyleSheet, Button } from "react-native";
 import { ImageButton, TextButton, LinkImageButton } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Global } from "../Global";
+import { DistinctRandomNumbers } from "../classes/Methods";
 
 const ICON_IMAGES = {
     home:require("../item_icons/home_icomdpi.png"),
@@ -59,14 +60,17 @@ export default function Home(){
             {UpperBar()}
             
             <View style={{flex:1}}>
-
+                <TextButton buttonStyle={{alignSelf:"center"}}text="Gerar Números" press={()=>{DistinctRandomNumbers(0,10,11)}}/>
             </View>
             <View style = {{alignSelf:"flex-end"}}>
+                
                 <Image source={require("../shapes/LowerBar.png")} style = {{width:420,height:125}}/>
+                
                 <View style = {{position:"absolute", flex:1,flexDirection:"row",alignSelf:"center",paddingTop:30}}>
                     <LinkImageButton img={ICON_IMAGES.acolitos} imgStyle={styles.buttonIcons} link={"/screens/AcolyteListScreen"} press={()=>{}}/>
                     <ImageButton img={ICON_IMAGES.home} imgStyle={styles.buttonIcons}/>
                     <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={styles.buttonIcons} link={"/screens/LineupOptions"} press={()=>{}}/>
+                    
                 </View>
             </View>
             

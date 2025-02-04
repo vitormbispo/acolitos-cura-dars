@@ -10,6 +10,14 @@ import { FlexToCoroinhaLineup, ResetAllLastWeekend } from "../../classes/Methods
 import { CoroinhaData } from "../../classes/CoroinhaData"
 import { MonthlyLineupScreen } from "../MonthLineup"
 
+
+enum Randomness{
+    LOW = 1,
+    MEDIUM_LOW = 1.15,
+    MEDIUM = 1.3,
+    MEDIUM_HIGH = 1.7,
+    HIGH = 2
+}
 export class CoroinhaMonthlyLineupScreen{
     static curLineup:any = null
 
@@ -23,7 +31,7 @@ export class CoroinhaMonthlyLineupScreen{
         "reduced":false,
         "celebration":false,
         "dayRotation":true,
-        "randomness":0
+        "randomness":Randomness.MEDIUM
     }
 }
 
@@ -35,7 +43,7 @@ export default function LineupOptions(){
     let daysNames:Array<any> = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     
     let[liturgicalColor,setColor] = useState("red")
-    let[randomness,setRandomness] = useState(0)
+    let[randomness,setRandomness] = useState(1.3)
 
     CoroinhaMonthlyLineupScreen.generateOptions.allRandom = false
     CoroinhaMonthlyLineupScreen.generateOptions.solemnity = false
@@ -58,27 +66,27 @@ export default function LineupOptions(){
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.3,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
                         <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-2)} checked={randomness == -2} press={()=>{setRandomness(-2),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -2}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.LOW)} checked={randomness == Randomness.LOW} press={()=>{setRandomness(Randomness.LOW),CoroinhaMonthlyLineupScreen.generateOptions.randomness = Randomness.LOW}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,-1)} checked={randomness == -1} press={()=>{setRandomness(-1),CoroinhaMonthlyLineupScreen.generateOptions.randomness = -1}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_LOW)} checked={randomness == Randomness.MEDIUM_LOW} press={()=>{setRandomness(Randomness.MEDIUM_LOW),CoroinhaMonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM_LOW}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
-                        <SingleCheck img={CheckImage(randomness,0)} checked={randomness == 0} press={()=>{setRandomness(0),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 0}}/>
+                        <SingleCheck img={CheckImage(randomness,1.3)} checked={randomness == Randomness.MEDIUM} press={()=>{setRandomness(Randomness.MEDIUM),CoroinhaMonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,1)} checked={randomness == 1} press={()=>{setRandomness(1),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 1}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_HIGH)} checked={randomness == Randomness.MEDIUM_HIGH} press={()=>{setRandomness(Randomness.MEDIUM_HIGH),CoroinhaMonthlyLineupScreen.generateOptions.randomness = Randomness.MEDIUM_HIGH}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,2)} checked={randomness == 2} press={()=>{setRandomness(2),CoroinhaMonthlyLineupScreen.generateOptions.randomness = 2}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.HIGH)} checked={randomness == Randomness.HIGH} press={()=>{setRandomness(Randomness.HIGH),CoroinhaMonthlyLineupScreen.generateOptions.randomness = Randomness.HIGH}}/>
                     </View>
                 </View>
                 {/* </ Opções de aleatoriedade > */}
@@ -252,7 +260,7 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekendKey,curDay,roles,"coroinha",MonthlyLineupScreen.generateOptions.randomness,MonthlyLineupScreen.generateOptions.dayRotation))
+                                let newLineup = FlexToCoroinhaLineup(GenerateLineup(weekendKey,curDay,roles,"coroinha",CoroinhaMonthlyLineupScreen.generateOptions.randomness,CoroinhaMonthlyLineupScreen.generateOptions.dayRotation))
                                 generatedLineups.get(weekendKey)?.push(newLineup)
                                 allLineups.push(newLineup)
                             }
