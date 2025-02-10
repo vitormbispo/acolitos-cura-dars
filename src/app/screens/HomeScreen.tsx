@@ -5,7 +5,7 @@ import { Global } from "../Global";
 import { DistinctRandomNumbers } from "../classes/Methods";
 import { uiStyles } from "../styles/GeneralStyles";
 import { themeStore,MenuStyles } from "@/src/app/store/store";
-import { THEMES } from "../styles/Themes";
+import { coroinhaLight, THEMES } from "../styles/Themes";
 
 const ICON_IMAGES = {
     home:require("../item_icons/home_icomdpi.png"),
@@ -93,15 +93,19 @@ export function AppBody(){
 }
 
 export const UpperBar = () => {
-    themeStore((state)=>state.useLightAcolyteTheme())
     const theme = themeStore((state)=>state.themeObj)
+    const updateTheme = themeStore((state)=>state.updateTheme)
+
+    const handleThemes = (newTheme:MenuStyles) =>{
+        
+    }   
     return(
-        <View style = {[{backgroundColor:theme.accentColor}]}>
-            <Image style = {[styles.buttonIcons]} source={require("../item_icons/home_icomdpi.png")}/>
+        <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
+            <Image style = {[uiStyles.buttonIcon,{margin:10}]} source={require("../item_icons/home_icomdpi.png")}/>
             <Text style = {textStyles.menuTitle}>- {currentScreen.screenName}</Text>
 
             <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
-                <LinkImageButton img={require("@/src/app/shapes/coroinha_ico.png")} link={"screens/coroinhas/CoroinhasHomeScreen"} imgStyle={Global.styles.buttonIcons} press={()=>{}}></LinkImageButton>
+                <ImageButton img={require("@/src/app/shapes/coroinha_ico.png")} imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={()=>{updateTheme(coroinhaLight)}}/>
             </View>
         </View>
     )

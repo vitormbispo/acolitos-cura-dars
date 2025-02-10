@@ -1,5 +1,5 @@
 import {create} from 'zustand'
-import { acolyteDark, acolyteLight } from '../styles/Themes'
+import { acolyteDark, acolyteLight, coroinhaLight } from '../styles/Themes'
 
 export enum MenuStyles{
     ACOLYTE_LIGHT,
@@ -15,14 +15,18 @@ export type ThemeStates = {
         secondary: string,
         backgroundColor: string
     }
+    updateTheme: (any) => void
     useLightAcolyteTheme: () => void
     useDarkAcolyteTheme: () => void
+    useLightCoroinhaTheme: ()=> void
 }
-export const themeStore = create<ThemeStates>(set=>({
+export const themeStore = create<ThemeStates>((set)=>({
     theme:MenuStyles.ACOLYTE_LIGHT,
     themeObj:acolyteLight,
-    useLightAcolyteTheme: ()=>{set({themeObj:acolyteLight})},
-    useDarkAcolyteTheme: ()=>{set({themeObj:acolyteDark})},
+    useLightAcolyteTheme: ()=>{set(()=>({themeObj:acolyteLight}))},
+    useDarkAcolyteTheme: ()=>{set(()=>({themeObj:acolyteDark}))},
+    useLightCoroinhaTheme: ()=>{set(()=>({themeObj:coroinhaLight}))},
+    updateTheme: (newTheme) => set(()=>({theme:newTheme}))
 }))
 
 
