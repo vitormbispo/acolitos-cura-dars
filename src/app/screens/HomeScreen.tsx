@@ -3,6 +3,9 @@ import { ImageButton, TextButton, LinkImageButton } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Global } from "../Global";
 import { DistinctRandomNumbers } from "../classes/Methods";
+import { uiStyles } from "../styles/GeneralStyles";
+import { themeStore,MenuStyles } from "@/src/app/store/store";
+import { THEMES } from "../styles/Themes";
 
 const ICON_IMAGES = {
     home:require("../item_icons/home_icomdpi.png"),
@@ -90,8 +93,10 @@ export function AppBody(){
 }
 
 export const UpperBar = () => {
+    themeStore((state)=>state.useLightAcolyteTheme())
+    const theme = themeStore((state)=>state.themeObj)
     return(
-        <View style = {Global.styles.rowContainer}>
+        <View style = {[{backgroundColor:theme.accentColor}]}>
             <Image style = {[styles.buttonIcons]} source={require("../item_icons/home_icomdpi.png")}/>
             <Text style = {textStyles.menuTitle}>- {currentScreen.screenName}</Text>
 
