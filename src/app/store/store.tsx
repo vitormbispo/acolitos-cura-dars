@@ -1,5 +1,6 @@
-import {create} from 'zustand'
-import { acolyteDark, acolyteLight, coroinhaLight } from '../styles/Themes'
+import { create } from 'zustand'
+import { acolyteLight, coroinhaLight} from '../styles/Themes'
+import { MemberType } from '../classes/Member'
 
 export enum MenuStyles{
     ACOLYTE_LIGHT,
@@ -9,32 +10,37 @@ export enum MenuStyles{
 }
 
 export type ThemeStates = {
-    theme: MenuStyles
-    themeObj:{
+    theme:{
         accentColor: string,
         secondary: string,
         backgroundColor: string
     }
-    updateTheme: (any) => void
-    useLightAcolyteTheme: () => void
-    useDarkAcolyteTheme: () => void
-    useLightCoroinhaTheme: ()=> void
+    name:string
+    type:MemberType
+
+    updateTheme: (theme:any) => void
+    updateType: (type:any)=>void
+    updateName:(name:any)=>void
+    toggleTheme:(state:any)=>void
 }
-export const themeStore = create<ThemeStates>((set)=>({
-    theme:MenuStyles.ACOLYTE_LIGHT,
-    themeObj:acolyteLight,
-    useLightAcolyteTheme: ()=>{set(()=>({themeObj:acolyteLight}))},
-    useDarkAcolyteTheme: ()=>{set(()=>({themeObj:acolyteDark}))},
-    useLightCoroinhaTheme: ()=>{set(()=>({themeObj:coroinhaLight}))},
-    updateTheme: (newTheme) => set(()=>({theme:newTheme}))
+
+export const menuStore = create<ThemeStates>((set)=>({
+    name:"Acólitos",
+    type:MemberType.ACOLYTE,
+    theme:acolyteLight,
+
+    updateType: (newType)=>set(()=>({type:newType})),
+    updateName: (newName)=>set(()=>({name:newName})),
+    updateTheme: (newTheme)=>set(()=>({theme:newTheme})),
+    toggleTheme: () => set((state)=>{
+        if(state.type==MemberType.ACOLYTE){
+            return({type:MemberType.COROINHA,name:"Coroinhas",theme:coroinhaLight})
+        }
+        else{
+            return({type:MemberType.ACOLYTE,name:"Acólitos",theme:acolyteLight})
+        }  
+    })
+
 }))
 
-
-
-const themes = (set) => ({
-    useLightAcolyteTheme: ()=>{set({theme:MenuStyles.ACOLYTE_LIGHT})},
-    useDarkAcolyteTheme: ()=>{set({theme:MenuStyles.ACOLYTE_DARK})},
-    useLightCoroinhaTheme: ()=>{set({theme:MenuStyles.COROINHA_LIGHT})},
-    useDarkCoroinhaTheme: ()=>{set({theme:MenuStyles.COROINHA_DARK})}
-})
 

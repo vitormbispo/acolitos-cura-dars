@@ -58,7 +58,7 @@ export default function List(){
                         fontSize:20}} 
                         
                     text="- Adicionar novo acólito!"
-                    img={require("../item_icons/add_ico.png")}
+                    img={require("@/src/app/item_icons/add_ico.png")}
                     press={()=>{}}
                     />
                 

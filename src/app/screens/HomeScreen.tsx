@@ -1,124 +1,67 @@
-import { TouchableOpacity, View, Image, Text, StyleSheet, Button } from "react-native";
-import { ImageButton, TextButton, LinkImageButton } from "../classes/NewComps";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Global } from "../Global";
-import { DistinctRandomNumbers } from "../classes/Methods";
-import { uiStyles } from "../styles/GeneralStyles";
-import { themeStore,MenuStyles } from "@/src/app/store/store";
-import { coroinhaLight, THEMES } from "../styles/Themes";
+import { View, Image, Text, StyleSheet} from "react-native";
+import { ImageButton, LinkImageButton } from "../classes/NewComps";
+import { uiStyles, textStyles } from "../styles/GeneralStyles";
+import { menuStore} from "@/src/app/store/store";
 
+// Ícones:
 const ICON_IMAGES = {
     home:require("../item_icons/home_icomdpi.png"),
     acolitos:require("../item_icons/users_icomdpi.png"),
     escalas:require("../item_icons/escala_icomdpi.png")  
 }
 
-const styles = StyleSheet.create({
-    icons: {
-        width:64,
-        height:64,
-        padding:26,
-        paddingRight:10,
-        paddingLeft:10,
-        resizeMode:"contain"
-    },
-    buttonIcons: {
-        width:64,
-        height:64,
-        resizeMode:"contain",
-    },
-    rowContainer:{
-        flex:0.1,
-        flexDirection:"row",
-        alignContent:"center",
-        alignItems:"center",
-        backgroundColor: '#FFEBA4',
-        padding:10
-    },
-    columnContainer:{
-        flex:0.1,
-        flexDirection:"column",
-        alignContent:"center",
-        alignItems:"center"
-    }
-})
+// Barra inferior:
+const LOWER_BARS = [require("@/src/app/shapes/LowerBar.png"),require("@/src/app/shapes/LowerBarCoroinhas.png")]
 
-var currentScreen = {
-    screenName: "Tela inicial - Acólitos",
-    iconPath: "../item_icons/home_icomdpi.png"
-}
-
-const textStyles = StyleSheet.create({
-    menuTitle:{
-        fontFamily:"Inter-Light",
-        fontSize:20,
-        paddingLeft:20
-    }
-})
-
-
+// Tela
 export default function Home(){
     return(
         <View style = {{flex:1}}>
-            {UpperBar()}
-            
-            <View style={{flex:1}}>
-                <TextButton buttonStyle={{alignSelf:"center"}}text="Gerar Números" press={()=>{DistinctRandomNumbers(0,10,11)}}/>
-            </View>
-            <View style = {{alignSelf:"flex-end"}}>
-                
-                <Image source={require("../shapes/LowerBar.png")} style = {{width:420,height:125}}/>
-                
-                <View style = {{position:"absolute", flex:1,flexDirection:"row",alignSelf:"center",paddingTop:30}}>
-                    <LinkImageButton img={ICON_IMAGES.acolitos} imgStyle={styles.buttonIcons} link={"/screens/AcolyteListScreen"} press={()=>{}}/>
-                    <ImageButton img={ICON_IMAGES.home} imgStyle={styles.buttonIcons}/>
-                    <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={styles.buttonIcons} link={"/screens/LineupOptions"} press={()=>{}}/>
-                    
-                </View>
-            </View>
-            
-            
+            <UpperBar/>
+            <AppBody/>
+            <LowerBar/> 
         </View>
         
     )
 }
+
+// Corpo da tela
 export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
 
-        <TextButton text="Clear AsyncStorage." sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
+        
         
     </View>
     )
 }
 
+// Cabeçalho
 export const UpperBar = () => {
-    const theme = themeStore((state)=>state.themeObj)
-    const updateTheme = themeStore((state)=>state.updateTheme)
-
-    const handleThemes = (newTheme:MenuStyles) =>{
-        
-    }   
+    const {theme,toggleTheme,name} = menuStore() 
     return(
         <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
             <Image style = {[uiStyles.buttonIcon,{margin:10}]} source={require("../item_icons/home_icomdpi.png")}/>
-            <Text style = {textStyles.menuTitle}>- {currentScreen.screenName}</Text>
+            <Text style = {textStyles.menuTitle}>- Tela inicial | {name}</Text>
 
             <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
-                <ImageButton img={require("@/src/app/shapes/coroinha_ico.png")} imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={()=>{updateTheme(coroinhaLight)}}/>
+                <ImageButton img={require("@/src/app/shapes/coroinha_ico.png")} imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
             </View>
         </View>
     )
 }
 
+// Rodapé
 export const LowerBar = () => {
+    const {type} = menuStore()
     return(
-        <View style = {{alignSelf:"flex-end", alignContent:"center"}}>
-            <Image source={require("../shapes/LowerBar.png")} style = {{width:420,height:125}}/>
+        <View style = {{alignSelf:"flex-end"}}>
+            <Image source={LOWER_BARS[type]} style = {{width:420,height:125}}/>
+            
             <View style = {{position:"absolute", flex:1,flexDirection:"row",alignSelf:"center",paddingTop:30}}>
-                <ImageButton img={ICON_IMAGES.acolitos} imgStyle={styles.buttonIcons} press={{}}/>
-                <ImageButton img={ICON_IMAGES.home} imgStyle={styles.buttonIcons}/>
-                <ImageButton img={ICON_IMAGES.escalas} imgStyle={styles.buttonIcons}/>
+                <LinkImageButton img={ICON_IMAGES.acolitos} imgStyle={uiStyles.buttonIcon} link={"/screens/AcolyteListScreen"} press={()=>{}}/>
+                <ImageButton img={ICON_IMAGES.home} imgStyle={uiStyles.buttonIcon}/>
+                <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={uiStyles.buttonIcon} link={"/screens/LineupOptions"} press={()=>{}}/>
             </View>
         </View>
     )
@@ -127,12 +70,7 @@ export const LowerBar = () => {
 export const Escala = () => {
     return(
         <View style={{flex:1,flexDirection:"row"}}>
-            <Text>Cruciferário</Text>
-            <Text>Librífero</Text>
-            <Text>Ceroferário 1</Text>
-            <Text>Ceroferário 2</Text>
-            <Text>Turiferário</Text>
-            <Text>Naveteiro</Text>
+            
         </View>
     )
 }

@@ -11,12 +11,10 @@ export const acolyteDark = {
 }
 
 export const coroinhaLight = {
-    accentColor: '#FFFFFF',
+    accentColor: '#FF7979',
     secondary: '#FD7252',
     backgroundColor: '#FFFFFF'
 }
-
-export const THEMES = [acolyteLight,null,coroinhaLight]
 
 
 
