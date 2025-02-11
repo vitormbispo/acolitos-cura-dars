@@ -11,7 +11,7 @@ export const uiStyles = StyleSheet.create({
         width:64,
         resizeMode:'contain'
     },
-    
+
     icons: {
         width:64,
         height:64,
@@ -45,6 +45,10 @@ export const textStyles = StyleSheet.create({
         fontFamily:"Inter-Light",
         fontSize:20,
         paddingLeft:20
+    },
+    names:{
+        fontFamily:"Inter-Bold",
+        fontSize:20
     }
 })
 

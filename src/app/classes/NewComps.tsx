@@ -6,6 +6,9 @@ import { AcolyteData } from "./AcolyteData";
 import { CoroinhaProfileScreen } from "../screens/coroinhas/CoroinhaProfile";
 import { CoroinhaData } from "./CoroinhaData";
 import { Global } from "../Global";
+import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { menuStore } from "../store/store";
+import { MemberType } from "./Member";
 
 /**
  * Botão com imagem
@@ -290,14 +293,33 @@ export function DeepCopyArray(array:Array<any>):Array<any>{
  * @param props Propriedades     
  * icon = Ícone
  * screenName = Nome da tela
+ * toggleEnabled = botão para troca entre coroinha/acólito ativado. 
  * @returns 
  */
 export function UpperBar(props:any){
+  
+  const {theme} = menuStore()
   return(
-      <View style = {Global.styles.rowContainer}>
-          <Image style = {[Global.styles.buttonIcons]} source={props.icon}/>
-          <Text style = {Global.textStyles.menuTitle}>- {props.screenName}</Text>
+      <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
+          <Image style = {[uiStyles.buttonIcon]} source={props.icon}/>
+          <Text style = {textStyles.menuTitle}>- {props.screenName}</Text>
+          <ToggleButton enabled={props.toggleEnabled}/>
       </View>
+  )
+}
+
+export function ToggleButton(props:any) {
+  if(!props.enabled){return null}
+  const {type,toggleTheme} = menuStore()
+  return(
+  <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
+    <ImageButton img={
+      type==MemberType.ACOLYTE ? 
+      require("@/src/app/shapes/coroinha_ico.png"):
+      require("@/src/app/item_icons/users_icomdpi.png")} 
+      
+      imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
+  </View>
   )
 }
   

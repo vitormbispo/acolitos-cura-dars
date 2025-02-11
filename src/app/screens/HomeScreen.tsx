@@ -1,7 +1,8 @@
 import { View, Image, Text, StyleSheet} from "react-native";
-import { ImageButton, LinkImageButton } from "../classes/NewComps";
+import { ImageButton, LinkImageButton, UpperBar } from "../classes/NewComps";
 import { uiStyles, textStyles } from "../styles/GeneralStyles";
 import { menuStore} from "@/src/app/store/store";
+import { MemberType } from "../classes/Member";
 
 // Ícones:
 const ICON_IMAGES = {
@@ -15,9 +16,10 @@ const LOWER_BARS = [require("@/src/app/shapes/LowerBar.png"),require("@/src/app/
 
 // Tela
 export default function Home(){
+    const {name} = menuStore()
     return(
         <View style = {{flex:1}}>
-            <UpperBar/>
+            <UpperBar screenName={"Tela inicial | "+name} icon={require("../item_icons/home_icomdpi.png")} toggleEnabled={true}/>
             <AppBody/>
             <LowerBar/> 
         </View>
@@ -36,21 +38,6 @@ export function AppBody(){
     )
 }
 
-// Cabeçalho
-export const UpperBar = () => {
-    const {theme,toggleTheme,name} = menuStore() 
-    return(
-        <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
-            <Image style = {[uiStyles.buttonIcon,{margin:10}]} source={require("../item_icons/home_icomdpi.png")}/>
-            <Text style = {textStyles.menuTitle}>- Tela inicial | {name}</Text>
-
-            <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
-                <ImageButton img={require("@/src/app/shapes/coroinha_ico.png")} imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
-            </View>
-        </View>
-    )
-}
-
 // Rodapé
 export const LowerBar = () => {
     const {type} = menuStore()
@@ -59,7 +46,10 @@ export const LowerBar = () => {
             <Image source={LOWER_BARS[type]} style = {{width:420,height:125}}/>
             
             <View style = {{position:"absolute", flex:1,flexDirection:"row",alignSelf:"center",paddingTop:30}}>
-                <LinkImageButton img={ICON_IMAGES.acolitos} imgStyle={uiStyles.buttonIcon} link={"/screens/AcolyteListScreen"} press={()=>{}}/>
+                <LinkImageButton img={type==MemberType.ACOLYTE ? 
+                      require("@/src/app/item_icons/users_icomdpi.png"):
+                      require("@/src/app/shapes/coroinha_ico.png")
+                      } imgStyle={uiStyles.buttonIcon} link={"/screens/MemberListScreen"} press={()=>{}}/>
                 <ImageButton img={ICON_IMAGES.home} imgStyle={uiStyles.buttonIcon}/>
                 <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={uiStyles.buttonIcon} link={"/screens/LineupOptions"} press={()=>{}}/>
             </View>
