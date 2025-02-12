@@ -1,9 +1,9 @@
 import { View, ScrollView } from "react-native";
 import { Global } from "../Global";
-import { UpperBar,LinkRowImageButton, RowAcolyte, RowCoroinha} from "../classes/NewComps";
+import { UpperBar,LinkRowImageButton, RowMember} from "../classes/NewComps";
 import { AcolyteData } from "../classes/AcolyteData";
 import { useRef, useState } from "react";
-import { menuStore } from "../store/store";
+import { contextStore, menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberType } from "../classes/Member";
 import { CoroinhaData } from "../classes/CoroinhaData";
@@ -17,11 +17,9 @@ export class MemberList{
 
 export default function List(){
     
-    Global.currentScreen={screenName:"Acólitos",iconPath:""}
-    
     const[scrollPosition, setScrollPosition] = useState(MemberList.scrollPos);
     const scrollViewRef = useRef(MemberList.scrollRef);
-
+    
     /**
      * Salva o estado do scroll da tela
      * @param event 
@@ -34,12 +32,13 @@ export default function List(){
     }
 
     let members = []
-    const {theme,name,type} = menuStore()
+    const {name,type} = menuStore()
+    const {memberID,updateMemberID} = contextStore()
 
     if(type == MemberType.ACOLYTE){
         if(AcolyteData.allAcolytes!=null){
             for(let i =0;i<AcolyteData.allAcolytes.length;i++){
-                members.push(<RowAcolyte nick={AcolyteData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
+                members.push(<RowMember nick={AcolyteData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -48,7 +47,7 @@ export default function List(){
     else{
         if(CoroinhaData.allCoroinhas != null){
             for(let i = 0; i < CoroinhaData.allCoroinhas.length; i++){
-                members.push(<RowCoroinha nick={CoroinhaData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
+                members.push(<RowMember nick={CoroinhaData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
                 textStyle={textStyles.names}
                 />)
             }

@@ -35,6 +35,14 @@ export const uiStyles = StyleSheet.create({
         flexDirection:"column",
         alignContent:"center",
         alignItems:"center"
+    },
+
+    inputField:{
+        backgroundColor:"#9BFFF9",
+        fontSize:22,
+        fontFamily:"Inter-Regular",
+        width:200,
+        padding:10
     }
 
     
@@ -49,6 +57,24 @@ export const textStyles = StyleSheet.create({
     names:{
         fontFamily:"Inter-Bold",
         fontSize:20
+    },
+
+    dataTitle:{
+        fontFamily:"Inter-Bold",
+        fontSize:20,
+        padding:10
+    },
+    dataText:{
+        fontFamily:"Inter-Light",
+        fontSize:20
+    },
+    dataSection:{
+        fontFamily:"Inter-Bold", 
+        fontSize:24,
+        textAlignVertical:"center",
+        textAlign:"left",
+        flex:1,
+        paddingLeft:10
     }
 })
 

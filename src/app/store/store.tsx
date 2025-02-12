@@ -9,6 +9,11 @@ export enum MenuStyles{
     COROINHA_DARK
 }
 
+export type ContextStates = {
+    memberID:number
+    updateMemberID: (id:number) => void
+}
+
 export type ThemeStates = {
     theme:{
         accentColor: string,
@@ -42,5 +47,11 @@ export const menuStore = create<ThemeStates>((set)=>({
     })
 
 }))
+
+export const contextStore = create<ContextStates>((set)=>({
+    memberID:0,
+    updateMemberID: (newID) => set(()=>({memberID:newID}))
+}))
+
 
 

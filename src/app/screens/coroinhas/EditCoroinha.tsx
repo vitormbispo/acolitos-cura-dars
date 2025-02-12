@@ -2,7 +2,7 @@ import { View,Text,Image, TextInput, Modal } from "react-native"
 import { Global } from "@/src/app/Global"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { CoroinhaData } from "@/src/app/classes/CoroinhaData";
-import { CheckBox, DeepCopyArray, ImageButton, LinkImageButton, RowImageButton, TextButton } from "@/src/app/classes/NewComps";
+import { CheckBox, ImageButton, TextButton } from "@/src/app/classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useNavigation } from "expo-router";
 import { useState } from "react";

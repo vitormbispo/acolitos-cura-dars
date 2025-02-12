@@ -1,6 +1,6 @@
 import { View,Image,Text, ScrollView, TouchableOpacity } from "react-native";
 import { Global } from "@/src/app/Global";
-import { CheckBox, ImageButton,LinkImageButton, LinkRowImageButton, RowAcolyte, RowImageButton, VisualCheckBox } from "@/src/app/classes/NewComps";
+import { CheckBox, ImageButton,LinkImageButton, LinkRowImageButton, RowImageButton, VisualCheckBox } from "@/src/app/classes/NewComps";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Coroinha, CoroinhaData } from "@/src/app/classes/CoroinhaData";

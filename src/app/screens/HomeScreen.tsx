@@ -1,8 +1,9 @@
 import { View, Image, Text, StyleSheet} from "react-native";
-import { ImageButton, LinkImageButton, UpperBar } from "../classes/NewComps";
+import { ImageButton, LinkImageButton, TextButton, UpperBar } from "../classes/NewComps";
 import { uiStyles, textStyles } from "../styles/GeneralStyles";
 import { menuStore} from "@/src/app/store/store";
 import { MemberType } from "../classes/Member";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Ícones:
 const ICON_IMAGES = {
@@ -32,7 +33,7 @@ export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
 
-        
+<TextButton text="Clear AsyncStorage." sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
         
     </View>
     )

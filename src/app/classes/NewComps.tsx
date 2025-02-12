@@ -1,99 +1,60 @@
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, useState } from "react";
-import {View,Text,Image,StyleSheet, Button, TouchableOpacity, ImageSourcePropType, TouchableHighlight} from "react-native"
-import {Link, router} from "expo-router"
-import { AcolyteProfileScreen } from "../screens/AcolyteProfile";
-import { AcolyteData } from "./AcolyteData";
-import { CoroinhaProfileScreen } from "../screens/coroinhas/CoroinhaProfile";
-import { CoroinhaData } from "./CoroinhaData";
-import { Global } from "../Global";
+import { useState } from "react";
+import { View,Text,Image, Pressable, TextInput} from "react-native"
+import { router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { menuStore } from "../store/store";
+import { contextStore, menuStore } from "../store/store";
 import { MemberType } from "./Member";
+
+const USER_ICONS = [require("@/src/app/item_icons/users_icomdpi.png"),require("@/src/app/shapes/coroinha_ico.png")]
 
 /**
  * Botão com imagem
  * @param props Propriedades: 
  * img = Imagem     
  * imgStyle = Estilo do componente de imagem     
- * buttonStyle = Estilo do componente TouchableOpacity     
+ * buttonStyle = Estilo do componente Pressable     
  * press = Ação quando o botão é pressionado     
  * @returns
  */
 export function ImageButton(props:any) {
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
   return (
     
-       <TouchableOpacity style={props.buttonStyle} onPress={props.press}>
+       <Pressable style={props.buttonStyle} onPress={props.press}>
           <Image source={props.img} style={props.imgStyle}/>
-       </TouchableOpacity>
+       </Pressable>
       );
   }
 
-  /**
- * Botão com imagem e link para outra tela
- * @param props Propriedades: 
- * img = Imagem     
- * imgStyle = Estilo do componente de imagem     
- * buttonStyle = Estilo do componente TouchableOpacity     
- * press = Ação quando o botão é pressionado     
- * link = Link para outra tela        
- * @returns
- */
-export function LinkImageButton(props:any) {
-  if(props.press == undefined){
-      props.press = ()=>{}
-  }
-  return (
-      <View style={props.viewStyle}>
-        <TouchableOpacity style={props.buttonStyle} onPress={() => {router.push(props.link)
-          props.press()
-        }}>
-          <Image source={props.img} style={props.imgStyle}/>
-        </TouchableOpacity>
-      </View>
-        
-      );
-  }
+
 
 /**
  * Botão com imagem que ocupa uma linha inteira
  * @param props Propriedades: 
  * img = Imagem     
  * imgStyle = Estilo do componente de imagem     
- * rowStyle = Estilo do componente TouchableOpacity     
+ * rowStyle = Estilo do componente Pressable    
  * text = Texto escrito na linha
  * press = Ação quando o botão é pressionado         
  * @returns
  */
 export function RowImageButton(props:any){
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
     return(
-      <TouchableOpacity onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
+      <Pressable onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
         <Image source={props.img} style={[{width:64,height:64,resizeMode:"contain"},props.imgStyle]}/>
         <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20}}>{props.text}</Text>       
-      </TouchableOpacity>
+      </Pressable>
     )
   }
+
+
 
 /**
- * Botão com imagem que ocupa uma linha inteira e possui link para outra tela.
- * @param props Propriedades: 
- * img = Imagem     
- * imgStyle = Estilo do componente de imagem     
- * rowStyle = Estilo do componente TouchableOpacity     
- * text = Texto escrito na linha
- * press = Ação quando o botão é pressionado       
- * link = Link para outra tela  
- * @returns
- */
-  export function LinkRowImageButton(props:any){
-    return(
-        <TouchableOpacity style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => router.push(props.link)}>
-          <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
-          <Text style={props.textStyle}>{props.text}</Text>       
-        </TouchableOpacity>
-    )
-  }
-
-  /**
    * Botão em formato de linha para representar um acólito.
    * @param props Propriedade:
    * id = Índice do acólito na lista principal.
@@ -102,49 +63,22 @@ export function RowImageButton(props:any){
    * textStyle = Estilo do texto
    * @returns 
    */
-export function RowAcolyte(props:any){
-return(
-  <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => OpenAcolyteProfile(props.id)}>
-    <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
-    <Text style={props.textStyle}>{props.nick}</Text>
-  </TouchableOpacity>
-)
-}
-  /**
-   * Botão em formato de linha para representar um coroinha.
-   * @param props Propriedade:
-   * id = Índice do coroinha na lista principal.
-   * img = Imagem     
-   * nick = Apelido do coroinha
-   * textStyle = Estilo do texto
-   * @returns 
-   */
-export function RowCoroinha(props:any){
-return(
-  <TouchableOpacity style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() =>   {OpenCoroinhaProfile(props.id)}
-  }>
-    <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
-    <Text style={props.textStyle}>{props.nick}</Text>
-  </TouchableOpacity>
+export function RowMember(props:any){
+  const {updateMemberID} = contextStore()
+  return(
+    <Pressable style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => {updateMemberID(props.id) ; OpenMemberProfile(props.id)}}>
+      <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
+      <Text style={props.textStyle}>{props.nick}</Text>
+    </Pressable>
   )
-}
+  }
 
 /**
- * Abre o perfil do acólito de índice *id* na lista geral.
+ * Abre o perfil do membro de índice *id* na lista geral.
  * @param id Índice
  */
-function OpenAcolyteProfile(id:any){
-  router.push("/screens/AcolyteProfile")
-  AcolyteProfileScreen.id = id
-}
-
-/**
- * Abre o perfil do coroinha de índice *id* na lista geral.
- * @param id Índice
- */
-function OpenCoroinhaProfile(id:any){
-  CoroinhaProfileScreen.id = id
-  router.push("/screens/coroinhas/CoroinhaProfile")
+function OpenMemberProfile(id:any){
+  router.push("/screens/MemberProfile")
 }
 
 /** Botão com texto
@@ -155,16 +89,18 @@ function OpenCoroinhaProfile(id:any){
    * sizeFonte = Tamanho do texto     
    * press = Ação ao tocar     
    * textStyle = Estilo do texto     
-   * buttonStyle = Estilo da TouchableOpacity
+   * buttonStyle = Estilo da Pressable
  * @returns 
  */
 export function TextButton(props:any) {
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
   return (
-    
-      <TouchableOpacity style={props.buttonStyle+{alignItems:"center"}} onPress={props.press}>
+      <Pressable style={props.buttonStyle+{alignItems:"center"}} onPress={props.press}>
           <Image source={require("@/src/app/shapes/button0.png")} style={{height:64, width:128, position:"absolute",alignSelf:"center"}}/>
           <Text style={[{alignSelf:"center",textAlign:"center",textAlignVertical:"center",width:128,height:64,fontFamily:props.familyFont, fontSize:props.sizeFont},props.textStyle]}>{props.text}</Text>
-      </TouchableOpacity>
+      </Pressable>
       
     );
 }
@@ -185,13 +121,17 @@ export function CheckBox(props:any){
     setChecked((check === 1) ? 0 : 1)
   }
 
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
+
   return(
-  <TouchableOpacity style={{flex:1}} onPress={()=>{
+  <Pressable style={{flex:1}} onPress={()=>{
     props.press()
     changeImage()
   }}>
     <Image source={images[check]} style={{height:32,width:32}}/>
-  </TouchableOpacity>
+  </Pressable>
   )
 }
 
@@ -204,16 +144,19 @@ export function CheckBox(props:any){
  * @returns 
  */
 export function SingleCheck(props:any){
-  
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
+
   return(
-    <TouchableOpacity style={{flex:1}} onPress={()=>{
+    <Pressable style={{flex:1}} onPress={()=>{
       props.press()}}>
       <View style={{paddingBottom:26,alignContent:"center",alignItems:"center"}}>
         <Text style={{paddingBottom:10,fontFamily:"Inter-Light"}}>{props.topText}</Text>
         <Image style={{height:32,width:32}} source={props.img}/>
       </View>
       
-    </TouchableOpacity>
+    </Pressable>
     
   )
 }
@@ -240,14 +183,18 @@ export function SingleCheckColor(props:any){
     "pink":[require("@/src/app/shapes/check_pink_f.png"),require("@/src/app/shapes/check_pink_t.png")],
     "purple":[require("@/src/app/shapes/check_purple_f.png"),require("@/src/app/shapes/check_purple_t.png")]}
   
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
+
   return(
-    <TouchableOpacity style={{flex:1}} onPress={()=>{
+    <Pressable style={{flex:1}} onPress={()=>{
       props.press()}}>
       <View style={{paddingBottom:26,alignContent:"center",alignItems:"center"}}>
         <Image style={{height:32,width:32}} source={images[liturgicalColors][checkNum]}/>
       </View>
       
-    </TouchableOpacity>
+    </Pressable>
     
   )
 }
@@ -275,20 +222,6 @@ export function VisualCheckBox(props:any){
 }
 
 /**
- * Faz uma cópia real da *array* dada.
- * @param array Lista
- * @returns 
- */
-export function DeepCopyArray(array:Array<any>):Array<any>{
-    let newArray = new Array<any>
-    for(let i = 0; i < array.length;i++){
-      newArray.push(array[i])
-    }
-
-    return newArray
-}
-
-/**
  * Barra superior
  * @param props Propriedades     
  * icon = Ícone
@@ -308,6 +241,27 @@ export function UpperBar(props:any){
   )
 }
 
+/**
+ * 
+ * @param props img = Imagem do botão
+ * style = Estilo do botão
+ * link = Link para outra tela. Deixe null para usar como um botão convencional
+ * press = Ação ao tocar
+ * backgroundColor = Cor do fundo
+ */
+export function UpperButton(props:any){
+  return(
+    <View style = {{flex:1,justifyContent:'flex-end',flexDirection:'row',alignItems:'center',padding:10,backgroundColor:props.backgroundColor}}>
+      <LinkImageButton img={props.img} imgStyle={[uiStyles.buttonIcon,{width:48},props.style]} link={props.link} press={()=>{props.press == null ? ()=>{} : props.press()}}/>
+    </View>
+  )
+}
+
+/**
+ * 
+ * @param props enabled = Componente ativado
+ * @returns 
+ */
 export function ToggleButton(props:any) {
   if(!props.enabled){return null}
   const {type,toggleTheme} = menuStore()
@@ -321,5 +275,86 @@ export function ToggleButton(props:any) {
       imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
   </View>
   )
+}
+
+/**
+ * Botão com imagem que ocupa uma linha inteira e possui link para outra tela.
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * rowStyle = Estilo do componente Pressable    
+ * text = Texto escrito na linha
+ * press = Ação quando o botão é pressionado       
+ * link = Link para outra tela  
+ * @returns
+ */
+export function LinkRowImageButton(props:any){
+  return(
+      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => {()=>{props.press == null ? ()=>{} : props.press()} ; router.push(props.link)}}>
+        <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
+        <Text style={props.textStyle}>{props.text}</Text>       
+      </Pressable>
+  )
+}
+
+  /**
+ * Botão com imagem e link para outra tela
+ * @param props Propriedades: 
+ * img = Imagem     
+ * imgStyle = Estilo do componente de imagem     
+ * buttonStyle = Estilo do componente Pressable     
+ * press = Ação quando o botão é pressionado     
+ * link = Link para outra tela        
+ * @returns
+ */
+  export function LinkImageButton(props:any) {
+    return (
+        <View style={props.viewStyle}>
+          <Pressable style={props.buttonStyle} onPress={() => {
+            props.press == null ? ()=>{} : props.press()
+            
+            if(props.link != null) {
+              router.push(props.link)
+            }
+            
+          }}>
+            <Image source={props.img} style={props.imgStyle}/>
+          </Pressable>
+        </View>
+          
+        );
+    }
+
+    /**
+     * 
+     * @param props title = Título da caixa de entrada
+     * default = valor padrão da caixa
+     * keyboardType = tipo de teclado
+     * onChangeText = ação ao usar a caixa
+     * @returns 
+     */
+export function TextInputBox(props:any={enabled:true}){
+  if(!props.enabled){return}
+
+  return(
+    <View style={{flexDirection:"row", padding:10,alignItems:"center"}}>
+      <Text style={{fontFamily:"Inter-Light",fontSize:22}}>{props.title}</Text>
+        <TextInput 
+          style={uiStyles.inputField}
+          defaultValue={props.default}
+          keyboardType={props.keyboardType}
+          onChangeText={props.onChangeText}
+          maxLength={props.maxLength}/>
+      </View>
+  )
+}
+/** Retorna o ícone de usuário referente ao tipo de menu atual contido
+ * na menuStore: acólito ou coroinha
+* 
+* @returns Ícon de usuário
+*/
+export function GetMemberIcon(){
+  const {type} = menuStore()
+  return USER_ICONS[type]
 }
   

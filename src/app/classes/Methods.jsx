@@ -2,6 +2,7 @@ import { Acolyte, AcolyteData } from "./AcolyteData";
 import { CoroinhaData } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
 import { Lineup } from "./Lineup";
+import { MemberType } from "./Member";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -64,6 +65,18 @@ export function GetAcolyteByName(name){
     return null
 }
 
+export function GetMemberByName(name,type){
+    let members = (type == MemberType.ACOLYTE) ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
+    for(let i = 0; i < members.length;i++){
+        let curMember = members[i]
+
+        if(curMember.name == name){
+            return curMember
+        }
+    }
+    return null
+}
+
 /**
  * Encontra o índice do acólito dado ou -1 caso o acólito não esteja na lista.
  * @param {Acolyte} acolyte 
@@ -80,6 +93,25 @@ export function GetAcolyteIndex(acolyte){
         }
     
         return -1
+    }
+    return -1
+}
+
+/**
+ * Encontra o índice do membro dado ou -1 caso o membro não esteja na lista.
+ * @param {Acolyte} acolyte 
+ * @returns 
+ */
+export function GetMemberTypeIndex(member,type){
+    let members = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
+    if(member == null){return -1}
+
+    for(let i = 0; i < members.length;i++){
+        let curMember = members[i]
+
+        if(curMember == member){
+            return i
+        }
     }
     return -1
 }
