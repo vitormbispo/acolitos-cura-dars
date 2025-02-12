@@ -11,6 +11,7 @@ import { Coroinha, CoroinhaData } from "../classes/CoroinhaData";
 import { MemberType } from "../classes/Member";
 import { uiStyles } from "../styles/GeneralStyles";
 import { MemberProfileScreen } from "./MemberProfile";
+import { loadAcolyteData } from "..";
 
 
 
@@ -21,9 +22,8 @@ export class EditMemberScreen{
 export default function EditMember(){
     const {theme,type} = menuStore()
     const {memberID,updateMemberID} = contextStore()
-    let members = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes.slice() : CoroinhaData.allCoroinhas.slice()
     let originalMembers = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
-    let curMember = Object.create(members[memberID])
+    let curMember = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
     return(
         
@@ -138,23 +138,22 @@ export default function EditMember(){
                 
                 {/*} Botão concluir {*/}
                 <TextButton buttonStyle={{alignSelf:"center"}} text="Concluir" press={()=>{
-                    let members:Array<Acolyte|Coroinha>
-                    let data:string
-                
+                    let storageData:string // Nome da chave do AsyncStorage
+                    let members:Array<any> // Lista de todos os acólitos ou coroinhas
+
                     if(type == MemberType.ACOLYTE){
                         members = AcolyteData.allAcolytes
-                        data = "AcolyteData"
+                        storageData = "AcolyteData"    
                     }
-                    else{
+                    else if(type == MemberType.COROINHA){
                         members = CoroinhaData.allCoroinhas
-                        data = "CoroinhaData"
+                        storageData = "CoroinhaData"    
                     }
+                    
+                    members[memberID] = curMember
+                    members = OrganizeMemberArrayAlpha(members)
 
-                    originalMembers[memberID] = curMember
-                    originalMembers = OrganizeMemberArrayAlpha(originalMembers)
-                    updateMemberID(GetMemberTypeIndex(GetMemberByName(curMember.name,type),type))
-
-                    AsyncStorage.setItem(data,JSON.stringify(originalMembers))
+                    AsyncStorage.setItem(storageData,JSON.stringify(members))
                     router.back()
                     
                     }}/>          
