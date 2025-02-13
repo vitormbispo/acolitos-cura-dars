@@ -325,15 +325,15 @@ export function LinkRowImageButton(props:any){
         );
     }
 
-    /**
-     * 
-     * @param props title = Título da caixa de entrada
-     * default = valor padrão da caixa
-     * keyboardType = tipo de teclado
-     * onChangeText = ação ao usar a caixa
-     * @returns 
-     */
-export function TextInputBox(props:any={enabled:true}){
+/**
+ * 
+ * @param props title = Título da caixa de entrada
+ * default = valor padrão da caixa
+ * keyboardType = tipo de teclado
+ * onChangeText = ação ao usar a caixa
+ * @returns 
+ */
+export function TextInputBox(props:any){
   if(!props.enabled){return}
 
   return(

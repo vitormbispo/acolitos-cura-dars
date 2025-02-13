@@ -1,67 +1,50 @@
-import { View,Text,Image, TextInput } from "react-native"
-import { Global } from "../Global"
+import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Acolyte, AcolyteData } from "../classes/AcolyteData";
-import { CheckBox, TextButton } from "../classes/NewComps";
+import { CheckBox, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
-
-
-var currentData:Acolyte = new Acolyte()
+import { menuStore } from "../store/store";
+import { MemberType } from "../classes/Member";
+import { Coroinha, CoroinhaData } from "../classes/CoroinhaData";
 
 export default function NewAcolyte(){
-    Global.currentScreen = {screenName:"Novo acólito",iconPath:""}
-    currentData = new Acolyte()
-
+    const {theme, type} = menuStore()
+    let currentData:any = type==MemberType.ACOLYTE ? new Acolyte() : new Coroinha()
+    let typeName = type==MemberType.ACOLYTE ? "Acólito":"Coroinha" // "Acólito"/"Coroinha"
     return(
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
-                <UpperBar/>
+                <UpperBar icon={require("@/src/app/item_icons/add_ico.png")}screenName={"-Novo "+typeName} backgroundColor={theme.accentColor}/>
 
-                <View style={{flexDirection:"row", padding:10,alignItems:"center"}}>
-                 <Text style={{fontFamily:"Inter-Light",fontSize:22}}>-Nome:  </Text>
-                    <TextInput 
-                    style=
-                    {{backgroundColor:"#9BFFF9",
-                    fontSize:22,
-                    fontFamily:"Inter-Regular",
-                    width:200,
-                    padding:10}}
-                    
-                    onChangeText={(text)=>currentData.name=text.toString()}></TextInput>
-                </View>
+                <TextInputBox 
+                    title={"-Nome: "} 
+                    enabled={true} 
+                    onChangeText={(text:any)=>currentData.name=text.toString()} 
+                    placeholder="Nome..."/>
 
-                <View style={{flexDirection:"row", padding:10,alignItems:"center"}}>
-                 <Text style={{fontFamily:"Inter-Light",fontSize:22}}>-Apelido:  </Text>
-                    <TextInput 
-                    style=
-                    {{backgroundColor:"#9BFFF9",
-                    fontSize:22,
-                    fontFamily:"Inter-Regular",
-                    width:200,
-                    padding:10,}}
-                    maxLength={12}
-                    onChangeText={(text)=>currentData.nick=text.toString()}></TextInput>
-                </View>
+                <TextInputBox 
+                    title={"-Apelido: "} 
+                    enabled={true} 
+                    onChangeText={(text:any)=>currentData.nick=text.toString()} 
+                    placeholder="Apelido..."/>
 
-                <View style={{flexDirection:"row", padding:10,alignItems:"center"}}>
-                 <Text style={{fontFamily:"Inter-Light",fontSize:22}}>-Contato:  </Text>
-                    <TextInput 
-                    style=
-                    {{backgroundColor:"#9BFFF9",
-                    fontSize:22,fontFamily:"Inter-Regular",
-                    width:200,padding:10}} 
-                    
-                    keyboardType="numeric"
-                    onChangeText={(text)=>currentData.contact = text.toString()}></TextInput>
-                </View>
-
-                <View style={{flex:0.1,backgroundColor:"#FFEBA4"}}>
+                <TextInputBox 
+                    title={"-Responsável: "} 
+                    enabled={type == MemberType.COROINHA} 
+                    onChangeText={(text:any)=>currentData.parents=text.toString()}/>
+                <TextInputBox 
+                    title={"-Contato: "} 
+                    enabled={true} 
+                    keyboardType={"numeric"} 
+                    onChangeText={(text:any)=>currentData.contact=text.toString()} 
+                    placeholder="Contato..."/>
+                
+                <View style={{flex:0.1,backgroundColor:theme.secondary}}>
                     <Text style={{fontFamily:"Inther-Bold",padding:20,alignSelf:"center",fontSize:24}}>-Disponibilidade-</Text>
                 </View>
-                
                 
                 <View style={{paddingTop:20}}>
                     <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
@@ -131,8 +114,6 @@ export default function NewAcolyte(){
                             <CheckBox checked={true}press = {()=>
                                 {currentData.disp["5thWE"].domingoPM = !currentData.disp["5thWE"].domingoPM}}/>
                         </View>
-                        
-                              
                     </View>
                     
                     <View style={{flexDirection:"row",alignItems:"center"}}>
@@ -142,46 +123,47 @@ export default function NewAcolyte(){
                     </View>
                 </View>
                 
-                <TextButton buttonStyle={{alignSelf:"center"}} text="Adicionar acólito" press={SubmitNewAcolyte}/>
+                <TextButton buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
         </KeyboardAwareScrollView>
-        
-        
-
-
     )
 }
 
-function SubmitNewAcolyte(){
-    if(AcolyteData.allAcolytes == null){
-        AcolyteData.allAcolytes = []
+function SubmitNewMember(member:any,type:MemberType){
+    let members:Array<any>
+    let storageData:string
+
+    if(type == MemberType.ACOLYTE){
+        members = AcolyteData.allAcolytes
+        storageData = "AcolyteData"
+    }
+    else if (type == MemberType.COROINHA){
+        members = CoroinhaData.allCoroinhas
+        storageData = "CoroinhaData"
+    }
+    if(members == null){
+        members = []
     }
 
-    let newAco = new Acolyte()
-    newAco.name = currentData.name
-    newAco.nick = currentData.nick
-    newAco.contact = currentData.contact
-    newAco.disp = currentData.disp
+    let newMember:any = type==MemberType.ACOLYTE ? new Acolyte() : new Coroinha
+    newMember.name = member.name
+    newMember.nick = member.nick
+    newMember.contact = member.contact
+    newMember.disp = member.disp
     
+    if(type == MemberType.COROINHA){
+        newMember.parents = member.parents
+    }
 
-    AcolyteData.allAcolytes = AcolyteData.allAcolytes.concat(newAco)
-    AcolyteData.allAcolytes = OrganizeMemberArrayAlpha(AcolyteData.allAcolytes)
-    let teste = JSON.stringify(AcolyteData.allAcolytes)
-    AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
+    members.push(newMember)
+    members = OrganizeMemberArrayAlpha(members)
+    AsyncStorage.setItem(storageData,JSON.stringify(members))
+
+    if(type == MemberType.ACOLYTE){
+        AcolyteData.allAcolytes = members
+    }
+    else if (type == MemberType.COROINHA){
+        CoroinhaData.allCoroinhas = members
+    }
 
     router.back()
-}
-
-
-export const UpperBar = () => {
-    return(
-        <View style = {Global.styles.rowContainer}>
-            <Image 
-            style = 
-            
-            {{width:64,
-            height:64,
-            resizeMode:"contain"}}  source={require("../item_icons/add_ico.png")}/>
-            <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
-        </View>
-    )
 }

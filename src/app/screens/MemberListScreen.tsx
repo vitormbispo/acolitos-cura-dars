@@ -14,8 +14,7 @@ export class MemberList{
     static scrollRef = null;
 }
 
-
-export default function List(){
+export default function List() {
     
     const[scrollPosition, setScrollPosition] = useState(MemberList.scrollPos);
     const scrollViewRef = useRef(MemberList.scrollRef);
@@ -35,7 +34,7 @@ export default function List(){
     const {name,type} = menuStore()
     const {memberID,updateMemberID} = contextStore()
 
-    if(type == MemberType.ACOLYTE){
+    if(type == MemberType.ACOLYTE) {
         if(AcolyteData.allAcolytes!=null){
             for(let i =0;i<AcolyteData.allAcolytes.length;i++){
                 members.push(<RowMember nick={AcolyteData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
@@ -44,7 +43,7 @@ export default function List(){
             }
         }
     }
-    else{
+    else if(type == MemberType.COROINHA) {
         if(CoroinhaData.allCoroinhas != null){
             for(let i = 0; i < CoroinhaData.allCoroinhas.length; i++){
                 members.push(<RowMember nick={CoroinhaData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
@@ -54,10 +53,7 @@ export default function List(){
         }
     }
     
-
-    
     return(
-        
         <View style={{flex:1,flexDirection:"column"}}>
             <UpperBar icon={type==MemberType.ACOLYTE ? require("@/src/app/item_icons/users_icomdpi.png"):require("@/src/app/shapes/coroinha_ico.png")} screenName={name} toggleEnabled={true}/>
 
@@ -66,13 +62,13 @@ export default function List(){
             onScroll={handleScroll}
             onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); }}
             style={{flex:1}}>
-                <LinkRowImageButton link={"/screens/NewAcolyte"} 
+                <LinkRowImageButton link={"/screens/NewMember"} 
                     textStyle=
                         {{paddingLeft:10, 
                         fontFamily:"Inter-Light",
                         fontSize:20}} 
                         
-                    text="- Adicionar novo acólito!"
+                    text={"- Adicionar novo "+(type==MemberType.ACOLYTE ? "acólito !":"coroinha!")}
                     img={require("@/src/app/item_icons/add_ico.png")}
                     press={()=>{}}
                     />

@@ -5,9 +5,7 @@ import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton } from "../classes
 import { contextStore, menuStore } from "../store/store"
 import { MemberType } from "../classes/Member"
 import { CoroinhaData } from "../classes/CoroinhaData"
-import { textStyles, uiStyles } from "../styles/GeneralStyles"
-import { EditMemberScreen } from "./EditMember"
-
+import { textStyles} from "../styles/GeneralStyles"
 
 export class MemberProfileScreen{
     static id = 0
@@ -17,8 +15,13 @@ export default function MemberProfile() {
     const {type,name,theme} = menuStore()
     const {memberID} = contextStore()
     let members = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
-    let curMember = members[memberID]
+    let curMember:any = members[memberID]
     
+    const parents =  type == MemberType.COROINHA? <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
+                        <Text style={textStyles.dataTitle}>Responsável: </Text>
+                        <Text style={textStyles.dataText}>{curMember.parents}</Text>
+                    </View> : null
+
     return(
         
         <View style={{flex:1}}>
@@ -42,6 +45,8 @@ export default function MemberProfile() {
                     <Text style={textStyles.dataTitle}>Apelido: </Text>
                     <Text style={textStyles.dataText}>{curMember.nick}</Text>
                 </View>
+
+                {parents}
 
                 <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
                     <Text style={textStyles.dataTitle}>Contato: </Text>

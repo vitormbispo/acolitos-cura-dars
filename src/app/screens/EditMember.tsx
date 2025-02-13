@@ -46,7 +46,13 @@ export default function EditMember(){
                     default={curMember.nick} 
                     onChangeText={(text:string)=>curMember.nick=text.toString()}
                     maxLength={12}/>
-                
+
+                <TextInputBox 
+                    title={"-Responsável: "} 
+                    enabled={type == MemberType.COROINHA} 
+                    default={curMember.parents}
+                    onChangeText={(text:any)=>curMember.parents=text.toString()}/>
+
                 <TextInputBox 
                     title={"-Contato: "} 
                     enabled={true} default={curMember.contact} 
