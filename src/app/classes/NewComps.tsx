@@ -3,7 +3,7 @@ import { View,Text,Image, Pressable, TextInput} from "react-native"
 import { router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
-import { MemberType } from "./Member";
+import { MemberType } from "./MemberData";
 
 const USER_ICONS = [require("@/src/app/item_icons/users_icomdpi.png"),require("@/src/app/shapes/coroinha_ico.png")]
 
@@ -333,7 +333,7 @@ export function LinkRowImageButton(props:any){
  * onChangeText = ação ao usar a caixa
  * @returns 
  */
-export function TextInputBox(props:any){
+export function TextInputBox(props:any) {
   if(!props.enabled){return}
 
   return(
@@ -348,13 +348,29 @@ export function TextInputBox(props:any){
       </View>
   )
 }
+
+/**
+ * Exibe um dado em formato de texto
+ * @param props dataTitle = nome do dado; data = valor do dado
+ */
+export function DataDisplay(props:any) {
+  return(
+  <View style={{flex:1,flexDirection:"row", padding:10, alignItems:"center"}}>
+    <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>{props.dataTitle}</Text>
+    <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{props.data}</Text>
+  </View>
+  )
+}
+
 /** Retorna o ícone de usuário referente ao tipo de menu atual contido
  * na menuStore: acólito ou coroinha
 * 
 * @returns Ícon de usuário
 */
-export function GetMemberIcon(){
+export function GetMemberIcon() {
   const {type} = menuStore()
   return USER_ICONS[type]
 }
+
+
   

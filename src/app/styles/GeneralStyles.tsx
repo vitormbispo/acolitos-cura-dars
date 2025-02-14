@@ -75,6 +75,23 @@ export const textStyles = StyleSheet.create({
         textAlign:"left",
         flex:1,
         paddingLeft:10
+    },
+    buttonText:{
+        paddingLeft:10, 
+        fontFamily:"Inter-Light",
+        fontSize:20
+    },
+    functionTitle:{
+        fontFamily:"Inter-Bold",
+        fontSize:18,
+        alignSelf:"center",
+        flex:1
+    },
+    acolyteNick:{
+        fontFamily:"Inter-Light",
+        fontSize:18,
+        alignSelf:"center",
+        flex:1
     }
 })
 

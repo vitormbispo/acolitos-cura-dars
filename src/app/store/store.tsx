@@ -1,6 +1,7 @@
+import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
-import { MemberType } from '../classes/Member'
+
 
 export enum MenuStyles{
     ACOLYTE_LIGHT,

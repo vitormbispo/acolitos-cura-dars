@@ -5,6 +5,7 @@ import { Lineup } from "./Lineup";
 import { MemberType } from "./Member";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MemberData } from "./MemberData";
 
 // Globais
 export let coroinhaRoles = ["donsD","donsE","cestD","cestE"] // Funções coroinhas
@@ -401,18 +402,17 @@ export function ShufflePriorities(members){
  * Salva os dados dos acólitos localmente.
  */
 export function SaveAcolyteData(){
-    AsyncStorage.setItem("AcolyteData",JSON.stringify(AcolyteData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(AcolyteData.allLineups,replacer))
+    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes,replacer))
 }
 
 /**
  * Salva os dados dos coroinhas localmente.
  */
 export function SaveCoroinhaData(){
-    AsyncStorage.setItem("CoroinhaData",JSON.stringify(CoroinhaData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(CoroinhaData.allLineups,replacer))
+    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas,replacer))
 }
-
 
 export function replacer(key, value){
     if(value instanceof Map){

@@ -1,18 +1,25 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Acolyte, AcolyteData } from "../classes/AcolyteData";
 import { CheckBox, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
 import { menuStore } from "../store/store";
-import { MemberType } from "../classes/Member";
-import { Coroinha, CoroinhaData } from "../classes/CoroinhaData";
+import { Member, MemberData, MemberType } from "../classes/MemberData";
+import { Roles } from "../classes/Roles";
 
 export default function NewAcolyte(){
     const {theme, type} = menuStore()
-    let currentData:any = type==MemberType.ACOLYTE ? new Acolyte() : new Coroinha()
-    let typeName = type==MemberType.ACOLYTE ? "Acólito":"Coroinha" // "Acólito"/"Coroinha"
+    let currentData:Member = new Member()
+    let typeName:string
+
+    switch (type){
+        case MemberType.ACOLYTE:
+            typeName = "Acólito"; break
+        case MemberType.COROINHA:
+            typeName = "Coroinha"; break
+    }
+    
     return(
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
@@ -133,36 +140,32 @@ function SubmitNewMember(member:any,type:MemberType){
     let storageData:string
 
     if(type == MemberType.ACOLYTE){
-        members = AcolyteData.allAcolytes
+        member.rodizio = Roles.defaultAcolyteRoles
+        member.oldRodizio = Roles.defaultAcolyteRoles
+
+        members = MemberData.allAcolytes
         storageData = "AcolyteData"
     }
     else if (type == MemberType.COROINHA){
-        members = CoroinhaData.allCoroinhas
+        member.rodizio = Roles.defaultCoroinhaRoles
+        member.oldRodizio = Roles.defaultCoroinhaRoles
+
+        members = MemberData.allCoroinhas
         storageData = "CoroinhaData"
     }
     if(members == null){
         members = []
     }
 
-    let newMember:any = type==MemberType.ACOLYTE ? new Acolyte() : new Coroinha
-    newMember.name = member.name
-    newMember.nick = member.nick
-    newMember.contact = member.contact
-    newMember.disp = member.disp
-    
-    if(type == MemberType.COROINHA){
-        newMember.parents = member.parents
-    }
-
-    members.push(newMember)
+    members.push(member)
     members = OrganizeMemberArrayAlpha(members)
     AsyncStorage.setItem(storageData,JSON.stringify(members))
 
     if(type == MemberType.ACOLYTE){
-        AcolyteData.allAcolytes = members
+        MemberData.allAcolytes = members
     }
     else if (type == MemberType.COROINHA){
-        CoroinhaData.allCoroinhas = members
+        MemberData.allCoroinhas = members
     }
 
     router.back()

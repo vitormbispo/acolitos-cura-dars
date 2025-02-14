@@ -1,29 +1,38 @@
 import { View,Text, ScrollView } from "react-native"
-import { Global } from "../Global"
-import { AcolyteData } from "../classes/AcolyteData"
-import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton } from "../classes/NewComps"
+import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
-import { MemberType } from "../classes/Member"
-import { CoroinhaData } from "../classes/CoroinhaData"
+import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { textStyles} from "../styles/GeneralStyles"
-
-export class MemberProfileScreen{
-    static id = 0
-}
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
     const {memberID} = contextStore()
-    let members = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
-    let curMember:any = members[memberID]
     
-    const parents =  type == MemberType.COROINHA? <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
+    let members:Array<Member>
+    
+    switch (type){
+        case MemberType.ACOLYTE:
+            members = MemberData.allAcolytes ; break
+        case MemberType.COROINHA:
+            members = MemberData.allCoroinhas ; break
+    }
+    
+    let curMember:Member = members[memberID]
+    
+    const parents =  type == MemberType.COROINHA? 
+                    <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
                         <Text style={textStyles.dataTitle}>Responsável: </Text>
                         <Text style={textStyles.dataText}>{curMember.parents}</Text>
                     </View> : null
 
+    const rodizio = []
+    
+    Object.keys(curMember.rodizio).forEach((role) => {
+        rodizio.push(
+        <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>)
+    })
+    
     return(
-        
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={curMember.nick+" | "+name}/>
@@ -120,45 +129,14 @@ export default function MemberProfile() {
                  </View>
 
                  <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
-                    <Text style={Global.textStyles.dataSection}>-Rodízio-</Text>
+                    <Text style={textStyles.dataSection}>-Rodízio-</Text>
                  </View>
 
                 <View style={{padding:10,flexDirection:"row"}}>
                     <Text style={{fontFamily:"Inter-Bold",fontSize:20,alignSelf:"center"}}>Geral: </Text>
                     <Text style={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}>{curMember.priority}</Text>
                 </View>
-
-                <View style={{flexDirection:"row",flex:1}}>
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Vela 1</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["cero1"]}</Text>
-                    </View>
-
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Vela 2</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["cero2"]}</Text>
-                    </View>
-
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Cruz</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["cruci"]}</Text>
-                    </View>
-
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Missal</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["libri"]}</Text>
-                    </View>
-
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Turíbulo</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["turib"]}</Text>
-                    </View>
-
-                    <View style={{flex:1}}>
-                        <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>Naveta</Text>
-                        <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{curMember.rodizio["navet"]}</Text>
-                    </View>
-                </View> 
+                {rodizio}
             </ScrollView>
         </View>
     )

@@ -1,12 +1,9 @@
 import { View, ScrollView } from "react-native";
-import { Global } from "../Global";
-import { UpperBar,LinkRowImageButton, RowMember} from "../classes/NewComps";
-import { AcolyteData } from "../classes/AcolyteData";
+import { UpperBar,LinkRowImageButton, RowMember, GetMemberIcon} from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { contextStore, menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
-import { MemberType } from "../classes/Member";
-import { CoroinhaData } from "../classes/CoroinhaData";
+import { MemberData, MemberType } from "../classes/MemberData";
 
 
 export class MemberList{
@@ -32,21 +29,28 @@ export default function List() {
 
     let members = []
     const {name,type} = menuStore()
-    const {memberID,updateMemberID} = contextStore()
+    let typeName:string
+
+    switch (type){
+        case MemberType.ACOLYTE:
+            typeName = "Acólito"; break
+        case MemberType.COROINHA:
+            typeName = "Coroinha"; break
+    }
 
     if(type == MemberType.ACOLYTE) {
-        if(AcolyteData.allAcolytes!=null){
-            for(let i =0;i<AcolyteData.allAcolytes.length;i++){
-                members.push(<RowMember nick={AcolyteData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
+        if(MemberData.allAcolytes!=null){
+            for(let i =0;i<MemberData.allAcolytes.length;i++){
+                members.push(<RowMember nick={MemberData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
         }
     }
     else if(type == MemberType.COROINHA) {
-        if(CoroinhaData.allCoroinhas != null){
-            for(let i = 0; i < CoroinhaData.allCoroinhas.length; i++){
-                members.push(<RowMember nick={CoroinhaData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
+        if(MemberData.allCoroinhas != null){
+            for(let i = 0; i < MemberData.allCoroinhas.length; i++){
+                members.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -55,7 +59,7 @@ export default function List() {
     
     return(
         <View style={{flex:1,flexDirection:"column"}}>
-            <UpperBar icon={type==MemberType.ACOLYTE ? require("@/src/app/item_icons/users_icomdpi.png"):require("@/src/app/shapes/coroinha_ico.png")} screenName={name} toggleEnabled={true}/>
+            <UpperBar icon={GetMemberIcon()} screenName={name} toggleEnabled={true}/>
 
             <ScrollView 
             ref={scrollViewRef}
@@ -68,7 +72,7 @@ export default function List() {
                         fontFamily:"Inter-Light",
                         fontSize:20}} 
                         
-                    text={"- Adicionar novo "+(type==MemberType.ACOLYTE ? "acólito !":"coroinha!")}
+                    text={"- Adicionar novo "+typeName}
                     img={require("@/src/app/item_icons/add_ico.png")}
                     press={()=>{}}
                     />

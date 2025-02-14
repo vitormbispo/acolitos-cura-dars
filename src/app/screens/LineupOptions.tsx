@@ -1,62 +1,36 @@
-import { View,Image,Text } from "react-native"
-import { Global } from "../Global"
-import { LinkRowImageButton} from "../classes/NewComps"
+import { View } from "react-native"
+import { LinkRowImageButton, UpperBar} from "../classes/NewComps"
+import { textStyles } from "../styles/GeneralStyles"
 
 
 export default function LineupOptions(){
-    Global.currentScreen = {screenName:"Escalas",iconPath:""}
     return(
     <View style={{flex:1}}>
-        <UpperBar/>
+        <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName={"Gerar escalas"} toggleEnabled={true}/>
 
         <LinkRowImageButton textStyle=
-                {{paddingLeft:10, 
-                fontFamily:"Inter-Light",
-                fontSize:20}}
+                {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala única"
                 link="/screens/SingleLineup"/>
        
         <LinkRowImageButton textStyle=
-                {{paddingLeft:10, 
-                fontFamily:"Inter-Light",
-                fontSize:20}}
+                {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala de fim de semana"
                 link="/screens/WeekendLineup"/>
         
         <LinkRowImageButton textStyle=
-                {{paddingLeft:10, 
-                fontFamily:"Inter-Light",
-                fontSize:20}}
+                {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala mensal"
                 link="/screens/MonthLineup"/>
         
         <LinkRowImageButton textStyle=
-                {{paddingLeft:10, 
-                fontFamily:"Inter-Light",
-                fontSize:20}}
+                {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Histórico de escalas"
                 link="/screens/LineupListScreen"/>
     </View>
    )
-}
-
-export const UpperBar = () => {
-    return(
-        <View style = {Global.styles.rowContainer}>
-            <Image 
-            style = 
-            
-            {{width:64,
-            height:64,
-            padding:26,
-            paddingRight:40,
-            paddingLeft:40,
-            resizeMode:"contain"}}  source={require("../item_icons/escala_icomdpi.png")}/>
-            <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
-        </View>
-    )
 }

@@ -176,12 +176,10 @@ export default function LineupOptions(){
                 if(MonthlyLineupScreen.generateOptions.solemnity){
                     roles = ["cero1","cero2","turib","navet","libri","cruci"]
                     LineupScreenOptions.roles = ["cero1","cero2","turib","navet","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Turiferário","Naveteiro","Librífero","Cruciferário"]
                 }
                 else{
                     roles = ["cero1","cero2","libri","cruci"]
                     LineupScreenOptions.roles = ["cero1","cero2","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Librífero","Cruciferário"]
                 }
 
                 
@@ -205,9 +203,9 @@ export default function LineupOptions(){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
                                 
-                                let newLineup = FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekendKey,curDay))
-                                generatedLineups.get(weekendKey)?.push(newLineup)
-                                allLineups.push(newLineup)
+                                //let newLineup = FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekendKey,curDay))
+                                //generatedLineups.get(weekendKey)?.push(newLineup)
+                                //allLineups.push(newLineup)
                             }
                         }
                         
@@ -227,7 +225,7 @@ export default function LineupOptions(){
                         let curWeekend = MonthlyLineupScreen.generateOptions.monthDays.get(weekendKey) // Dias no fim de semana
                         
                         generatedLineups.set(weekendKey,new Array<Lineup>)
-                        
+                        /*
                         if(curWeekend != undefined){
                             for(let k = 0; k < curWeekend.length;k++){
                                 let curDay:string = curWeekend[k]
@@ -243,6 +241,7 @@ export default function LineupOptions(){
                                 allLineups.push(newLineup)
                             }
                         }
+                            */
                     }
                 }
                 LineupScreenOptions.lineupType = "Month"

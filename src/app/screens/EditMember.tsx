@@ -1,28 +1,20 @@
-import { View,Text, TextInput } from "react-native"
+import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Acolyte, AcolyteData } from "../classes/AcolyteData";
 import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { useState } from "react";
-import { OrganizeMemberArrayAlpha, GetMemberTypeIndex, GetMemberByName} from "../classes/Methods"
+import { OrganizeMemberArrayAlpha} from "../classes/Methods"
 import { contextStore, menuStore } from "../store/store";
-import { Coroinha, CoroinhaData } from "../classes/CoroinhaData";
-import { MemberType } from "../classes/Member";
-import { uiStyles } from "../styles/GeneralStyles";
-import { MemberProfileScreen } from "./MemberProfile";
-import { loadAcolyteData } from "..";
-
-
+import { Member, MemberData, MemberType } from "../classes/MemberData";
 
 export class EditMemberScreen{
     static id:number = 0
 }
 
 export default function EditMember(){
-    const {theme,type} = menuStore()
-    const {memberID,updateMemberID} = contextStore()
-    let originalMembers = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
+    const { theme,type } = menuStore()
+    const { memberID } = contextStore()
+    let originalMembers = type == MemberType.ACOLYTE ? MemberData.allAcolytes : MemberData.allCoroinhas
     let curMember = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
     return(
@@ -148,11 +140,11 @@ export default function EditMember(){
                     let members:Array<any> // Lista de todos os acólitos ou coroinhas
 
                     if(type == MemberType.ACOLYTE){
-                        members = AcolyteData.allAcolytes
+                        members = MemberData.allAcolytes
                         storageData = "AcolyteData"    
                     }
                     else if(type == MemberType.COROINHA){
-                        members = CoroinhaData.allCoroinhas
+                        members = MemberData.allCoroinhas
                         storageData = "CoroinhaData"    
                     }
                     
@@ -173,15 +165,15 @@ export default function EditMember(){
  * @param type tipo de membro (MemberType)
  */
 export function EraseMember(id:number,type:MemberType){
-    let members:Array<Acolyte|Coroinha>
+    let members:Array<Member>
     let data:string
 
     if(type == MemberType.ACOLYTE){
-        members = AcolyteData.allAcolytes
+        members = MemberData.allAcolytes
         data = "AcolyteData"
     }
     else{
-        members = CoroinhaData.allCoroinhas
+        members = MemberData.allCoroinhas
         data = "CoroinhaData"
     }
 

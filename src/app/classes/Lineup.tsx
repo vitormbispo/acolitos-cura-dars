@@ -1,14 +1,21 @@
 import { Acolyte } from "./AcolyteData";
 import { Coroinha } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
+import { Member } from "./MemberData";
 
+
+export enum LineupType {
+    SINGLE,
+    WEEKEND,
+    MONTH
+}
 /**
  * Classe base de uma escala de acólitos
  */
 export class Lineup{
     TYPE = "single"
-    line = new Map<string,Acolyte>()
-    acolytes:any=[]
+    line = new Map<string,Member>()
+    members:any=[]
 
     day:string = ""
     weekend:string = ""

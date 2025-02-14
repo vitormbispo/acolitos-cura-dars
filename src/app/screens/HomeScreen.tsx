@@ -2,7 +2,7 @@ import { View, Image, Text, StyleSheet} from "react-native";
 import { ImageButton, LinkImageButton, TextButton, UpperBar } from "../classes/NewComps";
 import { uiStyles, textStyles } from "../styles/GeneralStyles";
 import { menuStore} from "@/src/app/store/store";
-import { MemberType } from "../classes/Member";
+import { MemberType } from "../classes/MemberData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Ícones:

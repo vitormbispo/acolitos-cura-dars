@@ -1,15 +1,16 @@
 import { View,Image,Text } from "react-native"
 import { Global } from "../Global"
-import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton } from "../classes/NewComps"
+import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
-import { StyleSheet } from "react-native"
-import { Acolyte } from "../classes/AcolyteData"
 import { useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
-import { FlexToAcolyteLineup } from "../classes/Methods"
+import { menuStore } from "../store/store"
+import { MemberType } from "../classes/MemberData"
+import { Roles, RoleSet } from "../classes/Roles"
 
+/*
 export class SingleLineupScreen{
     
     static generateOptions= {
@@ -21,22 +22,25 @@ export class SingleLineupScreen{
     }
     static curLineup:any = null
 }
-
+*/
 export default function LineupOptions(){
-    Global.currentScreen = {screenName:"Nova escala única",iconPath:""}
-
-
     let [weekend,setWeekend] = useState("1stWE")
     let[day,setDay] = useState("sabado")
     
     let[liturgicalColor,setColor] = useState("red")
+    let generateOptions= {
+        "weekend":"1stWE",
+        "day":null,
+        "allowOut":false,
+        "allRandom":false,
+        "solemnity":false
+    }
 
-    SingleLineupScreen.generateOptions.allRandom = false
-    SingleLineupScreen.generateOptions.solemnity = false
-    SingleLineupScreen.generateOptions.allowOut = false
+    const {type} = menuStore()
+
     return(
         <View style={{flex:1}}>
-            <UpperBar/>
+            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName={"Nova escala única"} toggleEnabled={false}/>
             
             <View style={{flex:1}}>
                 
@@ -54,7 +58,7 @@ export default function LineupOptions(){
                 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Solenidade</Text>
-                    <CheckBox checked={false} press={()=>{SingleLineupScreen.generateOptions.solemnity = !SingleLineupScreen.generateOptions.solemnity}}/>
+                    <CheckBox checked={false} press={()=>{generateOptions.solemnity = !generateOptions.solemnity}}/>
                 </View>
 
 
@@ -83,40 +87,53 @@ export default function LineupOptions(){
 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Aleatório</Text>
-                    <CheckBox checked={false} press={()=>{SingleLineupScreen.generateOptions.allRandom = !SingleLineupScreen.generateOptions.allRandom}}/>
+                    <CheckBox checked={false} press={()=>{generateOptions.allRandom = !generateOptions.allRandom}}/>
                 </View>
 
-                
-                
+
                 <TextButton text="Gerar escala" press={()=>{
                 
                 let roles = []
-                if(SingleLineupScreen.generateOptions.solemnity){
-                    roles = ["cero1","cero2","turib","navet","libri","cruci"]
-                    LineupScreenOptions.roles = ["cero1","cero2","turib","navet","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Turiferário","Naveteiro","Librífero","Cruciferário"]
+                let roleset:RoleSet
+                
+                
+                switch(type){
+                    case MemberType.ACOLYTE:
+                        if(generateOptions.solemnity){
+                            roles = Roles.getRoleSet("default",MemberType.ACOLYTE).set
+                            roleset = Roles.getRoleSet("default",MemberType.ACOLYTE)              
+                        }
+                        else{
+                            roles = Roles.getRoleSet("minimal",MemberType.ACOLYTE).set
+                            roleset = Roles.getRoleSet("minimal",MemberType.ACOLYTE)
+                        }
+                        break
+                    case MemberType.COROINHA:
+                        if(generateOptions.solemnity){
+                            roles = Roles.getRoleSet("default",MemberType.COROINHA).set
+                            roleset = Roles.getRoleSet("default",MemberType.COROINHA)              
+                        }
+                        else{
+                            roles = Roles.getRoleSet("minimal",MemberType.COROINHA).set
+                            roleset = Roles.getRoleSet("minimal",MemberType.COROINHA)
+                        }
+                        break
                 }
-                else{
-                    roles = ["cero1","cero2","libri","cruci"]
-                    LineupScreenOptions.roles = ["cero1","cero2","libri","cruci"]
-                    LineupScreenOptions.rolesNames = ["Ceroferário 1","Ceroferário 2","Librífero","Cruciferário"]
-                }
+                
+                LineupScreenOptions.roles = roles
+                LineupScreenOptions.lineups = []
+                let lineup:Lineup
 
-                if(SingleLineupScreen.generateOptions.allRandom){
-                    LineupScreenOptions.lineups = []
-                    LineupScreenOptions.lineups.push(FlexToAcolyteLineup(GenerateRandomLineup(roles,"acolito",weekend,day)))
-                }
-                else{
-                    LineupScreenOptions.lineups = []
-                    LineupScreenOptions.lineups.push(FlexToAcolyteLineup(GenerateLineup(weekend,day,roles,"acolito")))
-                }
+                generateOptions.allRandom ? 
+                    lineup = GenerateRandomLineup(roleset,type,weekend,day):
+                    lineup = GenerateLineup(weekend,day,roleset,type)
+                
+                LineupScreenOptions.lineups.push(lineup)
                 
                 LineupScreenOptions.loaded = false,
                 LineupScreenOptions.lineupType="Single",
                 router.push("/screens/LineupScreen")
-                
-
-                
+                               
                 }} buttonStyle={{alignSelf:"center"}}/>
             </View>
 
@@ -133,20 +150,4 @@ function CheckImage(value:any,id:any){
       return(require("@/src/app/shapes/check_false.png"))
     }
   }
-export const UpperBar = () => {
-    return(
-        <View style = {Global.styles.rowContainer}>
-            <Image 
-            style = 
-            
-            {{width:64,
-            height:64,
-            padding:26,
-            paddingRight:40,
-            paddingLeft:40,
-            resizeMode:"contain"}}  source={require("../item_icons/escala_icomdpi.png")}/>
-            <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
-        </View>
-    )
-}
 
