@@ -7,11 +7,12 @@ import { StyleSheet } from "react-native"
 import { useRef, useState } from "react"
 import { AcolyteSelectScreenOptions } from "./AcolyteSelectScreen"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
-import { CopyToClipboard, GenerateLineupPrompt, SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
+import { CopyToClipboard, GenerateLineupPrompt, GetMemberIndex, SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
 import { menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
 import {ICONS} from "../classes/AssetManager"
-import { textStyles } from "../styles/GeneralStyles"
+import { textStyles, uiStyles } from "../styles/GeneralStyles"
+import { MemberSelectScreenOptions } from "./MemberSelectScreen"
 
 
 // TODO Otimizar essa tela e aplicar mudanças na geração semanal e mensal.
@@ -83,8 +84,8 @@ let switchingMemberLineup:Lineup
 let memberSwitchedLineup:Lineup
 
 let isReplacing = false
-let replaced:Member
-let replacing:Member
+let memberReplaced:Member // Membro substituído
+let replacingMember:Member // Membro que substituirá
 
 
 export default function LineupScreen(){
@@ -115,7 +116,7 @@ export default function LineupScreen(){
         case "Single":
         // Lógica:    
             for(let i = 0; i < roles.length;i++){
-                    lineupMembers.push(<LineupMember text={roles[i]} role={roles[i]} key={i} lineup={LineupScreenOptions.lineups[0]}/>)
+                    lineupMembers.push(<LineupMember text={roles[i]} role={roles[i]} key={i} lineup={LineupScreenOptions.lineups[0]} lineupIndex={0}/>)
                 }
         // Tela:
             return(
@@ -165,7 +166,7 @@ export default function LineupScreen(){
                     </View> 
                 </View>
             )
-        
+        break;
         case "Weekend":
         // Lógica:
             for(let i = 0;i < LineupScreenOptions.days.length;i++){
@@ -217,7 +218,7 @@ export default function LineupScreen(){
                     </View> 
                 </View>
             )
-        
+        break;
         case "Month":
         // Lógica: 
             let weekends = Array.from(LineupScreenOptions.monthLineups.keys())
@@ -280,103 +281,80 @@ export default function LineupScreen(){
                     </View> 
                 </View>
             )
+        break;
     }
 }
-/*
-export const UpperBar = () => {
-    return(
-        <View style = {Global.styles.rowContainer}>
-            <Image 
-            style = 
-            
-            {{width:64,
-            height:64,
-            padding:26,
-            paddingRight:40,
-            paddingLeft:40,
-            resizeMode:"contain"}}  source={require("../item_icons/escala_icomdpi.png")}/>
-            <Text style = {Global.textStyles.menuTitle}>- {Global.currentScreen.screenName}</Text>
 
-            {LineupScreenOptions.loaded && // Se for uma escala carregada, aparece a opção de deletar.
-            
-            <View style={{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
-                <ImageButton img={require("@/src/app/shapes/delete_ico.png")} imgStyle={[Global.styles.buttonIcons,{width:48}]} press={()=>{EraseLineup(LineupScreenOptions.loadedLineIndex),SaveAcolyteData(),router.back()}}/>
-            </View>
-            }
-        </View>
-    )
-}
-*/
 export function LineupMember(props:any) {
     return(
         <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center",alignContent:"center"}}>
             <Text style={textStyles.functionTitle}>{props.text} - </Text>
-            <Text style={textStyles.acolyteNick}>{CheckMember(props.lineup.line.get(props.role))}</Text>
-            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/switch_ico.png")} imgStyle={Global.styles.buttonIcons} press={()=>{
-                let thisAcolyte = GetRoleAcolyte(props.role,props.lineup)
+            <Text style={textStyles.memberNick}>{CheckMember(props.lineup.line.get(props.role))}</Text>
+            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/switch_ico.png")} imgStyle={uiStyles.buttonIcon} press={()=>{
+                let thisMember = GetRoleMember(props.role,props.lineup)
                 if(!isSwitching){
-                    switchingMember = thisAcolyte
+                    switchingMember = thisMember
                     switchingMemberRole = props.role
                     switchingMemberLineup = props.lineup
                     isSwitching = true
                 }
                 else{
-                    memberSwitched = thisAcolyte
+                    memberSwitched = thisMember
                     memberSwitchedRole = props.role
                     memberSwitchedLineup = props.lineup
                     isSwitching = false
-                    SwitchAcolytes(switchingMember,memberSwitched,switchingMemberRole,memberSwitchedRole,switchingMemberLineup,memberSwitchedLineup)
+                    SwitchMembers(switchingMember,memberSwitched,switchingMemberRole,memberSwitchedRole,switchingMemberLineup,memberSwitchedLineup)
                     router.replace("/screens/LineupScreen")
                 }     
             }}/>
 
             <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/subs_ico.png")} imgStyle={Global.styles.buttonIcons} press={()=>{
                 isReplacing = true
-                let thisAcolyte = GetRoleAcolyte(props.role,props.lineup)
-                replacing = thisAcolyte
+                let curLine:Lineup= LineupScreenOptions.lineups[props.lineupIndex]
+                let thisMember = GetRoleMember(props.role,curLine)
+                memberReplaced = thisMember
 
-                AcolyteSelectScreenOptions.selectMode="Single"
-                AcolyteSelectScreenOptions.selected = []
+                MemberSelectScreenOptions.selectMode="Single"
+                MemberSelectScreenOptions.selected = []
                 
-                AcolyteSelectScreenOptions.action = ()=>{
+                MemberSelectScreenOptions.action = ()=>{
   
-                    if(replacing != null){
-                        replacing.rodizio[props.role]=replacing.oldRodizio[props.role]
-                        replacing.priority=replacing.oldPriority
-                        replacing.weekendPriority=replacing.oldWeekendPriority
-
+                    if(memberReplaced != null){
+                        memberReplaced.rodizio[props.role]=memberReplaced.oldRodizio[props.role]
+                        memberReplaced.priority=memberReplaced.oldPriority
+                        memberReplaced.weekendPriority=memberReplaced.oldWeekendPriority
                     }
-                    /*                 
-                    replaced = AcolyteSelectScreenOptions.selected[0]
-                    replaced.rodizio[props.role]=6
-                    replaced.priority=4
-                    replaced.weekendPriority[props.lineup.day]=3
-                    */
-
-                    props.lineup.line.set(props.role,replaced)
-                    props.lineup.acolytes.splice(props.lineup.acolytes.indexOf(replacing),1)
-                    props.lineup.acolytes.push(replaced)
+                                     
+                    replacingMember = MemberSelectScreenOptions.selected[0]
+                    replacingMember.rodizio[props.role]=6
+                    replacingMember.priority=4
+                    replacingMember.weekendPriority[props.lineup.day]=3
+                    
+                    curLine.line.set(props.role,replacingMember)
+                    
+                    let replacedID = GetMemberIndex(memberReplaced,curLine.members)
+                    LineupScreenOptions.lineups[props.lineupIndex].members.splice(replacedID,1)
+                    LineupScreenOptions.lineups[props.lineupIndex].members.push(replacingMember)
             
                     router.back()
                 }
-                AcolyteSelectScreenOptions.excludedAcolytes=props.lineup.acolytes
-                Global.currentScreen={screenName:"Selecione - Substituição",iconPath:""}
-                AcolyteSelectScreenOptions.lineup = props.lineup
-                router.push("/screens/AcolyteSelectScreen")
+                MemberSelectScreenOptions.excludedMembers = curLine.members
+                MemberSelectScreenOptions.lineup = curLine
+                router.push("/screens/MemberSelectScreen")
             }}/>
         </View>
     )
 }
 
 /**
- * Checa se o acólito existe ou não e retorna seu apelido caso exista,
+ * Checa se o membro existe ou não e retorna seu apelido caso exista,
  * Retorna "-Sem escala-" caso contrário.
- * @param aco Acólito
+ * @param member Membro
  * @returns string
  */
-function CheckMember(aco:Member): string{
-    if(aco != null){
-        return aco.nick
+function CheckMember(member:Member): string{
+    if(member != null){
+        return member.nick
     }
     else{
         return "-Sem escala-"
@@ -384,26 +362,26 @@ function CheckMember(aco:Member): string{
 }
 
 /**
- * Retorna o acólito escalado em determinada função em determinada escala
+ * Retorna o membro escalado em determinada função em determinada escala
  * @param role Função
  * @param lineup Escala
- * @returns 
+ * @returns Member
  */
-function GetRoleAcolyte(role:string,lineup:any){
+function GetRoleMember(role:string,lineup:any){
     return lineup.line.get(role)
     
 }
 
 /**
- * Troca os acólitos
- * @param switching Acótico a ser trocado
- * @param switched Acólito que substituirá
- * @param switchingRole Função do acólito a ser trocado
- * @param switchedRole Função do acólito que substituirá
+ * Troca os membros
+ * @param switching membro a ser trocado
+ * @param switched membro que substituirá
+ * @param switchingRole Função do membro a ser trocado
+ * @param switchedRole Função do membro que substituirá
  * @param switchingLineup Escala a ser trocado
  * @param switchedLineup Escala que substituirá
  */
-function SwitchAcolytes(switching:Member,switched:Member,switchingRole:string,switchedRole:string,switchingLineup:Lineup,switchedLineup:Lineup){
+function SwitchMembers(switching:Member,switched:Member,switchingRole:string,switchedRole:string,switchingLineup:Lineup,switchedLineup:Lineup){
     
     if(switching != null){
         switching.rodizio[switchingRole]=6

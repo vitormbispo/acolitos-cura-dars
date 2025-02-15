@@ -87,7 +87,7 @@ export const textStyles = StyleSheet.create({
         alignSelf:"center",
         flex:1
     },
-    acolyteNick:{
+    memberNick:{
         fontFamily:"Inter-Light",
         fontSize:18,
         alignSelf:"center",

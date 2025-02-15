@@ -23,6 +23,14 @@ export class SingleLineupScreen{
     static curLineup:any = null
 }
 */
+type GenerationOptionsType = {
+    "weekend":string,
+    "day":string,
+    "allowOut":boolean,
+    "allRandom":boolean,
+    "solemnity":boolean
+}
+
 export default function LineupOptions(){
     let [weekend,setWeekend] = useState("1stWE")
     let[day,setDay] = useState("sabado")
@@ -91,50 +99,7 @@ export default function LineupOptions(){
                 </View>
 
 
-                <TextButton text="Gerar escala" press={()=>{
-                
-                let roles = []
-                let roleset:RoleSet
-                
-                
-                switch(type){
-                    case MemberType.ACOLYTE:
-                        if(generateOptions.solemnity){
-                            roles = Roles.getRoleSet("default",MemberType.ACOLYTE).set
-                            roleset = Roles.getRoleSet("default",MemberType.ACOLYTE)              
-                        }
-                        else{
-                            roles = Roles.getRoleSet("minimal",MemberType.ACOLYTE).set
-                            roleset = Roles.getRoleSet("minimal",MemberType.ACOLYTE)
-                        }
-                        break
-                    case MemberType.COROINHA:
-                        if(generateOptions.solemnity){
-                            roles = Roles.getRoleSet("default",MemberType.COROINHA).set
-                            roleset = Roles.getRoleSet("default",MemberType.COROINHA)              
-                        }
-                        else{
-                            roles = Roles.getRoleSet("minimal",MemberType.COROINHA).set
-                            roleset = Roles.getRoleSet("minimal",MemberType.COROINHA)
-                        }
-                        break
-                }
-                
-                LineupScreenOptions.roles = roles
-                LineupScreenOptions.lineups = []
-                let lineup:Lineup
-
-                generateOptions.allRandom ? 
-                    lineup = GenerateRandomLineup(roleset,type,weekend,day):
-                    lineup = GenerateLineup(weekend,day,roleset,type)
-                
-                LineupScreenOptions.lineups.push(lineup)
-                
-                LineupScreenOptions.loaded = false,
-                LineupScreenOptions.lineupType="Single",
-                router.push("/screens/LineupScreen")
-                               
-                }} buttonStyle={{alignSelf:"center"}}/>
+                <TextButton text="Gerar escala" press={()=>{GerarEscala(type,generateOptions,day,weekend)}} buttonStyle={{alignSelf:"center"}}/>
             </View>
 
         </View>
@@ -149,5 +114,49 @@ function CheckImage(value:any,id:any){
     else{
       return(require("@/src/app/shapes/check_false.png"))
     }
-  }
+}
+
+function GerarEscala(type:MemberType,generateOptions:GenerationOptionsType, day:string,weekend:string){
+    let roles = []
+    let roleset:RoleSet
+    
+
+    switch(type){
+        case MemberType.ACOLYTE:
+            if(generateOptions.solemnity){
+                roles = Roles.getRoleSet("default",MemberType.ACOLYTE).set
+                roleset = Roles.getRoleSet("default",MemberType.ACOLYTE)              
+            }
+            else{
+                roles = Roles.getRoleSet("minimal",MemberType.ACOLYTE).set
+                roleset = Roles.getRoleSet("minimal",MemberType.ACOLYTE)
+            }
+            break
+        case MemberType.COROINHA:
+            if(generateOptions.solemnity){
+                roles = Roles.getRoleSet("default",MemberType.COROINHA).set
+                roleset = Roles.getRoleSet("default",MemberType.COROINHA)              
+            }
+            else{
+                roles = Roles.getRoleSet("minimal",MemberType.COROINHA).set
+                roleset = Roles.getRoleSet("minimal",MemberType.COROINHA)
+            }
+            break
+    }
+    
+    LineupScreenOptions.roles = roles
+    LineupScreenOptions.lineups = []
+    let lineup:Lineup
+
+    generateOptions.allRandom ? 
+        lineup = GenerateRandomLineup(roleset,type,weekend,day):
+        lineup = GenerateLineup(weekend,day,roleset,type)
+    
+    LineupScreenOptions.lineups.push(lineup)
+    
+    LineupScreenOptions.loaded = false,
+    LineupScreenOptions.lineupType="Single",
+    router.push("/screens/LineupScreen")
+                 
+}
 

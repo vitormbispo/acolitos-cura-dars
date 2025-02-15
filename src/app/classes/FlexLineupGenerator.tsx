@@ -62,8 +62,10 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
 
     // Escolher funções para cada membro e montar na classe Lineup.
     let newLineup:Lineup = new Lineup()
-    
-    roleset.set.forEach((role) => {
+
+    for(let i = 0; i < roleset.size; i++){
+        let role = roleset.set[i]
+        
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
 
@@ -74,7 +76,11 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
         newLineup.members.push(member)
         
         RemoveMember(member,chosenMembers)
-    })
+        if(chosenMembers.length == 0 && i+1 < roleset.size){
+            console.error("Not enough members! Only partial lineup will be generated.")
+            break;
+        }
+    }
     
     newLineup.day = day
     newLineup.weekend = weekend
