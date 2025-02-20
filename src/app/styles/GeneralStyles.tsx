@@ -43,6 +43,14 @@ export const uiStyles = StyleSheet.create({
         fontFamily:"Inter-Regular",
         width:200,
         padding:10
+    },
+    rowButtonContainer:{
+        alignSelf:"center",
+        alignContent:"center",
+        alignItems:"center",
+        margin:10,
+        flexDirection:"row",
+        gap:10
     }
 
     
@@ -58,7 +66,12 @@ export const textStyles = StyleSheet.create({
         fontFamily:"Inter-Bold",
         fontSize:20
     },
-
+    lineupTitle:{
+        fontFamily:"Inter-Bold",
+        fontSize:20,
+        textAlign:"center",
+        padding:10
+    },
     dataTitle:{
         fontFamily:"Inter-Bold",
         fontSize:20,

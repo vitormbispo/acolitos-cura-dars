@@ -7,6 +7,7 @@ import { OrganizeMemberArrayAlpha } from "../classes/Methods"
 import { menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Roles } from "../classes/Roles";
+import { Dates } from "../classes/Dates";
 
 export default function NewAcolyte(){
     const {theme, type} = menuStore()
@@ -20,6 +21,15 @@ export default function NewAcolyte(){
             typeName = "Coroinha"; break
     }
     
+    currentData.disp = DefaultDispMap()
+
+
+    let availabilities:Array<React.JSX.Element> = []
+    for(let i = 0; i < Dates.defaultWeekends.length;i++){
+        let curWeekend:string = Dates.defaultWeekends[i]
+        let available:React.JSX.Element = <WeekendAvailability member={currentData} weekend={curWeekend} key={curWeekend+i}/>
+        availabilities.push(available)
+    }
     return(
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
@@ -62,65 +72,8 @@ export default function NewAcolyte(){
                     
                     <View>
                         
-                        {/*PRIMEIRO FINAL DE SEMANA*/}
-                        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                            <Text style={{padding:10,flex:1}}>Primeiro</Text>
-                            
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["1stWE"].sabado = !currentData.disp["1stWE"].sabado}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["1stWE"].domingoAM = !currentData.disp["1stWE"].domingoAM}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["1stWE"].domingoPM = !currentData.disp["1stWE"].domingoPM}}/>
-                        </View>
-                        
-                        {/*SEGUNDO FINAL DE SEMANA*/}
-                        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                            <Text style={{padding:10,flex:1}}>Segundo</Text>
-                            
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["2ndWE"].sabado = !currentData.disp["2ndWE"].sabado}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["2ndWE"].domingoAM = !currentData.disp["2ndWE"].domingoAM}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["2ndWE"].domingoPM = !currentData.disp["2ndWE"].domingoPM}}/>
-                        </View>
+                    {availabilities}
 
-                        {/*TERCEIRO FINAL DE SEMANA*/}
-                        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                            <Text style={{padding:10,flex:1}}>Terceiro</Text>
-                            
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["3rdWE"].sabado = !currentData.disp["3rdWE"].sabado}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["3rdWE"].domingoAM = !currentData.disp["3rdWE"].domingoAM}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["3rdWE"].domingoPM = !currentData.disp["3rdWE"].domingoPM}}/>
-                        </View>
-                        
-                        {/*QUARTO FINAL DE SEMANA*/}
-                        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                            <Text style={{padding:10,flex:1}}>Quarto</Text>
-                            
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["4thWE"].sabado = !currentData.disp["4thWE"].sabado}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["4thWE"].domingoAM = !currentData.disp["4thWE"].domingoAM}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["4thWE"].domingoPM = !currentData.disp["4thWE"].domingoPM}}/>
-                        </View>
-                        
-                        {/*QUINTO FINAL DE SEMANA*/}
-                        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                            <Text style={{padding:10,flex:1}}>Quinto</Text>
-                            
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["5thWE"].sabado = !currentData.disp["5thWE"].sabado}}/>
-                            <CheckBox checked={true} press = {()=>
-                                {currentData.disp["5thWE"].domingoAM = !currentData.disp["5thWE"].domingoAM}}/>
-                            <CheckBox checked={true}press = {()=>
-                                {currentData.disp["5thWE"].domingoPM = !currentData.disp["5thWE"].domingoPM}}/>
-                        </View>
                     </View>
                     
                     <View style={{flexDirection:"row",alignItems:"center"}}>
@@ -169,4 +122,46 @@ function SubmitNewMember(member:any,type:MemberType){
     }
 
     router.back()
+}
+
+type WeekendAvailabilityProps = {
+    member:Member,
+    weekend:string
+}
+export function WeekendAvailability(props:WeekendAvailabilityProps){
+    let checks = []
+
+    for(let i = 0; i < Dates.defaultDays.length;i++){
+        let curDay = Dates.defaultDays[i]
+        let check = <CheckBox checked={props.member.disp[props.weekend][curDay]} press={()=>{props.member.disp[props.weekend][curDay] = !props.member.disp[props.weekend][curDay]}} key={props.weekend+curDay+i}/>
+
+        checks.push(check)
+    }
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
+            <Text style={{padding:10,flex:1}}>{props.weekend}</Text>
+            {checks}
+        </View>
+    )
+}
+
+export function DefaultDispMap(){
+    let map = {}
+
+    Dates.defaultWeekends.forEach((weekend)=>{
+        map[weekend] = {}
+        Dates.defaultDays.forEach((days)=>{
+            map[weekend][days] = true
+        })
+    })
+
+    return map
+}
+
+export function DefaultDayPriorityMap(){
+    let map = {}
+    
+    Dates.defaultWeekends.forEach((weekend)=>{
+        map[weekend] = 0
+    })
 }

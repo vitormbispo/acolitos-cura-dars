@@ -9,21 +9,21 @@ export class RoleSet{
         this.name = name
         this.type = type
         this.set = set
-        this.size = set.length
+        this.size = set!=undefined ? set.length : 0
     }
 
     /**
     * Adiciona uma nova função ao conjunto
      * @param role Função a adicionar
      */
-    addRole(role:string){
+    AddRole(role:string){
         this.set.push(role)
     }
     
     /**
      * Define o conjunto de funções para o padrão do tipo de membros.
      */
-    setRolesToDefault(){
+    SetRolesToDefault(){
         switch(this.type){
             case MemberType.ACOLYTE:
                 this.set = Object.keys(Roles.defaultAcolyteRoles); break
@@ -40,6 +40,8 @@ export class RoleSet{
         this.set = roles
     }
 }
+
+
 
 export class Roles {
     static defaultAcolyteRoles:object = {
@@ -61,7 +63,13 @@ export class Roles {
     static acolyteRoleSets:Array<RoleSet>
     static coroinhaRoleSets:Array<RoleSet>
 
-    static addRoleSet(name:string,roles:Array<string>,type:MemberType) {
+    static GetDefaultRoleset(type:MemberType):RoleSet{
+        let newSet:RoleSet = new RoleSet("new",type)
+        newSet.SetRolesToDefault()
+        return newSet
+    }
+
+    static AddRoleSet(name:string,roles:Array<string>,type:MemberType) {
         let newSet = new RoleSet(name,type,roles)
         switch(type){
             case MemberType.ACOLYTE:
@@ -71,7 +79,7 @@ export class Roles {
         }
     }
 
-    static initializeSets(type:MemberType){
+    static InitializeSets(type:MemberType){
         switch(type){
             case MemberType.ACOLYTE:
                 Roles.acolyteRoleSets = [
@@ -86,7 +94,7 @@ export class Roles {
         }
     }
 
-    static getRoleSet(name:string,type:MemberType){
+    static GetRoleSet(name:string,type:MemberType){
         let list:Array<RoleSet>
         switch(type){
             case MemberType.ACOLYTE:

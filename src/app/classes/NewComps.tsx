@@ -155,7 +155,6 @@ export function SingleCheck(props:any){
         <Text style={{paddingBottom:10,fontFamily:"Inter-Light"}}>{props.topText}</Text>
         <Image style={{height:32,width:32}} source={props.img}/>
       </View>
-      
     </Pressable>
     
   )
@@ -290,7 +289,14 @@ export function ToggleButton(props:any) {
  */
 export function LinkRowImageButton(props:any){
   return(
-      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => {()=>{props.press == null ? ()=>{} : props.press()} ; router.push(props.link)}}>
+      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => {
+        console.log(props.press)
+        if(props.press != null){
+          props.press() 
+        }
+        
+        router.push(props.link)}
+        }>
         <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
         <Text style={props.textStyle}>{props.text}</Text>       
       </Pressable>

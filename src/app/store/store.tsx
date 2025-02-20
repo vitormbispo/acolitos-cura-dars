@@ -1,6 +1,10 @@
 import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
+import { LineupType } from '../classes/Lineup'
+import { Roles } from '../classes/Roles'
+import { Dates, DateSet } from '../classes/Dates'
+import { GenerationOptionsType } from '../screens/SingleLineup'
 
 
 export enum MenuStyles{
@@ -12,7 +16,15 @@ export enum MenuStyles{
 
 export type ContextStates = {
     memberID:number
+    lineupType:LineupType
+    curWeekend:string
+    curDay:string
+    curGenOptions:GenerationOptionsType
     updateMemberID: (id:number) => void
+    setLineupType: (type:LineupType) => void
+    updateWeekend: (weekend:string) => void
+    updateDay: (day:string) => void
+    
 }
 
 export type ThemeStates = {
@@ -51,7 +63,26 @@ export const menuStore = create<ThemeStates>((set)=>({
 
 export const contextStore = create<ContextStates>((set)=>({
     memberID:0,
-    updateMemberID: (newID) => set(()=>({memberID:newID}))
+    lineupType:LineupType.SINGLE,
+    curWeekend:Dates.defaultWeekends[0],
+    curDay:Dates.defaultDays[0],
+    curGenOptions:{
+            "weekend":"1stWE",
+            "day":null,
+            "allowOut":false,
+            "allRandom":false,
+            "solemnity":false,
+            "randomness":1.6,
+            "lineupType":LineupType.SINGLE,
+            "monthDays":Dates.DefaultMonthDays,
+            "dayRotation":true,
+            "dateset":new DateSet(),
+            "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
+        },
+    updateMemberID: (newID) => set(()=>({memberID:newID})),
+    setLineupType: (newType:LineupType) => set(()=>({lineupType:newType})),
+    updateWeekend: (newWeekend:string) => set(()=>({curWeekend:newWeekend})),
+    updateDay: (newDay:string) => set(()=>({curDay:newDay}))
 }))
 
 

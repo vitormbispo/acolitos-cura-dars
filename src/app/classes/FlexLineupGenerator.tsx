@@ -32,7 +32,14 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
     members = members.slice()
 
     members = RemoveUnvailable(members,day,weekend) // Remover membros indisponíveis
-
+    if(members.length == 0){ // Não há membros disponíveis
+        console.warn("Any members available. Lineup is empty.")
+        let emptyLine = new Lineup()
+        emptyLine.day = day
+        emptyLine.weekend = weekend
+        emptyLine.roleset = roleset
+        return emptyLine      
+    }
     // Excluir membros que já estão nesse fim de semana
     if(weekend != "Outro"){
         members = RemoveIfAlreadyOnWeekend(members,weekend,roleset.size)
@@ -50,7 +57,6 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
         InsertSortedByScore(member,sortedScoreMembers) // Insere ordenado
     })
     
-
     let chosenMembers:Array<Member> = [] // Lista de membros selecionados
     
     let chosenQuant:number = Math.ceil(roleset.size*randomness) < sortedScoreMembers.length ? Math.ceil(roleset.size*randomness) : sortedScoreMembers.length // Quantidade de membros a selecionar
@@ -72,18 +78,20 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
         member.rodizio[role] = roleset.size
         
         IncreaseAllRoleCooldown(member,1,type)
-        newLineup.line.set(role,member)
+        newLineup.line[role] = member
         newLineup.members.push(member)
         
         RemoveMember(member,chosenMembers)
+
         if(chosenMembers.length == 0 && i+1 < roleset.size){
-            console.error("Not enough members! Only partial lineup will be generated.")
+            console.warn("Not enough members! Only partial lineup will be generated.")
             break;
         }
     }
     
     newLineup.day = day
     newLineup.weekend = weekend
+    newLineup.roleset = roleset
 
     newLineup.members.forEach((member:Member) => {
         member.priority = 0
@@ -105,7 +113,6 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
             SaveCoroinhaData(); break
     }
     return newLineup
-    
 }
 
 /** Gera uma nova escala flexível aleatória podendo se basear em dia e fim de semana ou não. 
@@ -139,7 +146,7 @@ export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:str
         let curMemberIndex:number = RandomNumber(0,availableMembers.length-1)
         let curMember:Member = availableMembers[curMemberIndex]
         
-        generatedLineup.line.set(curRole,curMember)
+        generatedLineup.line[curRole] = curMember
         generatedLineup.members.push(curMember)
         availableMembers.splice(curMemberIndex,1)
     }

@@ -3,6 +3,7 @@ import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay } fro
 import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { textStyles} from "../styles/GeneralStyles"
+import { Dates } from "../classes/Dates"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
@@ -32,6 +33,13 @@ export default function MemberProfile() {
         <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>)
     })
     
+    let availabilities:Array<React.JSX.Element> = []
+    for(let i = 0; i < Dates.defaultWeekends.length;i++){
+        let curWeekend:string = Dates.defaultWeekends[i]
+        let available:React.JSX.Element = <VisualWeekendAvailability member={curMember} weekend={curWeekend} key={curWeekend+i}/>
+        availabilities.push(available)
+    }
+
     return(
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
@@ -69,63 +77,19 @@ export default function MemberProfile() {
                 <View style={{paddingTop:20}}>
                     
                     <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
-                            <Text style={{flex:1}}>Sábado - 19h</Text>
-                            <Text style={{flex:1}}>Domingo - 08h</Text>
-                            <Text style={{flex:1}}>Domingo - 19h</Text>
-                        </View>
+                        <Text style={{flex:1}}>Sábado - 19h</Text>
+                        <Text style={{flex:1}}>Domingo - 08h</Text>
+                        <Text style={{flex:1}}>Domingo - 19h</Text>
+                    </View>
                         
-                        <View>
-                            
-                            {/*PRIMEIRO FINAL DE SEMANA*/}
-                            <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                                <Text style={{padding:10,flex:1,fontFamily:"Inter-Light"}}>Primeiro</Text>
-                                
-                                <VisualCheckBox enabled={curMember.disp["1stWE"].sabado}/>
-                                <VisualCheckBox enabled={curMember.disp["1stWE"].domingoAM}/>
-                                <VisualCheckBox enabled={curMember.disp["1stWE"].domingoPM}/>
-                            </View>
-                            
-                            {/*SEGUNDO FINAL DE SEMANA*/}
-                            <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                                <Text style={{padding:10,flex:1,fontFamily:"Inter-Light"}}>Segundo</Text>
-                                
-                                <VisualCheckBox enabled={curMember.disp["2ndWE"].sabado}/>
-                                <VisualCheckBox enabled={curMember.disp["2ndWE"].domingoAM}/>
-                                <VisualCheckBox enabled={curMember.disp["2ndWE"].domingoPM}/>
-                            </View>
-
-                            {/*TERCEIRO FINAL DE SEMANA*/}
-                            <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                                <Text style={{padding:10,flex:1,fontFamily:"Inter-Light"}}>Primeiro</Text>
-                                
-                                <VisualCheckBox enabled={curMember.disp["3rdWE"].sabado}/>
-                                <VisualCheckBox enabled={curMember.disp["3rdWE"].domingoAM}/>
-                                <VisualCheckBox enabled={curMember.disp["3rdWE"].domingoPM}/>
-                            </View>
-                            
-                            {/*QUARTO FINAL DE SEMANA*/}
-                            <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                                <Text style={{padding:10,flex:1,fontFamily:"Inter-Light"}}>Quarto</Text>
-                                
-                                <VisualCheckBox enabled={curMember.disp["4thWE"].sabado}/>
-                                <VisualCheckBox enabled={curMember.disp["4thWE"].domingoAM}/>
-                                <VisualCheckBox enabled={curMember.disp["4thWE"].domingoPM}/>
-                            </View>
-                            
-                            {/*QUINTO FINAL DE SEMANA*/}
-                            <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
-                                <Text style={{padding:10,flex:1,fontFamily:"Inter-Light"}}>Quinto</Text>
-                                
-                                <VisualCheckBox enabled={curMember.disp["5thWE"].sabado}/>
-                                <VisualCheckBox enabled={curMember.disp["5thWE"].domingoAM}/>
-                                <VisualCheckBox enabled={curMember.disp["5thWE"].domingoPM}/>
-                            </View>
-                        </View>
+                    <View>
+                        {availabilities}
+                    </View>
                         
-                        <View style={{flexDirection:"row",alignItems:"center"}}>
-                            <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
-                            <VisualCheckBox enabled={curMember.onLineup}/>
-                        </View>
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
+                        <VisualCheckBox enabled={curMember.onLineup}/>
+                    </View>
                  </View>
 
                  <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
@@ -138,6 +102,28 @@ export default function MemberProfile() {
                 </View>
                 {rodizio}
             </ScrollView>
+        </View>
+    )
+}
+
+type VisualWeekendAvailabilityProps = {
+    member:Member,
+    weekend:string
+}
+
+export function VisualWeekendAvailability(props:VisualWeekendAvailabilityProps){
+    let checks = []
+
+    for(let i = 0; i < Dates.defaultDays.length;i++){
+        let curDay = Dates.defaultDays[i]
+        let check = <VisualCheckBox enabled={props.member.disp[props.weekend][curDay]} key={props.weekend+curDay+i}/>
+
+        checks.push(check)
+    }
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
+            <Text style={{padding:10,flex:1}}>{props.weekend}</Text>
+            {checks}
         </View>
     )
 }

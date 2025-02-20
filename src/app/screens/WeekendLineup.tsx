@@ -23,7 +23,7 @@ export class WeekendLineupScreen{
         "solemnity":false
     }
 }
-
+/*
 export default function LineupOptions(){
     Global.currentScreen = {screenName:"Nova escala | Fim de semana",iconPath:""}
 
@@ -172,3 +172,4 @@ export const UpperBar = () => {
     )
 }
 
+*/

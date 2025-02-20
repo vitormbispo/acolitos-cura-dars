@@ -75,11 +75,11 @@ export default function App() {
         }
         
         if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets == undefined){
-            Roles.initializeSets(MemberType.ACOLYTE)
+            Roles.InitializeSets(MemberType.ACOLYTE)
         }
 
         if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets == undefined){
-            Roles.initializeSets(MemberType.COROINHA)
+            Roles.InitializeSets(MemberType.COROINHA)
         }
         
         appStarted = true

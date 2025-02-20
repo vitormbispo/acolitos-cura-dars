@@ -2,6 +2,7 @@ import { Acolyte } from "./AcolyteData";
 import { Coroinha } from "./CoroinhaData";
 import { CoroinhaLineup } from "./CoroinhaLineup";
 import { Member } from "./MemberData";
+import { RoleSet } from "./Roles";
 
 
 export enum LineupType {
@@ -13,14 +14,24 @@ export enum LineupType {
  * Classe base de uma escala de acólitos
  */
 export class Lineup{
-    TYPE = "single"
-    line = new Map<string,Member>()
+    TYPE = LineupType.SINGLE
+    line = {}
     members:any=[]
-
+    roleset:RoleSet
     day:string = ""
     weekend:string = ""
 }
 
+/**
+ * Tipo do objeto para armazenar tags de dias
+ * e seu respectivo nome
+ * Ex: (tag)sabado:(nome)Sábado - 19h
+ */
+type DaysAndNames = {
+    sabado:string,
+    domingoAM:string,
+    domingoPM:string
+}
 /**
  * Classe para uma escala montada a ser exibida na tela de escalas.
  */
@@ -32,12 +43,14 @@ export class StructuredLineup{
 
     days = ["sabado","domingoAM","domingoPM"]
     daysNames = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
-    daysMaps:Map<string,string> = new Map<string,string>([
-        ["sabado","Sábado - 19h"],
-        ["domingoAM","Domingo - 08h"],
-        ["domingoPM","Domingo - 19h"]])
-    lineups:Array<Lineup|CoroinhaLineup> = []
-    monthLineups:Map<string,Array<Lineup|CoroinhaLineup>> = new Map<string,Array<Lineup|CoroinhaLineup>>()
-    allLineups:Array<Lineup|CoroinhaLineup> = new Array<Lineup|CoroinhaLineup>()
+    daysMaps:DaysAndNames = {
+        sabado:"Sábado - 19h",
+        domingoAM:"Domingo - 08h",
+        domingoPM:"Domingo - 19h"
+    }
+        
+    lineups:Array<Lineup> = []
+    monthLineups:object = {}
+    allLineups:Array<Lineup> = new Array<Lineup>()
 }
 

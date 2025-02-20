@@ -3,6 +3,7 @@ export enum MemberType{
     ACOLYTE,
     COROINHA
 }
+
 /**
  * Classe base do acólito
  */
@@ -18,21 +19,24 @@ export class Member {
     "turib":0,
     "navet":0,
     "libri":0,
-}
+    }
+
     oldRodizio:object={"cero1":0, // Velho rodízio de função
     "cero2":0,
     "cruci":0,
     "turib":0,
     "navet":0,
     "libri":0,
-}
-    disp:object={ // Disponibilidade
-        "1stWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
-        "2ndWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
-        "3rdWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
-        "4thWE":{"sabado":true,"domingoPM":true,"domingoAM":true},
-        "5thWE":{"sabado":true,"domingoPM":true,"domingoAM":true}
     }
+
+    disp:object={ // Disponibilidade
+        "1º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
+        "2º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
+        "3º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
+        "4º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
+        "5º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true}
+    }
+
     contact:string="" // Contato
     parents:string=""
 
@@ -40,8 +44,8 @@ export class Member {
     priority=0 // Prioridade geral
     oldPriority=0 // Velha prioridade geral
     
-    weekendPriority={"sabado":0,"domingoPM":0,"domingoAM":0} // Prioridade de dia
-    oldWeekendPriority={"sabado":0,"domingoPM":0,"domingoAM":0} // Velha prioridade de dia
+    weekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Prioridade de dia
+    oldWeekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Velha prioridade de dia
     
     onLineup = true // Escalável
 
