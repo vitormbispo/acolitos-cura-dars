@@ -74,7 +74,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "solemnity":false,
             "randomness":1.6,
             "lineupType":LineupType.SINGLE,
-            "monthDays":Dates.DefaultMonthDays,
+            "monthDays":Dates.DefaultMonthDays(),
             "dayRotation":true,
             "dateset":new DateSet(),
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)

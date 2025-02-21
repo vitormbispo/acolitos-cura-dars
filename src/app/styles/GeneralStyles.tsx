@@ -4,7 +4,8 @@ export const uiStyles = StyleSheet.create({
     upperBar:{
         flexDirection:'row',
         alignItems:'center',
-        height:100
+        height:100,
+        paddingLeft:15
     },
     buttonIcon:{
         height:64,

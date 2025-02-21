@@ -1,21 +1,22 @@
-import { View,Image,Text, ScrollView, Role } from "react-native"
+import { View, Text, ScrollView} from "react-native"
 import { Global } from "../Global"
-import { CheckBox, LinkRowImageButton, RowImageButton, SingleCheck, SingleCheckColor, TextButton, UpperBar } from "../classes/NewComps"
+import { CheckBox,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
 import { router } from "expo-router"
-import { useRef, useState } from "react"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberData, MemberType } from "../classes/MemberData"
+import { MemberData, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles } from "../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../classes/Methods"
-import { ICONS } from "../classes/AssetManager"
-import { Dates, DateSet } from "../classes/Dates"
+import { DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
+import { ICONS } from "../classes/AssetManager"
 
-// TODO: Usar useRef para não reiniciar o valor do generationOptions e por fim compactar essa merda toda
+/**
+ * Tipo do objeto que armazena as opções de geração
+ */
 export type GenerationOptionsType = {
     "weekend":string,
     "day":string,
@@ -30,6 +31,9 @@ export type GenerationOptionsType = {
     "dateset":DateSet
 }
 
+/**
+ * Enumerador com os valores das opções de aleatoriedade, de baixa até alta.
+ */
 enum Randomness{
     LOW = 1,
     MEDIUM_LOW = 1.3,
@@ -37,7 +41,9 @@ enum Randomness{
     MEDIUM_HIGH = 1.7,
     HIGH = 2
 }
-
+/**
+ * Tela das opções de geração de escalas.
+ */
 export default function LineupOptions(){    
     const {lineupType,curGenOptions} = contextStore()
     let options:React.JSX.Element
@@ -53,7 +59,7 @@ export default function LineupOptions(){
 
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName={"Nova escala única"} toggleEnabled={false}/>
+            <UpperBar icon={ICONS.escala} screenName={"Nova escala única"} toggleEnabled={false}/>
             
             <ScrollView style={{flex:1}}>
 
@@ -101,10 +107,18 @@ export default function LineupOptions(){
             {options}
             </ScrollView>
         </View>
-        )
-    }
-    
+    )
+}
 
+/**
+ * Valida de o 'value' de uma checkbox única é igual ao 'id'.
+ * Ou seja, retorna uma imagem de checkbox verdadeira caso a caixa de 'id' X
+ * tenha o mesmo valor do atual 'value'. 
+ * Retorna uma imagem de checkbox falsa caso contrário.
+ * @param value 
+ * @param id 
+ * @returns 
+ */
 function CheckImage(value:any,id:any){
     if(value == id){
       return(require("@/src/app/shapes/check_true.png"))
@@ -116,10 +130,9 @@ function CheckImage(value:any,id:any){
 
 /**
  * Opções para geração de uma escala úncia
- * @param props generationOptions = Opções de geração
- * @returns 
+ * @returns React.JSX.Component
  */
-const SingleLineupOptions = (props) => {
+const SingleLineupOptions = () => {
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
 
     const {type} = menuStore()
@@ -138,6 +151,10 @@ const SingleLineupOptions = (props) => {
     )
 }
 
+/**
+ * Opções para geração de uma escala para um fim de semana
+ * @returns React.JSX.Component
+ */
 const WeekendLineupOptions = () => {
     const {type} = menuStore()
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
@@ -162,7 +179,10 @@ const WeekendLineupOptions = () => {
     )
 }
 
-
+/**
+ * Opções para geração de uma escala mensal
+ * @returns React.JSX.Component
+ */
 const MonthLineupOptions = (props:any) => {
     
     const {type} = menuStore()
@@ -186,7 +206,11 @@ const MonthLineupOptions = (props:any) => {
     )
 }
 
-
+/**
+ * Gera as escalas de determinado tipo('type') de acordo com as 'generateOptions'
+ * @param generateOptions 
+ * @param type 
+ */
 function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
 
     // Definir funções se for solenidade ou não
@@ -224,7 +248,6 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
 
     LineupScreenOptions.lineups = []
     LineupScreenOptions.days = generateOptions.dateset.days
-    LineupScreenOptions.daysNames = generateOptions.dateset.days
             
     let weekends = generateOptions.dateset.weekends
 
@@ -295,6 +318,11 @@ function ToggleDay(weekend:any,day:any,generateOptions:GenerationOptionsType){
     }
 }
 
+
+/**
+ * Seleção dos dias a serem gerados em uma escala mensal
+ * @returns 
+ */
 export function MonthDaySelection(){
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     let checks = []
@@ -325,9 +353,13 @@ export function MonthDaySelection(){
     )
 }
 
+/**
+ * Seleção dos dias de um único fim de semana
+ */
 export function DaySelection(){
     const {curWeekend} = contextStore()
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
+
     let days = generationOptions.dateset.days
     let checks = []
     for(let i = 0; i < days.length;i++){
@@ -349,6 +381,10 @@ export function DaySelection(){
     )
 }
 
+/**
+ * Seleção de um único dia para geração de uma escala individual
+ * @returns 
+ */
 function SingleDaySelection(){
     const {curWeekend,curDay,updateDay} = contextStore()
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
@@ -369,6 +405,12 @@ function SingleDaySelection(){
     )
 }
 
+/**
+ * Define os dias do mês para um único dia
+ * @param day 
+ * @param weekend 
+ * @param options 
+ */
 function SetSingleDay(day:string,weekend:string,options:GenerationOptionsType){
     options.monthDays = {}
     options.monthDays[weekend] = [day]

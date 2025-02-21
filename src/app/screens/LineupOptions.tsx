@@ -22,7 +22,7 @@ export default function LineupOptions(){
                 press={()=>{
                         setLineupType(LineupType.SINGLE)
                         genOptions.monthDays = {}
-                        genOptions.monthDays[Dates.defaultWeekends[0]] = Dates.defaultDays[0]
+                        genOptions.monthDays[Dates.defaultWeekends[0]] = [Dates.defaultDays[0]]
 
                 }}/>
        

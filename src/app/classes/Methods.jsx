@@ -153,24 +153,21 @@ export function RemoveMemberFromList(member,list){
  * @returns 
  */
 export function GenerateLineupPrompt(lines,rolesNames,roles){
-    let names = {"1stWE":"1˚", "2ndWE": "2˚", "3rdWE": "3˚", "4thWE":"4˚", "5thWE":"5˚",
-                 "sabado":"Sab. - 19h","domingoAM": "Dom. - 08h","domingoPM": "Dom. - 19h"}
-    
     let prompts = []
     for(let i = 0; i < lines.length; i++){
         let curLineup = lines[i]
-        let lineupName = names[curLineup.weekend] + " " + names[curLineup.day]
+        let lineupName = curLineup.weekend + " " + curLineup.day
         
         let members = []
-        let acolytesNicks = ""
+        let membersNicks = ""
         members.length = roles.length
         
         for(let j = 0; j < roles.length; j++){
-            members[j] = curLineup.line.get(roles[j])
-            acolytesNicks += members[j].nick+";"
+            members[j] = curLineup.line[roles[j]]
+            membersNicks += members[j].nick+";"
         }
 
-        prompts.push("{"+lineupName+"}"+"["+acolytesNicks+"]")
+        prompts.push("{"+lineupName+"}"+"["+membersNicks+"]")
     }
     
     let finalPrompt = "Construa uma tabela de escala de serviço com os títulos das colunas (funções) sendo, respectivamente: "
@@ -195,7 +192,6 @@ export const CopyToClipboard = async (text) => {
     await Clipboard.setStringAsync(text)
     
 }
-
 
 /** Organiza a lista de números em ordem crescente.
  * 
@@ -262,8 +258,6 @@ export function DistinctRandomNumbers(min,max,quant){
     return Array.from(numbers);
 }
 
-
-
 /** Escolhe um elemento aleatório na lista
  * 
  * @param {*} array Lista
@@ -297,61 +291,6 @@ export function ResetAllLastWeekend(members){
     members.forEach((member) => {
         member.lastWeekend = ""
     })
-}
-
-/** Converte uma escala flexível para uma escala de coroinha. Retorna null caso a escala possua chaves de funções que não são de coroinhas
- * 
- * @param {*} lineup Escala a ser convertida
- */
-export function FlexToCoroinhaLineup(lineup){
-    let lineKeys = Array.from(lineup.line.keys())
-    lineKeys.forEach((key) => {
-        if(GetIndexFromArray(key,coroinhaRoles) == -1){ // Chave do mapa a ser convetido não é de função de coroinha
-            console.error("Invalid lineup type!")
-            return null
-        }
-    })
-
-    let converted = new CoroinhaLineup()
-    
-    converted.coroinhas = lineup.members
-
-    lineKeys.forEach((key) => {
-        converted.line.set(key,lineup.line.get(key))
-    })
-    
-    converted.day = lineup.day
-    converted.weekend = lineup.weekend
-
-    return converted
-}
-
-/** Converte uma escala flexível para uma escala de acólito. Retorna null caso a escala possua chaves de funções que não são de acólitos
- * 
- * @param {*} lineup Escala a ser convertida
- */
-export function FlexToAcolyteLineup(lineup){
-    
-    let lineKeys = Array.from(lineup.line.keys())
-    lineKeys.forEach((key) => {
-        if(GetIndexFromArray(key,acolyteRoles) == -1){ // Chave do mapa a ser convetido não é de função de acólito
-            console.error("Invalid lineup type!")
-            return null
-        }
-    })
-
-    let converted = new Lineup()
-    
-    converted.acolytes = lineup.members
-
-    lineKeys.forEach((key) => {
-        converted.line.set(key,lineup.line.get(key))
-    })
-    
-    converted.day = lineup.day
-    converted.weekend = lineup.weekend
-
-    return converted
 }
 
 /**
