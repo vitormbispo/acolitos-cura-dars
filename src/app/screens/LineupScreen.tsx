@@ -1,8 +1,6 @@
 import { View,Text, ScrollView} from "react-native"
-import { ImageButton, TextButton, UpperBar} from "../classes/NewComps"
+import { ImageButton, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
 import { router } from "expo-router"
-import { Global } from "../Global"
-import { AcolyteData } from "../classes/AcolyteData"
 import { useRef, useState } from "react"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
 import { CopyToClipboard, GenerateLineupPrompt, GetMemberIndex, SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
@@ -50,7 +48,7 @@ export class LineupScreenOptions{
      * Carrega os dados da lineup:
      * @param line 
      */
-    public static LoadLineup(line){
+    public static LoadLineup(line:StructuredLineup){
         LineupScreenOptions.days = line.days
         LineupScreenOptions.lineupType = line.lineupType 
         LineupScreenOptions.lineups = line.lineups
@@ -80,12 +78,22 @@ class SwitchHandler{
 }
 
 export default function LineupScreen(){
-    const {type} = menuStore()
+    const {type, theme} = menuStore()
     // Rolagem
     
     const[scrollPosition, setScrollPosition] = useState(LineupScreenOptions.scrollPos);
     const scrollViewRef = useRef(LineupScreenOptions.scrollRef);
-
+    
+    const upperBtn = LineupScreenOptions.loaded ? <UpperButton img={ICONS.delete} press={()=>{
+        EraseLineup(LineupScreenOptions.loadedLineIndex,type)
+        router.back()
+    }}/>:
+    null
+    
+    /**
+     * Salva o estado do scroll da tela
+     * @param event 
+     */
     const handleScroll = (event:any) => {
         let pos = event.nativeEvent.contentOffset.y
         setScrollPosition(pos);
@@ -101,11 +109,17 @@ export default function LineupScreen(){
 
     return(
         <View style={{flex:1}}>
-            <View>
+            <View style={{flexDirection:'row', backgroundColor:theme.accentColor}}>
                 <UpperBar icon={ICONS.escala} screenName={"Escala:"}/>
+                {upperBtn}
             </View>
             
-            <ScrollView style={{flex:1}}>
+            <ScrollView 
+                style={{flex:1}}
+                ref={scrollViewRef}
+                onScroll={handleScroll}
+                onContentSizeChange={() => { scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false }); 
+            }}>
                 {lines}
             </ScrollView>
             
@@ -141,11 +155,11 @@ export function LineupMember(props:LineupMemberType) {
         <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center",alignContent:"center"}}>
             <Text style={textStyles.functionTitle}>{props.role} - </Text>
             <Text style={textStyles.memberNick}>{props.nick}</Text>
-            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/switch_ico.png")} imgStyle={uiStyles.buttonIcon} press={()=>{
+            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={ICONS.switch} imgStyle={uiStyles.buttonIcon} press={()=>{
                 ToggleSwitch(props.role,props.lineup)
             }}/>
 
-            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={require("@/src/app/shapes/subs_ico.png")} imgStyle={Global.styles.buttonIcons} press={()=>{
+            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={ICONS.subs} imgStyle={uiStyles.buttonIcon} press={()=>{
                 ReplaceMember(props.role,props.lineup)
             }}/>
         </View>
@@ -203,11 +217,13 @@ function GetRoleMember(role:string,lineup:Lineup):Member{
  */
 function GetMemberRole(member:Member,lineup:Lineup):string|null{
     let roles:Array<string> = lineup.roleset.set
-    roles.forEach((role)=>{
-        if(lineup.line[role] == member){
-            return role
+    
+    for(let i = 0; i < roles.length; i++){
+        let curRole = roles[i]
+        if(lineup.line[curRole] == member){
+            return curRole
         }
-    })
+    }
     return null
 }
 
@@ -233,7 +249,6 @@ function ToggleSwitch(role:string,lineup:Lineup){
         SwitchMembers(SwitchHandler.switchingMember,SwitchHandler.switchingMemberLineup,SwitchHandler.memberSwitched,SwitchHandler.memberSwitchedLineup)
         router.replace("/screens/LineupScreen")
     }     
-            
 }
 /**
  * Troca os membros
@@ -306,8 +321,26 @@ function ReplaceMember(role:string,lineup:Lineup){
  * Exclui uma escala da lista do histórico de escalas dado o índice.
  * @param index Índice a ser excluído
  */
-function EraseLineup(index:number){
-    AcolyteData.allLineups.splice(index,1)
+function EraseLineup(index:number,type:MemberType){
+    let lineupsList:Array<StructuredLineup>
+    switch (type){
+        case MemberType.ACOLYTE:
+            lineupsList = MemberData.allLineupsAcolytes
+            break
+        case MemberType.COROINHA:
+            lineupsList = MemberData.allLineupsCoroinhas
+            break
+    }
+    lineupsList.splice(index,1)
+    
+    switch(type){
+        case MemberType.ACOLYTE:
+            SaveAcolyteData()
+            break
+        case MemberType.COROINHA:
+            SaveCoroinhaData()
+            break
+    }
 }
 
 /**
@@ -318,10 +351,12 @@ function SaveAllLineups(type:MemberType){
     if(!LineupScreenOptions.loaded){
         switch(type){
             case MemberType.ACOLYTE:
+                LineupScreenOptions.name = "Escala | Acólitos "+(MemberData.allLineupsAcolytes.length+1)
                 MemberData.allLineupsAcolytes = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsAcolytes) // Inserindo nova escala no início. Poupa um sort
                 SaveAcolyteData()
                 break
             case MemberType.COROINHA:
+                LineupScreenOptions.name = "Escala | Coroinhas "+(MemberData.allLineupsCoroinhas.length+1)
                 MemberData.allLineupsCoroinhas = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsCoroinhas)
                 SaveCoroinhaData()
                 break
@@ -343,6 +378,10 @@ function SaveAllLineups(type:MemberType){
         }
     }
 }
+
+/**
+ * Copia um prompt para o Gemini à área de transferência.
+ */
 function CopyGeminiPrompt(){
     CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,LineupScreenOptions.roles,LineupScreenOptions.roles))
 }

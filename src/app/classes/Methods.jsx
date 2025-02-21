@@ -342,7 +342,7 @@ export function ShufflePriorities(members){
  */
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes,replacer))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
 }
 
 /**
@@ -350,7 +350,7 @@ export function SaveAcolyteData(){
  */
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas,replacer))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
 }
 
 export function replacer(key, value){

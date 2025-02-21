@@ -3,9 +3,13 @@ import { RowImageButton, UpperBar } from "../classes/NewComps";
 import { AcolyteData } from "../classes/AcolyteData";
 
 import { ImageButton } from "../classes/NewComps";
-import { RandomNumber } from "../classes/Methods";
+import { RandomNumber, SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
+import { menuStore } from "../store/store";
+import { MemberData, MemberType } from "../classes/MemberData";
+import { StructuredLineup } from "../classes/Lineup";
+import { ICONS } from "../classes/AssetManager";
 
 export class LineupList{
     static lines = [];
@@ -15,7 +19,7 @@ export default function LineupListScreen(){
     let lines = FetchLineupList();
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName="Escalas"/>
+            <UpperBar icon={ICONS.escala} screenName="Escalas"/>
             <ScrollView style={{flex:1}}>
                 {lines}
             </ScrollView>
@@ -29,12 +33,44 @@ export default function LineupListScreen(){
  * @returns Array
  */
 export function FetchLineupList(){
+    const {type} = menuStore()
+    
+    let lineupList:Array<StructuredLineup>
     let lineups = []
     let index = 0;
 
-    if(AcolyteData.allLineups == null){return []}
-    AcolyteData.allLineups.forEach((line) =>{
-        lineups.push(<RowImageButton img={require("@/src/app/item_icons/escala_icomdpi.png")} text={line.name} key={index} press={(i = this.key)=>{LineupScreenOptions.LoadLineup(line), LineupScreenOptions.loaded=true,LineupScreenOptions.loadedLineIndex=i, LineupScreenOptions.scrollPos=0, router.push("/screens/LineupScreen")}}/>)
+    switch (type){
+        case MemberType.ACOLYTE:
+            lineupList = MemberData.allLineupsAcolytes
+            break
+        case MemberType.COROINHA:
+            lineupList = MemberData.allLineupsCoroinhas
+            break
+    }
+
+    if(lineupList == null){return []}
+    lineupList.forEach((line) =>{
+        if(line == null){
+            console.error("Invalid lineup. Erasing it.")
+            lineupList.splice(index,1)
+            
+            switch(type){
+                case MemberType.ACOLYTE:
+                    SaveAcolyteData()
+                    break
+                case MemberType.COROINHA:
+                    SaveCoroinhaData()
+                    break
+            }
+
+            return
+        }
+        lineups.push(<RowImageButton img={ICONS.escala} text={line.name} key={index} press={(i = this.key)=>{
+            LineupScreenOptions.LoadLineup(line), 
+            LineupScreenOptions.loaded=true,
+            LineupScreenOptions.loadedLineIndex=i, 
+            LineupScreenOptions.scrollPos=0, 
+            router.push("/screens/LineupScreen")}}/>)
         index++;
     })
     return lineups
