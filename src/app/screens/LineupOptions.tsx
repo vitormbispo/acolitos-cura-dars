@@ -18,7 +18,7 @@ export default function LineupOptions(){
                 {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala única"
-                link="/screens/SingleLineup"
+                link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.SINGLE)
                         genOptions.monthDays = {}
@@ -30,7 +30,7 @@ export default function LineupOptions(){
                 {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala de fim de semana"
-                link="/screens/SingleLineup"
+                link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.WEEKEND)
                         genOptions.monthDays = {}
@@ -41,7 +41,7 @@ export default function LineupOptions(){
                 {textStyles.buttonText}
                 img={require("@/src/app/item_icons/users_icomdpi.png")}
                 text ="Gerar escala mensal"
-                link="/screens/SingleLineup"
+                link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.MONTH)
                         genOptions.monthDays = Dates.DefaultMonthDays()                  

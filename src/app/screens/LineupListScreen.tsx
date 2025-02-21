@@ -1,9 +1,6 @@
 import { ScrollView, View } from "react-native";
 import { RowImageButton, UpperBar } from "../classes/NewComps";
-import { AcolyteData } from "../classes/AcolyteData";
-
-import { ImageButton } from "../classes/NewComps";
-import { RandomNumber, SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
+import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";

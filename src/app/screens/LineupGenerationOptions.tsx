@@ -2,7 +2,7 @@ import { View, Text, ScrollView} from "react-native"
 import { Global } from "../Global"
 import { CheckBox,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
-import { GenerateLineup, GenerateRandomLineup } from "../classes/FlexLineupGenerator"
+import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
@@ -44,7 +44,7 @@ enum Randomness{
 /**
  * Tela das opções de geração de escalas.
  */
-export default function LineupOptions(){    
+export default function LineupGenerationOptions(){    
     const {lineupType,curGenOptions} = contextStore()
     let options:React.JSX.Element
 

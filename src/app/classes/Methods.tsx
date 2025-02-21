@@ -1,22 +1,15 @@
-import { Acolyte, AcolyteData } from "./AcolyteData";
-import { CoroinhaData } from "./CoroinhaData";
-import { CoroinhaLineup } from "./CoroinhaLineup";
-import { Lineup } from "./Lineup";
-import { MemberType } from "./Member";
+import { Member, MemberType } from "./MemberData";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
-
-// Globais
-export let coroinhaRoles = ["donsD","donsE","cestD","cestE"] // Funções coroinhas
-export let acolyteRoles = ["cero1","cero2","cruci","libri","turib","navet"] // Funções acóitos
+import { Lineup } from "./Lineup";
 
 /**
  * Organiza a *array* de membros em ordem alfabética.
- * @param {Array<Coroinha|Acolyte>} array Lista com os membros
+ * @param {Array<Member>} array Lista com os membros
  * @returns 
  */
-export function OrganizeMemberArrayAlpha(array){
+export function OrganizeMemberArrayAlpha(array:Array<Member>){
     let j = array.length-1
     let aux = array[0]
     
@@ -34,10 +27,10 @@ export function OrganizeMemberArrayAlpha(array){
 
 /** Encontra o índice do último membro da *array* na ordem alfabética
  * 
- * @param {Array<Coroinha|Acolyte>} array Lista de membros
+ * @param {Array<Member>} array Lista de membros
  * @returns 
  */
-export function LastMemberByNameIndex(array){
+export function LastMemberByNameIndex(array:Array<Member>){
     let last = 0
     for(let i = 0; i < array.length;i++){
         let curAco = array[i]
@@ -49,62 +42,25 @@ export function LastMemberByNameIndex(array){
     return last
 }
 
-/**
- * Encontra um acólito na lista geral com determinado nome ou null caso o acólito não exista.
- * @param {string} name Nome do acólito
- * @returns 
- */
-export function GetAcolyteByName(name){
-    for(let i = 0; i < AcolyteData.allAcolytes.length; i++){
-        let curAco = AcolyteData.allAcolytes[i]
-
-        if(curAco.name == name){
-            return curAco
-        }
-    }
-
-    return null
-}
-
-export function GetMemberByName(name,type){
-    let members = (type == MemberType.ACOLYTE) ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
-    for(let i = 0; i < members.length;i++){
-        let curMember = members[i]
-
-        if(curMember.name == name){
-            return curMember
-        }
-    }
-    return null
-}
-
-/**
- * Encontra o índice do acólito dado ou -1 caso o acólito não esteja na lista.
- * @param {Acolyte} acolyte 
- * @returns 
- */
-export function GetAcolyteIndex(acolyte){
-    if(acolyte != null){
-        for(let i = 0; i < AcolyteData.allAcolytes.length;i++){
-            let curAco = AcolyteData.allAcolytes[i]
-    
-            if(curAco == acolyte){
-                return i
-            }
-        }
-    
-        return -1
-    }
-    return -1
-}
 
 /**
  * Encontra o índice do membro dado ou -1 caso o membro não esteja na lista.
- * @param {Acolyte} acolyte 
+ * @param {Member} member membro
+ * @param {MemberType} type tipo de membro
  * @returns 
  */
-export function GetMemberTypeIndex(member,type){
-    let members = type == MemberType.ACOLYTE ? AcolyteData.allAcolytes : CoroinhaData.allCoroinhas
+export function GetMemberTypeIndex(member:Member,type:MemberType):number{
+    let members:Array<Member>
+    
+    switch(type){
+        case MemberType.ACOLYTE:
+            members = MemberData.allAcolytes
+            break
+        case MemberType.COROINHA:
+            members = MemberData.allCoroinhas
+            break
+    }
+    
     if(member == null){return -1}
 
     for(let i = 0; i < members.length;i++){
@@ -119,11 +75,11 @@ export function GetMemberTypeIndex(member,type){
 
 /**
  * Encontra o índice do membro em determinada lista.
- * @param {Coroinha|Acolyte} member Mebro
- * @param {Array<Coroinha|Acolyte>} list Lista a procurar
+ * @param {Member} member Mebro
+ * @param {Array<Member>} list Lista a procurar
  * @returns 
  */
-export function GetMemberIndex(member,list){
+export function GetMemberIndex(member:Member,list:Array<Member>){
     let chosen = -1
     let i = 0
 
@@ -138,21 +94,20 @@ export function GetMemberIndex(member,list){
 
 /** Remove um membro da lista.
  * 
- * @param {*} member Membro a ser removido da lista
- * @param {*} list Lista alvo
+ * @param {Member} member Membro a ser removido da lista
+ * @param {Array<Member>} list Lista alvo
  */
-export function RemoveMemberFromList(member,list){
+export function RemoveMemberFromList(member:Member,list:Array<Member>){
     list.splice(GetMemberIndex(member,list),1)
 }
 
 /**
  * Gera um prompt Gemini para se gerar uma planilha no Google Sheets.
- * @param {*} lines Escalas
- * @param {*} rolesNames Nomes das funções
- * @param {*} roles Funções
+ * @param {Array<Lineup>} lines Escalas
+ * @param {Array<string>} roles Funções
  * @returns 
  */
-export function GenerateLineupPrompt(lines,rolesNames,roles){
+export function GenerateLineupPrompt(lines:Array<Lineup>,roles:Array<string>):string{
     let prompts = []
     for(let i = 0; i < lines.length; i++){
         let curLineup = lines[i]
@@ -172,8 +127,8 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
     
     let finalPrompt = "Construa uma tabela de escala de serviço com os títulos das colunas (funções) sendo, respectivamente: "
 
-    for (let i = 0; i < rolesNames.length;i++){ //Adiciona as colunas com as funções
-        finalPrompt += rolesNames[i]+", "
+    for (let i = 0; i < roles.length;i++){ //Adiciona as colunas com as funções
+        finalPrompt += roles[i]+", "
     }
 
     finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela. Construa a tabela por completo: "
@@ -186,18 +141,18 @@ export function GenerateLineupPrompt(lines,rolesNames,roles){
 
 /**
  * Copia o texto para a área de transferência do aparelho.
- * @param {*} text Texto
+ * @param {string} text Texto
  */
-export const CopyToClipboard = async (text) => {
+export const CopyToClipboard = async (text:string) => {
     await Clipboard.setStringAsync(text)
     
 }
 
 /** Organiza a lista de números em ordem crescente.
  * 
- * @param array Lista de números
+ * @param {Array<string>} array Lista de números
  */
-export function SortByNumber(array){
+export function SortByNumber(array:Array<number>){
     let j = 0
     for(let i = 0; i < array.length; i++){
         let aux = Number(array[array.length-1])
@@ -209,12 +164,12 @@ export function SortByNumber(array){
 }
 /** Encontra o índice do maior valor numérico da lista. Transforma strings em números
  * 
- * @param array Lista de números a ser organizada. Número ou string
- * @param start Índice inicial
- * @param end Índice final
- * @returns O índice do maior número da lista
+ * @param {Array<number>} array Lista de números a ser organizada. Número ou string
+ * @param {number} start Índice inicial
+ * @param {number} end Índice final
+ * @returns {number} O índice do maior número da lista
  */
-export function GetGreatestNumIndex(array,start,end){
+export function GetGreatestNumIndex(array:Array<number|string>,start:number,end:number):number{
     let great = start
     for(let i = start; i < end; i++){
         if(Number(array[i]) > Number(array[great])){
@@ -231,7 +186,7 @@ export function GetGreatestNumIndex(array,start,end){
  * @param {Number} max Máximo
  * @returns 
  */
-export function RandomNumber(min, max) {
+export function RandomNumber(min:number, max:number) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
@@ -242,7 +197,7 @@ export function RandomNumber(min, max) {
  * @param {*} quant Tamanho da lista
  * @returns 
  */
-export function DistinctRandomNumbers(min,max,quant){
+export function DistinctRandomNumbers(min:number,max:number,quant:number):any{
     
     if(quant > (max-min)+1){
         console.error("Quantidade de números maior que o intervalo.")
@@ -260,10 +215,10 @@ export function DistinctRandomNumbers(min,max,quant){
 
 /** Escolhe um elemento aleatório na lista
  * 
- * @param {*} array Lista
+ * @param {Array<any>} array Lista
  * @returns 
  */
-export function GetRandom(array){
+export function GetRandom(array:Array<any>){
     return array[RandomNumber(0,array.length-1)]
 }
 
@@ -273,7 +228,7 @@ export function GetRandom(array){
  * @param array Lista de membros
  * @returns Membro está na lista
  */
-export function HasMember(member,array) {
+export function HasMember(member:Member,array:Array<Member>):boolean {
     for(let i = 0; i < array.length;i++){
         if(array[i] == member){
             return true
@@ -285,9 +240,9 @@ export function HasMember(member,array) {
 
 /**
  * Reinicia o último final de semana de todos os membros da lista.
- * @param {*} members Lista de membros
+ * @param {Array<Member>} members Lista de membros
  */
-export function ResetAllLastWeekend(members){
+export function ResetAllLastWeekend(members:Array<Member>){
     members.forEach((member) => {
         member.lastWeekend = ""
     })
@@ -297,9 +252,9 @@ export function ResetAllLastWeekend(members){
  * Embaralha os elementos da array. 
  * @param array Array<any>
  */
-export function ShuffleArray(array){
-    auxIndex = 0
-    aux = array[auxIndex]
+export function ShuffleArray(array:Array<any>){
+    let auxIndex = 0
+    let aux = array[auxIndex]
     
     for(let i = 0; i < array.length; i++){
         let newIndex = RandomNumber(0,array.length-1)
@@ -313,11 +268,11 @@ export function ShuffleArray(array){
 
 /**
  * Retorna o índice de algo na array
- * @param {*} obj Objeto
- * @param {*} array Array
+ * @param {any} obj Objeto
+ * @param {Array<any>} array Array
  * @returns Índice
  */
-export function GetIndexFromArray(obj,array){
+export function GetIndexFromArray(obj:any,array:Array<any>){
     for(let i = 0; i < array.length; i++){
         if(array[i] == obj){
             return i
@@ -329,9 +284,9 @@ export function GetIndexFromArray(obj,array){
 
 /**
  * Define as prioridades de todos os membros da lista para uma prioridade aleatória entre 0 e 4.
- * @param {*} members Lista de membros
+ * @param {Array<Member>} members Lista de membros
  */
-export function ShufflePriorities(members){
+export function ShufflePriorities(members:Array<Member>){
     members.forEach((member) => {
         member.priority = RandomNumber(0,4)
     })
@@ -351,25 +306,4 @@ export function SaveAcolyteData(){
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
-}
-
-export function replacer(key, value){
-    if(value instanceof Map){
-        return{
-            dataType: "Map",
-            value: Array.from(value.entries())
-        }
-    }
-    else{
-        return value
-    }
-}
-
-export function reviver(key,value){
-    if(typeof value === "object" && value !== null){
-        if(value.dataType === "Map"){
-            return new Map(value.value)
-        }
-    }
-    return value  
 }

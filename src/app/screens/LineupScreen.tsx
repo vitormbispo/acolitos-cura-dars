@@ -10,10 +10,6 @@ import {ICONS} from "../classes/AssetManager"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
 import { MemberSelectScreenOptions } from "./MemberSelectScreen"
 
-
-// TODO Otimizar essa tela e aplicar mudanças na geração semanal e mensal.
-// TODO Consertar seleção da geração de fim de semana para que tenha um valor inicial padrão e para que não precise
-// 
 export class LineupScreenOptions{
     static name = "Nova escala"
     static lineupType = "Single" // Tipo da escala
@@ -383,5 +379,5 @@ function SaveAllLineups(type:MemberType){
  * Copia um prompt para o Gemini à área de transferência.
  */
 function CopyGeminiPrompt(){
-    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,LineupScreenOptions.roles,LineupScreenOptions.roles))
+    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,LineupScreenOptions.roles))
 }

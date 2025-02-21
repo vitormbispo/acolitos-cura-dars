@@ -1,9 +1,7 @@
 import { View,Image,Text, ScrollView, TouchableOpacity } from "react-native";
 import { UpperBar, VisualCheckBox } from "../classes/NewComps";
-import { Acolyte, AcolyteData } from "../classes/AcolyteData";
 import { useState } from "react";
 import { Lineup } from "../classes/Lineup";
-import { Coroinha } from "../classes/CoroinhaData";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { menuStore } from "../store/store";
 
