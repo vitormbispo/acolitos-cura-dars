@@ -37,12 +37,8 @@ export function FetchLineupList(){
     let index = 0;
 
     switch (type){
-        case MemberType.ACOLYTE:
-            lineupList = MemberData.allLineupsAcolytes
-            break
-        case MemberType.COROINHA:
-            lineupList = MemberData.allLineupsCoroinhas
-            break
+        case MemberType.ACOLYTE:lineupList = MemberData.allLineupsAcolytes;break
+        case MemberType.COROINHA:lineupList = MemberData.allLineupsCoroinhas;break
     }
 
     if(lineupList == null){return []}
@@ -52,17 +48,14 @@ export function FetchLineupList(){
             lineupList.splice(index,1)
             
             switch(type){
-                case MemberType.ACOLYTE:
-                    SaveAcolyteData()
-                    break
-                case MemberType.COROINHA:
-                    SaveCoroinhaData()
-                    break
+                case MemberType.ACOLYTE:SaveAcolyteData();break
+                case MemberType.COROINHA:SaveCoroinhaData();break
             }
 
             return
         }
-        lineups.push(<RowImageButton img={ICONS.escala} text={line.name} key={index} press={(i = this.key)=>{
+        lineups.push(
+        <RowImageButton img={ICONS.escala} text={line.name} key={index} press={(i = this.key)=>{
             LineupScreenOptions.LoadLineup(line), 
             LineupScreenOptions.loaded=true,
             LineupScreenOptions.loadedLineIndex=i, 

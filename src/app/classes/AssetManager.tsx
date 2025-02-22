@@ -1,5 +1,6 @@
-import { GetMemberIcon } from "./NewComps";
-
+/**
+ * Ícones diversos
+ */
 export const ICONS = {
     edit:require("@/src/app/item_icons/edit_icomdpi.png"),
     escala:require("@/src/app/item_icons/escala_icomdpi.png"),

@@ -1,11 +1,13 @@
-
+/**
+ * Tipo de membro
+ */
 export enum MemberType{
     ACOLYTE,
     COROINHA
 }
 
 /**
- * Classe base do acólito
+ * Classe base dos membros
  */
 export class Member {
     TYPE:MemberType = MemberType.ACOLYTE // Tipo de membro
@@ -53,7 +55,7 @@ export class Member {
 }
 
 /**
- *  Dados armazenados dos acólitos
+ *  Dados armazenados dos Membros
  */
 export class MemberData{ 
     static allAcolytes: Member[] = []

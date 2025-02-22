@@ -67,6 +67,10 @@ export const textStyles = StyleSheet.create({
         fontFamily:"Inter-Bold",
         fontSize:20
     },
+    textButtonText:{
+        fontSize:16,
+        fontFamily:"Inter-Regular" 
+    },
     lineupTitle:{
         fontFamily:"Inter-Bold",
         fontSize:20,

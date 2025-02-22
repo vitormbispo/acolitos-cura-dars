@@ -1,9 +1,7 @@
 import  Home  from "./screens/HomeScreen"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { CoroinhaData } from "./classes/CoroinhaData"
-import { AcolyteData } from "./classes/AcolyteData"
-import { DistinctRandomNumbers, OrganizeMemberArrayAlpha, reviver } from "./classes/Methods"
+import { OrganizeMemberArrayAlpha} from "./classes/Methods"
 import { MemberData, MemberType } from "./classes/MemberData";
 import { Roles } from "./classes/Roles";
 
@@ -29,12 +27,20 @@ export const loadAcolyteData = async() => {
         let acolyteData = await AsyncStorage.getItem("AcolyteData")
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         MemberData.allAcolytes = JSON.parse(acolyteData)
-        MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups,reviver)
+        MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
         
         OrganizeMemberArrayAlpha(MemberData.allAcolytes)
+
+        if (MemberData.allAcolytes == null || MemberData.allAcolytes == undefined){
+            MemberData.allAcolytes = []
+        }
+        if (MemberData.allLineupsAcolytes == null || MemberData.allLineupsAcolytes == undefined){
+            MemberData.allLineupsAcolytes = []
+        }
     } catch (error) {
         console.log(error)
     }
+
 }
 
 /**
@@ -45,44 +51,34 @@ const loadCoroinhaData = async() => {
         let coroinhaData = await AsyncStorage.getItem("CoroinhaData")
         let coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
         MemberData.allCoroinhas = JSON.parse(coroinhaData)
-        MemberData.allLineupsCoroinhas = JSON.parse(coroinhaLineups,reviver)
+        MemberData.allLineupsCoroinhas = JSON.parse(coroinhaLineups)
 
         OrganizeMemberArrayAlpha(MemberData.allCoroinhas)
+
+        if (MemberData.allCoroinhas == null || MemberData.allCoroinhas == undefined){
+            MemberData.allCoroinhas = []
+        }
+        if (MemberData.allLineupsCoroinhas == null || MemberData.allLineupsCoroinhas == undefined){
+            MemberData.allLineupsCoroinhas = []
+        }
+
+        
+        
+
     } catch (error) {
         console.log(error)
     }
 }
 
 export default function App() {
-    if(!appStarted){
-        console.log("Starting!")
-        
-        loadAcolyteData()
-        loadCoroinhaData()
-
-        if (MemberData.allCoroinhas == null){
-            MemberData.allCoroinhas = []
-        }
-        if (MemberData.allLineupsCoroinhas == null){
-            MemberData.allLineupsCoroinhas = []
-        }
-
-        if (MemberData.allAcolytes == null){
-            MemberData.allAcolytes = []
-        }
-        if (MemberData.allLineupsAcolytes == null){
-            MemberData.allLineupsAcolytes = []
-        }
-        
-        if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets == undefined){
-            Roles.InitializeSets(MemberType.ACOLYTE)
-        }
-
-        if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets == undefined){
-            Roles.InitializeSets(MemberType.COROINHA)
-        }
-        
-        appStarted = true
+    loadAcolyteData()
+    loadCoroinhaData()
+    if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets == undefined || Roles.acolyteRoleSets.length == 0){
+        Roles.InitializeSets(MemberType.ACOLYTE)
+    }
+    
+    if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets == undefined || Roles.coroinhaRoleSets.length == 0){
+        Roles.InitializeSets(MemberType.COROINHA)
     }
     
     return (

@@ -1,14 +1,17 @@
 import { View } from "react-native"
 import { LinkRowImageButton, UpperBar} from "../classes/NewComps"
 import { textStyles } from "../styles/GeneralStyles"
-import { contextStore } from "../store/store"
+import { contextStore, menuStore } from "../store/store"
 import { LineupType } from "../classes/Lineup"
 import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
+import { Roles } from "../classes/Roles"
+import LineupListScreen from "./LineupListScreen"
 
 
 export default function LineupOptions(){
-    const {setLineupType} = contextStore()
+    const {setLineupType,updateWeekend} = contextStore()
+    const {type} = menuStore()
     const genOptions = contextStore(useShallow((state)=>state.curGenOptions))
     return(
     <View style={{flex:1}}>
@@ -21,8 +24,9 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.SINGLE)
+                        genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
-                        genOptions.monthDays[Dates.defaultWeekends[0]] = [Dates.defaultDays[0]]
+                        genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = [Dates.defaultDays.slice()[0]]
 
                 }}/>
        
@@ -33,8 +37,11 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.WEEKEND)
+                        genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
-                        genOptions.monthDays[Dates.defaultWeekends[0]] = Dates.defaultDays
+                        genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = Dates.defaultDays.slice()
+                        updateWeekend(Dates.defaultWeekends.slice()[0])
+
                 }}/>
         
         <LinkRowImageButton textStyle=
@@ -44,7 +51,10 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.MONTH)
-                        genOptions.monthDays = Dates.DefaultMonthDays()                  
+                        genOptions.roleset = Roles.GetDefaultRoleset(type)
+                        genOptions.monthDays = {}  
+                        genOptions.monthDays = Dates.DefaultMonthDays()
+                                  
                 }}/>
         
         <LinkRowImageButton textStyle=

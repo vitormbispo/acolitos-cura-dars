@@ -8,6 +8,7 @@ import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
 import { WeekendAvailability } from "./NewMember";
+import { textStyles } from "../styles/GeneralStyles";
 
 export class EditMemberScreen{
     static id:number = 0
@@ -38,25 +39,25 @@ export default function EditMember(){
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                default={curMember.name} 
+                placeholder={curMember.name} 
                 onChangeText={(text:string)=>curMember.name=text.toString()}/>
 
             <TextInputBox 
                 title={"-Apelido: "} 
                 enabled={true} 
-                default={curMember.nick} 
+                placeholder={curMember.nick} 
                 onChangeText={(text:string)=>curMember.nick=text.toString()}
                 maxLength={12}/>
 
             <TextInputBox 
                 title={"-Responsável: "} 
                 enabled={type == MemberType.COROINHA} 
-                default={curMember.parents}
+                placeholder={curMember.parents}
                 onChangeText={(text:any)=>curMember.parents=text.toString()}/>
 
             <TextInputBox 
                 title={"-Contato: "} 
-                enabled={true} default={curMember.contact} 
+                enabled={true} placeholder={curMember.contact} 
                 keyboardType="numeric" 
                 onChangeText={(text:string)=>curMember.contact = text.toString()}/>
 
@@ -84,7 +85,7 @@ export default function EditMember(){
             </View>
             
             {/*} Botão concluir {*/}
-            <TextButton buttonStyle={{alignSelf:"center"}} text="Concluir" press={()=>{
+            <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>{
                 let storageData:string // Nome da chave do AsyncStorage
                 let members:Array<any> // Lista de todos os acólitos ou coroinhas
 
@@ -117,13 +118,15 @@ export function EraseMember(id:number,type:MemberType){
     let members:Array<Member>
     let data:string
 
-    if(type == MemberType.ACOLYTE){
-        members = MemberData.allAcolytes
-        data = "AcolyteData"
-    }
-    else{
-        members = MemberData.allCoroinhas
-        data = "CoroinhaData"
+    switch (type){
+        case MemberType.ACOLYTE:
+            members = MemberData.allAcolytes
+            data = "AcolyteData"
+            break
+        case MemberType.COROINHA:
+            members = MemberData.allCoroinhas
+            data = "CoroinhaData"
+            break
     }
 
     members.splice(id,1)
@@ -132,5 +135,3 @@ export function EraseMember(id:number,type:MemberType){
     router.back()
     router.back()
 }
-
-

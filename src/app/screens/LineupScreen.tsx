@@ -12,8 +12,7 @@ import { MemberSelectScreenOptions } from "./MemberSelectScreen"
 
 export class LineupScreenOptions{
     static name = "Nova escala"
-    static lineupType = "Single" // Tipo da escala
-    static roles = ["cero1","cero2","cruci","turib","navet","libri"]
+    static roles = ["Ceroferário 1","Ceroferário 2","Cruciferário","Turiferário","Naveteiro","Librífero"]
 
     static days = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
 
@@ -31,7 +30,6 @@ export class LineupScreenOptions{
         let line = new StructuredLineup()
     
         line.days = LineupScreenOptions.days
-        line.lineupType = LineupScreenOptions.lineupType
         line.lineups = LineupScreenOptions.lineups
         line.monthLineups = LineupScreenOptions.monthLineups
         line.roles = LineupScreenOptions.roles
@@ -46,7 +44,6 @@ export class LineupScreenOptions{
      */
     public static LoadLineup(line:StructuredLineup){
         LineupScreenOptions.days = line.days
-        LineupScreenOptions.lineupType = line.lineupType 
         LineupScreenOptions.lineups = line.lineups
         LineupScreenOptions.monthLineups = line.monthLineups
         LineupScreenOptions.roles = line.roles 
@@ -61,10 +58,8 @@ export class LineupScreenOptions{
 // Gerenciador de trocas e substituições de membros
 class SwitchHandler{
     static isSwitching = false
-    static switchingMember:Member // Membro que está sendo trocado
-    static memberSwitched:Member // Membro que entrará no lugar do trocado
-
-
+    static switchingRole:string // Função do membro que está sendo trocado
+    static roleSwitched:string // Função do membro que entrará no lugar
     static switchingMemberLineup:Lineup
     static memberSwitchedLineup:Lineup
 
@@ -121,11 +116,11 @@ export default function LineupScreen(){
             
 
             <View style={uiStyles.rowButtonContainer}>
-                <TextButton text="Gerar prompt Gemini" press={()=>{
+                <TextButton textStyle={textStyles.textButtonText} text="Gerar prompt Gemini" press={()=>{
                     CopyGeminiPrompt()
                 }}/>
 
-                <TextButton text="Salvar escalas" press={()=>{
+                <TextButton textStyle={textStyles.textButtonText} text="Salvar escalas" press={()=>{
                     SaveAllLineups(type)
                 }}/>
             </View> 
@@ -206,25 +201,6 @@ function GetRoleMember(role:string,lineup:Lineup):Member{
 }
 
 /**
- * Retorna a função que o 'membro' está escalado em determinada 'escala'.
- * @param member Membro
- * @param lineup Escala
- * @returns 
- */
-function GetMemberRole(member:Member,lineup:Lineup):string|null{
-    let roles:Array<string> = lineup.roleset.set
-    
-    for(let i = 0; i < roles.length; i++){
-        let curRole = roles[i]
-        if(lineup.line[curRole] == member){
-            return curRole
-        }
-    }
-    return null
-}
-
-
-/**
  * Alterna o estado da troca de membros.
  * Caso não esteja no estado 'trocando', define o membro a ser trocado e entra no estado 'trocando'.
  * Se já está no estado, define o membro a ser trocado, realiza a troca e atualiza a tela.
@@ -232,17 +208,16 @@ function GetMemberRole(member:Member,lineup:Lineup):string|null{
  * @param lineup 
  */
 function ToggleSwitch(role:string,lineup:Lineup){
-    let thisMember = GetRoleMember(role,lineup)
     if(!SwitchHandler.isSwitching){
-        SwitchHandler.switchingMember = thisMember
+        SwitchHandler.switchingRole = role
         SwitchHandler.switchingMemberLineup = lineup
         SwitchHandler.isSwitching = true
     }
     else{
-        SwitchHandler.memberSwitched = thisMember
+        SwitchHandler.roleSwitched = role
         SwitchHandler.memberSwitchedLineup = lineup
         SwitchHandler.isSwitching = false
-        SwitchMembers(SwitchHandler.switchingMember,SwitchHandler.switchingMemberLineup,SwitchHandler.memberSwitched,SwitchHandler.memberSwitchedLineup)
+        SwitchMembers(SwitchHandler.switchingRole,SwitchHandler.switchingMemberLineup,SwitchHandler.roleSwitched,SwitchHandler.memberSwitchedLineup)
         router.replace("/screens/LineupScreen")
     }     
 }
@@ -255,21 +230,22 @@ function ToggleSwitch(role:string,lineup:Lineup){
  * @param switchingLineup Escala a ser trocado
  * @param switchedLineup Escala que substituirá
  */
-function SwitchMembers(switching:Member,switchingLineup:Lineup,switched:Member,switchedLineup:Lineup){
+
+function SwitchMembers(switchingRole:string,switchingLineup:Lineup,switchedRole:string,switchedLineup:Lineup){
     
-    let switchingRole:string = GetMemberRole(switching,switchingLineup)
-    let switchedRole:string = GetMemberRole(switched,switchedLineup)
-    if(switching != null){
-        switching.rodizio[switchingRole]=6
-        switching.rodizio[switchedRole]=switching.oldRodizio[switchedRole]
+    let switchingMember:Member = GetRoleMember(switchingRole,switchingLineup)
+    let switchedMember:Member = GetRoleMember(switchedRole,switchedLineup)
+    if(switchingMember != null){
+        switchingMember.rodizio[switchingRole]=6
+        switchingMember.rodizio[switchedRole]=switchingMember.oldRodizio[switchedRole]
     }
-    if(switched != null){
-        switched.rodizio[switchedRole]=6
-        switched.rodizio[switchingRole]=switched.oldRodizio[switchingRole]
+    if(switchedMember != null){
+        switchedMember.rodizio[switchedRole]=6
+        switchedMember.rodizio[switchingRole]=switchedMember.oldRodizio[switchingRole]
     }
     
-    switchingLineup.line[switchingRole] = switched
-    switchedLineup.line[switchedRole] = switching
+    switchingLineup.line[switchingRole] = switchedMember
+    switchedLineup.line[switchedRole] = switchingMember
 }
 
 /**
@@ -320,22 +296,14 @@ function ReplaceMember(role:string,lineup:Lineup){
 function EraseLineup(index:number,type:MemberType){
     let lineupsList:Array<StructuredLineup>
     switch (type){
-        case MemberType.ACOLYTE:
-            lineupsList = MemberData.allLineupsAcolytes
-            break
-        case MemberType.COROINHA:
-            lineupsList = MemberData.allLineupsCoroinhas
-            break
+        case MemberType.ACOLYTE:lineupsList = MemberData.allLineupsAcolytes;break
+        case MemberType.COROINHA:lineupsList = MemberData.allLineupsCoroinhas;break
     }
     lineupsList.splice(index,1)
     
     switch(type){
-        case MemberType.ACOLYTE:
-            SaveAcolyteData()
-            break
-        case MemberType.COROINHA:
-            SaveCoroinhaData()
-            break
+        case MemberType.ACOLYTE:SaveAcolyteData();break
+        case MemberType.COROINHA:SaveCoroinhaData();break
     }
 }
 

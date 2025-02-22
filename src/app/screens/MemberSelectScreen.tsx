@@ -17,14 +17,11 @@ export class MemberSelectScreenOptions{
 export default function List(){
     const members = []
     const {type} = menuStore()
-    let lineup = MemberSelectScreenOptions.lineup
 
     let all:Array<Member>
     switch (type){
-        case MemberType.ACOLYTE:
-            all = MemberData.allAcolytes; break
-        case MemberType.COROINHA:
-            all = MemberData.allCoroinhas; break
+        case MemberType.ACOLYTE:all = MemberData.allAcolytes; break
+        case MemberType.COROINHA:all = MemberData.allCoroinhas; break
     }
     
     if(all != null){
@@ -32,20 +29,18 @@ export default function List(){
             let curMember = all[i]
             
             if(!isExcluded(curMember) && isDayAvailable(curMember,MemberSelectScreenOptions.lineup) && curMember.onLineup){ // Apenas os membros disponíveis.
-                members.push(<SelectableRowMember 
-                                nick={curMember.nick} 
-                                id={i} 
-                                img={require("@/src/app/item_icons/users_icomdpi.png")} 
-                                key={i} 
-                                textStyle=
-                                    {{fontFamily:"Inter-Bold",
-                                    fontSize:20
-                                    }} 
-                                member={curMember}/>)
+                members.push(
+                    <SelectableRowMember 
+                        img={require("@/src/app/item_icons/users_icomdpi.png")} 
+                        key={i} 
+                        textStyle=
+                            {{fontFamily:"Inter-Bold",
+                            fontSize:20
+                            }} 
+                        member={curMember}/>)
             }
         }
     }
-
 
     return(
         
@@ -61,6 +56,11 @@ export default function List(){
     )
 }
 
+type SelectableRowMemberProps = {
+    member:Member,
+    img:any,
+    textStyle:object
+}
 /**
  * 
  * @param props 
@@ -69,7 +69,7 @@ export default function List(){
  * textStyle = Estilo do texto da linha
  * @returns 
  */
-function SelectableRowMember(props:any){
+function SelectableRowMember(props:SelectableRowMemberProps){
     
     let [checked,setChecked] = useState(false)
     let checkBox
@@ -98,7 +98,7 @@ function SelectableRowMember(props:any){
         }
       }}>
         <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
-        <Text style={props.textStyle}>{props.nick}</Text>
+        <Text style={props.textStyle}>{props.member.nick}</Text>
         {checkBox}
       </TouchableOpacity>
     )

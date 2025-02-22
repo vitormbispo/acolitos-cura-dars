@@ -1,10 +1,13 @@
+//TODO Fazer função para atualizar os objetos de acordo com os dias e fins de semana padrão 
+// caso eles sejam alterados em algum momento
 
+/**
+ * Armazena dados e métodos dos fins de semana e dias
+ */
 export class Dates {
-    static defaultWeekends = ["1º","2º","3º","4º"]
+    static defaultWeekends = ["1º","2º","3º","4º","5º"]
     static defaultDays = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
 
-
-    // TODO Corrigir um erro que esse método retorna um mapa usando cada letra do fim de semana como chave
     /**
     * Retorna o preset de um objeto que armazena os dias do mês no formato
     * "FimDeSemana":[Dia1,Dia2,Dia3]
@@ -22,11 +25,13 @@ export class Dates {
     })
 
     return map
-}
+    }
 }
 
+/**
+ * Conjunto de fins de semana e dias
+ */
 export class DateSet {
-    weekends = ["1º","2º","3º","4º"]
+    weekends = ["1º","2º","3º","4º","5º"]
     days = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
 }
-

@@ -3,19 +3,18 @@ import { Member, MemberData, MemberType } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 
-
-/** Gera uma nova escala flexível de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
+/** Gera uma nova escala de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
  * Leva em conta a disponibiliade e as prioridades diárias, de funções e gerais.
  * 
  * @param weekend Final de semana
  * @param day Dia
  * @param roles Funções
  * @param type Tipo
- * @returns {Lineup|null} Nova escala flexível montada
+ * @returns {Lineup|null} Nova escala montada
  */
 export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,type:MemberType,randomness:number = 1.3, dayRotation:boolean = true):Lineup|null{
     let members:Array<Member> = []
-
+    
     switch(type){
         case MemberType.COROINHA : members = MemberData.allCoroinhas; break
         case MemberType.ACOLYTE : members = MemberData.allAcolytes; break
@@ -107,18 +106,16 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
 
     // Salvar listas
     switch(type){
-        case MemberType.ACOLYTE:
-            SaveAcolyteData(); break
-        case MemberType.COROINHA:
-            SaveCoroinhaData(); break
+        case MemberType.ACOLYTE:  SaveAcolyteData(); break
+        case MemberType.COROINHA: SaveCoroinhaData(); break
     }
     return newLineup
 }
 
-/** Gera uma nova escala flexível aleatória podendo se basear em dia e fim de semana ou não. 
+/** Gera uma nova escala aleatória podendo se basear em dia e fim de semana ou não. 
  * Não afeta e nem leva em conta nenhum tipo de preferência e prioridade, apenas disponibilidade.
  *  
- * @param {string[]} roles Funções
+ * @param {RoleSet} roles Conjunto de funções
  * @param {string} weekend Fim de semana
  * @param {string} day Dia
  * @returns {Lineup} Uma nova escala aleatória
@@ -153,9 +150,16 @@ export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:str
 
     generatedLineup.day = day
     generatedLineup.weekend = weekend
+    generatedLineup.roleset = roleset
     return generatedLineup
 }
 
+/**
+ * Calcula a pontuação (score) de um membro baseado em sua prioridade geral e na prioridade do dia.
+ * A prioridade geral tem peso quadrático. A prioridade diária tem peso simples.
+ * @param member Membro
+ * @param day Dia
+ */
 export function CalculateScore(member:Member,day:string){
     let finalScore:number = 0
     
@@ -225,8 +229,10 @@ function RemoveUnvailable(members:Array<Member>,day:string,weekend:string){
 /** Retorna uma lista sem os mebros que já foram escalados nesse fim de semana.
  * Caso a lista seja menor do que a quantidade necessária de mebros, os mebros
  * removidos serão readicionados à lista de disponíveis, até que ela atinja a quantidade mínima.
- * Com o parâmetro de aleatoriedade(randomness) verdadeiro, escolherá mebros aleatórios que foram removidos. 
- * Quando falso, escolherá os membros com maior prioridade que foram removidos
+ * 
+ * Em caso de falta de membros, com o parâmetro de aleatoriedade(randomness) verdadeiro, 
+ * escolherá aleatoriamente mebros que foram removidos. 
+ * Quando falso, escolherá os com maior prioridade.
  * 
  * @param {Array<Member>} members Lista de mebros
  * @param {string} weekend Final de semana
@@ -294,20 +300,18 @@ function GetRolePrioritizedMembers(members:Array<Member>,role:string):Array<Memb
     return prioritized
 }
 
-/** Aumenta as prioridades das funções de um membro que estão no conjunto de funções por um determinado peso.
+/** Aumenta as prioridades das funções de um membro por um determinado peso.
  *  Caso o conjunto não seja determinado, será utilizado o conjunto padrão como referência 
  * @param {Member} member Membro
  * @param {number} weight Peso
  * @param {string} type Tipo de membro
- * @param {RoleSet} roleset Conjunto de funções
+ * @param {RoleSet} roles Funções
  */
 function IncreaseAllRoleCooldown(member:Member,weight:number,type:MemberType,roles?:Array<string>){
     if(roles == undefined){
         switch(type) {
-            case MemberType.ACOLYTE:
-                roles = Object.keys(Roles.defaultAcolyteRoles); break
-            case MemberType.COROINHA:
-                roles = Object.keys(Roles.defaultCoroinhaRoles); break
+            case MemberType.ACOLYTE:  roles = Object.keys(Roles.defaultAcolyteRoles); break
+            case MemberType.COROINHA: roles = Object.keys(Roles.defaultCoroinhaRoles); break
         }
     }
     roles.forEach((role) => {
@@ -323,10 +327,8 @@ function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type:
     let members:Array<Member> = []
 
     switch(type) {
-        case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes; break
-        case MemberType.COROINHA:
-            members = MemberData.allCoroinhas; break
+        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
+        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
         default: console.error("Invalid type"); break
     }
 
@@ -349,10 +351,8 @@ function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:numbe
     let members:Array<Member> = []
 
     switch(type) {
-        case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes; break
-        case MemberType.COROINHA:
-            members = MemberData.allCoroinhas; break
+        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
+        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
         default: console.error("Invalid type"); break
     }
     
@@ -364,8 +364,6 @@ function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:numbe
         }
     }
 }
-
-
 
 /** Retorna uma lista com os membros com maior prioridade geral.
  * 
@@ -390,4 +388,20 @@ function GetPrioritizedMembers(members:Array<Member>):Array<Member>{
     })
 
     return prioritized
+}
+
+/**
+ * Retorna uma nova escala sem membros
+ * @param day Dia
+ * @param weekend Fim de semana
+ * @param roleset Conjunto de funções
+ * @returns 
+ */
+function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
+    let emptyLine = new Lineup()
+    emptyLine.day = day
+    emptyLine.weekend = weekend
+    emptyLine.roleset = roleset
+    
+    return emptyLine
 }

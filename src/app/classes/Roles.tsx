@@ -60,16 +60,17 @@ export class Roles {
         "Cestinho E.":0
     }
 
-    static acolyteRoleSets:Array<RoleSet>
-    static coroinhaRoleSets:Array<RoleSet>
+    static acolyteRoleSets:Array<RoleSet> = []
+    static coroinhaRoleSets:Array<RoleSet> = []
 
     static GetDefaultRoleset(type:MemberType):RoleSet{
-        let newSet:RoleSet = new RoleSet("new",type)
+        let newSet:RoleSet = new RoleSet("default",type)
         newSet.SetRolesToDefault()
+        newSet.size = newSet.set.length
         return newSet
     }
 
-    static AddRoleSet(name:string,roles:Array<string>,type:MemberType) {
+    static AddRoleSet(name:string,roles:Array<string>,type:MemberType) {    
         let newSet = new RoleSet(name,type,roles)
         switch(type){
             case MemberType.ACOLYTE:

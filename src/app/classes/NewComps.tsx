@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { View,Text,Image, Pressable, TextInput} from "react-native"
-import { router} from "expo-router"
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions} from "react-native"
+import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
 import { MemberType } from "./MemberData";
 
 const USER_ICONS = [require("@/src/app/item_icons/users_icomdpi.png"),require("@/src/app/shapes/coroinha_ico.png")]
 
+type ImageButtonProps = {
+  img:any,
+  imgStyle?:object,
+  buttonStyle?:object,
+  press?: (...args:any) => any
+}
 /**
  * Botão com imagem
  * @param props Propriedades: 
@@ -16,7 +22,7 @@ const USER_ICONS = [require("@/src/app/item_icons/users_icomdpi.png"),require("@
  * press = Ação quando o botão é pressionado     
  * @returns
  */
-export function ImageButton(props:any) {
+export function ImageButton(props:ImageButtonProps) {
   if(props.press == undefined){
     props.press = ()=>{}
   }
@@ -29,7 +35,13 @@ export function ImageButton(props:any) {
   }
 
 
-
+type RowImageButtonProps = {
+  img:any,
+  text:string,
+  imgStyle?:object,
+  rowStyle?:object,
+  press: (...args:any) => any
+}
 /**
  * Botão com imagem que ocupa uma linha inteira
  * @param props Propriedades: 
@@ -40,7 +52,7 @@ export function ImageButton(props:any) {
  * press = Ação quando o botão é pressionado         
  * @returns
  */
-export function RowImageButton(props:any){
+export function RowImageButton(props:RowImageButtonProps){
   if(props.press == undefined){
     props.press = ()=>{}
   }
@@ -53,7 +65,12 @@ export function RowImageButton(props:any){
   }
 
 
-
+type RowMemberProps = {
+  id:number,
+  img:any,
+  nick:string,
+  textStyle?:object
+}
 /**
    * Botão em formato de linha para representar um acólito.
    * @param props Propriedade:
@@ -63,10 +80,10 @@ export function RowImageButton(props:any){
    * textStyle = Estilo do texto
    * @returns 
    */
-export function RowMember(props:any){
+export function RowMember(props:RowMemberProps){
   const {updateMemberID} = contextStore()
   return(
-    <Pressable style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => {updateMemberID(props.id) ; OpenMemberProfile(props.id)}}>
+    <Pressable style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => {updateMemberID(props.id) ; OpenMemberProfile()}}>
       <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
       <Text style={props.textStyle}>{props.nick}</Text>
     </Pressable>
@@ -77,34 +94,43 @@ export function RowMember(props:any){
  * Abre o perfil do membro de índice *id* na lista geral.
  * @param id Índice
  */
-function OpenMemberProfile(id:any){
+function OpenMemberProfile(){
   router.push("/screens/MemberProfile")
 }
 
+
+type TextButtonProps = {
+  text:string
+  press: (...args:any) => any
+  textStyle?:object,
+  buttonStyle?:object,
+}
 /** Botão com texto
  * 
  * @param props Propriedades:
-   * text = Texto      
-   * familyFont = Família da fonte do texto     
-   * sizeFonte = Tamanho do texto     
+   * text = Texto        
    * press = Ação ao tocar     
    * textStyle = Estilo do texto     
    * buttonStyle = Estilo da Pressable
  * @returns 
  */
-export function TextButton(props:any) {
+export function TextButton(props:TextButtonProps) {
   if(props.press == undefined){
     props.press = ()=>{}
   }
   return (
-      <Pressable style={props.buttonStyle+{alignItems:"center"}} onPress={props.press}>
+      <Pressable style={[props.buttonStyle,{alignItems:"center"}]} onPress={props.press}>
           <Image source={require("@/src/app/shapes/button0.png")} style={{height:64, width:128, position:"absolute",alignSelf:"center"}}/>
-          <Text style={[{alignSelf:"center",textAlign:"center",textAlignVertical:"center",width:128,height:64,fontFamily:props.familyFont, fontSize:props.sizeFont},props.textStyle]}>{props.text}</Text>
+          <Text style={[{alignSelf:"center",textAlign:"center",textAlignVertical:"center",width:128,height:64},props.textStyle]}>{props.text}</Text>
       </Pressable>
       
     );
 }
 
+type CheckBoxProps = {
+  checked:boolean,
+  press: (...args:any) => any
+}
 /**
  * Botão em formato de caixa de checagem.
  * @param props Propriedades:
@@ -112,7 +138,7 @@ export function TextButton(props:any) {
  * press = ação ao pressionar     
  * @returns 
  */
-export function CheckBox(props:any){
+export function CheckBox(props:CheckBoxProps){
 
   const[check,setChecked] = props.checked ? useState(1) : useState(0)
   const images = [require("@/src/app/shapes/check_false.png"),require("@/src/app/shapes/check_true.png")]
@@ -135,6 +161,11 @@ export function CheckBox(props:any){
   )
 }
 
+type SingleCheckProps = {
+  img:any,
+  press: (...args:any) => any,
+  topText?:string
+}
 /**
  * Botão no formato caixa de checagem única
  * @param props Propriedades:
@@ -143,7 +174,7 @@ export function CheckBox(props:any){
  * img = Imagem
  * @returns 
  */
-export function SingleCheck(props:any){
+export function SingleCheck(props:SingleCheckProps){
   if(props.press == undefined){
     props.press = ()=>{}
   }
@@ -160,6 +191,11 @@ export function SingleCheck(props:any){
   )
 }
 
+type SingleCheckColorProps = {
+  checked:boolean,
+  color:string
+  press: (...args:any) => any
+}
 /**
  * 
  * @param props Propriedades:
@@ -169,7 +205,7 @@ export function SingleCheck(props:any){
  * 
  * @returns 
  */
-export function SingleCheckColor(props:any){
+export function SingleCheckColor(props:SingleCheckColorProps){
   
   const[check,setChecked] = useState(props.checked)
   const[liturgicalColors,setColor] = useState(props.color)
@@ -198,6 +234,11 @@ export function SingleCheckColor(props:any){
   )
 }
 
+type VisualCheckBoxProps = {
+  enabled:boolean
+  imageStyle?:object
+  boxStyle?:object
+}
 /**
  * Caixa de checagem sem interação.
  * @param props Propriedades = 
@@ -207,7 +248,7 @@ export function SingleCheckColor(props:any){
  * 
  * @returns 
  */
-export function VisualCheckBox(props:any){
+export function VisualCheckBox(props:VisualCheckBoxProps){
 
   return(
     <View style={[{flex:1,padding:10},props.boxStyle]}>
@@ -220,6 +261,11 @@ export function VisualCheckBox(props:any){
   )
 }
 
+type UpperBarProps = {
+  icon:any
+  screenName:string,
+  toggleEnabled?:boolean
+}
 /**
  * Barra superior
  * @param props Propriedades     
@@ -228,7 +274,7 @@ export function VisualCheckBox(props:any){
  * toggleEnabled = botão para troca entre coroinha/acólito ativado. 
  * @returns 
  */
-export function UpperBar(props:any){
+export function UpperBar(props:UpperBarProps){
   
   const {theme} = menuStore()
   return(
@@ -240,15 +286,23 @@ export function UpperBar(props:any){
   )
 }
 
+type UpperButtonProps = {
+  img:any
+  press?: (...args:any) => any,
+  backgroundColor?:string,
+  link?:Href<string|object>,
+  style?:object
+}
 /**
  * 
- * @param props img = Imagem do botão
+ * @param props 
+ * img = Imagem do botão
  * style = Estilo do botão
  * link = Link para outra tela. Deixe null para usar como um botão convencional
  * press = Ação ao tocar
  * backgroundColor = Cor do fundo
  */
-export function UpperButton(props:any){
+export function UpperButton(props:UpperButtonProps){
   return(
     <View style = {{flex:1,justifyContent:'flex-end',flexDirection:'row',alignItems:'center',padding:10,backgroundColor:props.backgroundColor}}>
       <LinkImageButton img={props.img} imgStyle={[uiStyles.buttonIcon,{width:48},props.style]} link={props.link} press={()=>{props.press == null ? ()=>{} : props.press()}}/>
@@ -256,12 +310,15 @@ export function UpperButton(props:any){
   )
 }
 
+type ToggleButtonProps = {
+  enabled:boolean
+}
 /**
  * 
  * @param props enabled = Componente ativado
  * @returns 
  */
-export function ToggleButton(props:any) {
+export function ToggleButton(props:ToggleButtonProps) {
   if(!props.enabled){return null}
   const {type,toggleTheme} = menuStore()
   return(
@@ -276,6 +333,15 @@ export function ToggleButton(props:any) {
   )
 }
 
+type LinkRowImageButtonProps = {
+  img:any,
+  text:string,
+  link:Href<string|object>,
+  press?: (...args:any) => any,
+  imgStyle?:object,
+  rowstyle?:object,
+  textStyle?:object
+}
 /**
  * Botão com imagem que ocupa uma linha inteira e possui link para outra tela.
  * @param props Propriedades: 
@@ -287,7 +353,7 @@ export function ToggleButton(props:any) {
  * link = Link para outra tela  
  * @returns
  */
-export function LinkRowImageButton(props:any){
+export function LinkRowImageButton(props:LinkRowImageButtonProps){
   return(
       <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => {
         console.log(props.press)
@@ -303,7 +369,15 @@ export function LinkRowImageButton(props:any){
   )
 }
 
-  /**
+type LinkImageButtonProps = {
+  img:any,
+  link:Href<string|object>,
+  press?: (...args:any) => any,
+  imgStyle?:object,
+  buttonStyle?:object,
+  viewStyle?:object
+}
+/**
  * Botão com imagem e link para outra tela
  * @param props Propriedades: 
  * img = Imagem     
@@ -313,7 +387,7 @@ export function LinkRowImageButton(props:any){
  * link = Link para outra tela        
  * @returns
  */
-  export function LinkImageButton(props:any) {
+  export function LinkImageButton(props:LinkImageButtonProps) {
     return (
         <View style={props.viewStyle}>
           <Pressable style={props.buttonStyle} onPress={() => {
@@ -331,6 +405,14 @@ export function LinkRowImageButton(props:any){
         );
     }
 
+type TextInputBoxProps = {
+  title:string,
+  enabled?:boolean,
+  placeholder?:string,
+  maxLength?:number
+  keyboardType?:KeyboardTypeOptions,
+  onChangeText?: (...args:any) => any
+}
 /**
  * 
  * @param props title = Título da caixa de entrada
@@ -339,7 +421,7 @@ export function LinkRowImageButton(props:any){
  * onChangeText = ação ao usar a caixa
  * @returns 
  */
-export function TextInputBox(props:any) {
+export function TextInputBox(props:TextInputBoxProps) {
   if(!props.enabled){return}
 
   return(
@@ -347,19 +429,22 @@ export function TextInputBox(props:any) {
       <Text style={{fontFamily:"Inter-Light",fontSize:22}}>{props.title}</Text>
         <TextInput 
           style={uiStyles.inputField}
-          defaultValue={props.default}
+          placeholder={props.placeholder}
           keyboardType={props.keyboardType}
           onChangeText={props.onChangeText}
           maxLength={props.maxLength}/>
       </View>
   )
 }
-
+type DataDisplayProps = {
+  dataTitle:string,
+  data:string
+}
 /**
  * Exibe um dado em formato de texto
  * @param props dataTitle = nome do dado; data = valor do dado
  */
-export function DataDisplay(props:any) {
+export function DataDisplay(props:DataDisplayProps) {
   return(
   <View style={{flex:1,flexDirection:"row", padding:10, alignItems:"center"}}>
     <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>{props.dataTitle}</Text>

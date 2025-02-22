@@ -4,7 +4,7 @@ import { acolyteLight, coroinhaLight} from '../styles/Themes'
 import { LineupType } from '../classes/Lineup'
 import { Roles } from '../classes/Roles'
 import { Dates, DateSet } from '../classes/Dates'
-import { GenerationOptionsType } from '../screens/SingleLineup'
+import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
 
 
 export enum MenuStyles{
@@ -24,7 +24,6 @@ export type ContextStates = {
     setLineupType: (type:LineupType) => void
     updateWeekend: (weekend:string) => void
     updateDay: (day:string) => void
-    
 }
 
 export type ThemeStates = {
@@ -40,6 +39,7 @@ export type ThemeStates = {
     updateType: (type:any)=>void
     updateName:(name:any)=>void
     toggleTheme:(state:any)=>void
+    
 }
 
 export const menuStore = create<ThemeStates>((set)=>({
@@ -64,8 +64,8 @@ export const menuStore = create<ThemeStates>((set)=>({
 export const contextStore = create<ContextStates>((set)=>({
     memberID:0,
     lineupType:LineupType.SINGLE,
-    curWeekend:Dates.defaultWeekends[0],
-    curDay:Dates.defaultDays[0],
+    curWeekend:Dates.defaultWeekends.slice()[0],
+    curDay:Dates.defaultDays.slice()[0],
     curGenOptions:{
             "weekend":"1stWE",
             "day":null,
@@ -82,7 +82,7 @@ export const contextStore = create<ContextStates>((set)=>({
     updateMemberID: (newID) => set(()=>({memberID:newID})),
     setLineupType: (newType:LineupType) => set(()=>({lineupType:newType})),
     updateWeekend: (newWeekend:string) => set(()=>({curWeekend:newWeekend})),
-    updateDay: (newDay:string) => set(()=>({curDay:newDay}))
+    updateDay: (newDay:string) => set(()=>({curDay:newDay})),
 }))
 
 

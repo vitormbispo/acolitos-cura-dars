@@ -1,10 +1,9 @@
 import { View, ScrollView } from "react-native";
 import { UpperBar,LinkRowImageButton, RowMember, GetMemberIcon} from "../classes/NewComps";
 import { useRef, useState } from "react";
-import { contextStore, menuStore } from "../store/store";
+import { menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberData, MemberType } from "../classes/MemberData";
-
 
 export class MemberList{
     static scrollPos = 0;
@@ -32,10 +31,8 @@ export default function List() {
     let typeName:string
 
     switch (type){
-        case MemberType.ACOLYTE:
-            typeName = "Acólito"; break
-        case MemberType.COROINHA:
-            typeName = "Coroinha"; break
+        case MemberType.ACOLYTE:typeName = "Acólito"; break
+        case MemberType.COROINHA:typeName = "Coroinha"; break
     }
 
     if(type == MemberType.ACOLYTE) {

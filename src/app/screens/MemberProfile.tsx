@@ -12,10 +12,8 @@ export default function MemberProfile() {
     let members:Array<Member>
     
     switch (type){
-        case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes ; break
-        case MemberType.COROINHA:
-            members = MemberData.allCoroinhas ; break
+        case MemberType.ACOLYTE:members = MemberData.allAcolytes ; break
+        case MemberType.COROINHA:members = MemberData.allCoroinhas ; break
     }
     
     let curMember:Member = members[memberID]

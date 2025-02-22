@@ -8,6 +8,7 @@ import { menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
+import { textStyles } from "../styles/GeneralStyles";
 
 export default function NewAcolyte(){
     const {theme, type} = menuStore()
@@ -15,10 +16,8 @@ export default function NewAcolyte(){
     let typeName:string
 
     switch (type){
-        case MemberType.ACOLYTE:
-            typeName = "Acólito"; break
-        case MemberType.COROINHA:
-            typeName = "Coroinha"; break
+        case MemberType.ACOLYTE:typeName = "Acólito"; break
+        case MemberType.COROINHA:typeName = "Coroinha"; break
     }
     
     currentData.disp = DefaultDispMap()
@@ -34,7 +33,7 @@ export default function NewAcolyte(){
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
-                <UpperBar icon={require("@/src/app/item_icons/add_ico.png")}screenName={"-Novo "+typeName} backgroundColor={theme.accentColor}/>
+                <UpperBar icon={require("@/src/app/item_icons/add_ico.png")}screenName={"-Novo "+typeName}/>
 
                 <TextInputBox 
                     title={"-Nome: "} 
@@ -83,7 +82,7 @@ export default function NewAcolyte(){
                     </View>
                 </View>
                 
-                <TextButton buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
+                <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
         </KeyboardAwareScrollView>
     )
 }

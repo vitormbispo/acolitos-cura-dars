@@ -53,12 +53,8 @@ export function GetMemberTypeIndex(member:Member,type:MemberType):number{
     let members:Array<Member>
     
     switch(type){
-        case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes
-            break
-        case MemberType.COROINHA:
-            members = MemberData.allCoroinhas
-            break
+        case MemberType.ACOLYTE:members = MemberData.allAcolytes; break
+        case MemberType.COROINHA:members = MemberData.allCoroinhas; break
     }
     
     if(member == null){return -1}
@@ -119,6 +115,10 @@ export function GenerateLineupPrompt(lines:Array<Lineup>,roles:Array<string>):st
         
         for(let j = 0; j < roles.length; j++){
             members[j] = curLineup.line[roles[j]]
+            if(members[j] == null){
+                membersNicks += "!-VAZIO-!;"
+                continue
+            }
             membersNicks += members[j].nick+";"
         }
 
@@ -131,7 +131,7 @@ export function GenerateLineupPrompt(lines:Array<Lineup>,roles:Array<string>):st
         finalPrompt += roles[i]+", "
     }
 
-    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela. Construa a tabela por completo: "
+    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Deixe a célula vazia caso o nome seja '!-VAZIO-!'. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela. Construa a tabela por completo: "
     for(let i = 0; i < prompts.length;i++){
         finalPrompt += prompts[i]
     }

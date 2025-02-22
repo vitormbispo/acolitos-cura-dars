@@ -1,18 +1,18 @@
 import { View, Text, ScrollView} from "react-native"
-import { Global } from "../Global"
 import { CheckBox,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { MemberData, MemberType } from "../classes/MemberData"
+import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles } from "../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../classes/Methods"
 import { DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
+import { useState } from "react"
 
 /**
  * Tipo do objeto que armazena as opções de geração
@@ -46,15 +46,41 @@ enum Randomness{
  */
 export default function LineupGenerationOptions(){    
     const {lineupType,curGenOptions} = contextStore()
+    const {type} = menuStore()
+
+    const [randomness,setRandomness] = useState(Randomness.MEDIUM)
     let options:React.JSX.Element
 
     switch (lineupType){
-        case LineupType.SINGLE:
-            options = <SingleLineupOptions/>; break
-        case LineupType.WEEKEND:
-            options = <WeekendLineupOptions/>; break
-        case LineupType.MONTH:
-            options = <MonthLineupOptions/>; break
+        case LineupType.SINGLE:  options = <SingleLineupOptions/>; break
+        case LineupType.WEEKEND: options = <WeekendLineupOptions/>; break
+        case LineupType.MONTH:   options = <MonthLineupOptions/>; break
+    }
+
+    // Trecho temporário
+    let roleset:React.JSX.Element
+    switch(type){
+        case MemberType.ACOLYTE: roleset = 
+            (<View style={{flex:1}}>
+                <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Solenidade</Text>
+                    <CheckBox checked={curGenOptions.roleset.name == "default"} press={()=>{
+                        curGenOptions.roleset = curGenOptions.roleset.name == "minimal" ? 
+                            Roles.GetRoleSet("default",type):
+                            Roles.GetRoleSet("minimal",type)}}/>
+                </View>
+            </View>)
+            break
+        case MemberType.COROINHA: roleset =
+            (<View style={{flex:1}}>
+                <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
+                    <CheckBox checked={curGenOptions.roleset.name == "minimal"} press={()=>{
+                        curGenOptions.roleset = curGenOptions.roleset.name == "default" ? 
+                            Roles.GetRoleSet("minimal",type):
+                            Roles.GetRoleSet("default",type)}}/>
+                </View>
+            </View>)
     }
 
     return(
@@ -72,27 +98,27 @@ export default function LineupGenerationOptions(){
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
                         <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
-                        <SingleCheck img={CheckImage(curGenOptions.randomness,Randomness.LOW)} checked={curGenOptions.randomness == Randomness.LOW} press={()=>{curGenOptions.randomness = Randomness.LOW}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.LOW)} press={()=>{curGenOptions.randomness = Randomness.LOW, setRandomness(Randomness.LOW)}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
-                        <SingleCheck img={CheckImage(curGenOptions.randomness,Randomness.MEDIUM_LOW)} checked={curGenOptions.randomness == Randomness.MEDIUM_LOW} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_LOW}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_LOW)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_LOW, setRandomness(Randomness.MEDIUM_LOW)}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
-                        <SingleCheck img={CheckImage(curGenOptions.randomness,Randomness.MEDIUM)} checked={curGenOptions.randomness == Randomness.MEDIUM} press={()=>{curGenOptions.randomness = Randomness.MEDIUM}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM, setRandomness(Randomness.MEDIUM)}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
-                        <SingleCheck img={CheckImage(curGenOptions.randomness,Randomness.MEDIUM_HIGH)} checked={curGenOptions.randomness == Randomness.MEDIUM_HIGH} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_HIGH}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_HIGH)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_HIGH,setRandomness(Randomness.MEDIUM_HIGH)}}/>
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
-                        <SingleCheck img={CheckImage(curGenOptions.randomness,Randomness.HIGH)} checked={curGenOptions.randomness == Randomness.HIGH} press={()=>{curGenOptions.randomness = Randomness.HIGH}}/>
+                        <SingleCheck img={CheckImage(randomness,Randomness.HIGH)} press={()=>{curGenOptions.randomness = Randomness.HIGH,setRandomness(Randomness.HIGH)}}/>
                     </View>
                 </View>
                 {/* </ Opções de aleatoriedade > */}
@@ -100,11 +126,13 @@ export default function LineupGenerationOptions(){
                 <View style={{flex:1}}>
                     <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
-                        <CheckBox checked={false} press={()=>{curGenOptions.allRandom = !curGenOptions.allRandom}}/>
+                        <CheckBox checked={curGenOptions.allRandom} press={()=>{curGenOptions.allRandom = !curGenOptions.allRandom}}/>
                     </View>
                 </View>
-            
-            {options}
+
+                {/* RoleSet (temporário) */}
+                {roleset}
+                {options}
             </ScrollView>
         </View>
     )
@@ -140,13 +168,13 @@ const SingleLineupOptions = () => {
         <View style={{flex:1}}>
                 
             <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                <Text style={Global.textStyles.dataSection}>-Opções</Text>
+                <Text style={textStyles.dataSection}>-Opções</Text>
             </View>
             
             <WeekendSelection set={new DateSet()} single={true}/>
             <SingleDaySelection/>
 
-            <TextButton text="Gerar escala" press={()=>{GerarEscala(generationOptions,type)}} buttonStyle={{alignSelf:"center"}}/>
+            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}} buttonStyle={{alignSelf:"center"}}/>
         </View>
     )
 }
@@ -162,7 +190,7 @@ const WeekendLineupOptions = () => {
     return(
         <View style={{flex:1}}>
             <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                <Text style={Global.textStyles.dataSection}>-Opções</Text>
+                <Text style={textStyles.dataSection}>-Opções</Text>
             </View>
             
             <WeekendSelection set={new DateSet()}/>
@@ -173,7 +201,7 @@ const WeekendLineupOptions = () => {
             </View>
 
 
-            <TextButton text="Gerar escala" press={()=>{GerarEscala(generationOptions,type)}}/>
+            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
         </View>
 
     )
@@ -183,7 +211,7 @@ const WeekendLineupOptions = () => {
  * Opções para geração de uma escala mensal
  * @returns React.JSX.Component
  */
-const MonthLineupOptions = (props:any) => {
+const MonthLineupOptions = () => {
     
     const {type} = menuStore()
     
@@ -201,7 +229,7 @@ const MonthLineupOptions = (props:any) => {
                     <MonthDaySelection/>
                 </View>
 
-                <TextButton text="Gerar escala" press={()=>{GerarEscala(generationOptions,type)}}/>
+                <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
         </View>
     )
 }
@@ -212,33 +240,19 @@ const MonthLineupOptions = (props:any) => {
  * @param type 
  */
 function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
-
+    let members:Array<Member>
+    
+    switch(type) {
+        case MemberType.ACOLYTE:members = MemberData.allAcolytes;break
+        case MemberType.COROINHA:members = MemberData.allCoroinhas;break
+    }
+    if(members == null || members.length == 0){
+        console.error("Unable to generate lineup. Members is empty.")
+        return
+    }
     // Definir funções se for solenidade ou não
     let roles = []
-    let roleset:RoleSet
-
-    switch(type){
-        case MemberType.ACOLYTE:
-            if(generateOptions.solemnity){
-                roles = Roles.GetRoleSet("default",MemberType.ACOLYTE).set
-                roleset = Roles.GetRoleSet("default",MemberType.ACOLYTE)              
-            }
-            else{
-                roles = Roles.GetRoleSet("minimal",MemberType.ACOLYTE).set
-                roleset = Roles.GetRoleSet("minimal",MemberType.ACOLYTE)
-            }
-            break
-        case MemberType.COROINHA:
-            if(generateOptions.solemnity){
-                roles = Roles.GetRoleSet("default",MemberType.COROINHA).set
-                roleset = Roles.GetRoleSet("default",MemberType.COROINHA)              
-            }
-            else{
-                roles = Roles.GetRoleSet("minimal",MemberType.COROINHA).set
-                roleset = Roles.GetRoleSet("minimal",MemberType.COROINHA)
-            }
-            break
-    }
+    let roleset:RoleSet = generateOptions.roleset
 
     LineupScreenOptions.roles = roles
     LineupScreenOptions.lineups = []
@@ -275,20 +289,14 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
         
     }
 
-    LineupScreenOptions.lineupType = "Single"
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false
+    LineupScreenOptions.roles = roleset.set
 
-    if(!generateOptions.allRandom){
-        switch(type){
-            case MemberType.ACOLYTE:
-                ResetAllLastWeekend(MemberData.allAcolytes); break
-            case MemberType.COROINHA:
-                ResetAllLastWeekend(MemberData.allCoroinhas); break
-        }
-    }
+    if(!generateOptions.allRandom){ResetAllLastWeekend(members)}
 
+    LineupScreenOptions.scrollPos = 0
     router.push("/screens/LineupScreen")
 }
 
@@ -334,7 +342,9 @@ export function MonthDaySelection(){
         let dayChecks = []
         for(let j = 0; j < days.length;j++){
             let curDay = days[j]
-            let check = <CheckBox checked={generationOptions.monthDays[curWeekend].indexOf(curDay)!=-1} press={()=>{ToggleDay(curWeekend,curDay,generationOptions)}} key={curWeekend+curDay+j}/>
+            let check = <CheckBox checked={generationOptions.monthDays[curWeekend] != null && 
+                                           generationOptions.monthDays[curWeekend].indexOf(curDay)!=-1} 
+                                  press={()=>{ToggleDay(curWeekend,curDay,generationOptions)}} key={curWeekend+curDay+j}/>
 
             dayChecks.push(check)
         }
@@ -432,11 +442,13 @@ export function WeekendSelection(props:WeekendSelection){
             <SingleCheck img={CheckImage(curWeekend,week)} topText={week} press={()=>{
                 if(props.single){
                     SetSingleDay(curDay,week,generationOptions)
+                    updateWeekend(week)
+                    return
                 }
-                let tempDays:Array<string> = generationOptions.monthDays[week] // Armazenar temporariamente os dias de outro fim de semana
+                let tempDays:Array<string> = generationOptions.monthDays[curWeekend] // Armazenar temporariamente os dias de outro fim de semana
                 generationOptions.monthDays = {}
-                generationOptions.monthDays[week] = tempDays
                 updateWeekend(week)
+                generationOptions.monthDays[week] = tempDays
 
             }} key={week+i}/>
         )

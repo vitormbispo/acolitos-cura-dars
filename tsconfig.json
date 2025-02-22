@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/app/Global.jsx", "src/app/Mundial.js", "src/app/index.jsx"  ]
+, "src/app/Global.jsx", "src/app/Mundial.js", "src/app/index.jsx", "src/app/store/store.jsx", "src/app/store/store.jsx", "src/app/store/store.jsx"  ]
 }

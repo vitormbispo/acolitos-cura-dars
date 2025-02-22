@@ -33,8 +33,8 @@ export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
 
-<TextButton text="Clear AsyncStorage." sizeFont={16} familyFont="Inter-Regular" buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
-        
+<       TextButton text="Clear AsyncStorage." textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
+
     </View>
     )
 }
@@ -54,14 +54,6 @@ export const LowerBar = () => {
                 <ImageButton img={ICON_IMAGES.home} imgStyle={uiStyles.buttonIcon}/>
                 <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={uiStyles.buttonIcon} link={"/screens/LineupOptions"} press={()=>{}}/>
             </View>
-        </View>
-    )
-}
-
-export const Escala = () => {
-    return(
-        <View style={{flex:1,flexDirection:"row"}}>
-            
         </View>
     )
 }
