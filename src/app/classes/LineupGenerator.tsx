@@ -61,7 +61,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
     let chosenQuant:number = Math.ceil(roleset.size*randomness) < sortedScoreMembers.length ? Math.ceil(roleset.size*randomness) : sortedScoreMembers.length // Quantidade de membros a selecionar
     let chosenIndexes = DistinctRandomNumbers(0,chosenQuant-1,chosenQuant)
 
-    for(let i = 0; i < chosenIndexes.length;i++){
+    for(let i = 0; i < roleset.size;i++){
         chosenMembers.push(sortedScoreMembers[chosenIndexes[i]])
     }
 
@@ -73,10 +73,10 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
         
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
-
-        member.rodizio[role] = roleset.size
         
         IncreaseAllRoleCooldown(member,1,type)
+        member.rodizio[role] = 0
+        
         newLineup.line[role] = member
         newLineup.members.push(member)
         
@@ -284,7 +284,7 @@ function GetRolePrioritizedMembers(members:Array<Member>,role:string):Array<Memb
     let prioritized:Array<Member> = []
     let greatest:number = members[0].rodizio[role]
 
-    members.forEach((member) => { // Encontra o menor número (prioridade)
+    members.forEach((member) => { // Encontra o maior número (prioridade)
         let prio = member.rodizio[role]
         if(prio > greatest){
             greatest = prio
