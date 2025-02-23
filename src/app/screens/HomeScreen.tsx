@@ -32,9 +32,9 @@ export default function Home(){
 export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-
+{/*}
 <       TextButton text="Clear AsyncStorage." textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
-
+{*/}
     </View>
     )
 }
