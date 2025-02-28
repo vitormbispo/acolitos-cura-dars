@@ -3,7 +3,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { OrganizeMemberArrayAlpha} from "../classes/Methods"
+import { AbbreviateText, OrganizeMemberArrayAlpha} from "../classes/Methods"
 import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
@@ -17,8 +17,8 @@ export class EditMemberScreen{
 export default function EditMember(){
     const { theme,type } = menuStore()
     const { memberID } = contextStore()
-    let originalMembers = type == MemberType.ACOLYTE ? MemberData.allAcolytes : MemberData.allCoroinhas
-    let curMember = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
+    let originalMembers:Array<Member> = type == MemberType.ACOLYTE ? MemberData.allAcolytes : MemberData.allCoroinhas
+    let curMember:Member = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
    let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
@@ -32,33 +32,35 @@ export default function EditMember(){
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={"Editando - "+curMember.nick}/>
+                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
                 <UpperButton img={require("@/src/app/shapes/delete_ico.png")} press={()=>{EraseMember(memberID,type)}} backgroundColor={theme.accentColor}/>
             </View>
             
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                placeholder={curMember.name} 
+                default={curMember.name} 
                 onChangeText={(text:string)=>curMember.name=text.toString()}/>
 
             <TextInputBox 
                 title={"-Apelido: "} 
                 enabled={true} 
-                placeholder={curMember.nick} 
+                default={curMember.nick} 
                 onChangeText={(text:string)=>curMember.nick=text.toString()}
-                maxLength={12}/>
+                maxLength={20}/>
 
             <TextInputBox 
                 title={"-Responsável: "} 
                 enabled={type == MemberType.COROINHA} 
+                default={curMember.parents}
                 placeholder={curMember.parents}
                 onChangeText={(text:any)=>curMember.parents=text.toString()}/>
 
             <TextInputBox 
                 title={"-Contato: "} 
                 enabled={true} placeholder={curMember.contact} 
-                keyboardType="numeric" 
+                keyboardType="numeric"
+                default={curMember.contact}
                 onChangeText={(text:string)=>curMember.contact = text.toString()}/>
 
             

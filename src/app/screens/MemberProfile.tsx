@@ -41,7 +41,7 @@ export default function MemberProfile() {
     return(
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={curMember.nick+" | "+name}/>
+                <UpperBar icon={GetMemberIcon()} screenName={curMember.nick}/>
                 <UpperButton img={require("@/src/app/shapes/edit_icomdpi.png")} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>
             </View>
             

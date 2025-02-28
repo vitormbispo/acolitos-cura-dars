@@ -5,7 +5,7 @@ export const uiStyles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         height:100,
-        paddingLeft:15
+        paddingLeft:15,
     },
     buttonIcon:{
         height:64,
@@ -60,7 +60,7 @@ export const uiStyles = StyleSheet.create({
 export const textStyles = StyleSheet.create({
     menuTitle:{
         fontFamily:"Inter-Light",
-        fontSize:20,
+        fontSize:18,
         paddingLeft:20
     },
     names:{

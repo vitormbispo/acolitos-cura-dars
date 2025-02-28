@@ -44,6 +44,7 @@ export default function NewAcolyte(){
                 <TextInputBox 
                     title={"-Apelido: "} 
                     enabled={true} 
+                    maxLength={20}
                     onChangeText={(text:any)=>currentData.nick=text.toString()} 
                     placeholder="Apelido..."/>
 

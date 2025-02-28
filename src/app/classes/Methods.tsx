@@ -307,3 +307,19 @@ export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
 }
+
+/**
+ * Abrevia um texto para que possua um número máximo de caractéres, substituindo
+ * o fim do texto com reticências.
+ * Exemplo: >>> AbbreviateText("Matemática",5)
+ *              Ma...
+ * @param text 
+ * @param maxLen 
+ * @returns 
+ */
+export function AbbreviateText(text:string, maxLen:number):string{
+    if(text.length < maxLen || maxLen <= 3){return text}
+
+    let abbreviated:string = text.substring(0,maxLen-3)+"..."
+    return abbreviated
+}

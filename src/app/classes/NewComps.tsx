@@ -408,6 +408,7 @@ type LinkImageButtonProps = {
 type TextInputBoxProps = {
   title:string,
   enabled?:boolean,
+  default?:string,
   placeholder?:string,
   maxLength?:number
   keyboardType?:KeyboardTypeOptions,
@@ -430,6 +431,7 @@ export function TextInputBox(props:TextInputBoxProps) {
         <TextInput 
           style={uiStyles.inputField}
           placeholder={props.placeholder}
+          defaultValue={props.default}
           keyboardType={props.keyboardType}
           onChangeText={props.onChangeText}
           maxLength={props.maxLength}/>
