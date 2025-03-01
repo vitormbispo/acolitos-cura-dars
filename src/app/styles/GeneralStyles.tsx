@@ -1,6 +1,19 @@
 import { StyleSheet } from "react-native";
 
 export const uiStyles = StyleSheet.create({
+    lowerBar:{
+        paddingTop:10,
+        paddingBottom:10,
+        paddingRight:30,
+        paddingLeft:30,
+        margin:20,
+        borderRadius:100,
+        gap:15,
+        alignItems:"center",
+        alignContent:"center",
+        flexDirection:"row",
+        alignSelf:"center", 
+    },
     upperBar:{
         flexDirection:'row',
         alignItems:'center',
@@ -10,6 +23,11 @@ export const uiStyles = StyleSheet.create({
     buttonIcon:{
         height:64,
         width:64,
+        resizeMode:'contain'
+    },
+    buttonIconSmall:{
+        height:48,
+        width:48,
         resizeMode:'contain'
     },
 
@@ -98,6 +116,12 @@ export const textStyles = StyleSheet.create({
         paddingLeft:10, 
         fontFamily:"Inter-Light",
         fontSize:20
+    },
+    imageButtonText:{
+        paddingLeft:10, 
+        fontFamily:"Inter-Light",
+        fontSize:14,
+        alignSelf:"center"
     },
     functionTitle:{
         fontFamily:"Inter-Bold",

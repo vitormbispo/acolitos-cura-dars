@@ -1,5 +1,5 @@
 import { View, Image, Text, StyleSheet} from "react-native";
-import { ImageButton, LinkImageButton, TextButton, UpperBar } from "../classes/NewComps";
+import { ImageButton, ImageTextButton, LinkImageButton, TextButton, TextPosition, UpperBar } from "../classes/NewComps";
 import { uiStyles, textStyles } from "../styles/GeneralStyles";
 import { menuStore} from "@/src/app/store/store";
 import { MemberType } from "../classes/MemberData";
@@ -41,19 +41,16 @@ export function AppBody(){
 
 // Rodapé
 export const LowerBar = () => {
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     return(
-        <View style = {{alignSelf:"flex-end"}}>
-            <Image source={LOWER_BARS[type]} style = {{width:420,height:125}}/>
+        <View style = {[uiStyles.lowerBar,{backgroundColor:theme.accentColor}]}>
+            <ImageTextButton img={type==MemberType.ACOLYTE ? 
+                    require("@/src/app/item_icons/users_icomdpi.png"):
+                    require("@/src/app/shapes/coroinha_ico.png")
+                    } imgStyle={uiStyles.buttonIconSmall} text={"Membros"} textPos={TextPosition.BOTTOM} link={"/screens/MemberListScreen"}/>
             
-            <View style = {{position:"absolute", flex:1,flexDirection:"row",alignSelf:"center",paddingTop:30}}>
-                <LinkImageButton img={type==MemberType.ACOLYTE ? 
-                      require("@/src/app/item_icons/users_icomdpi.png"):
-                      require("@/src/app/shapes/coroinha_ico.png")
-                      } imgStyle={uiStyles.buttonIcon} link={"/screens/MemberListScreen"} press={()=>{}}/>
-                <ImageButton img={ICON_IMAGES.home} imgStyle={uiStyles.buttonIcon}/>
-                <LinkImageButton img={ICON_IMAGES.escalas} imgStyle={uiStyles.buttonIcon} link={"/screens/LineupOptions"} press={()=>{}}/>
-            </View>
+            <ImageTextButton img={ICON_IMAGES.home} imgStyle={uiStyles.buttonIconSmall} text={"Início"} textPos={TextPosition.BOTTOM}/>
+            <ImageTextButton img={ICON_IMAGES.escalas} imgStyle={uiStyles.buttonIconSmall} text={"Escalas"} textPos={TextPosition.BOTTOM} link={"/screens/LineupOptions"}/>
         </View>
     )
 }
