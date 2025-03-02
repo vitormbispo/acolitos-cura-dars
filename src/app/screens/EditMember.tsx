@@ -8,7 +8,8 @@ import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
 import { WeekendAvailability } from "./NewMember";
-import { textStyles } from "../styles/GeneralStyles";
+import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { ICONS } from "../classes/AssetManager";
 
 export class EditMemberScreen{
     static id:number = 0
@@ -33,7 +34,7 @@ export default function EditMember(){
                 
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
-                <UpperButton img={require("@/src/app/shapes/delete_ico.png")} press={()=>{EraseMember(memberID,type)}} backgroundColor={theme.accentColor}/>
+                <UpperButton img={ICONS.delete} press={()=>{EraseMember(memberID,type)}} backgroundColor={theme.accentColor}/>
             </View>
             
             <TextInputBox 
@@ -64,8 +65,8 @@ export default function EditMember(){
                 onChangeText={(text:string)=>curMember.contact = text.toString()}/>
 
             
-            <View style={{flex:0.1,backgroundColor:"#FFEBA4"}}>
-                <Text style={{fontFamily:"Inther-Bold",padding:20,alignSelf:"center",fontSize:24}}>-Disponibilidade-</Text>
+            <View style={{flex:0.1,height:80,backgroundColor:theme.secondary}}>
+                <Text style={[textStyles.dataSection]}>-Disponibilidade-</Text>
             </View>
             
             <View style={{paddingTop:20}}>
@@ -80,7 +81,7 @@ export default function EditMember(){
                 </View>
 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
+                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
                     <CheckBox checked={curMember.onLineup}press = {()=>
                         {curMember.onLineup = !curMember.onLineup}}/>
                 </View>

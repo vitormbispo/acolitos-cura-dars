@@ -4,6 +4,7 @@ import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { textStyles} from "../styles/GeneralStyles"
 import { Dates } from "../classes/Dates"
+import { ICONS } from "../classes/AssetManager"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
@@ -42,7 +43,7 @@ export default function MemberProfile() {
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={curMember.nick}/>
-                <UpperButton img={require("@/src/app/shapes/edit_icomdpi.png")} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>
+                <UpperButton img={ICONS.edit} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>
             </View>
             
 
@@ -69,7 +70,7 @@ export default function MemberProfile() {
                 </View>
 
                 <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
-                    <Text style={textStyles.dataSection}>-Disponibilidade-</Text>
+                    <Text style={[textStyles.dataSection,{backgroundColor:theme.secondary}]}>-Disponibilidade-</Text>
                 </View>
 
                 <View style={{paddingTop:20}}>
@@ -85,7 +86,7 @@ export default function MemberProfile() {
                     </View>
                         
                     <View style={{flexDirection:"row",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
+                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
                         <VisualCheckBox enabled={curMember.onLineup}/>
                     </View>
                  </View>

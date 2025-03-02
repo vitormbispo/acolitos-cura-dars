@@ -26,8 +26,8 @@ export const uiStyles = StyleSheet.create({
         resizeMode:'contain'
     },
     buttonIconSmall:{
-        height:48,
-        width:48,
+        height:64,
+        width:64,
         resizeMode:'contain'
     },
 
@@ -57,11 +57,14 @@ export const uiStyles = StyleSheet.create({
     },
 
     inputField:{
-        backgroundColor:"#9BFFF9",
+        backgroundColor:"#FFFFFF",
         fontSize:22,
         fontFamily:"Inter-Regular",
         width:200,
-        padding:10
+        padding:10,
+        borderRadius:100,
+        borderColor:"#1E1E1E99",
+        borderWidth:1
     },
     rowButtonContainer:{
         alignSelf:"center",
@@ -70,6 +73,13 @@ export const uiStyles = StyleSheet.create({
         margin:10,
         flexDirection:"row",
         gap:10
+    },
+    textButton:{
+        alignItems:"center",
+        backgroundColor:"#ABDCE3",
+        borderRadius:100,
+        borderWidth:1,
+        borderColor:"#1E1E1E"
     }
 
     
@@ -118,10 +128,9 @@ export const textStyles = StyleSheet.create({
         fontSize:20
     },
     imageButtonText:{
-        paddingLeft:10, 
         fontFamily:"Inter-Light",
         fontSize:14,
-        alignSelf:"center"
+        textAlign:"center",
     },
     functionTitle:{
         fontFamily:"Inter-Bold",
@@ -134,6 +143,15 @@ export const textStyles = StyleSheet.create({
         fontSize:18,
         alignSelf:"center",
         flex:1
+    },
+    textButton:{
+        alignSelf:"center",
+        textAlign:"center",
+        textAlignVertical:"center",
+        marginLeft:25,
+        marginRight:25,
+        marginTop:15,
+        marginBottom:15   
     }
 })
 

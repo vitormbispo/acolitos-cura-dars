@@ -1,9 +1,10 @@
 import { View, ScrollView } from "react-native";
-import { UpperBar,LinkRowImageButton, RowMember, GetMemberIcon} from "../classes/NewComps";
+import { UpperBar,LinkRowImageButton, RowMember, GetMemberIcon, GetMemberAddIcon} from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberData, MemberType } from "../classes/MemberData";
+import { ICONS } from "../classes/AssetManager";
 
 export class MemberList{
     static scrollPos = 0;
@@ -38,7 +39,7 @@ export default function List() {
     if(type == MemberType.ACOLYTE) {
         if(MemberData.allAcolytes!=null){
             for(let i =0;i<MemberData.allAcolytes.length;i++){
-                members.push(<RowMember nick={MemberData.allAcolytes[i].nick} id={i} img={require("../item_icons/users_icomdpi.png")} key={i} 
+                members.push(<RowMember nick={MemberData.allAcolytes[i].nick} id={i} img={ICONS.acolito} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -47,7 +48,7 @@ export default function List() {
     else if(type == MemberType.COROINHA) {
         if(MemberData.allCoroinhas != null){
             for(let i = 0; i < MemberData.allCoroinhas.length; i++){
-                members.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={require("../shapes/coroinha_ico.png")} key={i} 
+                members.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={ICONS.coroinha} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -70,7 +71,7 @@ export default function List() {
                         fontSize:20}} 
                         
                     text={"- Adicionar novo "+typeName}
-                    img={require("@/src/app/item_icons/add_ico.png")}
+                    img={GetMemberAddIcon()}
                     press={()=>{}}
                     />
                 

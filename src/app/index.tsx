@@ -5,20 +5,6 @@ import { OrganizeMemberArrayAlpha} from "./classes/Methods"
 import { MemberData, MemberType } from "./classes/MemberData";
 import { Roles } from "./classes/Roles";
 
-
-//let acolyteData: any
-//let acolyteLineups: any
-//let coroinhaData: any
-//let coroinhaLineups:any
-
-const ICON_IMAGES = {
-    home:require("./item_icons/home_icomdpi.png"),
-    acolitos:require("./item_icons/users_icomdpi.png"),
-    escalas:require("./item_icons/escala_icomdpi.png")  
-}
-
-let appStarted = false;
-
 /**
  * Carrega os dados dos acólitos.
  */

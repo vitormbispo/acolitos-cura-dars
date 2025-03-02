@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import LineupListScreen from "./LineupListScreen"
+import { ICONS } from "../classes/AssetManager"
 
 
 export default function LineupOptions(){
@@ -15,11 +16,11 @@ export default function LineupOptions(){
     const genOptions = contextStore(useShallow((state)=>state.curGenOptions))
     return(
     <View style={{flex:1}}>
-        <UpperBar icon={require("@/src/app/item_icons/escala_icomdpi.png")} screenName={"Gerar escalas"} toggleEnabled={true}/>
+        <UpperBar icon={ICONS.escala} screenName={"Gerar escalas"} toggleEnabled={true}/>
 
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
-                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                img={ICONS.escala}
                 text ="Gerar escala única"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
@@ -32,7 +33,7 @@ export default function LineupOptions(){
        
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
-                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                img={ICONS.escala}
                 text ="Gerar escala de fim de semana"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
@@ -46,7 +47,7 @@ export default function LineupOptions(){
         
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
-                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                img={ICONS.escala}
                 text ="Gerar escala mensal"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
@@ -59,7 +60,7 @@ export default function LineupOptions(){
         
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
-                img={require("@/src/app/item_icons/users_icomdpi.png")}
+                img={ICONS.historicoEscalas}
                 text ="Histórico de escalas"
                 link="/screens/LineupListScreen"
                 />

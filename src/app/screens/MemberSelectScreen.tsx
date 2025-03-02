@@ -1,5 +1,5 @@
 import { View,Image,Text, ScrollView, TouchableOpacity } from "react-native";
-import { UpperBar, VisualCheckBox } from "../classes/NewComps";
+import { GetMemberIcon, UpperBar, VisualCheckBox } from "../classes/NewComps";
 import { useState } from "react";
 import { Lineup } from "../classes/Lineup";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
@@ -31,7 +31,7 @@ export default function List(){
             if(!isExcluded(curMember) && isDayAvailable(curMember,MemberSelectScreenOptions.lineup) && curMember.onLineup){ // Apenas os membros disponíveis.
                 members.push(
                     <SelectableRowMember 
-                        img={require("@/src/app/item_icons/users_icomdpi.png")} 
+                        img={GetMemberIcon()} 
                         key={i} 
                         textStyle=
                             {{fontFamily:"Inter-Bold",
@@ -45,7 +45,7 @@ export default function List(){
     return(
         
         <View style={{flex:1,flexDirection:"column"}}>
-            <UpperBar screenName="Selecione o(s) acólito(s)" icon={require("@/src/app/item_icons/users_icomdpi.png")}/>
+            <UpperBar screenName="Selecione o(s) acólito(s)" icon={GetMemberIcon()}/>
 
         <ScrollView style={{flex:1}}> 
             {members} 

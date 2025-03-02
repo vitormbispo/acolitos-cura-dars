@@ -62,7 +62,9 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
     let chosenIndexes = DistinctRandomNumbers(0,chosenQuant-1,chosenQuant)
 
     for(let i = 0; i < roleset.size;i++){
-        chosenMembers.push(sortedScoreMembers[chosenIndexes[i]])
+        let chosen = sortedScoreMembers[chosenIndexes[i]]
+        if(chosen == null){continue}
+        chosenMembers.push(chosen)
     }
 
     // Escolher funções para cada membro e montar na classe Lineup.

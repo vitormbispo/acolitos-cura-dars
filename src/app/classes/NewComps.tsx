@@ -4,9 +4,10 @@ import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
 import { MemberType } from "./MemberData";
+import { ICONS } from "./AssetManager";
 
-const USER_ICONS = [require("@/src/app/item_icons/users_icomdpi.png"),require("@/src/app/shapes/coroinha_ico.png")]
-
+const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
+const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
 type ImageButtonProps = {
   img:any,
   imgStyle?:object,
@@ -119,9 +120,8 @@ export function TextButton(props:TextButtonProps) {
     props.press = ()=>{}
   }
   return (
-      <Pressable style={[props.buttonStyle,{alignItems:"center"}]} onPress={props.press}>
-          <Image source={require("@/src/app/shapes/button0.png")} style={{height:64, width:128, position:"absolute",alignSelf:"center"}}/>
-          <Text style={[{alignSelf:"center",textAlign:"center",textAlignVertical:"center",width:128,height:64},props.textStyle]}>{props.text}</Text>
+      <Pressable style={[props.buttonStyle,uiStyles.textButton]} onPress={props.press}>
+          <Text style={[textStyles.textButton,props.textStyle]}>{props.text}</Text>
       </Pressable>
       
     );
@@ -305,7 +305,7 @@ type UpperButtonProps = {
 export function UpperButton(props:UpperButtonProps){
   return(
     <View style = {{flex:1,justifyContent:'flex-end',flexDirection:'row',alignItems:'center',padding:10,backgroundColor:props.backgroundColor}}>
-      <LinkImageButton img={props.img} imgStyle={[uiStyles.buttonIcon,{width:48},props.style]} link={props.link} press={()=>{props.press == null ? ()=>{} : props.press()}}/>
+      <LinkImageButton img={props.img} imgStyle={[uiStyles.buttonIcon,props.style]} link={props.link} press={()=>{props.press == null ? ()=>{} : props.press()}}/>
     </View>
   )
 }
@@ -325,8 +325,8 @@ export function ToggleButton(props:ToggleButtonProps) {
   <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
     <ImageButton img={
       type==MemberType.ACOLYTE ? 
-      require("@/src/app/shapes/coroinha_ico.png"):
-      require("@/src/app/item_icons/users_icomdpi.png")} 
+      ICONS.coroinha:
+      ICONS.acolito} 
       
       imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
   </View>
@@ -458,11 +458,21 @@ export function DataDisplay(props:DataDisplayProps) {
 /** Retorna o ícone de usuário referente ao tipo de menu atual contido
  * na menuStore: acólito ou coroinha
 * 
-* @returns Ícon de usuário
+* @returns Ícone de usuário
 */
 export function GetMemberIcon() {
   const {type} = menuStore()
   return USER_ICONS[type]
+}
+
+/** Retorna o ícone de adicionar usuário referente ao tipo de menu atual contido
+ * na menuStore: acólito ou coroinha
+* 
+* @returns Ícone de adicionar usuário
+*/
+export function GetMemberAddIcon(){
+  const {type} = menuStore()
+  return ADD_ICONS[type]
 }
 
 

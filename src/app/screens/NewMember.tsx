@@ -1,6 +1,6 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
+import { CheckBox, GetMemberAddIcon, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
@@ -10,7 +10,7 @@ import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 
-export default function NewAcolyte(){
+export default function NewMember(){
     const {theme, type} = menuStore()
     let currentData:Member = new Member()
     let typeName:string
@@ -33,7 +33,7 @@ export default function NewAcolyte(){
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
-                <UpperBar icon={require("@/src/app/item_icons/add_ico.png")}screenName={"-Novo "+typeName}/>
+                <UpperBar icon={GetMemberAddIcon()}screenName={"-Novo "+typeName}/>
 
                 <TextInputBox 
                     title={"-Nome: "} 
@@ -51,7 +51,8 @@ export default function NewAcolyte(){
                 <TextInputBox 
                     title={"-Responsável: "} 
                     enabled={type == MemberType.COROINHA} 
-                    onChangeText={(text:any)=>currentData.parents=text.toString()}/>
+                    onChangeText={(text:any)=>currentData.parents=text.toString()}
+                    placeholder="Responsável..."/>
                 <TextInputBox 
                     title={"-Contato: "} 
                     enabled={true} 
@@ -77,7 +78,7 @@ export default function NewAcolyte(){
                     </View>
                     
                     <View style={{flexDirection:"row",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Escalável?</Text>
+                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Dispnível: </Text>
                         <CheckBox checked={true}press = {()=>
                             {currentData.onLineup = !currentData.onLineup}}/>
                     </View>
