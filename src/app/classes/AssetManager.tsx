@@ -12,6 +12,6 @@ export const ICONS = {
     delete:require("@/src/app/item_icons/deletar_ico.png"),
     switch:require("@/src/app/item_icons/trocar_ico.png"),
     subs:require("@/src/app/item_icons/subs_ico.png"),
-    historicoEscalas:require("@/src/app/item_icons/historico_ico.png")
-
+    historicoEscalas:require("@/src/app/item_icons/historico_ico.png"),
+    menu:require("@/src/app/item_icons/menu_ico.png")
 }

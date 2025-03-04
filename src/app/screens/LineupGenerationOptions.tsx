@@ -85,7 +85,7 @@ export default function LineupGenerationOptions(){
 
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={ICONS.escala} screenName={"Nova escala única"} toggleEnabled={false}/>
+            <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
             
             <ScrollView style={{flex:1}}>
 
@@ -174,7 +174,8 @@ const SingleLineupOptions = () => {
             <WeekendSelection set={new DateSet()} single={true}/>
             <SingleDaySelection/>
 
-            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}} buttonStyle={{alignSelf:"center"}}/>
+            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText}press={()=>{GerarEscala(generationOptions,type)}}/> 
+            
         </View>
     )
 }

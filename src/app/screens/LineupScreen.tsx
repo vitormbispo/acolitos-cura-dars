@@ -1,5 +1,5 @@
 import { View,Text, ScrollView} from "react-native"
-import { ImageButton, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
+import { ConfirmationModal, ImageButton, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
 import { router } from "expo-router"
 import { useRef, useState } from "react"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
@@ -75,9 +75,10 @@ export default function LineupScreen(){
     const[scrollPosition, setScrollPosition] = useState(LineupScreenOptions.scrollPos);
     const scrollViewRef = useRef(LineupScreenOptions.scrollRef);
     
-    const upperBtn = LineupScreenOptions.loaded ? <UpperButton img={ICONS.delete} press={()=>{
-        EraseLineup(LineupScreenOptions.loadedLineIndex,type)
-        router.back()
+    const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
+    const upperBtn = LineupScreenOptions.loaded ? 
+    <UpperButton img={ICONS.delete} press={()=>{
+        setConfirmDeleteVisible(!confirmDeleteVisible)
     }}/>:
     null
     
@@ -123,7 +124,17 @@ export default function LineupScreen(){
                 <TextButton textStyle={textStyles.textButtonText} text="Salvar escalas" press={()=>{
                     SaveAllLineups(type)
                 }}/>
-            </View> 
+            </View>
+
+            <ConfirmationModal 
+                visible={confirmDeleteVisible} 
+                confirmationText={"Deseja excluir a escala: \""+LineupScreenOptions.name+"\"?"} 
+                confirmAction={() => {
+                    EraseLineup(LineupScreenOptions.loadedLineIndex,type)
+                    router.back()}}  
+                declineAction={()=>{
+                    setConfirmDeleteVisible(!confirmDeleteVisible)
+                }}/> 
         </View>
     )
 }

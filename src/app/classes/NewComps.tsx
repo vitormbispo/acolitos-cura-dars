@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions} from "react-native"
+import { useEffect, useState } from "react";
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal} from "react-native"
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
@@ -514,4 +514,33 @@ export function ImageTextButton(props:ImageTextButtonProps):React.JSX.Element{
   )
 }
 
-  
+type ConfirmationModalProps = {
+  visible:boolean
+  confirmationText:string
+  confirmAction: (...args:any)=>any
+  declineAction: (...args:any)=>any
+  requestClose?: (...args:any)=>any
+}
+export function ConfirmationModal(props:ConfirmationModalProps){
+  const {theme} = menuStore()
+  return(
+    <Modal
+      animationType="fade"
+      visible={props.visible}
+      transparent={true}
+      onRequestClose={props.requestClose != null ? props.requestClose : null}>
+      
+      <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
+          <View style={{backgroundColor:theme.accentColor,height:"30%",width:"70%",alignSelf:"center",justifyContent:"center",borderRadius:50,borderColor:"#1E1E1E",borderWidth:1}}>
+              <Text style={[textStyles.dataText,{alignSelf:"center",textAlign:"center"}]}>{props.confirmationText}</Text>
+
+              <View style={{flexDirection:"row",alignSelf:"center",gap:10,marginTop:30}}>
+                  <TextButton text="Sim" press={props.confirmAction}/>
+                  <TextButton text="Não" press={props.declineAction}/>
+              </View>
+          </View>
+          
+      </View>
+  </Modal>
+  )
+}

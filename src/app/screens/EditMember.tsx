@@ -1,6 +1,6 @@
-import { View,Text} from "react-native"
+import { View,Text, Modal} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox } from "../classes/NewComps";
+import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { AbbreviateText, OrganizeMemberArrayAlpha} from "../classes/Methods"
@@ -10,6 +10,7 @@ import { Dates } from "../classes/Dates";
 import { WeekendAvailability } from "./NewMember";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { ICONS } from "../classes/AssetManager";
+import { useState } from "react";
 
 export class EditMemberScreen{
     static id:number = 0
@@ -18,6 +19,8 @@ export class EditMemberScreen{
 export default function EditMember(){
     const { theme,type } = menuStore()
     const { memberID } = contextStore()
+    const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
+    
     let originalMembers:Array<Member> = type == MemberType.ACOLYTE ? MemberData.allAcolytes : MemberData.allCoroinhas
     let curMember:Member = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
@@ -34,7 +37,13 @@ export default function EditMember(){
                 
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
-                <UpperButton img={ICONS.delete} press={()=>{EraseMember(memberID,type)}} backgroundColor={theme.accentColor}/>
+                <UpperButton img={ICONS.delete} press={()=>{
+                    console.log("Button pressed")
+                    setConfirmDeleteVisible(!confirmDeleteVisible)
+                    console.log(confirmDeleteVisible)
+                }}
+                     
+                    backgroundColor={theme.accentColor}/>
             </View>
             
             <TextInputBox 
@@ -107,7 +116,13 @@ export default function EditMember(){
                 AsyncStorage.setItem(storageData,JSON.stringify(members))
                 router.back()
                 
-                }}/>          
+                }}/>
+            <ConfirmationModal 
+            visible={confirmDeleteVisible}
+            confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.nick+"\"?"} 
+            confirmAction={()=>EraseMember(memberID,type)} 
+            declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
+            requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}/>          
         </KeyboardAwareScrollView>
     )
 }

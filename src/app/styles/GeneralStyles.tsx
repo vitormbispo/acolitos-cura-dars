@@ -76,10 +76,11 @@ export const uiStyles = StyleSheet.create({
     },
     textButton:{
         alignItems:"center",
+        alignSelf:"center",
         backgroundColor:"#ABDCE3",
         borderRadius:100,
         borderWidth:1,
-        borderColor:"#1E1E1E"
+        borderColor:"#1E1E1E",
     }
 
     
