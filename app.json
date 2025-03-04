@@ -46,8 +46,8 @@
             "./src/app/fonts/Inter-Bold.ttf"
           ]
         }
-      ]
-
+      ],
+      "expo-document-picker"
     ],
     "experiments": {
       "typedRoutes": true
