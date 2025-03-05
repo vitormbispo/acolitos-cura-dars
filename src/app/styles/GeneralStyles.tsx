@@ -40,6 +40,15 @@ export const uiStyles = StyleSheet.create({
         resizeMode:"contain"
     },
 
+    modal: {
+        height:"30%",
+        width:"70%",
+        alignSelf:"center",
+        justifyContent:"center",
+        borderRadius:50,
+        borderColor:"#1E1E1E",
+        borderWidth:1
+    },
     rowContainer:{
         flex:0.1,
         flexDirection:"row",

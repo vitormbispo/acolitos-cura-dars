@@ -13,5 +13,10 @@ export const ICONS = {
     switch:require("@/src/app/item_icons/trocar_ico.png"),
     subs:require("@/src/app/item_icons/subs_ico.png"),
     historicoEscalas:require("@/src/app/item_icons/historico_ico.png"),
-    menu:require("@/src/app/item_icons/menu_ico.png")
+    menu:require("@/src/app/item_icons/menu_ico.png"),
+    export:require("@/src/app/item_icons/export_ico.png"),
+    import:require("@/src/app/item_icons/import_ico.png"),
+    document:require("@/src/app/item_icons/document_ico.png"),
+    erase_data:require("@/src/app/item_icons/erase_data_ico.png"),
+    alert:require("@/src/app/item_icons/alert_ico.png")
 }

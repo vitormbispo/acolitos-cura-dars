@@ -130,6 +130,10 @@ export function TextButton(props:TextButtonProps) {
 type CheckBoxProps = {
   checked:boolean,
   press: (...args:any) => any
+  topText?:string
+  topTextStyle?:object
+  bottomText?:string
+  bottomTextStyle?:object
 }
 /**
  * Botão em formato de caixa de checagem.
@@ -151,12 +155,65 @@ export function CheckBox(props:CheckBoxProps){
     props.press = ()=>{}
   }
 
+  let topText:React.JSX.Element = props.topText != undefined ? 
+    <Text style={[props.topTextStyle,textStyles.imageButtonText]}>{props.topText}</Text> : null
+  
+  let bottomText:React.JSX.Element = props.bottomText != undefined ?
+    <Text style={[props.bottomTextStyle,textStyles.imageButtonText]}>{props.bottomText}</Text> : null
+
   return(
-  <Pressable style={{flex:1}} onPress={()=>{
+  <Pressable style={{flex:1,alignItems:"center"}} onPress={()=>{
     props.press()
     changeImage()
   }}>
+    {topText}
     <Image source={images[check]} style={{height:32,width:32}}/>
+    {bottomText}
+  </Pressable>
+  )
+}
+
+type TextCheckBoxProps = {
+  checked:boolean,
+  press: (...args:any) => any
+  text:string
+  textStyle?:object
+  before?:boolean
+}
+/**
+ * Botão em formato de caixa de checagem.
+ * @param props Propriedades:
+ * checked = caixa marcada ou não.     
+ * press = ação ao pressionar
+ * before = Texto deve aparecer antes da caixa? 
+ * @returns 
+ */
+export function TextCheckBox(props:TextCheckBoxProps){
+
+  const[check,setChecked] = props.checked ? useState(1) : useState(0)
+  const images = [require("@/src/app/shapes/check_false.png"),require("@/src/app/shapes/check_true.png")]
+  
+  const changeImage = () =>{
+    setChecked((check === 1) ? 0 : 1)
+  }
+
+  if(props.press == undefined){
+    props.press = ()=>{}
+  }
+  if(props.before == undefined){
+    props.before = false
+  }
+
+  let text:React.JSX.Element = <Text style={[props.textStyle,textStyles.imageButtonText,{marginLeft:20}]}>{props.text}</Text>
+
+  return(
+  <Pressable style={{flexDirection:"row",alignItems:"center"}} onPress={()=>{
+    props.press()
+    changeImage()
+  }}>
+    {props.before ? text : null}
+    <Image source={images[check]} style={{height:32,width:32}}/>
+    {!props.before ? text : null}
   </Pressable>
   )
 }
@@ -520,7 +577,17 @@ type ConfirmationModalProps = {
   confirmAction: (...args:any)=>any
   declineAction: (...args:any)=>any
   requestClose?: (...args:any)=>any
+  alert?:boolean
+  modalStyle?:object
 }
+/**
+ * Modal para confirmar determinada ação
+ * @param props
+ * visible = Modal visível, confirmationText = Texto pedindo confirmação da ação,
+ * confirmAction = ação ao confirmar, declineAction: ação ao cancelar.
+ * requestClose = ação ao solicitar fechamento do modal
+ * @returns 
+ */
 export function ConfirmationModal(props:ConfirmationModalProps){
   const {theme} = menuStore()
   return(
@@ -531,7 +598,14 @@ export function ConfirmationModal(props:ConfirmationModalProps){
       onRequestClose={props.requestClose != null ? props.requestClose : null}>
       
       <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
-          <View style={{backgroundColor:theme.accentColor,height:"30%",width:"70%",alignSelf:"center",justifyContent:"center",borderRadius:50,borderColor:"#1E1E1E",borderWidth:1}}>
+          <View style={[{backgroundColor:theme.accentColor},uiStyles.modal,props.modalStyle]}>
+              
+              {props.alert ? 
+              <View>
+                <Image source={ICONS.alert} style={{width:64,height:64,alignSelf:"center"}}/>
+                <Text style={{fontFamily:'Inter-Bold',textAlign:"center",alignSelf:"center",fontSize:24,color:"#EE2D24"}}>ATENÇÃO!</Text>
+              </View>:null}
+              
               <Text style={[textStyles.dataText,{alignSelf:"center",textAlign:"center"}]}>{props.confirmationText}</Text>
 
               <View style={{flexDirection:"row",alignSelf:"center",gap:10,marginTop:30}}>
@@ -542,5 +616,22 @@ export function ConfirmationModal(props:ConfirmationModalProps){
           
       </View>
   </Modal>
+  )
+}
+
+type DataSectionProps = {
+  text:string
+  color:string
+}
+/**
+ * Exibe um divisor de seção
+ * @param props text = texto da seção
+ * color = cor
+ */
+export function DataSection(props:DataSectionProps){
+  return(
+    <View style={{flex:0.1,backgroundColor:props.color,minHeight:"5%"}}>
+      <Text style={[textStyles.dataSection,{backgroundColor:props.color}]}>{props.text}</Text>
+    </View>
   )
 }
