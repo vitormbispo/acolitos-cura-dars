@@ -77,6 +77,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "monthDays":Dates.DefaultMonthDays(),
             "dayRotation":true,
             "dateset":new DateSet(),
+            "place":"",
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
         },
     updateMemberID: (newID) => set(()=>({memberID:newID})),

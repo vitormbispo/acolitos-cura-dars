@@ -1,13 +1,14 @@
 import { Modal, View, Image, Text, Platform, ToastAndroid } from "react-native";
 import { DataSection, TextButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
-import { AppData, MemberData, SaveDataFile } from "../classes/MemberData";
+import { MemberData} from "../classes/MemberData";
 import { DataSelectors } from "./DataExport";
 import { menuStore } from "../store/store";
 import { router, useRouter } from "expo-router";
 import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
 
 
 export class DataImportOptions{
@@ -87,4 +88,7 @@ function LoadData(data:AppData|object,properties:Array<string>){
     })
     SaveAcolyteData()
     SaveCoroinhaData()
+
+    VerifyMembersIntegrity(MemberData.allAcolytes)
+    VerifyMembersIntegrity(MemberData.allCoroinhas)
 }

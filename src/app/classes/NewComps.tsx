@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal} from "react-native"
+import { useEffect, useRef, useState } from "react";
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView} from "react-native"
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
@@ -130,6 +130,7 @@ export function TextButton(props:TextButtonProps) {
 type CheckBoxProps = {
   checked:boolean,
   press: (...args:any) => any
+  boxStyle?:object
   topText?:string
   topTextStyle?:object
   bottomText?:string
@@ -162,7 +163,7 @@ export function CheckBox(props:CheckBoxProps){
     <Text style={[props.bottomTextStyle,textStyles.imageButtonText]}>{props.bottomText}</Text> : null
 
   return(
-  <Pressable style={{flex:1,alignItems:"center"}} onPress={()=>{
+  <Pressable style={[{flex:1,alignItems:"center"},props.boxStyle]} onPress={()=>{
     props.press()
     changeImage()
   }}>
@@ -295,6 +296,10 @@ type VisualCheckBoxProps = {
   enabled:boolean
   imageStyle?:object
   boxStyle?:object
+  topText?:string
+  bottomText?:string
+  topTextStyle?:object
+  bottomTextStyle?:object
 }
 /**
  * Caixa de checagem sem interação.
@@ -305,15 +310,65 @@ type VisualCheckBoxProps = {
  * 
  * @returns 
  */
-export function VisualCheckBox(props:VisualCheckBoxProps){
+export function VisualCheckBox(props:VisualCheckBoxProps){ 
+  const topTextOffset = -70
+  const botTextOffset = 10
+  const boxRef = useRef<Image>(null)
+  const [pivotPos,setPivotPos] = useState({x:0,y:0})
+  useEffect(()=>{
+    boxRef.current.measure((x,y,width,height,pageX,pageY)=>{
+      setPivotPos({x:x,y:y})
+    })
+  })
+
+  let topText = props.topText != undefined ? <Text style={[{top:pivotPos.y+topTextOffset,left:pivotPos.x,position:"absolute",padding:10},props.topTextStyle,textStyles.imageButtonText]}>{props.topText}</Text> : null
+  let bottomText = props.bottomText != undefined ? <Text style={[props.bottomTextStyle,textStyles.imageButtonText,{marginTop:20}]}>{props.bottomText}</Text> : null
 
   return(
-    <View style={[{flex:1,padding:10},props.boxStyle]}>
+    <View style={[{flex:1,padding:10},props.boxStyle,topText != undefined ? {top:70,marginTop:30,marginBottom:60}:null]}>
+      {topText}
+      <Image ref={boxRef} source={props.enabled 
+        ? require("@/src/app/shapes/check_true.png")
+        :require("@/src/app/shapes/check_false.png")} 
+        
+        style={[{width:32,height:32},props.imageStyle]}></Image>
+      {bottomText}
+    </View>
+  )
+}
+
+
+type TextVisualCheckBoxProps = {
+  enabled:boolean
+  text:string
+  before?:boolean
+  textStyle?:object
+  imageStyle?:object
+  boxStyle?:object
+  
+}
+/**
+ * Caixa de checagem sem interação.
+ * @param props Propriedades = 
+ * boxStyle = Estilo do contêiner     
+ * imageStyle = Estilo da imagem     
+ * enabled = Ativado
+ * 
+ * @returns 
+ */
+export function TextVisualCheckBox(props:TextVisualCheckBoxProps){ 
+
+  let text = <Text style={[{padding:10},props.textStyle,textStyles.imageButtonText]}>{props.text}</Text>
+
+  return(
+    <View style={{alignItems:"center",flexDirection:"row"}}>
+      {props.before ? text : null}
       <Image source={props.enabled 
         ? require("@/src/app/shapes/check_true.png")
         :require("@/src/app/shapes/check_false.png")} 
         
         style={[{width:32,height:32},props.imageStyle]}></Image>
+      {!props.before || props.before==undefined ? text : null}
     </View>
   )
 }
@@ -465,6 +520,7 @@ type LinkImageButtonProps = {
 type TextInputBoxProps = {
   title:string,
   enabled?:boolean,
+  boxBelow?:boolean
   default?:string,
   placeholder?:string,
   maxLength?:number
@@ -480,10 +536,10 @@ type TextInputBoxProps = {
  * @returns 
  */
 export function TextInputBox(props:TextInputBoxProps) {
-  if(!props.enabled){return}
+  if(props.enabled === false){return}
 
   return(
-    <View style={{flexDirection:"row", padding:10,alignItems:"center"}}>
+    <View style={{flexDirection:!props.boxBelow ? "row":"column", padding:10,alignItems:"center"}}>
       <Text style={{fontFamily:"Inter-Light",fontSize:22}}>{props.title}</Text>
         <TextInput 
           style={uiStyles.inputField}
@@ -622,6 +678,7 @@ export function ConfirmationModal(props:ConfirmationModalProps){
 type DataSectionProps = {
   text:string
   color:string
+  
 }
 /**
  * Exibe um divisor de seção
@@ -633,5 +690,71 @@ export function DataSection(props:DataSectionProps){
     <View style={{flex:0.1,backgroundColor:props.color,minHeight:"5%"}}>
       <Text style={[textStyles.dataSection,{backgroundColor:props.color}]}>{props.text}</Text>
     </View>
+  )
+}
+
+type DropDownTypes = {
+  options?:Array<string>
+  actions?:Array<(...args:any)=>any>
+  placeholder?:string
+}
+export function DropDown(props:DropDownTypes){
+  const [modalOpened,setModalOpened] = useState(false)
+  const viewRef = useRef<View>(null)
+  const [position,setPosition] = useState({x:0,y:0})
+  const dropDownOffset = {x:10,y:32}
+  const [selectedOption, setSelectedOption] = useState(props.placeholder != undefined ? props.placeholder : props.options[0])
+
+  useEffect(()=>{
+    viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
+      setPosition({x:pageX,y:pageY})
+    })
+  })
+
+  let options = []
+  for(let i = 0; i < props.options.length;i++){
+    let op = 
+    <Pressable style={{borderRadius:100,backgroundColor:"FFFFFF"}} key={i}onPress={
+      ()=>{
+        setSelectedOption(props.options[i])
+        setModalOpened(!modalOpened)
+        props.actions[i]()
+      }
+    }>
+      <Text style={[textStyles.dataText,{marginLeft:20}]}>{props.options[i]}</Text>
+      <View style={{marginTop:5,borderWidth:0.5,borderColor:"#1E1E1EF0"}}/>
+    </Pressable>
+
+    options.push(op)
+  }
+
+  return(
+    <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
+      <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:"10%",borderRadius:100,borderColor:"#1E1E1E",borderWidth:1}} onPress={()=>{setModalOpened(!modalOpened)}}>
+        <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{selectedOption}</Text>
+        <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
+          <ScrollView style={{backgroundColor:"#FFFFFF",zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",borderColor:"#1E1E1E",borderWidth:1}}>
+            {options}
+          </ScrollView>
+        </Modal>
+      </Pressable>
+    </View>
+  )
+}
+
+type ExpandableViewProps = {
+  expanded:boolean
+  title:string
+  content:React.JSX.Element
+  action?:(...args:any)=>any
+}
+export function ExpandableView(props:ExpandableViewProps){
+  const [expanded,setExpanded] = useState(props.expanded)
+  let content = expanded ? props.content : null
+  return(
+    <Pressable style={{flex:1,width:"100%", height:"15%"}}onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
+      <Text style={[textStyles.dataSection,{backgroundColor:"#9BFFF9",height:"15%"}]}>{props.title}</Text>
+      {content}
+    </Pressable>
   )
 }

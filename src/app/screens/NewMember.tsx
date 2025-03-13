@@ -1,6 +1,6 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberAddIcon, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
+import { CheckBox, GetMemberAddIcon, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
@@ -9,6 +9,7 @@ import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
+import { Places } from "../classes/Places";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
@@ -21,7 +22,7 @@ export default function NewMember(){
     }
     
     currentData.disp = DefaultDispMap()
-
+    currentData.placeDisp = Places.PlacesRotationMap()
 
     let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
@@ -33,58 +34,61 @@ export default function NewMember(){
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
-                <UpperBar icon={GetMemberAddIcon()}screenName={"-Novo "+typeName}/>
+            <UpperBar icon={GetMemberAddIcon()}screenName={"-Novo "+typeName}/>
 
-                <TextInputBox 
-                    title={"-Nome: "} 
-                    enabled={true} 
-                    onChangeText={(text:any)=>currentData.name=text.toString()} 
-                    placeholder="Nome..."/>
+            <TextInputBox 
+                title={"-Nome: "} 
+                enabled={true} 
+                onChangeText={(text:any)=>currentData.name=text.toString()} 
+                placeholder="Nome..."/>
 
-                <TextInputBox 
-                    title={"-Apelido: "} 
-                    enabled={true} 
-                    maxLength={20}
-                    onChangeText={(text:any)=>currentData.nick=text.toString()} 
-                    placeholder="Apelido..."/>
+            <TextInputBox 
+                title={"-Apelido: "} 
+                enabled={true} 
+                maxLength={20}
+                onChangeText={(text:any)=>currentData.nick=text.toString()} 
+                placeholder="Apelido..."/>
 
-                <TextInputBox 
-                    title={"-Responsável: "} 
-                    enabled={type == MemberType.COROINHA} 
-                    onChangeText={(text:any)=>currentData.parents=text.toString()}
-                    placeholder="Responsável..."/>
-                <TextInputBox 
-                    title={"-Contato: "} 
-                    enabled={true} 
-                    keyboardType={"numeric"} 
-                    onChangeText={(text:any)=>currentData.contact=text.toString()} 
-                    placeholder="Contato..."/>
-                
-                <View style={{flex:0.1,backgroundColor:theme.secondary}}>
-                    <Text style={{fontFamily:"Inther-Bold",padding:20,alignSelf:"center",fontSize:24}}>-Disponibilidade-</Text>
+            <TextInputBox 
+                title={"-Responsável: "} 
+                enabled={type == MemberType.COROINHA} 
+                onChangeText={(text:any)=>currentData.parents=text.toString()}
+                placeholder="Responsável..."/>
+            <TextInputBox 
+                title={"-Contato: "} 
+                enabled={true} 
+                keyboardType={"numeric"} 
+                onChangeText={(text:any)=>currentData.contact=text.toString()} 
+                placeholder="Contato..."/>
+            
+            <View style={{flex:0.1,backgroundColor:theme.secondary}}>
+                <Text style={{fontFamily:"Inther-Bold",padding:20,alignSelf:"center",fontSize:24}}>-Disponibilidade-</Text>
+            </View>
+
+            <Text style={textStyles.dataTitle}>- Local</Text>
+            <PlaceAvailability member={currentData}/>
+
+            <View style={{paddingTop:20}}>
+                <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
+                    <Text style={{flex:1}}>Sábado - 19h</Text>
+                    <Text style={{flex:1}}>Domingo - 08h</Text>
+                    <Text style={{flex:1}}>Domingo - 19h</Text>
                 </View>
                 
-                <View style={{paddingTop:20}}>
-                    <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
-                        <Text style={{flex:1}}>Sábado - 19h</Text>
-                        <Text style={{flex:1}}>Domingo - 08h</Text>
-                        <Text style={{flex:1}}>Domingo - 19h</Text>
-                    </View>
+                <View>
                     
-                    <View>
-                        
-                    {availabilities}
+                {availabilities}
 
-                    </View>
-                    
-                    <View style={{flexDirection:"row",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Dispnível: </Text>
-                        <CheckBox checked={true}press = {()=>
-                            {currentData.onLineup = !currentData.onLineup}}/>
-                    </View>
                 </View>
                 
-                <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
+                <View style={{flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Dispnível: </Text>
+                    <CheckBox checked={true}press = {()=>
+                        {currentData.onLineup = !currentData.onLineup}}/>
+                </View>
+            </View>
+            
+            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
         </KeyboardAwareScrollView>
     )
 }
@@ -165,4 +169,25 @@ export function DefaultDayPriorityMap(){
     Dates.defaultWeekends.forEach((weekend)=>{
         map[weekend] = 0
     })
+}
+
+type PlaceAvailabilityProps = {
+    member:Member
+}
+
+export function PlaceAvailability(props:PlaceAvailabilityProps){
+    let checks:Array<React.JSX.Element> = []
+    for(let i = 0; i < Places.allPlaces.length; i++){
+        let curPlace = Places.allPlaces[i]
+        let check = <TextCheckBox checked={props.member.placeDisp[curPlace]} text={curPlace} key={i} press={()=>{
+            props.member.placeDisp[curPlace] = !props.member.placeDisp[curPlace]
+        }}/>
+        checks.push(check)
+    }
+
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:1,flexWrap:"wrap",gap:10,padding:10}}>
+            {checks}
+        </View>
+    )
 }

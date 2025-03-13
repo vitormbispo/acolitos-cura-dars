@@ -1,5 +1,5 @@
 import { View, Text, ScrollView} from "react-native"
-import { CheckBox,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
+import { CheckBox,DropDown,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -13,6 +13,7 @@ import { DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
 import { useState } from "react"
+import { Places } from "../classes/Places"
 
 /**
  * Tipo do objeto que armazena as opções de geração
@@ -28,6 +29,7 @@ export type GenerationOptionsType = {
     "dayRotation":boolean,
     "randomness":number,
     "roleset":RoleSet,
+    "place":string
     "dateset":DateSet
 }
 
@@ -57,32 +59,38 @@ export default function LineupGenerationOptions(){
         case LineupType.MONTH:   options = <MonthLineupOptions/>; break
     }
 
-    // Trecho temporário
-    let roleset:React.JSX.Element
+    // Seleção de RoleSet
+    let rolesets:Array<RoleSet> = []
     switch(type){
-        case MemberType.ACOLYTE: roleset = 
-            (<View style={{flex:1}}>
-                <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Solenidade</Text>
-                    <CheckBox checked={curGenOptions.roleset.name == "default"} press={()=>{
-                        curGenOptions.roleset = curGenOptions.roleset.name == "minimal" ? 
-                            Roles.GetRoleSet("default",type):
-                            Roles.GetRoleSet("minimal",type)}}/>
-                </View>
-            </View>)
-            break
-        case MemberType.COROINHA: roleset =
-            (<View style={{flex:1}}>
-                <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
-                    <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Escala reduzida</Text>
-                    <CheckBox checked={curGenOptions.roleset.name == "minimal"} press={()=>{
-                        curGenOptions.roleset = curGenOptions.roleset.name == "default" ? 
-                            Roles.GetRoleSet("minimal",type):
-                            Roles.GetRoleSet("default",type)}}/>
-                </View>
-            </View>)
+        case MemberType.ACOLYTE:
+            rolesets = Roles.acolyteRoleSets.slice(); break
+        case MemberType.COROINHA:
+            rolesets = Roles.coroinhaRoleSets.slice(); break
     }
 
+    let rolesetOptions:Array<string> = []
+    let rolesetActions:Array<(...args:any)=>any> = []
+
+    for(let i = 0; i < rolesets.length; i++){
+        let curSet = rolesets[i]
+
+        rolesetOptions.push(curSet.name)
+        rolesetActions.push(()=>{
+            curGenOptions.roleset = curSet
+        })
+    }
+    // Seleção de local
+
+    let placesOptions:Array<string> = []
+    let placesActions:Array<(...args:any)=>any> = []
+
+    for(let i = 0; i < Places.allPlaces.length;i++){
+        let curPlace = Places.allPlaces[i]
+        placesOptions.push(curPlace)
+        placesActions.push(
+            ()=>{curGenOptions.place = curPlace}
+        )
+    }
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
@@ -123,6 +131,7 @@ export default function LineupGenerationOptions(){
                 </View>
                 {/* </ Opções de aleatoriedade > */}
                 
+
                 <View style={{flex:1}}>
                     <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
                         <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
@@ -131,7 +140,9 @@ export default function LineupGenerationOptions(){
                 </View>
 
                 {/* RoleSet (temporário) */}
-                {roleset}
+                <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:"/>
+                {/* Local */}
+                <DropDown options={placesOptions} actions={placesActions} placeholder="Selecione o local:"/>
                 {options}
             </ScrollView>
         </View>
@@ -251,11 +262,9 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
         console.error("Unable to generate lineup. Members is empty.")
         return
     }
-    // Definir funções se for solenidade ou não
-    let roles = []
+    
     let roleset:RoleSet = generateOptions.roleset
 
-    LineupScreenOptions.roles = roles
     LineupScreenOptions.lineups = []
 
     let generatedLineups:object = {}
@@ -278,7 +287,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
                 
                 let newLineup = generateOptions.allRandom ?
                     GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                    GenerateLineup(weekendKey,curDay,roleset,type,generateOptions.randomness,generateOptions.dayRotation)
+                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness})
                 generatedLineups[weekendKey].push(newLineup)
                 allLineups.push(newLineup)
             }

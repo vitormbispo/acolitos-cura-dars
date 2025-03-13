@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { GetMemberIcon, ImageTextButton, TextPosition, UpperBar } from "../classes/NewComps";
+import { DropDown, ExpandableView, GetMemberIcon, ImageTextButton, TextPosition, UpperBar } from "../classes/NewComps";
 import { uiStyles} from "../styles/GeneralStyles";
 import { menuStore} from "@/src/app/store/store";
 import { ICONS } from "../classes/AssetManager";
@@ -11,6 +11,7 @@ export default function Home(){
         <View style = {{flex:1}}>
             <UpperBar screenName={"Tela inicial | "+name} icon={ICONS.home} toggleEnabled={true}/>
             <AppBody/>
+            
             <LowerBar/> 
         </View>
         
@@ -23,7 +24,12 @@ export function AppBody(){
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
 {/*}
 <       TextButton text="Clear AsyncStorage." textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
+        
 {*/}
+    <ExpandableView title="drop" expanded={false} content={
+        <DropDown options={["Opção 1","Opção 2","Opção 3"]} actions={[()=>{console.log("Opção 1")},()=>{console.log("Opção 2")},()=>{console.log("Opção 3")}]}/>
+    }/>
+    
     </View>
     )
 }
@@ -38,6 +44,7 @@ export const LowerBar = () => {
             <ImageTextButton img={ICONS.home} imgStyle={uiStyles.buttonIconSmall} text={"Início"} textPos={TextPosition.BOTTOM}/>
             <ImageTextButton img={ICONS.escala} imgStyle={uiStyles.buttonIconSmall} text={"Escalas"} textPos={TextPosition.BOTTOM} link={"/screens/LineupOptions"}/>
             <ImageTextButton img={ICONS.menu} imgStyle={uiStyles.buttonIconSmall} text={"Menu"} textPos={TextPosition.BOTTOM} link={"/screens/SettingsMenu"}/>
+            
         </View>
     )
 }

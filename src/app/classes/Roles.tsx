@@ -1,15 +1,19 @@
-import { Member, MemberType } from "./MemberData"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { SaveData } from "./DataManager"
+import { MemberType } from "./MemberData"
 
 export class RoleSet{
     name:string = ""
     type:MemberType = MemberType.ACOLYTE
     set:Array<string> = []
     size:number = 0
-    constructor(name:string,type:MemberType,set?:Array<string>){
+    isDefault:boolean = false
+    constructor(name:string,type:MemberType,set?:Array<string>,isDefault?:boolean){
         this.name = name
         this.type = type
         this.set = set
-        this.size = set!=undefined ? set.length : 0
+        this.size = set != undefined ? set.length : 0
+        this.isDefault = isDefault != undefined ? isDefault : false
     }
 
     /**
@@ -40,8 +44,6 @@ export class RoleSet{
         this.set = roles
     }
 }
-
-
 
 export class Roles {
     static defaultAcolyteRoles:object = {
@@ -74,9 +76,13 @@ export class Roles {
         let newSet = new RoleSet(name,type,roles)
         switch(type){
             case MemberType.ACOLYTE:
-                Roles.acolyteRoleSets.push(newSet); break
+                Roles.acolyteRoleSets.push(newSet)
+                SaveData("AcolyteRolesets",Roles.acolyteRoleSets)
+                break
             case MemberType.COROINHA:
-                Roles.coroinhaRoleSets.push(newSet); break
+                Roles.coroinhaRoleSets.push(newSet)
+                SaveData("CoroinhaRolesets",Roles.coroinhaRoleSets)
+                break
         }
     }
 
@@ -84,13 +90,13 @@ export class Roles {
         switch(type){
             case MemberType.ACOLYTE:
                 Roles.acolyteRoleSets = [
-                    new RoleSet("default",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles)),
-                    new RoleSet("minimal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"])
+                    new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles),true),
+                    new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true)
                 ]; break
             case MemberType.COROINHA:
                 Roles.coroinhaRoleSets = [
-                    new RoleSet("default",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles)),
-                    new RoleSet("minimal",MemberType.COROINHA,["Dons D.","Dons E."])
+                    new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles),true),
+                    new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
                 ]; break     
         }
     }
@@ -114,3 +120,21 @@ export class Roles {
     }
 }
 
+export async function LoadAcolyteRolesets() {
+    let sets = await AsyncStorage.getItem("AcolyteRolesets")
+    Roles.acolyteRoleSets = JSON.parse(sets)
+
+    if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets.length == 0){
+        Roles.InitializeSets(MemberType.ACOLYTE)
+    }
+                    
+}
+
+export async function LoadCoroinhaRolesets() {
+    let sets = await AsyncStorage.getItem("CoroinhaRolesets")
+    Roles.coroinhaRoleSets = JSON.parse(sets)
+    
+    if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
+        Roles.InitializeSets(MemberType.COROINHA)
+    }
+}

@@ -1,20 +1,30 @@
 import { View,Text, ScrollView } from "react-native"
-import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay } from "../classes/NewComps"
+import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, ImageButton } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
-import { textStyles} from "../styles/GeneralStyles"
+import { textStyles, uiStyles} from "../styles/GeneralStyles"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
+import { Places } from "../classes/Places"
+import { Roles } from "../classes/Roles"
+import { useEffect, useRef, useState } from "react"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
     const {memberID} = contextStore()
     
     let members:Array<Member>
-    
+    let defaultRoles:Array<string> = []
+
     switch (type){
-        case MemberType.ACOLYTE:members = MemberData.allAcolytes ; break
-        case MemberType.COROINHA:members = MemberData.allCoroinhas ; break
+        case MemberType.ACOLYTE:
+            members = MemberData.allAcolytes
+            defaultRoles = Object.keys(Roles.defaultAcolyteRoles)
+            break
+        case MemberType.COROINHA:
+            members = MemberData.allCoroinhas 
+            defaultRoles = Object.keys(Roles.defaultCoroinhaRoles)
+            break
     }
     
     let curMember:Member = members[memberID]
@@ -24,12 +34,23 @@ export default function MemberProfile() {
                         <Text style={textStyles.dataTitle}>Responsável: </Text>
                         <Text style={textStyles.dataText}>{curMember.parents}</Text>
                     </View> : null
+    
 
     const rodizio = []
-    
+    const rodizioAlt = []
     Object.keys(curMember.rodizio).forEach((role) => {
-        rodizio.push(
-        <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>)
+        let display = <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>
+        if(defaultRoles.includes(role)){
+            rodizio.push(display)
+        }
+        else{
+            let altDisplay = 
+            <View style={{flexDirection:"row"}} key={role}>
+                {display}
+                <ImageButton img={ICONS.delete} imgStyle={uiStyles.buttonIconSmall} press={()=>{delete curMember.rodizio[role]}}/>
+            </View>
+            rodizioAlt.push(altDisplay)
+        }
     })
     
     let availabilities:Array<React.JSX.Element> = []
@@ -39,6 +60,11 @@ export default function MemberProfile() {
         availabilities.push(available)
     }
 
+    const scrollRef = useRef<ScrollView>(null)
+    const [scrollPos,setScrollPos] = useState(0)
+    const handleScroll = (event:any) =>{
+        setScrollPos(event.nativeEvent.contentOffset.y)
+    }
     return(
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
@@ -47,7 +73,7 @@ export default function MemberProfile() {
             </View>
             
 
-            <ScrollView style={{flex:1}}>
+            <ScrollView style={{flex:1}} ref={scrollRef}>
                 <View style={{flex:1,backgroundColor:theme.secondary,height:80}}>
                     <Text style={textStyles.dataSection}>-Dados Pessoais-</Text>
                 </View>
@@ -72,6 +98,8 @@ export default function MemberProfile() {
                 <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
                     <Text style={[textStyles.dataSection,{backgroundColor:theme.secondary}]}>-Disponibilidade-</Text>
                 </View>
+                <Text style={textStyles.dataTitle}>- Local:</Text>
+                <VisualPlaceAvailability member={curMember}/>
 
                 <View style={{paddingTop:20}}>
                     
@@ -99,7 +127,14 @@ export default function MemberProfile() {
                     <Text style={{fontFamily:"Inter-Bold",fontSize:20,alignSelf:"center"}}>Geral: </Text>
                     <Text style={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}>{curMember.priority}</Text>
                 </View>
+
                 {rodizio}
+
+                <ExpandableView expanded={false} title={"Outras funções:"} content={
+                    <View>
+                        {rodizioAlt}
+                    </View>}
+                    action={()=>{scrollRef.current.scrollToEnd({animated:true})}}/>
             </ScrollView>
         </View>
     )
@@ -122,6 +157,24 @@ export function VisualWeekendAvailability(props:VisualWeekendAvailabilityProps){
     return(
         <View style={{flexDirection:"row",alignItems:"center",flex:1}}>
             <Text style={{padding:10,flex:1}}>{props.weekend}</Text>
+            {checks}
+        </View>
+    )
+}
+
+type VisualPlaceAvailabilityProps = {
+    member:Member
+}
+export function VisualPlaceAvailability(props:VisualPlaceAvailabilityProps){
+    let checks:Array<React.JSX.Element> = []
+    for(let i = 0; i < Places.allPlaces.length; i++){
+        let curPlace = Places.allPlaces[i]
+        let check = <TextVisualCheckBox enabled={props.member.placeDisp[curPlace]} text={curPlace}key={i}/>
+        checks.push(check)
+    }
+
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:1,flexWrap:"wrap",gap:10,padding:10}}>
             {checks}
         </View>
     )

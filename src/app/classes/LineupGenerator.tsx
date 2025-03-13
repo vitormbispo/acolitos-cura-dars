@@ -3,6 +3,16 @@ import { Member, MemberData, MemberType } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 
+
+type GeneratorSettings = {
+    weekend:string
+    day:string
+    roleset:RoleSet
+    type:MemberType
+    place?:string
+    randomness?:number
+    
+}
 /** Gera uma nova escala de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
  * Leva em conta a disponibiliade e as prioridades diárias, de funções e gerais.
  * 
@@ -12,10 +22,10 @@ import { Lineup } from "./Lineup";
  * @param type Tipo
  * @returns {Lineup|null} Nova escala montada
  */
-export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,type:MemberType,randomness:number = 1.3, dayRotation:boolean = true):Lineup|null{
+export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     let members:Array<Member> = []
     
-    switch(type){
+    switch(settings.type){
         case MemberType.COROINHA : members = MemberData.allCoroinhas; break
         case MemberType.ACOLYTE : members = MemberData.allAcolytes; break
         default: 
@@ -30,24 +40,24 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
 
     members = members.slice()
 
-    members = RemoveUnvailable(members,day,weekend) // Remover membros indisponíveis
+    members = RemoveUnvailable(members,settings.day,settings.weekend,settings.place) // Remover membros indisponíveis
     if(members.length == 0){ // Não há membros disponíveis
         console.warn("Any members available. Lineup is empty.")
         let emptyLine = new Lineup()
-        emptyLine.day = day
-        emptyLine.weekend = weekend
-        emptyLine.roleset = roleset
+        emptyLine.day = settings.day
+        emptyLine.weekend = settings.weekend
+        emptyLine.roleset = settings.roleset
         return emptyLine      
     }
     // Excluir membros que já estão nesse fim de semana
-    if(weekend != "Outro"){
-        members = RemoveIfAlreadyOnWeekend(members,weekend,roleset.size)
+    if(settings.weekend != "Outro"){
+        members = RemoveIfAlreadyOnWeekend(members,settings.weekend,settings.roleset.size)
     }
     
     ShuffleArray(members) // Embaralha o array para aumentar a aleatoriedade
 
     members.forEach((member)=>{
-        CalculateScore(member,day)
+        CalculateScore(member,settings.day)
     })
 
     let sortedScoreMembers:Array<Member> = []; // Lista ordenada por score.
@@ -58,10 +68,10 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
     
     let chosenMembers:Array<Member> = [] // Lista de membros selecionados
     
-    let chosenQuant:number = Math.ceil(roleset.size*randomness) < sortedScoreMembers.length ? Math.ceil(roleset.size*randomness) : sortedScoreMembers.length // Quantidade de membros a selecionar
+    let chosenQuant:number = Math.ceil(settings.roleset.size*settings.randomness) < sortedScoreMembers.length ? Math.ceil(settings.roleset.size * settings.randomness) : sortedScoreMembers.length // Quantidade de membros a selecionar
     let chosenIndexes = DistinctRandomNumbers(0,chosenQuant-1,chosenQuant)
 
-    for(let i = 0; i < roleset.size;i++){
+    for(let i = 0; i < settings.roleset.size;i++){
         let chosen = sortedScoreMembers[chosenIndexes[i]]
         if(chosen == null){continue}
         chosenMembers.push(chosen)
@@ -70,13 +80,13 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
     // Escolher funções para cada membro e montar na classe Lineup.
     let newLineup:Lineup = new Lineup()
 
-    for(let i = 0; i < roleset.size; i++){
-        let role = roleset.set[i]
+    for(let i = 0; i < settings.roleset.size; i++){
+        let role = settings.roleset.set[i]
         
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
         
-        IncreaseAllRoleCooldown(member,1,type)
+        IncreaseAllRoleCooldown(member,1,settings.type)
         member.rodizio[role] = 0
         
         newLineup.line[role] = member
@@ -84,30 +94,30 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
         
         RemoveMember(member,chosenMembers)
 
-        if(chosenMembers.length == 0 && i+1 < roleset.size){
+        if(chosenMembers.length == 0 && i+1 < settings.roleset.size){
             console.warn("Not enough members! Only partial lineup will be generated.")
             break;
         }
     }
     
-    newLineup.day = day
-    newLineup.weekend = weekend
-    newLineup.roleset = roleset
+    newLineup.day = settings.day
+    newLineup.weekend = settings.weekend
+    newLineup.roleset = settings.roleset
 
     newLineup.members.forEach((member:Member) => {
         member.priority = 0
-        member.weekendPriority[day] = 0
-        member.lastWeekend = weekend
+        member.weekendPriority[settings.day] = 0
+        member.lastWeekend = settings.weekend
     });
 
     // Ajustar prioridades
-    if(day != "Outro"){
-        IncreaseAllDayPriority(newLineup.members,day,1,type)
-        IncreaseAllGeneralPriority(newLineup.members,1,type)
+    if(settings.day != "Outro"){
+        IncreaseAllDayPriority(newLineup.members,settings.day,1,settings.type)
+        IncreaseAllGeneralPriority(newLineup.members,1,settings.type)
     }
 
     // Salvar listas
-    switch(type){
+    switch(settings.type){
         case MemberType.ACOLYTE:  SaveAcolyteData(); break
         case MemberType.COROINHA: SaveCoroinhaData(); break
     }
@@ -122,7 +132,7 @@ export function GenerateLineup(weekend:any=null,day:any=null,roleset:RoleSet,typ
  * @param {string} day Dia
  * @returns {Lineup} Uma nova escala aleatória
  */
-export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:string="Outro",day:string="Outro"):Lineup{
+export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:string="Outro",day:string="Outro",place?:string):Lineup{
     
     let members:Array<Member> = []
 
@@ -137,7 +147,7 @@ export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:str
 
     let availableMembers = []
 
-    availableMembers = RemoveUnvailable(members,"Outro","Outro")
+    availableMembers = RemoveUnvailable(members,"Outro","Outro",place)
 
     let generatedLineup = new Lineup()
     for(let i = 0; i < roleset.size;i++){
@@ -207,7 +217,7 @@ export function InsertSortedByScore(member:Member,array:Array<Member>){
  * @param {string} day Dia 
  * @param {string} weekend Fim de semana 
  */
-function RemoveUnvailable(members:Array<Member>,day:string,weekend:string){
+function RemoveUnvailable(members:Array<Member>,day:string,weekend:string,place:string){
     let availableMembers = []
 
     for(let i = 0; i < members.length;i++){
@@ -216,9 +226,12 @@ function RemoveUnvailable(members:Array<Member>,day:string,weekend:string){
         if(curMember.onLineup){
             if(day != "Outro" && weekend != "Outro"){
                 if(curMember.disp[weekend][day]){
-                    availableMembers.push(curMember)
+                    if( (place != undefined && curMember.placeDisp[place]) || (place == undefined)){
+                        availableMembers.push(curMember)
+                    }
                 }
             }
+            
             else{
                 availableMembers.push(curMember)
             }

@@ -1,14 +1,14 @@
-import { View,Text, Modal} from "react-native"
+import { View,Text } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal } from "../classes/NewComps";
+import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal, TextCheckBox } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { AbbreviateText, OrganizeMemberArrayAlpha} from "../classes/Methods"
 import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
-import { WeekendAvailability } from "./NewMember";
-import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { PlaceAvailability, WeekendAvailability } from "./NewMember";
+import { textStyles} from "../styles/GeneralStyles";
 import { ICONS } from "../classes/AssetManager";
 import { useState } from "react";
 
@@ -74,10 +74,14 @@ export default function EditMember(){
                 onChangeText={(text:string)=>curMember.contact = text.toString()}/>
 
             
+
             <View style={{flex:0.1,height:80,backgroundColor:theme.secondary}}>
                 <Text style={[textStyles.dataSection]}>-Disponibilidade-</Text>
             </View>
             
+            <Text style={textStyles.dataTitle}>- Local:</Text>
+            <PlaceAvailability member={curMember}/>
+
             <View style={{paddingTop:20}}>
                 <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
                     <Text style={{flex:1}}>Sábado - 19h</Text>
@@ -153,3 +157,4 @@ export function EraseMember(id:number,type:MemberType){
     router.back()
     router.back()
 }
+

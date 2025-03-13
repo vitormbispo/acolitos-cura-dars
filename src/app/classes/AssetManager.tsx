@@ -20,3 +20,4 @@ export const ICONS = {
     erase_data:require("@/src/app/item_icons/erase_data_ico.png"),
     alert:require("@/src/app/item_icons/alert_ico.png")
 }
+

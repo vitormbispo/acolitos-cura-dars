@@ -17,6 +17,13 @@ export default function SettingsMenu(){
                     fontFamily:"Inter-Light",
                     fontSize:20
             }}  link={"/screens/DataSettingsMenu"}/>
+
+            <LinkRowImageButton img={ICONS.acolito} text={"- Funções"}
+                textStyle={{
+                    paddingLeft:10, 
+                    fontFamily:"Inter-Light",
+                    fontSize:20
+            }}  link={"/screens/RolesetList"}/>
         </View>
     )
 }

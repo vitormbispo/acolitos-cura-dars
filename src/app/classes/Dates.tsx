@@ -14,17 +14,17 @@ export class Dates {
     * @returns 
     */
     static DefaultMonthDays():object{
-    let map = {}
+        let map = {}
 
-    Dates.defaultWeekends.forEach((weekend)=>{
-        let days:Array<string> = []
-        Dates.defaultDays.forEach((day)=>{
-            days.push(day)
+        Dates.defaultWeekends.forEach((weekend)=>{
+            let days:Array<string> = []
+            Dates.defaultDays.forEach((day)=>{
+                days.push(day)
+            })
+            map[weekend] = days
         })
-        map[weekend] = days
-    })
 
-    return map
+        return map
     }
 }
 
