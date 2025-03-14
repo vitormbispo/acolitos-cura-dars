@@ -16,11 +16,13 @@ export enum MenuStyles{
 
 export type ContextStates = {
     memberID:number
+    rolesetID:number
     lineupType:LineupType
     curWeekend:string
     curDay:string
     curGenOptions:GenerationOptionsType
     updateMemberID: (id:number) => void
+    updateRolesetID: (id:number) => void
     setLineupType: (type:LineupType) => void
     updateWeekend: (weekend:string) => void
     updateDay: (day:string) => void
@@ -63,6 +65,7 @@ export const menuStore = create<ThemeStates>((set)=>({
 
 export const contextStore = create<ContextStates>((set)=>({
     memberID:0,
+    rolesetID:0,
     lineupType:LineupType.SINGLE,
     curWeekend:Dates.defaultWeekends.slice()[0],
     curDay:Dates.defaultDays.slice()[0],
@@ -81,6 +84,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
         },
     updateMemberID: (newID) => set(()=>({memberID:newID})),
+    updateRolesetID: (newID) => set(()=>({rolesetID:newID})),
     setLineupType: (newType:LineupType) => set(()=>({lineupType:newType})),
     updateWeekend: (newWeekend:string) => set(()=>({curWeekend:newWeekend})),
     updateDay: (newDay:string) => set(()=>({curDay:newDay})),

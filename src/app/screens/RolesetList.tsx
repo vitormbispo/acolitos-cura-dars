@@ -1,7 +1,7 @@
 import { View, Image, Text, Pressable } from "react-native";
 import { ImageButton, RowImageButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
-import { menuStore } from "../store/store";
+import { contextStore, menuStore } from "../store/store";
 import { MemberType } from "../classes/MemberData";
 import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
@@ -30,7 +30,7 @@ export default function RolesetList(){
 
     return(
         <View style={{flex:1}}>
-            <UpperBar icon={ICONS.acolito} screenName={"Funções"}/>
+            <UpperBar icon={ICONS.acolito} screenName={"Funções"} toggleEnabled={true}/>
             <RowImageButton img={ICONS.acolito} text={"Adicionar novo conjunto"} press={()=>{
                 router.push("/screens/NewRoleset")
             }}/>
@@ -49,9 +49,11 @@ type RowRolesetProps = {
     deleteAction: (...args:any) => any
 }
 function RowRoleset(props:RowRolesetProps){
+    const {updateRolesetID} = contextStore()
     return(
         <Pressable style={{alignContent:"center",alignItems:"center",flexDirection:"row",height:"15%",width:"100%",backgroundColor:"#FFFFFF"}} onPress={()=>{
-
+            updateRolesetID(props.index)
+            router.push("/screens/EditRoleset")
         }}>
             <Image style={uiStyles.buttonIcon} source={ICONS.acolito}/>
             <Text>{props.name}</Text>

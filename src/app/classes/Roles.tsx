@@ -8,14 +8,16 @@ export class RoleSet{
     set:Array<string> = []
     size:number = 0
     isDefault:boolean = false
+
     constructor(name:string,type:MemberType,set?:Array<string>,isDefault?:boolean){
         this.name = name
         this.type = type
         this.set = set
         this.size = set != undefined ? set.length : 0
         this.isDefault = isDefault != undefined ? isDefault : false
+        
     }
-
+    
     /**
     * Adiciona uma nova função ao conjunto
      * @param role Função a adicionar
@@ -23,7 +25,17 @@ export class RoleSet{
     AddRole(role:string){
         this.set.push(role)
     }
-    
+    /**
+     * Exclui determinada função do conjunto
+     * @param role Nome da função a remover
+     * @returns 
+     */
+    RemoveRole(role:string){
+        let index = this.set.indexOf(role)
+        if(index == -1){console.error("Role not found");return}
+
+        this.set.splice(index,1)
+    }
     /**
      * Define o conjunto de funções para o padrão do tipo de membros.
      */

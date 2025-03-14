@@ -323,3 +323,12 @@ export function AbbreviateText(text:string, maxLen:number):string{
     let abbreviated:string = text.substring(0,maxLen-3)+"..."
     return abbreviated
 }
+
+/**
+ * Retorna uma cópia absoluta de determinado objeto
+ * @param obj Objeto a ser copiado
+ */
+export function DeepCopyObject(obj:any):any{
+    return JSON.parse(JSON.stringify(obj))
+
+}

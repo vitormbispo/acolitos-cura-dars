@@ -24,6 +24,13 @@ export default function SettingsMenu(){
                     fontFamily:"Inter-Light",
                     fontSize:20
             }}  link={"/screens/RolesetList"}/>
+
+            <LinkRowImageButton img={ICONS.home} text="- Locais" 
+                textStyle={{
+                    paddingLeft:10, 
+                    fontFamily:"Inter-Light",
+                    fontSize:20
+            }}  link={"/screens/PlaceList"}/>
         </View>
     )
 }

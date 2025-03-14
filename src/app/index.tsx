@@ -21,7 +21,7 @@ export default function App() {
     
 
     if(Places.allPlaces == undefined || Places.allPlaces == null){
-        Places.allPlaces = Places.defaultPlaces
+        Places.allPlaces = Places.defaultPlaces.slice()
     }
     if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets == undefined || Roles.acolyteRoleSets.length == 0){
         Roles.InitializeSets(MemberType.ACOLYTE)
