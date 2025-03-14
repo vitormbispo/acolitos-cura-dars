@@ -18,6 +18,7 @@ export class Lineup{
     roleset:RoleSet
     day:string = ""
     weekend:string = ""
+    place:string = ""
 }
 
 /**
@@ -32,4 +33,5 @@ export class StructuredLineup{
     lineups:Array<Lineup> = []
     monthLineups:object = {}
     allLineups:Array<Lineup> = new Array<Lineup>()
+    place:string = ""
 }

@@ -28,7 +28,7 @@ export default function List(){
         for(let i = 0; i < all.length;i++){
             let curMember = all[i]
             
-            if(!isExcluded(curMember) && isDayAvailable(curMember,MemberSelectScreenOptions.lineup) && curMember.onLineup){ // Apenas os membros disponíveis.
+            if(!isExcluded(curMember) && isDayAvailable(curMember,MemberSelectScreenOptions.lineup) && isPlaceAvailable(curMember,MemberSelectScreenOptions.lineup) && curMember.onLineup){ // Apenas os membros disponíveis.
                 members.push(
                     <SelectableRowMember 
                         img={GetMemberIcon()} 
@@ -127,6 +127,15 @@ function isExcluded(member:Member){
 function isDayAvailable(member:Member,line:Lineup){
     if(line.day != "Outro" && line.weekend != "Outro"){
         return member.disp[line.weekend][line.day]
+    }
+    else{
+        return true
+    }
+}
+
+function isPlaceAvailable(member:Member,line:Lineup){
+    if(line.place != null && line.place != ""){
+        return member.placeDisp[line.place]
     }
     else{
         return true

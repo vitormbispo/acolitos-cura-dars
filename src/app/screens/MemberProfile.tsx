@@ -8,6 +8,8 @@ import { ICONS } from "../classes/AssetManager"
 import { Places } from "../classes/Places"
 import { Roles } from "../classes/Roles"
 import { useEffect, useRef, useState } from "react"
+import { SaveData } from "../classes/DataManager"
+import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
@@ -37,7 +39,8 @@ export default function MemberProfile() {
     
 
     const rodizio = []
-    const rodizioAlt = []
+    const [rodizioAlt,setRodizioAlt] = useState([])
+    
     Object.keys(curMember.rodizio).forEach((role) => {
         let display = <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>
         if(defaultRoles.includes(role)){
@@ -47,7 +50,16 @@ export default function MemberProfile() {
             let altDisplay = 
             <View style={{flexDirection:"row"}} key={role}>
                 {display}
-                <ImageButton img={ICONS.delete} imgStyle={uiStyles.buttonIconSmall} press={()=>{delete curMember.rodizio[role]}}/>
+                <ImageButton img={ICONS.delete} imgStyle={uiStyles.buttonIconSmall} press={()=>{
+                    delete curMember.rodizio[role]
+                    switch(type){
+                        case MemberType.ACOLYTE:
+                            SaveAcolyteData()
+                        case MemberType.COROINHA:
+                            SaveCoroinhaData()
+                    }
+                    setRodizioAlt([]) // Causa um rerender
+                    }}/>
             </View>
             rodizioAlt.push(altDisplay)
         }
@@ -128,13 +140,19 @@ export default function MemberProfile() {
                     <Text style={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}>{curMember.priority}</Text>
                 </View>
 
-                {rodizio}
+                <View style={{flex:1}}>
+                    {rodizio}
+                    
+                    {rodizioAlt.length > 0 ? 
+                    <ExpandableView expanded={false} title={"Outras funções:"} content={
+                        <View>
+                            {rodizioAlt}
+                        </View>}
+                        action={()=>{scrollRef.current.scrollToEnd({animated:true})}}>
+                    </ExpandableView> : null}
+                </View>
+                
 
-                <ExpandableView expanded={false} title={"Outras funções:"} content={
-                    <View>
-                        {rodizioAlt}
-                    </View>}
-                    action={()=>{scrollRef.current.scrollToEnd({animated:true})}}/>
             </ScrollView>
         </View>
     )

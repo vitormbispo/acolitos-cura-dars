@@ -71,7 +71,7 @@ export const uiStyles = StyleSheet.create({
         fontFamily:"Inter-Regular",
         width:200,
         padding:10,
-        borderRadius:100,
+        borderRadius:10,
         borderColor:"#1E1E1E99",
         borderWidth:1
     },
@@ -86,10 +86,11 @@ export const uiStyles = StyleSheet.create({
     textButton:{
         alignItems:"center",
         alignSelf:"center",
-        backgroundColor:"#ABDCE3",
-        borderRadius:100,
-        borderWidth:1,
+        backgroundColor:"#A5D8E8",
+        borderRadius:10,
+        borderWidth:0,
         borderColor:"#1E1E1E",
+        margin:10
     }
 
     
@@ -100,6 +101,7 @@ export const textStyles = StyleSheet.create({
         fontFamily:"Inter-Light",
         fontSize:18,
         paddingLeft:20
+        
     },
     names:{
         fontFamily:"Inter-Bold",
@@ -107,7 +109,8 @@ export const textStyles = StyleSheet.create({
     },
     textButtonText:{
         fontSize:16,
-        fontFamily:"Inter-Regular" 
+        fontFamily:"Inter-Bold",
+        color:"#333333"
     },
     lineupTitle:{
         fontFamily:"Inter-Bold",

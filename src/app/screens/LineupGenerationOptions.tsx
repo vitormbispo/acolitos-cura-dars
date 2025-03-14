@@ -287,7 +287,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
                 
                 let newLineup = generateOptions.allRandom ?
                     GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness})
+                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:generateOptions.place})
                 generatedLineups[weekendKey].push(newLineup)
                 allLineups.push(newLineup)
             }

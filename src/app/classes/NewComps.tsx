@@ -733,7 +733,7 @@ export function DropDown(props:DropDownTypes){
       <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:"10%",borderRadius:100,borderColor:"#1E1E1E",borderWidth:1}} onPress={()=>{setModalOpened(!modalOpened)}}>
         <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{selectedOption}</Text>
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
-          <ScrollView style={{backgroundColor:"#FFFFFF",zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",borderColor:"#1E1E1E",borderWidth:1}}>
+          <ScrollView style={{backgroundColor:"#FFFFFF",zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",height:"0%",borderColor:"#1E1E1E",borderWidth:1}}>
             {options}
           </ScrollView>
         </Modal>
@@ -752,9 +752,12 @@ export function ExpandableView(props:ExpandableViewProps){
   const [expanded,setExpanded] = useState(props.expanded)
   let content = expanded ? props.content : null
   return(
-    <Pressable style={{flex:1,width:"100%", height:"15%"}}onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
-      <Text style={[textStyles.dataSection,{backgroundColor:"#9BFFF9",height:"15%"}]}>{props.title}</Text>
-      {content}
-    </Pressable>
+    <View style={{}}>
+      <Pressable style={{}}onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
+        <Text style={[textStyles.dataSection,{backgroundColor:"#9BFFF9"}]}>{props.title}</Text>
+        {content}
+      </Pressable>
+    </View>
+    
   )
 }

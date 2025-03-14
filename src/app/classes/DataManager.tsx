@@ -21,7 +21,7 @@ export function RetrieveAppData():AppData{
         "allLineups":{name:"Todas as escalas",data:MemberData.allLineups},
         "allLineupsCoroinhas":{name:"Escalas dos coroinhas",data:MemberData.allLineupsCoroinhas},
         "allLineupsAcolytes":{name:"Escalas dos acólitos",data:MemberData.allLineupsAcolytes},
-        "allMembers":{name:"Todos os membros",data:MemberData.allMembers}
+        "allMembers":{name:"Todos os membros",data:MemberData.allMembers},
     }
     return data
 }

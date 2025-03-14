@@ -86,7 +86,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
         
-        IncreaseAllRoleCooldown(member,1,settings.type)
+        IncreaseAllRoleCooldown(member,1,settings.type,Object.keys(member.rodizio))
         member.rodizio[role] = 0
         
         newLineup.line[role] = member
@@ -103,7 +103,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     newLineup.day = settings.day
     newLineup.weekend = settings.weekend
     newLineup.roleset = settings.roleset
-
+    newLineup.place = settings.place
     newLineup.members.forEach((member:Member) => {
         member.priority = 0
         member.weekendPriority[settings.day] = 0
