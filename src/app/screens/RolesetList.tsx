@@ -19,11 +19,12 @@ export default function RolesetList(){
             rolesets.set = Roles.coroinhaRoleSets;break
     }
     
-    // TODO Remover esse rerender forçado
     for(let i = 0; i < rolesets.set.length; i++){
-        let newComp = <RowRoleset name={rolesets.set[i].name} index={i} roleset={rolesets.set[i]} key={rolesets.set[i].name+i} deleteAction={()=>{
+        let newComp = 
+        <RowRoleset name={rolesets.set[i].name} index={i} roleset={rolesets.set[i]} key={rolesets.set[i].name+i} deleteAction={()=>{
             rolesets.set.splice(i,1)
-            router.replace("/screens/RolesetList")
+            Roles.SaveRolesets()
+            setRolesets({set:rolesets.set})
         }}/>
         setsComps.push(newComp)
     }

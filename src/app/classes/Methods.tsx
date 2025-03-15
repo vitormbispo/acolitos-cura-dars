@@ -3,6 +3,7 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
+import { Roles } from "./Roles";
 
 /**
  * Organiza a *array* de membros em ordem alfabética.
@@ -331,4 +332,13 @@ export function AbbreviateText(text:string, maxLen:number):string{
 export function DeepCopyObject(obj:any):any{
     return JSON.parse(JSON.stringify(obj))
 
+}
+
+/**
+ * Salva os dados no AsyncStorage
+ * @param key Chave
+ * @param data Dados
+ */
+export function SaveData(key:string,data:any) {
+    AsyncStorage.setItem(key,JSON.stringify(data))
 }

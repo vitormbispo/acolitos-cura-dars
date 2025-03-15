@@ -11,13 +11,20 @@ export default function App() {
         VerifyMembersIntegrity(MemberData.allAcolytes)
     })
 
-    LoadAcolyteRolesets()
+    
 
     LoadCoroinhaData().then(()=>{
         VerifyMembersIntegrity(MemberData.allCoroinhas)
     })
 
-    LoadCoroinhaRolesets()
+    LoadAcolyteRolesets()
+    LoadCoroinhaRolesets().then(()=>{
+        Roles.VerifyRolesIntegrity()
+    })
+
+    Places.LoadPlaceData().then(()=>{
+        Places.VerifyPlacesIntegrity()
+    })
     
 
     if(Places.allPlaces == undefined || Places.allPlaces == null){

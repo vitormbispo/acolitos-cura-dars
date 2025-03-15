@@ -2,12 +2,15 @@ import { Modal, Platform, ToastAndroid, View, Image, Text} from "react-native";
 import { ConfirmationModal, TextButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { DataSelectors } from "./DataExport";
-import { MemberData, RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/MemberData";
+import { MemberData} from "../classes/MemberData";
 import { useRef, useState } from "react";
 import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
+import { Roles } from "../classes/Roles";
+import { Places } from "../classes/Places";
 
 // TODO Corrigir problema que ao selecionar salvar e continuar, caso o usuário não
 // escolha o diretório para salvar, os dados são excluídos mesmo assim.
@@ -72,8 +75,19 @@ export default function DataErase(){
 
 function EraseSelectedData(selectedData:Array<string>){
     selectedData.forEach((data)=>{
-        MemberData[data] = null
+        if(MemberData[data] != undefined){
+            MemberData[data] = null
+        }
+        else if(Roles[data] != undefined){
+            Roles[data] = null
+        }
+        else if(Places[data] != undefined){
+            Places[data] = null
+        }
+        
     })
+    Places.VerifyPlacesIntegrity()
+    Roles.VerifyRolesIntegrity()
     SaveAcolyteData()
     SaveCoroinhaData()
 }

@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MemberData } from "./MemberData"
+import { SaveAcolyteData, SaveCoroinhaData, SaveData } from "./Methods"
 
 export class Places {
     static allPlaces:Array<string>
@@ -20,6 +22,9 @@ export class Places {
             coroinha.placeRotation[place] = 0
         })
 
+        SaveData("AllPlaces",this.allPlaces)
+        SaveAcolyteData()
+        SaveCoroinhaData()
     }
 
     static RemovePlace(place:string):void{
@@ -37,6 +42,10 @@ export class Places {
             delete coroinha.placeDisp[place]
             delete coroinha.placeRotation[place]
         })
+
+        SaveData("AllPlaces",this.allPlaces)
+        SaveAcolyteData()
+        SaveCoroinhaData()
     }
 
     static RenamePlace(place:string,newPlace:string):void{
@@ -75,5 +84,17 @@ export class Places {
         })
 
         return map
+    }
+
+    static VerifyPlacesIntegrity(){
+        if(this.allPlaces == null){
+            this.allPlaces = []
+        }
+        SaveData("AllPlaces",this.allPlaces)
+    }
+    
+    static async LoadPlaceData(){
+        let data = await AsyncStorage.getItem("AllPlaces")
+        this.allPlaces = JSON.parse(data)
     }
 }

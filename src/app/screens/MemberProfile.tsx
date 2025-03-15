@@ -8,7 +8,6 @@ import { ICONS } from "../classes/AssetManager"
 import { Places } from "../classes/Places"
 import { Roles } from "../classes/Roles"
 import { useEffect, useRef, useState } from "react"
-import { SaveData } from "../classes/DataManager"
 import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
 
 export default function MemberProfile() {

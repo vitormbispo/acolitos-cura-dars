@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { SaveData } from "./DataManager"
+import { SaveData } from "./Methods"
 import { MemberType } from "./MemberData"
 
 export class RoleSet{
@@ -98,21 +98,29 @@ export class Roles {
         }
     }
 
+    static GetDefaultAcolyteSet():Array<RoleSet>{
+        return [
+            new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles),true),
+            new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true)
+        ]
+    }
+
+    static GetDefaultCoroinhaSet():Array<RoleSet>{
+        return[
+            new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles),true),
+            new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
+        ]
+    }
+
     static InitializeSets(type:MemberType){
         switch(type){
             case MemberType.ACOLYTE:
-                Roles.acolyteRoleSets = [
-                    new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles),true),
-                    new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true)
-                ]; break
+                Roles.acolyteRoleSets = this.GetDefaultAcolyteSet(); break
             case MemberType.COROINHA:
-                Roles.coroinhaRoleSets = [
-                    new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles),true),
-                    new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
-                ]; break     
+                Roles.coroinhaRoleSets = this.GetDefaultCoroinhaSet(); break     
         }
     }
-
+    
     static GetRoleSet(name:string,type:MemberType){
         let list:Array<RoleSet>
         switch(type){
@@ -130,8 +138,25 @@ export class Roles {
 
         console.error("Roleset \'"+name+"\' not found for member type \'"+type+"\'")
     }
-}
 
+    static VerifyRolesIntegrity(){
+        if(this.acolyteRoleSets == null){
+            this.acolyteRoleSets = this.GetDefaultAcolyteSet()
+        }
+
+        if(this.coroinhaRoleSets == null){
+            this.coroinhaRoleSets = this.GetDefaultCoroinhaSet()
+        }
+
+        SaveData("AcolyteRolesets",this.acolyteRoleSets)
+        SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
+    }
+
+    static SaveRolesets(){
+        SaveData("AcolyteRolesets",this.acolyteRoleSets)
+        SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
+    }
+}
 export async function LoadAcolyteRolesets() {
     let sets = await AsyncStorage.getItem("AcolyteRolesets")
     Roles.acolyteRoleSets = JSON.parse(sets)

@@ -1,13 +1,12 @@
 import { Modal, ScrollView, Text, View } from "react-native";
 import { ImageButton, RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
 import { menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { Roles, RoleSet } from "../classes/Roles";
+import { Roles} from "../classes/Roles";
 import { router } from "expo-router";
-import { MemberData, MemberType } from "../classes/MemberData";
-import { SaveData } from "../classes/DataManager";
+
 
 export default function NewRoleset(){
     const [newSet,updateSet] = useState({name:"",roles:[]})

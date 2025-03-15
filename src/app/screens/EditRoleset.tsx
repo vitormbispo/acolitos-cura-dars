@@ -6,8 +6,7 @@ import { contextStore, menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
-import { MemberData, MemberType } from "../classes/MemberData";
-import { SaveData } from "../classes/DataManager";
+import { MemberType } from "../classes/MemberData";
 import { AbbreviateText, DeepCopyObject } from "../classes/Methods";
 
 export default function NewRoleset(){
@@ -53,6 +52,7 @@ export default function NewRoleset(){
             
             <TextButton  buttonStyle={{margin:30}}text={"Concluir"} press={()=>{
                 setsArray[rolesetID] = newSet
+                Roles.SaveRolesets()
                 router.back()
             }}/>
         </View>

@@ -28,7 +28,9 @@ export default function PlaceList(){
                     setModalVisible(!modalVisible)}}/>
                 <RowImageButton img={ICONS.home} text={"Restaurar ao padrão"} press={()=>{
                     Places.allPlaces = Places.PlacesArray()
-                    setPlaces(Places.allPlaces.slice())}}/>
+                    Places.VerifyPlacesIntegrity()
+                    setPlaces(Places.allPlaces.slice())}}
+                    />
                 {comps} 
             </ScrollView>
             <AddModal visible={modalVisible} places={Places.allPlaces} requestClose={()=>{setModalVisible(!modalVisible)}} onSubmit={()=>{

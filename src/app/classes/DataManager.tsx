@@ -4,6 +4,8 @@ import { OrganizeMemberArrayAlpha } from "./Methods"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
+import { Roles, RoleSet } from "./Roles"
+
 
 export type AppData = {
     "allAcolytes":{name:string,data:Member[]},
@@ -12,6 +14,9 @@ export type AppData = {
     "allLineupsAcolytes":{name:string,data:any[]},
     "allLineupsCoroinhas":{name:string,data:any[]},
     "allMembers":{name:string,data:Member[]},
+    "acolyteRoleSets":{name:string,data:RoleSet[]},
+    "coroinhaRoleSets":{name:string,data:RoleSet[]},
+    "allPlaces":{name:string,data:string[]}
 }
 
 export function RetrieveAppData():AppData{
@@ -22,6 +27,9 @@ export function RetrieveAppData():AppData{
         "allLineupsCoroinhas":{name:"Escalas dos coroinhas",data:MemberData.allLineupsCoroinhas},
         "allLineupsAcolytes":{name:"Escalas dos acólitos",data:MemberData.allLineupsAcolytes},
         "allMembers":{name:"Todos os membros",data:MemberData.allMembers},
+        "acolyteRoleSets":{name:"Funções dos acólitos",data:Roles.acolyteRoleSets},
+        "coroinhaRoleSets":{name:"Funções dos coroinhas",data:Roles.coroinhaRoleSets},
+        "allPlaces":{name:"Locais",data:Places.allPlaces}
     }
     return data
 }
@@ -33,7 +41,11 @@ export function RetrieveAppDataProperties(){
         "allLineups",
         "allLineupsAcolytes",
         "allLineupsCoroinhas",
-        "allMembers"]
+        "allMembers",
+        "acolyteRoleSets",
+        "coroinhaRoleSets",
+        "allPlaces"
+    ]
 }
 
 
@@ -140,6 +152,3 @@ export function VerifyMembersIntegrity(members:Array<Member>){
     })
 }
 
-export function SaveData(key:string,data:any) {
-    AsyncStorage.setItem(key,JSON.stringify(data))
-}

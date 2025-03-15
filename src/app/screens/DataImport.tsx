@@ -9,6 +9,8 @@ import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
+import { Roles } from "../classes/Roles";
+import { Places } from "../classes/Places";
 
 
 export class DataImportOptions{
@@ -84,11 +86,22 @@ function LoadData(data:AppData|object,properties:Array<string>){
     properties.forEach((prop)=>{
         let propData = data[prop].data
         
-        MemberData[prop] = propData
+        if(MemberData[prop] != undefined){
+            MemberData[prop] = propData
+        }
+        else if(Roles[prop] != undefined){
+            Roles[prop] = propData
+        }
+        else if(Places[prop] != undefined){
+            Places[prop] = propData
+        }
+        
     })
     SaveAcolyteData()
     SaveCoroinhaData()
 
+    Places.VerifyPlacesIntegrity()
+    Roles.VerifyRolesIntegrity()
     VerifyMembersIntegrity(MemberData.allAcolytes)
     VerifyMembersIntegrity(MemberData.allCoroinhas)
 }
