@@ -90,6 +90,10 @@ export class MemberData{
         SaveAcolyteData()
         SaveCoroinhaData()
     }
+
+    static GetAllMembers():Array<Member>{
+        return MemberData.allAcolytes.concat(MemberData.allCoroinhas)
+    }
 }
 
 /**

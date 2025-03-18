@@ -84,6 +84,37 @@ export class Places {
         return map
     }
 
+    static ResetToDefault(){
+        this.allPlaces = this.PlacesArray()
+        let allMembers = MemberData.allAcolytes
+
+        this.VerifyPlacesIntegrity()
+        
+        
+        allMembers.forEach((member)=>{
+            let memberPlaces:Array<string> = Object.keys(member.placeDisp)
+            
+            // Deletar locais
+            memberPlaces.forEach((place=>{
+                if(!this.allPlaces.includes(place)){ // Caso exista um local que não é padrão
+                    delete member.placeDisp[place]
+                    delete member.placeRotation[place]
+                }
+            }))
+            
+            // Adicionar locais padrão
+            this.allPlaces.forEach((place)=>{
+                if(!memberPlaces.includes(place)){ // Caso não exista um dos locais padrão
+                    member.placeDisp[place] = true
+                    member.placeRotation[place] = 0
+                }
+            })
+        })
+            
+        MemberData.SaveMemberData()
+        
+    }
+
     static VerifyPlacesIntegrity(){
         if(this.allPlaces == null){
             this.allPlaces = []

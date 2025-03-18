@@ -27,8 +27,7 @@ export default function PlaceList(){
                 <RowImageButton img={ICONS.home} text={"Adiciona novo local"} press={()=>{
                     setModalVisible(!modalVisible)}}/>
                 <RowImageButton img={ICONS.home} text={"Restaurar ao padrão"} press={()=>{
-                    Places.allPlaces = Places.PlacesArray()
-                    Places.VerifyPlacesIntegrity()
+                    Places.ResetToDefault()
                     setPlaces(Places.allPlaces.slice())}}
                     />
                 {comps} 
