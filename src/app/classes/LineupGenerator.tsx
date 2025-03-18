@@ -1,5 +1,5 @@
-import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, SaveAcolyteData, SaveCoroinhaData, HasMember, ShuffleArray } from "./Methods";
-import { Member, MemberData, MemberType } from "./MemberData";
+import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray } from "./Methods";
+import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 

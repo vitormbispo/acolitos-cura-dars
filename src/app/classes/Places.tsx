@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MemberData } from "./MemberData"
-import { SaveAcolyteData, SaveCoroinhaData, SaveData } from "./Methods"
+import { SaveData } from "./Methods"
 
 export class Places {
     static allPlaces:Array<string>
@@ -23,8 +23,7 @@ export class Places {
         })
 
         SaveData("AllPlaces",this.allPlaces)
-        SaveAcolyteData()
-        SaveCoroinhaData()
+        MemberData.SaveMemberData()
     }
 
     static RemovePlace(place:string):void{
@@ -44,8 +43,7 @@ export class Places {
         })
 
         SaveData("AllPlaces",this.allPlaces)
-        SaveAcolyteData()
-        SaveCoroinhaData()
+        MemberData.SaveMemberData()
     }
 
     static RenamePlace(place:string,newPlace:string):void{

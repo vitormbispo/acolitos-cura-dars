@@ -1,14 +1,13 @@
 import { View,Text, ScrollView } from "react-native"
 import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, ImageButton } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberData, MemberType } from "../classes/MemberData"
+import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
 import { textStyles, uiStyles} from "../styles/GeneralStyles"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
 import { Places } from "../classes/Places"
 import { Roles } from "../classes/Roles"
 import { useEffect, useRef, useState } from "react"
-import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()

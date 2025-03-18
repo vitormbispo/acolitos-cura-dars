@@ -1,11 +1,4 @@
-import * as FileSystem from 'expo-file-system'
-import * as DocumentPicker from 'expo-document-picker'
-import { Lineup } from './Lineup'
-import { Alert, Platform, ToastAndroid } from 'react-native'
-import { Places } from './Places'
-import { OrganizeMemberArrayAlpha, SaveAcolyteData, SaveCoroinhaData } from './Methods'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Roles } from './Roles'
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 /**
  * Tipo de membro
@@ -90,7 +83,27 @@ export class MemberData{
         if(this.allLineupsCoroinhas == null){
             this.allLineupsCoroinhas = []
         }
+        this.SaveMemberData
+    }
+
+    static SaveMemberData(){
         SaveAcolyteData()
         SaveCoroinhaData()
     }
+}
+
+/**
+ * Salva os dados dos acólitos localmente.
+ */
+export function SaveAcolyteData(){
+    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
+}
+
+/**
+ * Salva os dados dos coroinhas localmente.
+ */
+export function SaveCoroinhaData(){
+    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
 }

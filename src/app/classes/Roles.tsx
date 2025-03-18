@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { SaveData } from "./Methods"
 import { MemberType } from "./MemberData"
+import { SaveData } from "./Methods"
 
 export class RoleSet{
     name:string = ""

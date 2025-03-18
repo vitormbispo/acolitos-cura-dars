@@ -5,7 +5,6 @@ import { MemberData} from "../classes/MemberData";
 import { DataSelectors } from "./DataExport";
 import { menuStore } from "../store/store";
 import { router, useRouter } from "expo-router";
-import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
@@ -97,8 +96,7 @@ function LoadData(data:AppData|object,properties:Array<string>){
         }
         
     })
-    SaveAcolyteData()
-    SaveCoroinhaData()
+    MemberData.SaveMemberData()
     MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
     Roles.VerifyRolesIntegrity()

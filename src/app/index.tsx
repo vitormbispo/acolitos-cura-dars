@@ -30,7 +30,8 @@ function InitializeApp(){
     LoadCoroinhaData().then(()=>{
         VerifyMembersIntegrity(MemberData.allCoroinhas)
     })
-
+    MemberData.VerifyMemberDataIntegrity()
+    
     LoadAcolyteRolesets()
     LoadCoroinhaRolesets().then(()=>{
         Roles.VerifyRolesIntegrity()
@@ -50,4 +51,5 @@ function InitializeApp(){
     if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets == undefined || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
     }  
+
 }

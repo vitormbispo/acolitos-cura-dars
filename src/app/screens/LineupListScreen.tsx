@@ -1,10 +1,9 @@
 import { ScrollView, View } from "react-native";
 import { RowImageButton, UpperBar } from "../classes/NewComps";
-import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";
-import { MemberData, MemberType } from "../classes/MemberData";
+import { MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData";
 import { StructuredLineup } from "../classes/Lineup";
 import { ICONS } from "../classes/AssetManager";
 

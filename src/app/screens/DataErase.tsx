@@ -4,7 +4,6 @@ import { ICONS } from "../classes/AssetManager";
 import { DataSelectors } from "./DataExport";
 import { MemberData} from "../classes/MemberData";
 import { useRef, useState } from "react";
-import { SaveAcolyteData, SaveCoroinhaData } from "../classes/Methods";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
@@ -89,6 +88,5 @@ function EraseSelectedData(selectedData:Array<string>){
     MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
     Roles.VerifyRolesIntegrity()
-    SaveAcolyteData()
-    SaveCoroinhaData()
+    MemberData.SaveMemberData()
 }

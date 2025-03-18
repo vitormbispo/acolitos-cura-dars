@@ -6,7 +6,6 @@ import { LineupType } from "../classes/Lineup"
 import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
-import LineupListScreen from "./LineupListScreen"
 import { ICONS } from "../classes/AssetManager"
 
 

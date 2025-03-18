@@ -152,3 +152,27 @@ export function VerifyMembersIntegrity(members:Array<Member>){
     })
 }
 
+/**
+ * Salva os dados dos acólitos localmente.
+ */
+export function SaveAcolyteData(){
+    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
+    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
+}
+
+/**
+ * Salva os dados dos coroinhas localmente.
+ */
+export function SaveCoroinhaData(){
+    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
+    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
+}
+
+/**
+ * Salva os dados no AsyncStorage
+ * @param key Chave
+ * @param data Dados
+ */
+export function SaveData(key:string,data:any) {
+    AsyncStorage.setItem(key,JSON.stringify(data))
+}

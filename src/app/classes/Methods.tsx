@@ -3,7 +3,6 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
-import { Roles } from "./Roles";
 
 /**
  * Organiza a *array* de membros em ordem alfabética.
@@ -293,21 +292,6 @@ export function ShufflePriorities(members:Array<Member>){
     })
 }
 
-/**
- * Salva os dados dos acólitos localmente.
- */
-export function SaveAcolyteData(){
-    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
-}
-
-/**
- * Salva os dados dos coroinhas localmente.
- */
-export function SaveCoroinhaData(){
-    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
-}
 
 /**
  * Abrevia um texto para que possua um número máximo de caractéres, substituindo
