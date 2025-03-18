@@ -86,6 +86,7 @@ function EraseSelectedData(selectedData:Array<string>){
         }
         
     })
+    MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
     Roles.VerifyRolesIntegrity()
     SaveAcolyteData()

@@ -3,7 +3,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { Lineup } from './Lineup'
 import { Alert, Platform, ToastAndroid } from 'react-native'
 import { Places } from './Places'
-import { OrganizeMemberArrayAlpha } from './Methods'
+import { OrganizeMemberArrayAlpha, SaveAcolyteData, SaveCoroinhaData } from './Methods'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Roles } from './Roles'
 
@@ -76,4 +76,21 @@ export class MemberData{
     static allLineups = [];
     static allLineupsAcolytes = []
     static allLineupsCoroinhas = []
+
+    static VerifyMemberDataIntegrity(){
+        if(this.allAcolytes == null){
+            this.allAcolytes = []
+        }
+        if(this.allCoroinhas == null){
+            this.allCoroinhas = []
+        }
+        if(this.allLineupsAcolytes == null){
+            this.allLineupsAcolytes = []
+        }
+        if(this.allLineupsCoroinhas == null){
+            this.allLineupsCoroinhas = []
+        }
+        SaveAcolyteData()
+        SaveCoroinhaData()
+    }
 }

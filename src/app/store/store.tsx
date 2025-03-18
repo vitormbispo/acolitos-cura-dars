@@ -15,12 +15,14 @@ export enum MenuStyles{
 }
 
 export type ContextStates = {
+    appStarted:boolean
     memberID:number
     rolesetID:number
     lineupType:LineupType
     curWeekend:string
     curDay:string
     curGenOptions:GenerationOptionsType
+    updateAppStarted: (state:boolean) => void
     updateMemberID: (id:number) => void
     updateRolesetID: (id:number) => void
     setLineupType: (type:LineupType) => void
@@ -64,6 +66,7 @@ export const menuStore = create<ThemeStates>((set)=>({
 }))
 
 export const contextStore = create<ContextStates>((set)=>({
+    appStarted:false,
     memberID:0,
     rolesetID:0,
     lineupType:LineupType.SINGLE,
@@ -83,6 +86,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "place":"",
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
         },
+    updateAppStarted: (newState) => set(()=>({appStarted:newState})),
     updateMemberID: (newID) => set(()=>({memberID:newID})),
     updateRolesetID: (newID) => set(()=>({rolesetID:newID})),
     setLineupType: (newType:LineupType) => set(()=>({lineupType:newType})),

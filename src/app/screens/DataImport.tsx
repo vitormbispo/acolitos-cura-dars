@@ -99,7 +99,7 @@ function LoadData(data:AppData|object,properties:Array<string>){
     })
     SaveAcolyteData()
     SaveCoroinhaData()
-
+    MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
     Roles.VerifyRolesIntegrity()
     VerifyMembersIntegrity(MemberData.allAcolytes)
