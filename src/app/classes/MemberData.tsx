@@ -25,7 +25,7 @@ export class Member {
     "libri":0,
     }
 
-    oldRodizio:object={"cero1":0, // Velho rodízio de função
+    oldRodizio:object={"cero1":0, // Velho rodízio de função (controle)
     "cero2":0,
     "cruci":0,
     "turib":0,
@@ -49,12 +49,12 @@ export class Member {
 
     score:number = 0
     priority=0 // Prioridade geral
-    oldPriority=0 // Velha prioridade geral
+    oldPriority=0 // Velha prioridade geral (controle)
     
     weekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Prioridade de dia
-    oldWeekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Velha prioridade de dia
+    oldWeekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Velha prioridade de dia (controle)
     
-    onLineup = true // Escalável
+    onLineup = true // Disponível
 
     lastWeekend = "" // Último fim de semana servido
 }
@@ -70,6 +70,10 @@ export class MemberData{
     static allLineupsAcolytes = []
     static allLineupsCoroinhas = []
 
+    /**
+     * Verifica a integridade dos dados dos membros e salva
+     * as alterações necessárias
+     */
     static VerifyMemberDataIntegrity(){
         if(this.allAcolytes == null){
             this.allAcolytes = []
@@ -86,11 +90,18 @@ export class MemberData{
         this.SaveMemberData
     }
 
+    /**
+     * Salva todos os dados dos membros
+     */
     static SaveMemberData(){
         SaveAcolyteData()
         SaveCoroinhaData()
     }
 
+    /**
+     * Retorna uma lista com todos os membros acólitos e coroinhas
+     * @returns 
+     */
     static GetAllMembers():Array<Member>{
         return MemberData.allAcolytes.concat(MemberData.allCoroinhas)
     }

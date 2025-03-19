@@ -18,8 +18,10 @@ type GeneratorSettings = {
  * 
  * @param weekend Final de semana
  * @param day Dia
- * @param roles Funções
+ * @param roleset Conjunto de funções
  * @param type Tipo
+ * @param place Local (opcional)
+ * @param randomness Aleatoriedade (opcional)
  * @returns {Lineup|null} Nova escala montada
  */
 export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
@@ -114,6 +116,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     if(settings.day != "Outro"){
         IncreaseAllDayPriority(newLineup.members,settings.day,1,settings.type)
         IncreaseAllGeneralPriority(newLineup.members,1,settings.type)
+        IncreaseAllPlacePriority(newLineup.members,settings.place,1,settings.type)
     }
 
     // Salvar listas
@@ -376,6 +379,31 @@ function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:numbe
 
         if(!HasMember(curMember,exceptions)){
             curMember.weekendPriority[day]+=weight
+        }
+    }
+}
+
+/**
+ * Aumenta a prioridade do local de
+ * todos os membros por determinado peso, salvo excessões.
+ * @param exceptions Excessões
+ * @param place Local
+ * @param weight Peso
+ */
+function IncreaseAllPlacePriority(exceptions:Array<Member>,place:string,weight:number,type:MemberType) {
+    let members:Array<Member> = []
+
+    switch(type) {
+        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
+        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
+        default: console.error("Invalid type"); break
+    }
+    
+    for(let i = 0; i < members.length;i++) {
+        let curMember = members[i]
+
+        if(!HasMember(curMember,exceptions)){
+            curMember.placeRotation[place]+=weight
         }
     }
 }

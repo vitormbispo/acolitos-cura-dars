@@ -697,12 +697,21 @@ type DropDownTypes = {
   options?:Array<string>
   actions?:Array<(...args:any)=>any>
   placeholder?:string
+  offset?:{x:number,y:number}
 }
+/**
+ * Menu no estilo dropdown de escolha única.
+ * @param props options = nomes das opções do menu;
+ * actions = ações ao selecionar cada opção (a ordem deve conferir com 'options');
+ * placeholder = texto exibido antes de selecionar uma função
+ * offset = desvio da posição da caixa de opções
+ * @returns 
+ */
 export function DropDown(props:DropDownTypes){
   const [modalOpened,setModalOpened] = useState(false)
   const viewRef = useRef<View>(null)
   const [position,setPosition] = useState({x:0,y:0})
-  const dropDownOffset = {x:10,y:32}
+  const dropDownOffset = props.offset != null ? props.offset : {x:10,y:32}
   const [selectedOption, setSelectedOption] = useState(props.placeholder != undefined ? props.placeholder : props.options[0])
 
   useEffect(()=>{
@@ -748,6 +757,11 @@ type ExpandableViewProps = {
   content:React.JSX.Element
   action?:(...args:any)=>any
 }
+/**
+ * Componente expansível
+ * @param props expanded = está expandido?; title = título do botão; content = conteúdo do componente expandido; action = ação ao tocar no botão
+ * @returns 
+ */
 export function ExpandableView(props:ExpandableViewProps){
   const [expanded,setExpanded] = useState(props.expanded)
   let content = expanded ? props.content : null

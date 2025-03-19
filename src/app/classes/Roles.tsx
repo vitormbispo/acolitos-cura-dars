@@ -2,12 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MemberType } from "./MemberData"
 import { SaveData } from "./Methods"
 
+/**
+ * Conjunto de funções
+ */
 export class RoleSet{
-    name:string = ""
-    type:MemberType = MemberType.ACOLYTE
-    set:Array<string> = []
-    size:number = 0
-    isDefault:boolean = false
+    name:string = "" // Nome
+    type:MemberType = MemberType.ACOLYTE // Tipo de membro
+    set:Array<string> = [] // Lista de funções
+    size:number = 0 // Tamanho do conjunto
+    isDefault:boolean = false // É padrão? (OBS: NÃO permitir criação de conjuntos padrão pelo usuário)
 
     constructor(name:string,type:MemberType,set?:Array<string>,isDefault?:boolean){
         this.name = name
@@ -57,7 +60,13 @@ export class RoleSet{
     }
 }
 
+/**
+ * Armazena dados e métodos relacionados à funções
+ */
 export class Roles {
+    /**
+     * Funções padrão dos acólitos
+     */
     static defaultAcolyteRoles:object = {
         "Ceroferário 1":0,
         "Ceroferário 2":0,
@@ -66,7 +75,9 @@ export class Roles {
         "Naveteiro":0,
         "Librífero":0,
     }
-
+    /**
+     * Funções padrão doscoroinhas
+     */
     static defaultCoroinhaRoles:object = {
         "Dons D.":0,
         "Dons E.":0,
@@ -74,9 +85,13 @@ export class Roles {
         "Cestinho E.":0
     }
 
-    static acolyteRoleSets:Array<RoleSet> = []
-    static coroinhaRoleSets:Array<RoleSet> = []
+    static acolyteRoleSets:Array<RoleSet> = [] // Conjuntos de funções dos acólitos
+    static coroinhaRoleSets:Array<RoleSet> = [] // Conjuntos de funções dos coroinhas
 
+    /**
+     * Retorna o conjunto de funções padrão de determinado tipo de membro
+     * @returns RoleSet
+     */
     static GetDefaultRoleset(type:MemberType):RoleSet{
         let newSet:RoleSet = new RoleSet("default",type)
         newSet.SetRolesToDefault()
@@ -84,6 +99,12 @@ export class Roles {
         return newSet
     }
 
+    /**
+     * Adiciona um novo conjunto de funções
+     * @param name Nome do conjunto
+     * @param roles Funções
+     * @param type Tipo de membro
+     */
     static AddRoleSet(name:string,roles:Array<string>,type:MemberType) {    
         let newSet = new RoleSet(name,type,roles)
         switch(type){
@@ -98,6 +119,10 @@ export class Roles {
         }
     }
 
+    /**
+     * Retorna os conjuntos de função padrão dos acólitos
+     * @returns Array<RoleSet>
+     */
     static GetDefaultAcolyteSet():Array<RoleSet>{
         return [
             new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles),true),
@@ -105,6 +130,10 @@ export class Roles {
         ]
     }
 
+    /**
+     * Retorna os conjuntos de função padrão dos coroinhas
+     * @returns Array<RoleSet>
+     */
     static GetDefaultCoroinhaSet():Array<RoleSet>{
         return[
             new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles),true),
@@ -112,6 +141,10 @@ export class Roles {
         ]
     }
 
+    /**
+     * Inicializa os conjuntos de função com seus respectivos valores padrão
+     * @param type 
+     */
     static InitializeSets(type:MemberType){
         switch(type){
             case MemberType.ACOLYTE:
@@ -121,7 +154,13 @@ export class Roles {
         }
     }
     
-    static GetRoleSet(name:string,type:MemberType){
+    /**
+     * Retorna um conjunto de funções com determinado nome e tipo
+     * @param name Nome do conjunto
+     * @param type Tipo de membri
+     * @returns RoleSet
+     */
+    static GetRoleSet(name:string,type:MemberType):RoleSet{
         let list:Array<RoleSet>
         switch(type){
             case MemberType.ACOLYTE:
@@ -139,6 +178,9 @@ export class Roles {
         console.error("Roleset \'"+name+"\' not found for member type \'"+type+"\'")
     }
 
+    /**
+     * Verifica a integridade dos dados dos conjuntos de função
+     */
     static VerifyRolesIntegrity(){
         if(this.acolyteRoleSets == null){
             this.acolyteRoleSets = this.GetDefaultAcolyteSet()
@@ -152,11 +194,18 @@ export class Roles {
         SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
     }
 
+    /**
+     *  Salva os dados dos conjuntos de função no AsyncStorage
+     */
     static SaveRolesets(){
         SaveData("AcolyteRolesets",this.acolyteRoleSets)
         SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
     }
 }
+
+/**
+ * Carrega os conjuntos de função dos acólitos
+ */
 export async function LoadAcolyteRolesets() {
     let sets = await AsyncStorage.getItem("AcolyteRolesets")
     Roles.acolyteRoleSets = JSON.parse(sets)
@@ -167,6 +216,9 @@ export async function LoadAcolyteRolesets() {
                     
 }
 
+/**
+ * Carrega os conjuntos de função dos coroinhas
+ */
 export async function LoadCoroinhaRolesets() {
     let sets = await AsyncStorage.getItem("CoroinhaRolesets")
     Roles.coroinhaRoleSets = JSON.parse(sets)

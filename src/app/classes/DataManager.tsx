@@ -6,7 +6,6 @@ import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
 import { Roles, RoleSet } from "./Roles"
 
-
 export type AppData = {
     "allAcolytes":{name:string,data:Member[]},
     "allCoroinhas":{name:string,data:Member[]},
@@ -19,6 +18,10 @@ export type AppData = {
     "allPlaces":{name:string,data:string[]}
 }
 
+/**
+ * Retorna todos os dados da aplicação em um único objeto
+ * @returns AppData
+ */
 export function RetrieveAppData():AppData{
     let data:AppData = {
         "allAcolytes":{name:"Acólitos",data:MemberData.allAcolytes},
@@ -34,7 +37,12 @@ export function RetrieveAppData():AppData{
     return data
 }
 
-export function RetrieveAppDataProperties(){
+/**
+ * Retorna uma lista com o nome de todas as propriedades de dados\
+ * da aplicação
+ * @returns Array<string>
+ */
+export function RetrieveAppDataProperties():Array<string>{
     return [
         "allAcolytes",
         "allCoroinhas",
@@ -48,7 +56,6 @@ export function RetrieveAppDataProperties(){
     ]
 }
 
-
 /**
  * Carrega os dados dos acólitos.
  */
@@ -60,7 +67,6 @@ export const LoadAcolyteData = async() => {
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
        
-        
         OrganizeMemberArrayAlpha(MemberData.allAcolytes)
 
         if (MemberData.allAcolytes == null || MemberData.allAcolytes == undefined){
@@ -94,14 +100,10 @@ export const LoadCoroinhaData = async() => {
             MemberData.allLineupsCoroinhas = []
         }
 
-        
-        
-
     } catch (error) {
         console.log(error)
     }
 }
-
 
 /**
  * Solicita ao usuário um diretório para então salvar todos os dados da aplicação
@@ -118,8 +120,7 @@ export async function SaveDataFile(name:string,mimetype:string,properties:Array<
                 delete data[key]
             }
         })
-    }
-    
+    } 
     let permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
     
     if(permissions.granted){
@@ -135,11 +136,14 @@ export async function SaveDataFile(name:string,mimetype:string,properties:Array<
             if(Platform.OS == 'android'){
                 ToastAndroid.show("Erro ao salvar os dados! "+e,2)
             }
-        }
-    )
+        })
     }
 }
 
+/**
+ * Verifica a integridade dos dados dos membros de determinada lista
+ * @param members Lista de membros
+ */
 export function VerifyMembersIntegrity(members:Array<Member>){
     members.forEach((member)=>{
         if(member.placeDisp == undefined){
@@ -152,27 +156,6 @@ export function VerifyMembersIntegrity(members:Array<Member>){
     })
 }
 
-/**
- * Salva os dados dos acólitos localmente.
- */
-export function SaveAcolyteData(){
-    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
-}
 
-/**
- * Salva os dados dos coroinhas localmente.
- */
-export function SaveCoroinhaData(){
-    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
-}
 
-/**
- * Salva os dados no AsyncStorage
- * @param key Chave
- * @param data Dados
- */
-export function SaveData(key:string,data:any) {
-    AsyncStorage.setItem(key,JSON.stringify(data))
-}
+

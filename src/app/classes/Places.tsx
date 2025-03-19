@@ -86,7 +86,7 @@ export class Places {
 
     static ResetToDefault(){
         this.allPlaces = this.PlacesArray()
-        let allMembers = MemberData.allAcolytes
+        let allMembers = MemberData.GetAllMembers()
 
         this.VerifyPlacesIntegrity()
         
