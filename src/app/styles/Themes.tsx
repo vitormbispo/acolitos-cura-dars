@@ -5,7 +5,7 @@ export const acolyteLight = {
     highlight: '#B388FF',
     confirm: '#77DD77',
     reject: '#FF6961',
-    neutral: '#8FD7EE',
+    neutral: '#8FD7FF',
     primaryText: '#1E1E1E',
     backgroundColor: '#F5F5F5'
 }
@@ -23,7 +23,7 @@ export const coroinhaLight = {
     highlight: '#B388FF',
     confirm: '#77DD77',
     reject: '#FF6961',
-    neutral: '#6CB4EE',
+    neutral: '#8FD7FF',
     primaryText: '#1E1E1E',
     backgroundColor: '#F5F5F5'
 }

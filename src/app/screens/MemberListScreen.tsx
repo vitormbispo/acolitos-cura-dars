@@ -70,7 +70,7 @@ export default function List() {
                         fontFamily:"Inter-Light",
                         fontSize:20}} 
                         
-                    text={"- Adicionar novo "+typeName}
+                    text={"- Novo "+typeName}
                     img={GetMemberAddIcon()}
                     press={()=>{}}
                     />

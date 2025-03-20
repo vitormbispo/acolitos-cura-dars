@@ -24,7 +24,7 @@ export default function PlaceList(){
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.home} screenName={"Locais"}/>
             <ScrollView style={{flex:1}}>
-                <RowImageButton img={ICONS.home} text={"Adiciona novo local"} press={()=>{
+                <RowImageButton img={ICONS.home} text={"Adicionar novo local"} press={()=>{
                     setModalVisible(!modalVisible)}}/>
                 <RowImageButton img={ICONS.home} text={"Restaurar ao padrão"} press={()=>{
                     Places.ResetToDefault()

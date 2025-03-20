@@ -20,7 +20,7 @@ export default function LineupOptions(){
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
                 img={ICONS.escala}
-                text ="Gerar escala única"
+                text ="Escala única"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.SINGLE)
@@ -33,7 +33,7 @@ export default function LineupOptions(){
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
                 img={ICONS.escala}
-                text ="Gerar escala de fim de semana"
+                text ="Escala de fim de semana"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.WEEKEND)
@@ -47,7 +47,7 @@ export default function LineupOptions(){
         <LinkRowImageButton textStyle=
                 {textStyles.buttonText}
                 img={ICONS.escala}
-                text ="Gerar escala mensal"
+                text ="Escala mensal"
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.MONTH)

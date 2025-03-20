@@ -22,7 +22,7 @@ export default function DataImport(){
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.import} screenName={"Importar dados"}/>
-            <DataSection text={"Selecione quais dados importar:"} color={theme.accentColor}/>
+            <DataSection text={"Selecione quais \n dados importar:"} color={theme.accentColor}/>
             <DataSelectors allProperties={DataImportOptions.data} selectedProperties={DataImportOptions.selectedProperties}/>
             <TextButton text={"Importar"} press={()=>setConfirmationVisible(!confirmationVisible)} buttonStyle={{margin:30}}/>
 

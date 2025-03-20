@@ -32,9 +32,7 @@ export default function EditMember(){
     }
 
     return(
-        
-        <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
-                
+        <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{
@@ -42,86 +40,102 @@ export default function EditMember(){
                     setConfirmDeleteVisible(!confirmDeleteVisible)
                     console.log(confirmDeleteVisible)
                 }}
-                     
+                        
                     backgroundColor={theme.accentColor}/>
             </View>
-            
-            <TextInputBox 
-                title={"-Nome: "} 
-                enabled={true} 
-                default={curMember.name} 
-                onChangeText={(text:string)=>curMember.name=text.toString()}/>
 
-            <TextInputBox 
-                title={"-Apelido: "} 
-                enabled={true} 
-                default={curMember.nick} 
-                onChangeText={(text:string)=>curMember.nick=text.toString()}
-                maxLength={20}/>
-
-            <TextInputBox 
-                title={"-Responsável: "} 
-                enabled={type == MemberType.COROINHA} 
-                default={curMember.parents}
-                placeholder={curMember.parents}
-                onChangeText={(text:any)=>curMember.parents=text.toString()}/>
-
-            <TextInputBox 
-                title={"-Contato: "} 
-                enabled={true} placeholder={curMember.contact} 
-                keyboardType="numeric"
-                default={curMember.contact}
-                onChangeText={(text:string)=>curMember.contact = text.toString()}/>
-
-            
-            <DataSection text={"- Disponibilidade -"} centered={true} />
-            
-            <Text style={textStyles.dataTitle}>- Local:</Text>
-            <PlaceAvailability member={curMember}/>
-
-            <View style={{paddingTop:20}}>              
-                <View style={{marginTop:30}}>             
-                    {availabilities}
-                </View>
-
-                <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
-                    <CheckBox checked={curMember.onLineup}press = {()=>
-                        {curMember.onLineup = !curMember.onLineup}}/>
-                </View>
-            </View>
-            
+            <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
+                
+                
+                <TextInputBox 
+                    title={"-Nome: "} 
+                    enabled={true} 
+                    default={curMember.name} 
+                    onChangeText={(text:string)=>curMember.name=text.toString()}/>
+    
+                <TextInputBox 
+                    title={"-Apelido: "} 
+                    enabled={true} 
+                    default={curMember.nick} 
+                    onChangeText={(text:string)=>curMember.nick=text.toString()}
+                    maxLength={20}/>
+    
+                <TextInputBox 
+                    title={"-Responsável: "} 
+                    enabled={type == MemberType.COROINHA} 
+                    default={curMember.parents}
+                    placeholder={curMember.parents}
+                    onChangeText={(text:any)=>curMember.parents=text.toString()}/>
+    
+                <TextInputBox 
+                    title={"-Contato: "} 
+                    enabled={true} placeholder={curMember.contact} 
+                    keyboardType="numeric"
+                    default={curMember.contact}
+                    onChangeText={(text:string)=>curMember.contact = text.toString()}/>
+    
+                
+                <DataSection text={"- Disponibilidade -"} centered={true} />
+                
+                <Text style={textStyles.dataTitle}>- Local:</Text>
+                <PlaceAvailability member={curMember}/>
+    
+                <View style={{paddingTop:20}}>              
+                    <View style={{marginTop:30}}>             
+                        {availabilities}
+                    </View>
+    
+                    <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
+                        <CheckBox checked={curMember.onLineup}press = {()=>
+                            {curMember.onLineup = !curMember.onLineup}}/>
+                    </View>
+                </View>         
+            </KeyboardAwareScrollView>
             {/*} Botão concluir {*/}
-            <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>{
-                let storageData:string // Nome da chave do AsyncStorage
-                let members:Array<any> // Lista de todos os acólitos ou coroinhas
-
-                if(type == MemberType.ACOLYTE){
-                    members = MemberData.allAcolytes
-                    storageData = "AcolyteData"    
-                }
-                else if(type == MemberType.COROINHA){
-                    members = MemberData.allCoroinhas
-                    storageData = "CoroinhaData"    
-                }
-                
-                members[memberID] = curMember
-                members = OrganizeMemberArrayAlpha(members)
-
-                AsyncStorage.setItem(storageData,JSON.stringify(members))
-                router.back()
-                
+            <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} 
+                press={()=>{
+                    SaveChanges(curMember,memberID,type)
                 }}/>
+
             <ConfirmationModal 
-            visible={confirmDeleteVisible}
-            confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.nick+"\"?"} 
-            confirmAction={()=>EraseMember(memberID,type)} 
-            declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
-            requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}/>          
-        </KeyboardAwareScrollView>
+                visible={confirmDeleteVisible}
+                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.nick+"\"?"} 
+                confirmAction={()=>EraseMember(memberID,type)} 
+                declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
+                requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}
+            /> 
+        </View>
+        
     )
 }
+/**
+ * Salva as alterações feitas no membro.
+ *  
+ * @param memberID ID do membro original
+ * @param curMember Membro editado
+ * @param type Tipo do membro
+ */ 
+export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
+    let storageData:string // Nome da chave do AsyncStorage
+    let members:Array<any> // Lista de todos os acólitos ou coroinhas
+    
+    if(type == MemberType.ACOLYTE){
+        members = MemberData.allAcolytes
+        storageData = "AcolyteData"    
+    }
+    else if(type == MemberType.COROINHA){
+        members = MemberData.allCoroinhas
+        storageData = "CoroinhaData"    
+    }
+    
+    members[memberID] = curMember
+    members = OrganizeMemberArrayAlpha(members)
 
+    AsyncStorage.setItem(storageData,JSON.stringify(members))
+    router.back()
+                    
+}
 /**
  * Apaga o membro com o determinado ID e volta à lista de membros
  * @param id índice do membro

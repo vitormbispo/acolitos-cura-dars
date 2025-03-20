@@ -83,10 +83,21 @@ export const uiStyles = StyleSheet.create({
         flexDirection:"row",
         gap:10
     },
+    rowButton:{
+        flexDirection:"row", 
+        alignContent:"center",
+        alignItems:"center", 
+        padding:10,
+        marginRight:10,
+        marginLeft:10,
+        marginTop:10,
+        borderWidth:1,
+        borderColor:"#CCCCCC99",
+        borderRadius:10
+    },
     textButton:{
         alignItems:"center",
         alignSelf:"center",
-        backgroundColor:"#6CB4EE",
         borderRadius:10,
         borderWidth:0,
         borderColor:"#CCCCCC",
@@ -110,7 +121,7 @@ export const textStyles = StyleSheet.create({
     textButtonText:{
         fontSize:16,
         fontFamily:"Inter-Bold",
-        color:"#333333"
+        color:"#1E1E1E"
     },
     lineupTitle:{
         fontFamily:"Inter-Bold",

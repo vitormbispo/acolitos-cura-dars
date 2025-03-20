@@ -1,5 +1,5 @@
 import { View, Text, ScrollView} from "react-native"
-import { CheckBox,DropDown,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -97,15 +97,13 @@ export default function LineupGenerationOptions(){
             
             <ScrollView style={{flex:1}}>
 
-                <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                    <Text style={textStyles.dataSection}>-Opções</Text>
-                </View>
+                <DataSection text={"- Opções"}/>
                 
                 {/* < Opções de aleatoriedade > */}
-                <Text style = {[textStyles.dataText,{padding:10}]}>Aleatoriedade</Text>
+                <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
                 <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
-                        <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+ Baixa</Text>
+                        <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+Baixa</Text>
                         <SingleCheck img={CheckImage(randomness,Randomness.LOW)} press={()=>{curGenOptions.randomness = Randomness.LOW, setRandomness(Randomness.LOW)}}/>
                     </View>
                     
@@ -125,7 +123,7 @@ export default function LineupGenerationOptions(){
                     </View>
                     
                     <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+ Alta</Text>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+Alta</Text>
                         <SingleCheck img={CheckImage(randomness,Randomness.HIGH)} press={()=>{curGenOptions.randomness = Randomness.HIGH,setRandomness(Randomness.HIGH)}}/>
                     </View>
                 </View>
@@ -139,9 +137,12 @@ export default function LineupGenerationOptions(){
                     </View>
                 </View>
 
-                {/* RoleSet (temporário) */}
+                {/* RoleSet */}
+                <Text style={textStyles.dataTitle}> - Conjunto de funções</Text>
                 <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:"/>
+                
                 {/* Local */}
+                <Text style={textStyles.dataTitle}> - Local</Text>
                 <DropDown options={placesOptions} actions={placesActions} placeholder="Selecione o local:"/>
                 {options}
             </ScrollView>
@@ -178,9 +179,7 @@ const SingleLineupOptions = () => {
     return(
         <View style={{flex:1}}>
                 
-            <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                <Text style={textStyles.dataSection}>-Opções</Text>
-            </View>
+            <DataSection text={"Dias e horários"}/>
             
             <WeekendSelection set={new DateSet()} single={true}/>
             <SingleDaySelection/>
@@ -201,9 +200,7 @@ const WeekendLineupOptions = () => {
 
     return(
         <View style={{flex:1}}>
-            <View style={{height:80,backgroundColor:"#9BFFF9"}}>
-                <Text style={textStyles.dataSection}>-Opções</Text>
-            </View>
+            <DataSection text={"Dias e horários"}/>
             
             <WeekendSelection set={new DateSet()}/>
 
@@ -230,18 +227,13 @@ const MonthLineupOptions = () => {
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     return(
         <View style={{flex:1}}>
-            
-                <View style={{paddingTop:20}}>
-                    <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:100}}>
-                        <Text style={{flex:1}}>Sábado - 19h</Text>
-                        <Text style={{flex:1}}>Domingo - 08h</Text>
-                        <Text style={{flex:1}}>Domingo - 19h</Text>
-                    </View>
-                    
-                    <MonthDaySelection/>
-                </View>
+            <DataSection text={"Dias e horários"}/>
+                
+            <View style={{paddingTop:50}}>               
+                <MonthDaySelection/>
+            </View>
 
-                <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
+            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
         </View>
     )
 }
@@ -354,7 +346,9 @@ export function MonthDaySelection(){
             let curDay = days[j]
             let check = <CheckBox checked={generationOptions.monthDays[curWeekend] != null && 
                                            generationOptions.monthDays[curWeekend].indexOf(curDay)!=-1} 
-                                  press={()=>{ToggleDay(curWeekend,curDay,generationOptions)}} key={curWeekend+curDay+j}/>
+                                  press={()=>{ToggleDay(curWeekend,curDay,generationOptions)}} key={curWeekend+curDay+j}
+                                  topText={i == 0 ? curDay : null}
+                                  />
 
             dayChecks.push(check)
         }

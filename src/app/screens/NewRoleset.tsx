@@ -24,8 +24,8 @@ export default function NewRoleset(){
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.acolito} screenName={"Novo conjunto"}/>
-            <TextInputBox title={"Nome: "} placeholder="Nome..." onChangeText={(text)=>{newSet.name=text}}/>
-            <RowImageButton img={ICONS.acolito} text={"Adicionar..."} press={()=>{
+            <TextInputBox title={"Nome: "} placeholder="Conjunto..." onChangeText={(text)=>{newSet.name=text}}/>
+            <RowImageButton img={ICONS.acolito} text={"Adicionar função..."} press={()=>{
                 setModalVisible(!modalVisible)
             }}
             />

@@ -1,5 +1,5 @@
 import { Modal, Platform, ToastAndroid, View, Image, Text} from "react-native";
-import { ConfirmationModal, TextButton, UpperBar } from "../classes/NewComps";
+import { TextButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { DataSelectors } from "./DataExport";
 import { MemberData} from "../classes/MemberData";
@@ -11,8 +11,6 @@ import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../cla
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 
-// TODO Corrigir problema que ao selecionar salvar e continuar, caso o usuário não
-// escolha o diretório para salvar, os dados são excluídos mesmo assim.
 export default function DataErase(){
     const [confirmationVisible, setConfirmationVisible] = useState(false)
     const {theme} = menuStore()

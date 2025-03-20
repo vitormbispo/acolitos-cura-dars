@@ -59,7 +59,7 @@ export function RowImageButton(props:RowImageButtonProps){
     props.press = ()=>{}
   }
     return(
-      <Pressable onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:theme.neutral,padding:10},props.rowStyle]}>
+      <Pressable onPress={props.press} style={[uiStyles.rowButton,{backgroundColor:theme.neutral},props.rowStyle]}>
         <Image source={props.img} style={[uiStyles.buttonIcon,props.imgStyle]}/>
         <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20,color:theme.primaryText}}>{props.text}</Text>       
       </Pressable>
@@ -120,8 +120,9 @@ export function TextButton(props:TextButtonProps) {
   if(props.press == undefined){
     props.press = ()=>{}
   }
+  const {theme} = menuStore()
   return (
-      <Pressable style={[uiStyles.textButton,props.buttonStyle]} onPress={props.press}>
+      <Pressable style={[uiStyles.textButton,{backgroundColor:theme.neutral},props.buttonStyle]} onPress={props.press}>
           <Text style={[textStyles.textButton,props.textStyle]}>{props.text}</Text>
       </Pressable>
       
@@ -459,7 +460,7 @@ type LinkRowImageButtonProps = {
 export function LinkRowImageButton(props:LinkRowImageButtonProps){
   const {theme} = menuStore()
   return(
-      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:theme.neutral,padding:10}} onPress={() => {
+      <Pressable style={[uiStyles.rowButton,{backgroundColor:theme.neutral,flexWrap:"wrap"}]} onPress={() => {
         if(props.press != null){
           props.press() 
         }
@@ -467,7 +468,7 @@ export function LinkRowImageButton(props:LinkRowImageButtonProps){
         router.push(props.link)}
         }>
         <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
-        <Text style={props.textStyle}>{props.text}</Text>       
+        <Text style={[textStyles.buttonText,props.textStyle]}>{props.text}</Text>       
       </Pressable>
   )
 }
@@ -681,7 +682,7 @@ type DataSectionProps = {
 export function DataSection(props:DataSectionProps){
   const {theme} = menuStore()
   return(
-    <View style={{backgroundColor:theme.neutral,minHeight:100}}>
+    <View style={{backgroundColor:theme.neutral,minHeight:70,margin:10,borderColor:"#CCCCCC99",borderWidth:1,borderRadius:10}}>
       <Text style={[textStyles.dataSection,{backgroundColor:props.color,textAlign:props.centered?"center":"auto"}]}>{props.text}</Text>
     </View>
   )
@@ -701,13 +702,15 @@ type DropDownTypes = {
  * offset = desvio da posição da caixa de opções
  * @returns 
  */
+// TODO Evitar usar esse useRef. Está prejudicando muito a performance do componente
 export function DropDown(props:DropDownTypes){
   const [modalOpened,setModalOpened] = useState(false)
   const viewRef = useRef<View>(null)
   const [position,setPosition] = useState({x:0,y:0})
   const dropDownOffset = props.offset != null ? props.offset : {x:10,y:32}
   const [selectedOption, setSelectedOption] = useState(props.placeholder != undefined ? props.placeholder : props.options[0])
-
+  const {theme} = menuStore()
+  
   useEffect(()=>{
     viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
       setPosition({x:pageX,y:pageY})
@@ -716,8 +719,9 @@ export function DropDown(props:DropDownTypes){
 
   let options = []
   for(let i = 0; i < props.options.length;i++){
+    let selected = props.options[i] == selectedOption
     let op = 
-    <Pressable style={{borderRadius:100,backgroundColor:"FFFFFF"}} key={i}onPress={
+    <Pressable style={{backgroundColor:selected ? theme.neutral : "FFFFFF"}} key={i}onPress={
       ()=>{
         setSelectedOption(props.options[i])
         setModalOpened(!modalOpened)
@@ -733,10 +737,11 @@ export function DropDown(props:DropDownTypes){
 
   return(
     <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
-      <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:"10%",borderRadius:100,borderColor:"#1E1E1E",borderWidth:1}} onPress={()=>{setModalOpened(!modalOpened)}}>
+      <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} onPress={()=>{setModalOpened(!modalOpened)}}>
         <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{selectedOption}</Text>
+        
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
-          <ScrollView style={{backgroundColor:"#FFFFFF",zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",height:"0%",borderColor:"#1E1E1E",borderWidth:1}}>
+          <ScrollView style={{backgroundColor:"#FFFFFF",borderRadius:10,zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",height:"0%",borderColor:"#1E1E1E",borderWidth:1}}>
             {options}
           </ScrollView>
         </Modal>
