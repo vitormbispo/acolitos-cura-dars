@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ToastAndroid, View } from "react-native";
 import { CheckBox, DataSection, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { menuStore } from "../store/store";
@@ -19,6 +19,7 @@ export default function DataExport(){
             <TextButton buttonStyle={{margin:30}} text={"Exportar"} press={()=>{
                 SaveDataFile("data","application/json",selectedProperties)
                     .then(()=>router.back())
+                    .catch(()=>{ToastAndroid.show("Salvamento cancelado.",2)})
             }}/>
         </View>
     )

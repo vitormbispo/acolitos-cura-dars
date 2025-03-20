@@ -54,13 +54,14 @@ type RowImageButtonProps = {
  * @returns
  */
 export function RowImageButton(props:RowImageButtonProps){
+  const {theme} = menuStore()
   if(props.press == undefined){
     props.press = ()=>{}
   }
     return(
-      <Pressable onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10},props.rowStyle]}>
-        <Image source={props.img} style={[{width:64,height:64,resizeMode:"contain"},props.imgStyle]}/>
-        <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20}}>{props.text}</Text>       
+      <Pressable onPress={props.press} style={[{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:theme.neutral,padding:10},props.rowStyle]}>
+        <Image source={props.img} style={[uiStyles.buttonIcon,props.imgStyle]}/>
+        <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20,color:theme.primaryText}}>{props.text}</Text>       
       </Pressable>
     )
   }
@@ -120,7 +121,7 @@ export function TextButton(props:TextButtonProps) {
     props.press = ()=>{}
   }
   return (
-      <Pressable style={[props.buttonStyle,uiStyles.textButton]} onPress={props.press}>
+      <Pressable style={[uiStyles.textButton,props.buttonStyle]} onPress={props.press}>
           <Text style={[textStyles.textButton,props.textStyle]}>{props.text}</Text>
       </Pressable>
       
@@ -157,10 +158,10 @@ export function CheckBox(props:CheckBoxProps){
   }
 
   let topText:React.JSX.Element = props.topText != undefined ? 
-    <Text style={[props.topTextStyle,textStyles.imageButtonText]}>{props.topText}</Text> : null
+    <Text style={[props.topTextStyle,textStyles.imageButtonText,{position:"absolute",bottom:40}]}>{props.topText}</Text> : null
   
   let bottomText:React.JSX.Element = props.bottomText != undefined ?
-    <Text style={[props.bottomTextStyle,textStyles.imageButtonText]}>{props.bottomText}</Text> : null
+    <Text style={[props.bottomTextStyle,textStyles.imageButtonText,{position:"absolute",top:40}]}>{props.bottomText}</Text> : null
 
   return(
   <Pressable style={[{flex:1,alignItems:"center"},props.boxStyle]} onPress={()=>{
@@ -311,23 +312,13 @@ type VisualCheckBoxProps = {
  * @returns 
  */
 export function VisualCheckBox(props:VisualCheckBoxProps){ 
-  const topTextOffset = -70
-  const botTextOffset = 10
-  const boxRef = useRef<Image>(null)
-  const [pivotPos,setPivotPos] = useState({x:0,y:0})
-  useEffect(()=>{
-    boxRef.current.measure((x,y,width,height,pageX,pageY)=>{
-      setPivotPos({x:x,y:y})
-    })
-  })
-
-  let topText = props.topText != undefined ? <Text style={[{top:pivotPos.y+topTextOffset,left:pivotPos.x,position:"absolute",padding:10},props.topTextStyle,textStyles.imageButtonText]}>{props.topText}</Text> : null
-  let bottomText = props.bottomText != undefined ? <Text style={[props.bottomTextStyle,textStyles.imageButtonText,{marginTop:20}]}>{props.bottomText}</Text> : null
+  let topText = props.topText != undefined ? <Text style={[props.topTextStyle,textStyles.imageButtonText,{position:"absolute",bottom:40}]}>{props.topText}</Text> : null
+  let bottomText = props.bottomText != undefined ? <Text style={[props.topTextStyle,textStyles.imageButtonText,{position:"absolute",top:40}]}>{props.bottomText}</Text> : null
 
   return(
-    <View style={[{flex:1,padding:10},props.boxStyle,topText != undefined ? {top:70,marginTop:30,marginBottom:60}:null]}>
+    <View style={[{flex:1,padding:10,alignItems:"center"},props.boxStyle]}>
       {topText}
-      <Image ref={boxRef} source={props.enabled 
+      <Image source={props.enabled 
         ? require("@/src/app/shapes/check_true.png")
         :require("@/src/app/shapes/check_false.png")} 
         
@@ -466,9 +457,9 @@ type LinkRowImageButtonProps = {
  * @returns
  */
 export function LinkRowImageButton(props:LinkRowImageButtonProps){
+  const {theme} = menuStore()
   return(
-      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:"#9BFFF9",padding:10}} onPress={() => {
-        console.log(props.press)
+      <Pressable style={{flexDirection:"row", alignContent:"center",alignItems:"center", backgroundColor:theme.neutral,padding:10}} onPress={() => {
         if(props.press != null){
           props.press() 
         }
@@ -554,6 +545,8 @@ export function TextInputBox(props:TextInputBoxProps) {
 type DataDisplayProps = {
   dataTitle:string,
   data:string
+  titleStyle?:object
+  dataStyle?:object
 }
 /**
  * Exibe um dado em formato de texto
@@ -562,8 +555,8 @@ type DataDisplayProps = {
 export function DataDisplay(props:DataDisplayProps) {
   return(
   <View style={{flex:1,flexDirection:"row", padding:10, alignItems:"center"}}>
-    <Text style={{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"}}>{props.dataTitle}</Text>
-    <Text style={{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"}}>{props.data}</Text>
+    <Text style={[{flex:1,fontFamily:"Inter-Bold",fontSize:16,alignSelf:"center"},props.titleStyle]}>{props.dataTitle}</Text>
+    <Text style={[{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"},props.dataStyle]}>{props.data}</Text>
   </View>
   )
 }
@@ -654,7 +647,7 @@ export function ConfirmationModal(props:ConfirmationModalProps){
       onRequestClose={props.requestClose != null ? props.requestClose : null}>
       
       <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
-          <View style={[{backgroundColor:theme.accentColor},uiStyles.modal,props.modalStyle]}>
+          <View style={[{backgroundColor:theme.primary},uiStyles.modal,props.modalStyle]}>
               
               {props.alert ? 
               <View>
@@ -665,8 +658,8 @@ export function ConfirmationModal(props:ConfirmationModalProps){
               <Text style={[textStyles.dataText,{alignSelf:"center",textAlign:"center"}]}>{props.confirmationText}</Text>
 
               <View style={{flexDirection:"row",alignSelf:"center",gap:10,marginTop:30}}>
-                  <TextButton text="Sim" press={props.confirmAction}/>
-                  <TextButton text="Não" press={props.declineAction}/>
+                  <TextButton text="Sim" buttonStyle={{backgroundColor:theme.confirm}} press={props.confirmAction}/>
+                  <TextButton text="Não" buttonStyle={{backgroundColor:theme.reject}} press={props.declineAction}/>
               </View>
           </View>
           
@@ -677,8 +670,8 @@ export function ConfirmationModal(props:ConfirmationModalProps){
 
 type DataSectionProps = {
   text:string
-  color:string
-  
+  color?:string
+  centered?:boolean
 }
 /**
  * Exibe um divisor de seção
@@ -686,9 +679,10 @@ type DataSectionProps = {
  * color = cor
  */
 export function DataSection(props:DataSectionProps){
+  const {theme} = menuStore()
   return(
-    <View style={{flex:0.1,backgroundColor:props.color,minHeight:"5%"}}>
-      <Text style={[textStyles.dataSection,{backgroundColor:props.color}]}>{props.text}</Text>
+    <View style={{backgroundColor:theme.neutral,minHeight:100}}>
+      <Text style={[textStyles.dataSection,{backgroundColor:props.color,textAlign:props.centered?"center":"auto"}]}>{props.text}</Text>
     </View>
   )
 }

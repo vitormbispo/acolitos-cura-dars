@@ -1,5 +1,5 @@
 import { View,Text, ScrollView } from "react-native"
-import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, ImageButton } from "../classes/NewComps"
+import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, ImageButton, DataSection } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
 import { textStyles, uiStyles} from "../styles/GeneralStyles"
@@ -30,10 +30,7 @@ export default function MemberProfile() {
     let curMember:Member = members[memberID]
     
     const parents =  type == MemberType.COROINHA? 
-                    <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
-                        <Text style={textStyles.dataTitle}>Responsável: </Text>
-                        <Text style={textStyles.dataText}>{curMember.parents}</Text>
-                    </View> : null
+    <DataDisplay dataTitle={"- Responsável: "} data={curMember.parents} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
     
 
     const rodizio = []
@@ -84,41 +81,20 @@ export default function MemberProfile() {
             
 
             <ScrollView style={{flex:1}} ref={scrollRef}>
-                <View style={{flex:1,backgroundColor:theme.secondary,height:80}}>
-                    <Text style={textStyles.dataSection}>-Dados Pessoais-</Text>
-                </View>
+                <DataSection text={"- Dados pessoais -"} centered={true}/>
                 
-                <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
-                    <Text style={textStyles.dataTitle}>Nome: </Text>
-                    <Text style={textStyles.dataText}>{curMember.name}</Text>
-                </View>
-                
-                <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
-                    <Text style={textStyles.dataTitle}>Apelido: </Text>
-                    <Text style={textStyles.dataText}>{curMember.nick}</Text>
-                </View>
+                <DataDisplay dataTitle={"- Nome: "} data={curMember.name} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Apelido: "} data={curMember.nick} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
                 {parents}
 
-                <View style={{flex:0.06,flexDirection:"row",alignItems:"center"}}>
-                    <Text style={textStyles.dataTitle}>Contato: </Text>
-                    <Text style={textStyles.dataText}>{curMember.contact}</Text>
-                </View>
+                <DataDisplay dataTitle={"- Contato: "} data={curMember.contact} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
-                <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
-                    <Text style={[textStyles.dataSection,{backgroundColor:theme.secondary}]}>-Disponibilidade-</Text>
-                </View>
+                <DataSection text={"- Disponibilidade -"} centered={true}/>
                 <Text style={textStyles.dataTitle}>- Local:</Text>
                 <VisualPlaceAvailability member={curMember}/>
 
                 <View style={{paddingTop:20}}>
-                    
-                    <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
-                        <Text style={{flex:1}}>Sábado - 19h</Text>
-                        <Text style={{flex:1}}>Domingo - 08h</Text>
-                        <Text style={{flex:1}}>Domingo - 19h</Text>
-                    </View>
-                        
                     <View>
                         {availabilities}
                     </View>
@@ -129,15 +105,11 @@ export default function MemberProfile() {
                     </View>
                  </View>
 
-                 <View style={{flex:0.1,backgroundColor:theme.secondary,height:80}}>
-                    <Text style={textStyles.dataSection}>-Rodízio-</Text>
-                 </View>
-
-                <View style={{padding:10,flexDirection:"row"}}>
-                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,alignSelf:"center"}}>Geral: </Text>
-                    <Text style={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}>{curMember.priority}</Text>
-                </View>
-
+                <DataSection text={"- Rodízio -"} centered={true}/>
+                <DataDisplay dataTitle={"Geral: "} data={curMember.priority.toString()}
+                             titleStyle={{fontFamily:"Inter-Bold",fontSize:30,alignSelf:"center"}}
+                             dataStyle={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}/>
+                
                 <View style={{flex:1}}>
                     {rodizio}
                     
@@ -163,10 +135,16 @@ type VisualWeekendAvailabilityProps = {
 
 export function VisualWeekendAvailability(props:VisualWeekendAvailabilityProps){
     let checks = []
-
+    let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
     for(let i = 0; i < Dates.defaultDays.length;i++){
         let curDay = Dates.defaultDays[i]
-        let check = <VisualCheckBox enabled={props.member.disp[props.weekend][curDay]} key={props.weekend+curDay+i}/>
+        let check = 
+        <VisualCheckBox 
+            enabled={props.member.disp[props.weekend][curDay]} 
+            key={props.weekend+curDay+i}
+            topText={isFirstWeekend ? curDay : null}
+        
+        />
 
         checks.push(check)
     }

@@ -1,6 +1,6 @@
 import { View,Text } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal, TextCheckBox } from "../classes/NewComps";
+import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal, TextCheckBox, DataSection } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { AbbreviateText, OrganizeMemberArrayAlpha} from "../classes/Methods"
@@ -74,22 +74,13 @@ export default function EditMember(){
                 onChangeText={(text:string)=>curMember.contact = text.toString()}/>
 
             
-
-            <View style={{flex:0.1,height:80,backgroundColor:theme.secondary}}>
-                <Text style={[textStyles.dataSection]}>-Disponibilidade-</Text>
-            </View>
+            <DataSection text={"- Disponibilidade -"} centered={true} />
             
             <Text style={textStyles.dataTitle}>- Local:</Text>
             <PlaceAvailability member={curMember}/>
 
-            <View style={{paddingTop:20}}>
-                <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
-                    <Text style={{flex:1}}>Sábado - 19h</Text>
-                    <Text style={{flex:1}}>Domingo - 08h</Text>
-                    <Text style={{flex:1}}>Domingo - 19h</Text>
-                </View>
-                
-                <View>             
+            <View style={{paddingTop:20}}>              
+                <View style={{marginTop:30}}>             
                     {availabilities}
                 </View>
 

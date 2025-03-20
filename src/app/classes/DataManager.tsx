@@ -138,6 +138,9 @@ export async function SaveDataFile(name:string,mimetype:string,properties:Array<
             }
         })
     }
+    else{
+        return Promise.reject("Salvamento cancelado.")
+    }
 }
 
 /**

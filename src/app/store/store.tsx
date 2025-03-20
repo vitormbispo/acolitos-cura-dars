@@ -33,7 +33,13 @@ export type ContextStates = {
 export type ThemeStates = {
     theme:{
         accentColor: string,
+        primary:string,
         secondary: string,
+        highlight: string,
+        confirm: string,
+        reject: string,
+        neutral:string,
+        primaryText: string,
         backgroundColor: string
     }
     name:string

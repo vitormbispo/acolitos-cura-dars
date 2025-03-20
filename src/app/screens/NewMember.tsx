@@ -1,6 +1,6 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberAddIcon, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps";
+import { CheckBox, DataSection, GetMemberAddIcon, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
@@ -61,23 +61,15 @@ export default function NewMember(){
                 onChangeText={(text:any)=>currentData.contact=text.toString()} 
                 placeholder="Contato..."/>
             
-            <View style={{flex:0.1,backgroundColor:theme.secondary}}>
-                <Text style={{fontFamily:"Inther-Bold",padding:20,alignSelf:"center",fontSize:24}}>-Disponibilidade-</Text>
-            </View>
+            <DataSection text={"- Disponibilidade -"} centered={true}/>
 
             <Text style={textStyles.dataTitle}>- Local</Text>
             <PlaceAvailability member={currentData}/>
 
             <View style={{paddingTop:20}}>
-                <View style={{flexDirection:"row",alignContent:"space-between",paddingLeft:90}}>
-                    <Text style={{flex:1}}>Sábado - 19h</Text>
-                    <Text style={{flex:1}}>Domingo - 08h</Text>
-                    <Text style={{flex:1}}>Domingo - 19h</Text>
-                </View>
-                
-                <View>
+                <View style={{marginTop:30}}>
                     
-                {availabilities}
+                    {availabilities}
 
                 </View>
                 
@@ -135,11 +127,20 @@ type WeekendAvailabilityProps = {
 }
 export function WeekendAvailability(props:WeekendAvailabilityProps){
     let checks = []
-
+    let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
+    
     for(let i = 0; i < Dates.defaultDays.length;i++){
         let curDay = Dates.defaultDays[i]
-        let check = <CheckBox checked={props.member.disp[props.weekend][curDay]} press={()=>{props.member.disp[props.weekend][curDay] = !props.member.disp[props.weekend][curDay]}} key={props.weekend+curDay+i}/>
-
+        
+        let check = 
+            <CheckBox 
+                checked={props.member.disp[props.weekend][curDay]} 
+                press={()=>{
+                    props.member.disp[props.weekend][curDay] = !props.member.disp[props.weekend][curDay]
+                }} 
+                key={props.weekend+curDay+i}
+                topText={isFirstWeekend ? curDay:null}/>
+        
         checks.push(check)
     }
     return(

@@ -47,7 +47,7 @@ export const uiStyles = StyleSheet.create({
         justifyContent:"center",
         borderRadius:50,
         borderColor:"#1E1E1E",
-        borderWidth:1
+        borderWidth:0
     },
     rowContainer:{
         flex:0.1,
@@ -72,7 +72,7 @@ export const uiStyles = StyleSheet.create({
         width:200,
         padding:10,
         borderRadius:10,
-        borderColor:"#1E1E1E99",
+        borderColor:"#CCCCCC99",
         borderWidth:1
     },
     rowButtonContainer:{
@@ -86,10 +86,10 @@ export const uiStyles = StyleSheet.create({
     textButton:{
         alignItems:"center",
         alignSelf:"center",
-        backgroundColor:"#A5D8E8",
+        backgroundColor:"#6CB4EE",
         borderRadius:10,
         borderWidth:0,
-        borderColor:"#1E1E1E",
+        borderColor:"#CCCCCC",
         margin:10
     }
 

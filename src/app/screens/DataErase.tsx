@@ -27,46 +27,49 @@ export default function DataErase(){
             <TextButton text={"Excluir"} press={()=>setConfirmationVisible(!confirmationVisible)} buttonStyle={{margin:30}}/>
 
             <Modal
-                  animationType="fade"
-                  visible={confirmationVisible}
-                  transparent={true}
-                  onRequestClose={()=>{setConfirmationVisible(!confirmationVisible)}}>
-                  
-                  <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
-                      <View style={[{backgroundColor:theme.accentColor},uiStyles.modal,{height:"70%",width:"90%"}]}>
-                            <View>
-                                <Image source={ICONS.alert} style={{width:64,height:64,alignSelf:"center"}}/>
-                                <Text style={{fontFamily:'Inter-Bold',textAlign:"center",alignSelf:"center",fontSize:24,color:"#EE2D24"}}>ATENÇÃO!</Text>
-                            </View>
-                          
-                            <Text style={[textStyles.dataText,{padding:20,alignSelf:"center",textAlign:"center"}]}>
-                            Você está prestes a excluir TODOS os dados selecionados. 
-                            Essa ação não pode ser desfeita. Deseja fazer uma cópia dos dados e prosseguir?
-                            </Text>
-            
-                            <View style={{alignSelf:"center",gap:10,marginTop:30}}>
-                                <TextButton text="Salvar e continuar" press={()=>{
-                                    SaveDataFile("data","application/json",selectedProperties.current)
-                                        .then(()=>{
-                                            EraseSelectedData(selectedProperties.current)
-                                            setConfirmationVisible(false)
-                                            router.back()}
-                                        )
-                                }}/>
-                                <TextButton text="Continuar sem salvar" press={()=>{
-                                    EraseSelectedData(selectedProperties.current)
-                                    if(Platform.OS == 'android'){
-                                        ToastAndroid.show("Dados excluídos com sucesso.",2)
-                                    }
-                                    router.back()
-                                }}/>
-                                <TextButton text="Cancelar" press={()=>{
-                                    setConfirmationVisible(!confirmationVisible)
-                                }}/>
-                            </View>
-                      </View>
-                      
-                  </View>
+                animationType="fade"
+                visible={confirmationVisible}
+                transparent={true}
+                onRequestClose={()=>{setConfirmationVisible(!confirmationVisible)}}>
+                
+                <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
+                    <View style={[{backgroundColor:theme.accentColor},uiStyles.modal,{height:"70%",width:"90%"}]}>
+                        <View>
+                            <Image source={ICONS.alert} style={{width:64,height:64,alignSelf:"center"}}/>
+                            <Text style={{fontFamily:'Inter-Bold',textAlign:"center",alignSelf:"center",fontSize:24,color:"#EE2D24"}}>ATENÇÃO!</Text>
+                        </View>
+                        
+                        <Text style={[textStyles.dataText,{padding:20,alignSelf:"center",textAlign:"center"}]}>
+                        Você está prestes a excluir TODOS os dados selecionados. 
+                        Essa ação não pode ser desfeita. Deseja fazer uma cópia dos dados e prosseguir?
+                        </Text>
+        
+                        <View style={{alignSelf:"center",gap:10,marginTop:30}}>
+                            <TextButton text="Salvar e continuar" press={()=>{
+                                SaveDataFile("data","application/json",selectedProperties.current)
+                                    .then(()=>{
+                                        EraseSelectedData(selectedProperties.current)
+                                        setConfirmationVisible(false)
+                                        router.back()}
+                                    )
+                                    .catch(()=>{
+                                        ToastAndroid.show("Salvamento cancelado. Os dados não foram excluídos",2)
+                                    })
+                            }}/>
+                            <TextButton text="Continuar sem salvar" press={()=>{
+                                EraseSelectedData(selectedProperties.current)
+                                if(Platform.OS == 'android'){
+                                    ToastAndroid.show("Dados excluídos com sucesso.",2)
+                                }
+                                router.back()
+                            }}/>
+                            <TextButton text="Cancelar" press={()=>{
+                                setConfirmationVisible(!confirmationVisible)
+                            }}/>
+                        </View>
+                    </View>
+                    
+                </View>
               </Modal>
         </View>
     )
