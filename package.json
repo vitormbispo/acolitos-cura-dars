@@ -1,7 +1,7 @@
 {
   "name": "pastoraldosacolitosecoroinhas",
   "main": "expo-router/entry",
-  "version": "1.1.3a",
+  "version": "1.2.0a",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
