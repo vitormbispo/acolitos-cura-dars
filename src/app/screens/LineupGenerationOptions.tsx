@@ -139,7 +139,7 @@ export default function LineupGenerationOptions(){
 
                 {/* RoleSet */}
                 <Text style={textStyles.dataTitle}> - Conjunto de funções</Text>
-                <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:"/>
+                <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
                 
                 {/* Local */}
                 <Text style={textStyles.dataTitle}> - Local</Text>

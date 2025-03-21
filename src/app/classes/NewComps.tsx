@@ -707,15 +707,9 @@ export function DropDown(props:DropDownTypes){
   const [modalOpened,setModalOpened] = useState(false)
   const viewRef = useRef<View>(null)
   const [position,setPosition] = useState({x:0,y:0})
-  const dropDownOffset = props.offset != null ? props.offset : {x:10,y:32}
+  const dropDownOffset = props.offset != null ? props.offset : {x:0,y:0}
   const [selectedOption, setSelectedOption] = useState(props.placeholder != undefined ? props.placeholder : props.options[0])
   const {theme} = menuStore()
-  
-  useEffect(()=>{
-    viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
-      setPosition({x:pageX,y:pageY})
-    })
-  })
 
   let options = []
   for(let i = 0; i < props.options.length;i++){
@@ -735,15 +729,25 @@ export function DropDown(props:DropDownTypes){
     options.push(op)
   }
 
+  
   return(
     <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
-      <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} onPress={()=>{setModalOpened(!modalOpened)}}>
+      <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} 
+      onPress={()=>{
+        setModalOpened(!modalOpened)
+        viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
+          setPosition({x:pageX+dropDownOffset.x,y:pageY+dropDownOffset.y})
+        })
+        }}>
         <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{selectedOption}</Text>
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
-          <ScrollView style={{backgroundColor:"#FFFFFF",borderRadius:10,zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"30%",height:"0%",borderColor:"#1E1E1E",borderWidth:1}}>
-            {options}
-          </ScrollView>
+          <Pressable style={{flex:1}} onPress={()=>{setModalOpened(false)}}>
+            <ScrollView style={{backgroundColor:"#FFFFFF",borderRadius:10,zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"20%",borderColor:"#1E1E1E",borderWidth:1}}>
+              {options}
+            </ScrollView>
+          </Pressable>
+          
         </Modal>
       </Pressable>
     </View>
