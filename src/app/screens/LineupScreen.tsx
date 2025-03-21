@@ -121,7 +121,7 @@ export default function LineupScreen(){
                     CopyGeminiPrompt()
                 }}/>
 
-                <TextButton textStyle={textStyles.textButtonText} text="Salvar escalas" press={()=>{
+                <TextButton textStyle={textStyles.textButtonText} text="Salvar" press={()=>{
                     SaveAllLineups(type)
                 }}/>
             </View>

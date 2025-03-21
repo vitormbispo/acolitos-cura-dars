@@ -10,14 +10,22 @@ export default function PlaceList(){
     
     const [places,setPlaces] = useState(Places.allPlaces.slice())
     const [modalVisible,setModalVisible] = useState(false)
+    const [renameModalVisible,setRenameModalVisible] = useState(false)
+    const renamingPlace = useRef("")
     let comps = []
     
     for(let i = 0; i < places.length; i++){
         let curPlace = places[i]
-        let newComp = <RowPlace name={curPlace} index={i} key={i} deleteAction={()=>{
+        let newComp = <RowPlace name={curPlace} index={i} key={i} 
+        deleteAction={()=>{
             Places.RemovePlace(curPlace)
             setPlaces(Places.allPlaces.slice())
-        }}/>
+        }}
+        editAction={()=>{
+            renamingPlace.current = curPlace
+            setRenameModalVisible(true)
+        }}
+        />
         comps.push(newComp)
     }
     return(
@@ -32,12 +40,18 @@ export default function PlaceList(){
                     />
                 {comps} 
             </ScrollView>
-            <AddModal visible={modalVisible} places={Places.allPlaces} requestClose={()=>{setModalVisible(!modalVisible)}} onSubmit={()=>{
-                setModalVisible(!modalVisible)
-                setPlaces(Places.allPlaces)
+            <AddModal visible={modalVisible} places={Places.allPlaces} requestClose={()=>{setModalVisible(false)}} 
+                onSubmit={()=>{
+                    setModalVisible(false)
+                    setPlaces(Places.allPlaces.slice())
+                    }}/>
+
+            <RenameModal visible={renameModalVisible} places={places} place={renamingPlace.current} requestClose={()=>{setRenameModalVisible(false)}} 
+                onSubmit={()=>{
+                    setRenameModalVisible(false)
+                    setPlaces(Places.allPlaces.slice())
                 }}/>
-        </View>
-        
+        </View>  
     )
 }
 
@@ -45,6 +59,7 @@ type RowPlaceProps = {
     name:string
     index:number
     deleteAction: (...args:any) => any
+    editAction: (...args:any) => any
 }
 
 function RowPlace(props:RowPlaceProps){
@@ -58,6 +73,10 @@ function RowPlace(props:RowPlaceProps){
             
             <ImageButton buttonStyle={{alignSelf:"center"}}imgStyle={[uiStyles.buttonIcon]} img={ICONS.delete} press={()=>{
                 props.deleteAction()
+            }}/>
+
+            <ImageButton buttonStyle={{alignSelf:"center"}}imgStyle={[uiStyles.buttonIcon]} img={ICONS.edit} press={()=>{
+                props.editAction()
             }}/>
             
         </Pressable>
@@ -85,6 +104,39 @@ function AddModal(props:AddModalProps){
                             Places.AddPlace(placeName)
                             props.visible = false
                             placeName = ""
+                        }
+                        else{
+                            console.error("Invalid place name.")
+                        }
+                        props.onSubmit != undefined ? props.onSubmit() : null
+                    }}/>
+                </View>
+            </View>
+            
+        </Modal>
+    )
+}
+
+type RenameModalProps = {
+    visible:boolean
+    places:Array<string>
+    place:string
+    requestClose?:(...args:any) => any
+    onSubmit?:(...args:any) => any
+}
+function RenameModal(props:RenameModalProps){
+    const {theme} = menuStore()
+    
+    let placeName = props.place
+    return(
+        <Modal visible={props.visible} animationType="fade" transparent={true} onRequestClose={()=>{props.requestClose != undefined ? props.requestClose() : null}}>
+            <View style={{flex:1,justifyContent:"center"}}>
+                <View style={{alignSelf:"center",justifyContent:"center",height:"40%",width:"80%",backgroundColor:theme.accentColor,borderRadius:50}}>
+                    
+                    <TextInputBox title={"Novo nome: "} boxBelow={true} default={props.place} onChangeText={(text)=>{placeName=text}}/>
+                    <TextButton text={"Concluir"} press={()=>{;
+                        if(placeName != "" && placeName != undefined && placeName != null){
+                            Places.RenamePlace(props.place,placeName)
                         }
                         else{
                             console.error("Invalid place name.")

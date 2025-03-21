@@ -16,11 +16,13 @@ export default function DataSettingsMenu(){
                 LoadDataFile()
             }}/>
             <LinkRowImageButton img={ICONS.erase_data} text={"Excluir dados"} link={"/screens/DataErase"}/>
-
-            
         </View>
     )
 }
+
+/**
+ * Solicita ao usuário que selecione um arquivo para importação
+ */
 async function LoadDataFile() {
     let doc = DocumentPicker.getDocumentAsync({type:"application/json",copyToCacheDirectory:true,multiple:false})
     .then((result)=>{FileSystem.readAsStringAsync(result.assets[0].uri)

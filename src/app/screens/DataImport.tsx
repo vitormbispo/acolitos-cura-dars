@@ -4,7 +4,7 @@ import { ICONS } from "../classes/AssetManager";
 import { MemberData} from "../classes/MemberData";
 import { DataSelectors } from "./DataExport";
 import { menuStore } from "../store/store";
-import { router, useRouter } from "expo-router";
+import { router} from "expo-router";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
@@ -22,7 +22,7 @@ export default function DataImport(){
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.import} screenName={"Importar dados"}/>
-            <DataSection text={"Selecione quais \n dados importar:"} color={theme.accentColor}/>
+            <DataSection text={"Selecione quais dados importar:"} textStyle={{fontSize:20}}/>
             <DataSelectors allProperties={DataImportOptions.data} selectedProperties={DataImportOptions.selectedProperties}/>
             <TextButton text={"Importar"} press={()=>setConfirmationVisible(!confirmationVisible)} buttonStyle={{margin:30}}/>
 
@@ -61,7 +61,7 @@ export default function DataImport(){
                                             ToastAndroid.show("Ação cancelada.",2)
                                         }
                                     })
-                            }}/>
+                            }} buttonStyle={{backgroundColor:theme.confirm}}/>
                             <TextButton text="Continuar sem salvar" press={()=>{
                                 LoadData(DataImportOptions.data,DataImportOptions.selectedProperties)
                                 if(Platform.OS == 'android'){
@@ -71,7 +71,7 @@ export default function DataImport(){
                             }}/>
                             <TextButton text="Cancelar" press={()=>{
                                 setConfirmationVisible(!confirmationVisible)
-                            }}/>
+                            }}buttonStyle={{backgroundColor:theme.reject}}/>
                         </View>
                     </View>
                     

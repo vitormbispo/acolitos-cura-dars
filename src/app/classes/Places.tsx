@@ -10,59 +10,115 @@ export class Places {
         "Cap. S. José Operário", "Cap. S. Rita", "Cap N. S. Carmo"
     ]
 
+    /**
+     * Adiciona um novo local,
+     * fazendo também as atualizações necessárias em todos os membros.
+     * @param place Nome do local
+     */
     static AddPlace(place:string):void{
         this.allPlaces.push(place)
-        MemberData.allAcolytes.forEach((acolyte)=>{
-            acolyte.placeDisp[place] = true
-            acolyte.placeRotation[place] = 0
-        })
 
-        MemberData.allCoroinhas.forEach((coroinha)=>{
-            coroinha.placeDisp[place] = true
-            coroinha.placeRotation[place] = 0
+        let allMembers = MemberData.GetAllMembers()
+        allMembers.forEach((member)=>{
+            member.placeDisp[place] = true
+            member.placeRotation[place] = 0
         })
 
         SaveData("AllPlaces",this.allPlaces)
         MemberData.SaveMemberData()
     }
 
+    /**
+     * Remove determinado local pelo seu nome,
+     * fazendo também as atualizações necessárias em todos os membros.
+     * @param place Nome do local a remover
+     * @returns 
+     */
     static RemovePlace(place:string):void{
         let index = this.allPlaces.indexOf(place)
         if(index == -1){console.error("Place not found!");return}
 
         this.allPlaces.splice(index,1)
 
-        MemberData.allAcolytes.forEach((acolyte)=>{
-            delete acolyte.placeDisp[place]
-            delete acolyte.placeRotation[place]
-        })
-
-        MemberData.allCoroinhas.forEach((coroinha)=>{
-            delete coroinha.placeDisp[place]
-            delete coroinha.placeRotation[place]
+        let allMembers = MemberData.GetAllMembers()
+        allMembers.forEach((member)=>{
+            delete member.placeDisp[place]
+            delete member.placeRotation[place]
         })
 
         SaveData("AllPlaces",this.allPlaces)
         MemberData.SaveMemberData()
     }
 
+    /**
+     * Renomeia um determinado local,
+     * fazendo também as atualizações necessárias em todos os membros.
+     * @param place Local
+     * @param newPlace Novo nome
+     * @returns 
+     */
     static RenamePlace(place:string,newPlace:string):void{
         let index = this.allPlaces.indexOf(place)
         if(index == -1){console.error("Place not found!");return}
 
+        let allMembers = MemberData.GetAllMembers()
+        allMembers.forEach((member)=>{
+            // Cria a chave com os dados da antiga
+            member.placeDisp[newPlace] = member.placeDisp[place]
+            member.placeRotation[newPlace] = member.placeRotation[place]
+
+            // Deleta as chaves antigas
+            delete member.placeDisp[place]
+            delete member.placeRotation[place]
+        })
+        
         this.allPlaces[index] = newPlace
+
+        SaveData("AllPlaces",this.allPlaces)
+        MemberData.SaveMemberData()
     }
 
+    /**
+     * Renomeia o local com o determinado índice,
+     * fazendo também as atualizações necessárias em todos os membros.
+     * @param placeIndex Índice alvo
+     * @param newPlace Novo nome
+     * @returns 
+     */
     static RenamePlaceIndex(placeIndex:number,newPlace:string):void{
         if(placeIndex > this.allPlaces.length){console.error("Place index out of range.");return}
+        
+        let allMembers = MemberData.GetAllMembers()
+        let place = this.allPlaces[placeIndex]
+
+        allMembers.forEach((member)=>{
+            // Cria a chave com os dados da antiga
+            member.placeDisp[newPlace] = member.placeDisp[place]
+            member.placeRotation[newPlace] = member.placeRotation[place]
+
+            // Deleta as chaves antigas
+            delete member.placeDisp[place]
+            delete member.placeRotation[place]
+        })
+
         this.allPlaces[placeIndex] = newPlace
-    
+
+        SaveData("AllPlaces",this.allPlaces)
+        MemberData.SaveMemberData()
     }
 
+    /**
+     * Retorna uma lista com os nomes dos locais padrão.
+     * @returns Array<string>
+     */
     static PlacesArray():Array<string>{
         return this.defaultPlaces.slice()
     }
 
+    /**
+     * Retorna um objeto padrão para armazenar o rodízio de locais.
+     * @returns object
+     */
     static PlacesRotationMap():object{
         let array:Array<string> = this.PlacesArray()
         let map = {}
@@ -73,6 +129,11 @@ export class Places {
 
         return map
     }
+
+    /**
+     * Retorna um objeto padrão para armazenar as disponibilidades de locais
+     * @returns 
+     */
     static PlacesDispMap():object{
         let array:Array<string> = this.PlacesArray()
         let map = {}
@@ -84,13 +145,15 @@ export class Places {
         return map
     }
 
+    /**
+     * Reinicia os locais para o padrão, fazendo também as atualizações necessárias em todos os membros.
+     */
     static ResetToDefault(){
         this.allPlaces = this.PlacesArray()
         let allMembers = MemberData.GetAllMembers()
 
         this.VerifyPlacesIntegrity()
-        
-        
+          
         allMembers.forEach((member)=>{
             let memberPlaces:Array<string> = Object.keys(member.placeDisp)
             
@@ -115,13 +178,19 @@ export class Places {
         
     }
 
+    /**
+     * Verifica a integridade da lista de locais.
+     */
     static VerifyPlacesIntegrity(){
         if(this.allPlaces == null){
             this.allPlaces = []
         }
         SaveData("AllPlaces",this.allPlaces)
     }
-    
+
+    /**
+     * Carrega os dados de locais do AsyncStorage
+     */
     static async LoadPlaceData(){
         let data = await AsyncStorage.getItem("AllPlaces")
         this.allPlaces = JSON.parse(data)

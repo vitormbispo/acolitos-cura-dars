@@ -7,7 +7,7 @@ import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
 import { Places } from "../classes/Places"
 import { Roles } from "../classes/Roles"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()

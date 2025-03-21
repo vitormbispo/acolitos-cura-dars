@@ -671,6 +671,7 @@ export function ConfirmationModal(props:ConfirmationModalProps){
 
 type DataSectionProps = {
   text:string
+  textStyle?:object
   color?:string
   centered?:boolean
 }
@@ -683,7 +684,7 @@ export function DataSection(props:DataSectionProps){
   const {theme} = menuStore()
   return(
     <View style={{backgroundColor:theme.neutral,minHeight:70,margin:10,borderColor:"#CCCCCC99",borderWidth:1,borderRadius:10}}>
-      <Text style={[textStyles.dataSection,{backgroundColor:props.color,textAlign:props.centered?"center":"auto"}]}>{props.text}</Text>
+      <Text style={[textStyles.dataSection,{backgroundColor:props.color,textAlign:props.centered?"center":"auto"},props.textStyle]}>{props.text}</Text>
     </View>
   )
 }
@@ -702,7 +703,7 @@ type DropDownTypes = {
  * offset = desvio da posição da caixa de opções
  * @returns 
  */
-// TODO Evitar usar esse useRef. Está prejudicando muito a performance do componente
+
 export function DropDown(props:DropDownTypes){
   const [modalOpened,setModalOpened] = useState(false)
   const viewRef = useRef<View>(null)

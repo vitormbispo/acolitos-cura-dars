@@ -22,13 +22,6 @@ export default function Home(){
 export function AppBody(){
     return(
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-{/*}
-<       TextButton text="Clear AsyncStorage." textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} press={()=>AsyncStorage.clear()}/>
-        
-{*/}
-    <ExpandableView title="drop" expanded={false} content={
-        <DropDown options={["Opção 1","Opção 2","Opção 3"]} actions={[()=>{console.log("Opção 1")},()=>{console.log("Opção 2")},()=>{console.log("Opção 3")}]}/>
-    }/>
     
     </View>
     )

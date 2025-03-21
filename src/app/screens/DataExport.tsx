@@ -1,5 +1,5 @@
 import { ToastAndroid, View } from "react-native";
-import { CheckBox, DataSection, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps";
+import { DataSection, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { menuStore } from "../store/store";
 import { router } from "expo-router";
@@ -14,7 +14,7 @@ export default function DataExport(){
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.export} screenName={"Exportar dados"}/>
-            <DataSection text={"Selecione os dados para exportar:"} color={theme.secondary}/>
+            <DataSection text={"Selecione os dados para exportar:"} textStyle={{fontSize:20}}/>
             <DataSelectors allProperties={allProperties} selectedProperties={selectedProperties}/>
             <TextButton buttonStyle={{margin:30}} text={"Exportar"} press={()=>{
                 SaveDataFile("data","application/json",selectedProperties)

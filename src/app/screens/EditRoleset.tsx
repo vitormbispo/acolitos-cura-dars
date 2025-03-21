@@ -1,6 +1,6 @@
-import { Modal, Role, ScrollView, Text, View } from "react-native";
+import { Modal, ScrollView, Text, View } from "react-native";
 import { ImageButton, RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
@@ -9,7 +9,7 @@ import { router } from "expo-router";
 import { MemberType } from "../classes/MemberData";
 import { AbbreviateText, DeepCopyObject } from "../classes/Methods";
 
-export default function NewRoleset(){
+export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)
     
     const {type} = menuStore()
@@ -23,12 +23,11 @@ export default function NewRoleset(){
         case MemberType.COROINHA:
             setsArray = Roles.coroinhaRoleSets; break
     }
-    const [curSet,setCurSet] = useState(DeepCopyObject(setsArray[rolesetID]))  
+    const [curSet] = useState(DeepCopyObject(setsArray[rolesetID]))  
     const [newSet,setNewSet] = useState(new RoleSet(curSet.name,curSet.type,curSet.set.slice(),curSet.isDefault))
     
     let rolesComps:Array<React.JSX.Element> = []
     
-    // TODO Remover rerender forçado
     for(let i = 0; i < newSet.set.length;i++){
         let newComp = <RowRole allRoles={newSet.set} role={newSet.set[i]} index={i} key={i} deleteAction={()=>{
             newSet.RemoveRole(newSet.set[i]);
@@ -65,6 +64,11 @@ type AddModalProps = {
     requestClose?:(...args:any) => any
     onSubmit?:(...args:any) => any
 }
+/**
+ * Modal para adicionar um novo RoleSet
+ * @param props visible = visível; roles = funções do RoleSet; 
+ * requestClose ?= ação ao solicitar fechamento do modal; onSubmit ?= ação ao confirmar.
+ */
 function AddModal(props:AddModalProps){
     const {theme} = menuStore()
     
@@ -98,7 +102,11 @@ type RowRoleProps = {
     index:number
     deleteAction?:(...args:any) => any
 }
-
+/**
+ * Botão de um RoleSet
+ * @param props role=função; allRoles = todas as funções do conjunto; 
+ * index = índice da função; deleteAction ?= ação ao deletar
+ */
 function RowRole(props:RowRoleProps){
     return(
         <View style={{flexDirection:"row",minHeight:"10%"}}>
