@@ -229,8 +229,9 @@ function RemoveUnvailable(members:Array<Member>,day:string,weekend:string,place:
         if(curMember.onLineup){
             if(day != "Outro" && weekend != "Outro"){
                 if(curMember.disp[weekend][day]){
-                    if( (place != undefined && curMember.placeDisp[place]) || (place == undefined)){
+                    if( (place == undefined) || (place != undefined && curMember.placeDisp[place])){
                         availableMembers.push(curMember)
+                        continue
                     }
                 }
             }

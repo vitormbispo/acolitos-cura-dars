@@ -63,7 +63,6 @@ export const LoadAcolyteData = async() => {
     try {
         let acolyteData = await AsyncStorage.getItem("AcolyteData")
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
-        let acolyteRolesets = await AsyncStorage.getItem("AcolyteRolesets")
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
        

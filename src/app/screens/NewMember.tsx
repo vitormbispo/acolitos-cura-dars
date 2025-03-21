@@ -10,6 +10,7 @@ import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
+import { VerifyMembersIntegrity } from "../classes/DataManager";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
@@ -22,7 +23,8 @@ export default function NewMember(){
     }
     
     currentData.disp = DefaultDispMap()
-    currentData.placeDisp = Places.PlacesRotationMap()
+    currentData.placeDisp = Places.PlacesDispMap()
+    currentData.placeRotation = Places.PlacesRotationMap()
 
     let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
@@ -107,6 +109,7 @@ function SubmitNewMember(member:any,type:MemberType){
         members = []
     }
 
+    VerifyMembersIntegrity([member])
     members.push(member)
     members = OrganizeMemberArrayAlpha(members)
     AsyncStorage.setItem(storageData,JSON.stringify(members))

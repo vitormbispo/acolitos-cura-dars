@@ -81,8 +81,8 @@ export default function LineupGenerationOptions(){
     }
     // Seleção de local
 
-    let placesOptions:Array<string> = []
-    let placesActions:Array<(...args:any)=>any> = []
+    let placesOptions:Array<string> = ["Nenhum"]
+    let placesActions:Array<(...args:any)=>any> = [()=>{curGenOptions.place = undefined}]
 
     for(let i = 0; i < Places.allPlaces.length;i++){
         let curPlace = Places.allPlaces[i]
