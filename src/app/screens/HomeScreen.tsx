@@ -1,8 +1,11 @@
 import { View } from "react-native";
-import { DropDown, ExpandableView, GetMemberIcon, ImageTextButton, TextPosition, UpperBar } from "../classes/NewComps";
+import { CompactLineup, DropDown, ExpandableView, GetMemberIcon, ImageTextButton, LinkRowImageButton, TextPosition, UpperBar } from "../classes/NewComps";
 import { uiStyles} from "../styles/GeneralStyles";
-import { menuStore} from "@/src/app/store/store";
+import { contextStore, menuStore} from "@/src/app/store/store";
 import { ICONS } from "../classes/AssetManager";
+import { Member, MemberData } from "../classes/MemberData";
+import { ConvertDataToClasses } from "../classes/DataManager";
+import { Lineup, StructuredLineup } from "../classes/Lineup";
 
 // Tela
 export default function Home(){
@@ -20,10 +23,12 @@ export default function Home(){
 
 // Corpo da tela
 export function AppBody(){
+    const {appStarted} = contextStore()
     return(
+    appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-    
-    </View>
+        <LinkRowImageButton img={ICONS.acolito} text={"TESTE"} link={"/screens/TestScreen"}/>
+    </View> : null
     )
 }
 

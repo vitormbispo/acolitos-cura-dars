@@ -1,3 +1,4 @@
+import { Member } from "./MemberData";
 import { RoleSet } from "./Roles";
 
 /**
@@ -19,6 +20,25 @@ export class Lineup{
     day:string = ""
     weekend:string = ""
     place:string = ""
+
+
+    Generic(){
+        console.log("Hello World!")
+    }
+
+    GetRoleMember(role:string):Member{
+        return this.line[role]
+    }
+
+    GetMemberRole(member:Member):string{
+        Object.keys(this.line).forEach((role)=>{
+            let curAco = this.line[role]
+            if(this.line[role].name == member.name){
+                return role
+            }
+        })
+        return null
+    }
 }
 
 /**

@@ -3,8 +3,9 @@ import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, Scro
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
-import { MemberType } from "./MemberData";
+import { Member, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
+import { Lineup } from "./Lineup";
 
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
@@ -777,5 +778,52 @@ export function ExpandableView(props:ExpandableViewProps){
       </Pressable>
     </View>
     
+  )
+}
+
+type CompactLineupProps = {
+  line:Lineup
+}
+/**
+ * 
+ * @param props 
+ */
+export function CompactLineup(props:CompactLineupProps){
+  
+  let roles:Array<React.JSX.Element> = []
+  const {theme} = menuStore()
+  for(let i = 0; i < props.line.members.length; i++){
+    let member:Member = props.line.members[i]
+    let role = Object.keys(props.line.line)[i]
+
+    let component = 
+    <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
+      <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
+      <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
+      
+      <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
+      <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
+      
+      
+      </View>
+
+    roles.push(component)
+  }
+  return(
+    <View style={{maxWidth:"50%",height:250,backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
+      <View style={{backgroundColor:theme.primary,borderRadius:15,margin: 10}}>
+        <Text style={{fontFamily:"Inter-Bold",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.weekend + props.line.day}</Text>
+        
+        {props.line.place != undefined ?
+          <Text style={{fontFamily:"Inter-Regular",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.place}</Text> 
+        : null}
+      </View>
+      
+      
+      <View style={{flex:1,margin:10,gap:5}}>
+        {roles}
+      </View>
+      
+    </View>
   )
 }

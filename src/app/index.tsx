@@ -14,7 +14,7 @@ export default function App() {
         InitializeApp()
         updateAppStarted(true)
     }
- 
+    
     return (
       
       <Home/>

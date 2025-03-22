@@ -1,5 +1,5 @@
 import { View } from "react-native"
-import { LinkRowImageButton, UpperBar} from "../classes/NewComps"
+import { CompactLineup, LinkRowImageButton, UpperBar} from "../classes/NewComps"
 import { textStyles } from "../styles/GeneralStyles"
 import { contextStore, menuStore } from "../store/store"
 import { LineupType } from "../classes/Lineup"
@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import { ICONS } from "../classes/AssetManager"
+import { MemberData } from "../classes/MemberData"
 
 
 export default function LineupOptions(){
@@ -63,6 +64,9 @@ export default function LineupOptions(){
                 text ="Histórico de escalas"
                 link="/screens/LineupListScreen"
                 />
+
+        {MemberData.allLineupsAcolytes != undefined && MemberData.allLineupsAcolytes.length > 0 ?
+        <CompactLineup line={MemberData.allLineupsAcolytes[0].lineups[0]}/> : null}
     </View>
    )
 }

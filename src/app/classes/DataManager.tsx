@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
 import { Roles, RoleSet } from "./Roles"
+import { Lineup, StructuredLineup } from "./Lineup"
 
 export type AppData = {
     "allAcolytes":{name:string,data:Member[]},
@@ -65,7 +66,10 @@ export const LoadAcolyteData = async() => {
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
-       
+        
+        ConvertDataToClasses()
+        
+
         OrganizeMemberArrayAlpha(MemberData.allAcolytes)
 
         if (MemberData.allAcolytes == null || MemberData.allAcolytes == undefined){
@@ -158,6 +162,40 @@ export function VerifyMembersIntegrity(members:Array<Member>){
     })
 }
 
+export function ConvertDataToClasses(){
+    let allLineups = MemberData.GetAllLineups()
+    for(let i = 0; i < allLineups.length; i++){
+        let curLine = allLineups[i]
+        allLineups[i] = ConvertObjectToStructuredLineup(curLine)
+        
+        for(let h = 0; h < curLine.lineups.length; h++){
+            let line = curLine.lineups[h]
+            curLine.lineups[h] = ConvertObjectToLineup(line)
+        }
+    }
+}
+
+export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
+    let newLine = new StructuredLineup()
+    let props = Object.keys(newLine)
+    
+    props.forEach((prop)=>{
+        newLine[prop] = obj[prop]
+    })
+
+    return newLine
+}
+
+export function ConvertObjectToLineup(obj:any):Lineup{
+    let newLine = new Lineup()
+    let props = Object.keys(newLine)
+    
+    props.forEach((prop)=>{
+        newLine[prop] = obj[prop]
+    })
+
+    return newLine
+}
 
 
 
