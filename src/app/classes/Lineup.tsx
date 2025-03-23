@@ -39,6 +39,21 @@ export class Lineup{
         })
         return null
     }
+
+    SwitchMembers(srcRole:string,srcLineup:Lineup,targetRole:string,update?:any){
+        
+        let aux = this.GetRoleMember(targetRole)
+
+        console.log("Before: "+aux.name)
+
+        this.line[targetRole] = srcLineup.GetRoleMember(srcRole)
+
+        srcLineup.line[srcRole] = aux
+        
+        console.log("After: "+this.line[srcRole].name)
+        update()
+    }
+
 }
 
 /**

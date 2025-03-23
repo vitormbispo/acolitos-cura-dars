@@ -1,7 +1,7 @@
 import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
-import { LineupType } from '../classes/Lineup'
+import { Lineup, LineupType } from '../classes/Lineup'
 import { Roles } from '../classes/Roles'
 import { Dates, DateSet } from '../classes/Dates'
 import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
@@ -22,6 +22,9 @@ export type ContextStates = {
     curWeekend:string
     curDay:string
     curGenOptions:GenerationOptionsType
+    switchingMember:{role:string,lineup:Lineup,switching:boolean,update?:(...args:any)=>void}
+    
+    updateSwitchingMember: (state:{role:string,lineup:Lineup,switching:boolean,update?:(...args:any)=>void}) => void
     updateAppStarted: (state:boolean) => void
     updateMemberID: (id:number) => void
     updateRolesetID: (id:number) => void
@@ -45,6 +48,7 @@ export type ThemeStates = {
     name:string
     type:MemberType
 
+    
     updateTheme: (theme:any) => void
     updateType: (type:any)=>void
     updateName:(name:any)=>void
@@ -92,6 +96,8 @@ export const contextStore = create<ContextStates>((set)=>({
             "place":"",
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
         },
+    switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},
+    updateSwitchingMember: (member) => set(()=>({switchingMember:member})),
     updateAppStarted: (newState) => set(()=>({appStarted:newState})),
     updateMemberID: (newID) => set(()=>({memberID:newID})),
     updateRolesetID: (newID) => set(()=>({rolesetID:newID})),

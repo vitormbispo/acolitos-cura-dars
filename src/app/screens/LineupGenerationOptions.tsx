@@ -1,5 +1,5 @@
 import { View, Text, ScrollView} from "react-native"
-import { CheckBox,DataSection,DropDown,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,LoadingModal,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -48,9 +48,11 @@ enum Randomness{
  */
 export default function LineupGenerationOptions(){    
     const {lineupType,curGenOptions} = contextStore()
+    const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     const {type} = menuStore()
-
+    const [isGenerating,setIsGenerating] = useState(false)
     const [randomness,setRandomness] = useState(Randomness.MEDIUM)
+    
     let options:React.JSX.Element
 
     switch (lineupType){
@@ -146,6 +148,14 @@ export default function LineupGenerationOptions(){
                 <DropDown options={placesOptions} actions={placesActions} placeholder="Selecione o local:"/>
                 {options}
             </ScrollView>
+            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
+                setIsGenerating(true)
+                setTimeout(()=>{
+                    GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},50)})
+                },100)
+                
+            }}/>
+            <LoadingModal visible={isGenerating}/>
         </View>
     )
 }
@@ -182,10 +192,7 @@ const SingleLineupOptions = () => {
             <DataSection text={"Dias e horários"}/>
             
             <WeekendSelection set={new DateSet()} single={true}/>
-            <SingleDaySelection/>
-
-            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText}press={()=>{GerarEscala(generationOptions,type)}}/> 
-            
+            <SingleDaySelection/>  
         </View>
     )
 }
@@ -208,9 +215,6 @@ const WeekendLineupOptions = () => {
                 <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Horário</Text>
                 <DaySelection/>
             </View>
-
-
-            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
         </View>
 
     )
@@ -232,18 +236,17 @@ const MonthLineupOptions = () => {
             <View style={{paddingTop:50}}>               
                 <MonthDaySelection/>
             </View>
-
-            <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{GerarEscala(generationOptions,type)}}/>
         </View>
     )
 }
 
 /**
  * Gera as escalas de determinado tipo('type') de acordo com as 'generateOptions'
- * @param generateOptions 
- * @param type 
+ * @param generateOptions Opções de geração
+ * @param type Tipo de membro a gerar
+ * @param finished Ação ao finalizar a geração
  */
-function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
+function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args)=>void){
     let members:Array<Member>
     
     switch(type) {
@@ -267,30 +270,33 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
             
     let weekends = generateOptions.dateset.weekends
 
-    for(let i = 0; i < weekends.length;i++){
-        let weekendKey = weekends[i] // Finais de semana
-        let curWeekend = generateOptions.monthDays[weekendKey] // Dias no fim de semana
+    for(let p = 0; p < Places.allPlaces.length; p++){
+        let curPlace = Places.allPlaces[p]
         
-        generatedLineups[weekendKey] = new Array<Lineup>
-        
-        if(curWeekend != undefined){
-            for(let k = 0; k < curWeekend.length;k++){
-                let curDay:string = curWeekend[k]
-                
-                let newLineup = generateOptions.allRandom ?
-                    GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:generateOptions.place})
-                generatedLineups[weekendKey].push(newLineup)
-                allLineups.push(newLineup)
+        for(let i = 0; i < weekends.length;i++){
+            let weekendKey = weekends[i] // Finais de semana
+            let curWeekend = generateOptions.monthDays[weekendKey] // Dias no fim de semana
+            
+            generatedLineups[weekendKey] = new Array<Lineup>
+            
+            if(curWeekend != undefined){
+                for(let k = 0; k < curWeekend.length;k++){
+                    let curDay:string = curWeekend[k]
+                    
+                    let newLineup = generateOptions.allRandom ?
+                        GenerateRandomLineup(roleset,type,weekendKey,curDay):
+                        GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
+                    generatedLineups[weekendKey].push(newLineup)
+                    allLineups.push(newLineup)
+                }
             }
+    
+            if(generatedLineups[weekendKey].length == 0){
+                delete generatedLineups[weekendKey]
+            }  
         }
-
-        if(generatedLineups[weekendKey].length == 0){
-            delete generatedLineups[weekendKey]
-        }
-        
     }
-
+    
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false
@@ -299,6 +305,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType){
     if(!generateOptions.allRandom){ResetAllLastWeekend(members)}
 
     LineupScreenOptions.scrollPos = 0
+    finished()
     router.push("/screens/LineupScreen")
 }
 

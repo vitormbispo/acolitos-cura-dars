@@ -1,9 +1,10 @@
-import { ScrollView, View, Text, VirtualizedList } from "react-native";
+import { ScrollView, View, Text, VirtualizedList, Modal, ActivityIndicator } from "react-native";
 import { MemberData } from "../classes/MemberData";
-import { CompactLineup, UpperBar } from "../classes/NewComps";
+import { CompactLineup, GridLineupView, UpperBar } from "../classes/NewComps";
 import { Dates } from "../classes/Dates";
 import { Lineup } from "../classes/Lineup";
 import { ICONS } from "../classes/AssetManager";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 export default function TestScreen(){
      
@@ -16,62 +17,3 @@ export default function TestScreen(){
     )
 }
 
-type GridLineupViewProps = {
-    allLineups:Array<Lineup>
-    multiplePlace:boolean
-}
-/**
- * allLineups
- * multiplePlace
- */
-export function GridLineupView(props:GridLineupViewProps){
-
-    let rows:Array<React.JSX.Element> = []
-    let sortedLines = {}
-
-    if(!props.multiplePlace){
-        for(let i = 0; i < props.allLineups.length; i++){
-            let curLine:Lineup = props.allLineups[i]
-            if(sortedLines[curLine.weekend] == undefined){
-                sortedLines[curLine.weekend] = []
-            }
-
-            sortedLines[curLine.weekend].push(
-                <CompactLineup line={curLine} key={i}/>
-            )
-        }
-    }
-
-    else{
-        for(let i = 0; i < props.allLineups.length; i++){
-            let curLine:Lineup = props.allLineups[i]
-            if(sortedLines[curLine.weekend+curLine.day] == undefined){
-                sortedLines[curLine.weekend+curLine.day] = []
-            }
-
-            sortedLines[curLine.weekend+curLine.day].push(
-                <CompactLineup line={curLine} key={i}/>
-            )
-        }
-    }
-
-    let keys = Object.keys(sortedLines)
-    for(let i = 0; i < keys.length;i++){
-    rows.push(
-        <View style={{flexDirection:"row"}} key={i}>
-            {sortedLines[keys[i]]}
-        </View>
-        )
-    }
-
-    return(
-        <View style={{flex:1}}>
-            <ScrollView horizontal={true}>    
-                <ScrollView style={{flex:1}}>
-                    {rows}
-                </ScrollView>
-            </ScrollView>
-        </View>
-    )
-
-}

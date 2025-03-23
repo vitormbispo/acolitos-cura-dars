@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView} from "react-native"
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator} from "react-native"
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
@@ -792,18 +792,43 @@ export function CompactLineup(props:CompactLineupProps){
   
   let roles:Array<React.JSX.Element> = []
   const {theme} = menuStore()
-  for(let i = 0; i < props.line.members.length; i++){
-    let member:Member = props.line.members[i]
-    let role = Object.keys(props.line.line)[i]
+  const {switchingMember,updateSwitchingMember} = contextStore()
+  const [lineup,updateLineup] = useState(props.line)
+  for(let i = 0; i < lineup.members.length; i++){
+    
+    let role = Object.keys(lineup.line)[i]
+    let member:Member = lineup.GetRoleMember(role)
 
     let component = 
     <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
       <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
       <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
-      {/*}
-      <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
+      
+      
+      <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}
+        press={()=>{
+          
+          if(switchingMember.switching){
+            props.line.SwitchMembers(switchingMember.role,switchingMember.lineup,role,()=>{
+              switchingMember.update()
+            })
+            switchingMember.switching = false
+            
+            let newState:Lineup = new Lineup()
+            updateLineup(Object.assign(newState,props.line))
+            console.log("Switched!")
+          }
+          else{
+            updateSwitchingMember({role:role,lineup:props.line,switching:true,update:()=>{
+              let newState:Lineup = new Lineup()
+              updateLineup(Object.assign(newState,props.line))
+            }})
+            console.log("Switching")
+            
+          }
+        }}/>
       <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
-      {*/}
+      
       
       </View>
 
@@ -825,5 +850,102 @@ export function CompactLineup(props:CompactLineupProps){
       </View>
       
     </View>
+  )
+}
+
+type GridLineupViewProps = {
+    allLineups:Array<Lineup>
+    multiplePlace:boolean
+}
+
+/**
+ * Exibe todas as escalas de uma lista em formato de grade.
+ * @param props allLineups = lista de escalas; multiplePlace = organizar por local?
+ * @returns 
+ */
+export function GridLineupView(props:GridLineupViewProps){
+    // OBS: Esse componente utiliza renderização em etapas
+    const isRendering = useRef(false) // Está renderizando?
+    const renderPhase = useRef(0) // Estágio da renderização
+    const [renderComplete,setRenderComplete] = useState(false) // Renderização completa
+    
+    // Construir componentes
+    let rows:Array<React.JSX.Element> = []
+    let sortedLines = {}
+    const [components,setComponents] = useState([])
+
+    for(let i = 0; i < props.allLineups.length; i++){
+        let curLine:Lineup = props.allLineups[i] // Escala
+        let mapKey = props.multiplePlace ? curLine.weekend+curLine.day : curLine.weekend
+
+        if(sortedLines[mapKey] == undefined){
+            sortedLines[mapKey] = []
+        }
+
+        sortedLines[mapKey].push(
+            <CompactLineup line={curLine} key={i}/>
+        )
+    }
+    
+    let keys = Object.keys(sortedLines)
+    for(let i = 0; i < keys.length;i++){
+    rows.push(
+        <View style={{flexDirection:"row"}} key={i}>
+            {sortedLines[keys[i]]}
+        </View>
+        )
+    }
+
+    useEffect(()=>{
+        if(!isRendering.current){
+            isRendering.current = true
+            setTimeout(()=>{         
+                components.push(rows[renderPhase.current])
+
+                if(renderPhase.current < rows.length){
+                    renderPhase.current += 1
+                    isRendering.current = false
+                }
+                else{
+                    setRenderComplete(true)
+                }
+                
+                setComponents(components.slice())
+            },10)
+        }
+    })
+    return(
+      <View style={{flex:1}}>
+        <ScrollView horizontal={true}>    
+          <ScrollView style={{flex:1}}>
+            {components}                    
+          </ScrollView>               
+        </ScrollView>
+
+        {/* Carregamento */}
+        <Modal visible={!renderComplete} transparent={true}>
+          <View style={{flex:1,alignContent:"center",alignItems:"center",justifyContent:"center",top:100,backgroundColor:"white"}}>
+            <View style={{top:-100}}>
+              <ActivityIndicator size="large"/>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    )
+}
+
+type LoadingModalProps = {
+  visible:boolean
+}
+export function LoadingModal(props:LoadingModalProps){
+  {/* Carregamento */}
+  return(
+    <Modal visible={props.visible} transparent={true}>
+      <View style={{flex:1,alignContent:"center",alignItems:"center",justifyContent:"center",top:100,backgroundColor:"white"}}>
+        <View style={{top:-100}}>
+          <ActivityIndicator size="large"/>
+        </View>
+      </View>
+    </Modal>
   )
 }
