@@ -179,7 +179,14 @@ type DayLineupProps={
  */
 function DayLineup(props:DayLineupProps) {
     const {theme} = menuStore()
-    let roles:Array<string> = props.line.roleset.set
+    let roles:Array<string>
+    
+    if(props.line.roleset != undefined){
+        roles = props.line.roleset.set
+    }
+    else{
+        roles = Object.keys(props.line.line)
+    }
     let members:Array<React.JSX.Element> = []
 
     for(let i = 0; i < roles.length;i++){

@@ -800,17 +800,17 @@ export function CompactLineup(props:CompactLineupProps){
     <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
       <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
       <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
-      
+      {/*}
       <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
       <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
-      
+      {*/}
       
       </View>
 
     roles.push(component)
   }
   return(
-    <View style={{maxWidth:"50%",height:250,backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
+    <View style={{maxWidth:"50%",backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
       <View style={{backgroundColor:theme.primary,borderRadius:15,margin: 10}}>
         <Text style={{fontFamily:"Inter-Bold",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.weekend + props.line.day}</Text>
         

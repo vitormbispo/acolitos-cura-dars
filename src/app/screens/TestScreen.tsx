@@ -24,7 +24,7 @@ type GridLineupViewProps = {
  * allLineups
  * multiplePlace
  */
-function GridLineupView(props:GridLineupViewProps){
+export function GridLineupView(props:GridLineupViewProps){
 
     let rows:Array<React.JSX.Element> = []
     let sortedLines = {}
@@ -42,24 +42,34 @@ function GridLineupView(props:GridLineupViewProps){
         }
     }
 
+    else{
+        for(let i = 0; i < props.allLineups.length; i++){
+            let curLine:Lineup = props.allLineups[i]
+            if(sortedLines[curLine.weekend+curLine.day] == undefined){
+                sortedLines[curLine.weekend+curLine.day] = []
+            }
+
+            sortedLines[curLine.weekend+curLine.day].push(
+                <CompactLineup line={curLine} key={i}/>
+            )
+        }
+    }
+
     let keys = Object.keys(sortedLines)
     for(let i = 0; i < keys.length;i++){
-        rows.push(
-            <View style={{flexDirection:"row"}} key={i}>
-                {sortedLines[keys[i]]}
-            </View>
+    rows.push(
+        <View style={{flexDirection:"row"}} key={i}>
+            {sortedLines[keys[i]]}
+        </View>
         )
     }
 
     return(
-        <View>
-            <ScrollView horizontal={true}>
-                <View>
-                    <ScrollView style={{flex:1}}>
-                        {rows}
-                    </ScrollView>
-                </View>
-                
+        <View style={{flex:1}}>
+            <ScrollView horizontal={true}>    
+                <ScrollView style={{flex:1}}>
+                    {rows}
+                </ScrollView>
             </ScrollView>
         </View>
     )
