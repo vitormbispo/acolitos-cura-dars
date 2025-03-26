@@ -114,7 +114,7 @@ export default function MemberProfile() {
                     {rodizio}
                     
                     {rodizioAlt.length > 0 ? 
-                    <ExpandableView expanded={false} title={"Outras funções:"} content={
+                    <ExpandableView color={theme.neutral} expanded={false} title={"Outras funções:"} content={
                         <View>
                             {rodizioAlt}
                         </View>}

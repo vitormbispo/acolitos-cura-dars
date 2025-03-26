@@ -1,5 +1,5 @@
-import { View, Text, ScrollView} from "react-native"
-import { CheckBox,DataSection,DropDown,LoadingModal,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
+import { View, Text, ScrollView, Modal, Role} from "react-native"
+import { CheckBox,DataSection,DropDown,ExpandableView,LoadingModal,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -15,6 +15,8 @@ import { ICONS } from "../classes/AssetManager"
 import { useState } from "react"
 import { Places } from "../classes/Places"
 
+// TODO Ajustar pra reiniciar as exclusiveOptions
+
 /**
  * Tipo do objeto que armazena as opções de geração
  */
@@ -29,8 +31,9 @@ export type GenerationOptionsType = {
     "dayRotation":boolean,
     "randomness":number,
     "roleset":RoleSet,
-    "places":Array<string>
-    "dateset":DateSet
+    "places":Array<string>,
+    "dateset":DateSet,
+    "exclusiveOptions":object
 }
 
 /**
@@ -92,33 +95,7 @@ export default function LineupGenerationOptions(){
                 
                 {/* < Opções de aleatoriedade > */}
                 <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
-                <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
-                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}}>
-                        <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>+Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,Randomness.LOW)} press={()=>{curGenOptions.randomness = Randomness.LOW, setRandomness(Randomness.LOW)}}/>
-                    </View>
-                    
-                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Baixa</Text>
-                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_LOW)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_LOW, setRandomness(Randomness.MEDIUM_LOW)}}/>
-                    </View>
-                    
-                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Normal</Text>
-                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM, setRandomness(Randomness.MEDIUM)}}/>
-                    </View>
-                    
-                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,Randomness.MEDIUM_HIGH)} press={()=>{curGenOptions.randomness = Randomness.MEDIUM_HIGH,setRandomness(Randomness.MEDIUM_HIGH)}}/>
-                    </View>
-                    
-                    <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center",alignItems:"center"}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:15}}>+Alta</Text>
-                        <SingleCheck img={CheckImage(randomness,Randomness.HIGH)} press={()=>{curGenOptions.randomness = Randomness.HIGH,setRandomness(Randomness.HIGH)}}/>
-                    </View>
-                </View>
-                {/* </ Opções de aleatoriedade > */}
+                <RandomnessSelect genOptions={curGenOptions} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
                 
 
                 <View style={{flex:1}}>
@@ -135,12 +112,14 @@ export default function LineupGenerationOptions(){
                 <DataSection text={"- Local"}/>
                 <PlaceSelect selectedPlaces={generationOptions.places}/>
                 {options}
+
+                <AdvancedOptions/>
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
                 setTimeout(()=>{
                     GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},50)})
-                },100)
+                },200)
                 
             }}/>
             <LoadingModal visible={isGenerating}/>
@@ -265,7 +244,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
         let curWeekend = weekends[i]
         generateOptions.monthDays[curWeekend] = Dates.OrganizeDays(generateOptions.dateset,generateOptions.monthDays[curWeekend])
     }
-    
+
     // Organiza a ordem dos fins de semana
     generateOptions.monthDays = Dates.OrganizeWeekends(generateOptions.dateset,generateOptions.monthDays) 
     weekends = Object.keys(generateOptions.monthDays) // Atualiza com os fins de semana organizados
@@ -286,10 +265,19 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
                 
                 for(let p = 0; p < generateOptions.places.length;p++){
                     let curPlace = generateOptions.places[p]
+                    let key = weekendKey+""+curDay
+                    let newLineup
+
+                    if(generateOptions.exclusiveOptions[key] != undefined){
+                        let opt = generateOptions.exclusiveOptions[key]
+                        newLineup = GenerateLineup({weekend:weekendKey,day:curDay,roleset:opt.roleset,type:type,randomness:opt.randomness,place:curPlace})
+                    }
+                    else{
+                        newLineup = generateOptions.allRandom ?
+                        GenerateRandomLineup(roleset,type,weekendKey,curDay):
+                        GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
+                    }
                     
-                    let newLineup = generateOptions.allRandom ?
-                    GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
                     generatedLineups[weekendKey].push(newLineup)
                     allLineups.push(newLineup)
                 }
@@ -511,6 +499,125 @@ function PlaceSelect(props:PlaceSelectProps){
     )
 }
 
-function GenerateSinglePlaceLineups(){
+type AdvancedOptionsProps = {
 
+}
+function AdvancedOptions(){
+    const [isExpanded,setExpanded] = useState(false)
+    const {curGenOptions} = contextStore()
+    const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined})
+    const [editingModalOpened,setEditingModalOpened] = useState(false)
+    let weekends = Object.keys(curGenOptions.monthDays)
+    let wkButtons = []
+   
+    for(let i = 0; i < weekends.length; i++){
+        let newButton = <TextButton text={weekends[i]} press={()=>{
+            setEditingExclusive({weekend:weekends[i],day:undefined})
+            setEditingModalOpened(true)
+        }} key={i}/>;
+        wkButtons.push(newButton)
+    }
+
+    return(
+        <ExpandableView expanded={isExpanded} title={"Opções avançadas"} content={
+            <View style={{flex:1}}>
+                <View style={{flexDirection:'row'}}>
+                    {wkButtons}
+                </View>
+                <SingleDayOptions visible={editingModalOpened} genOptionsKey={editingExclusive} rolesets={Roles.acolyteRoleSets} onClose={()=>{setEditingModalOpened(false)}}/>
+            </View>
+        }/>
+        
+    )
+}
+
+type SingleDayOptionsProps = {
+    visible:boolean
+    genOptionsKey:{weekend:undefined,day:undefined}
+    rolesets:Array<RoleSet>
+    onClose?:(...args:any)=>void
+}
+function SingleDayOptions(props:SingleDayOptionsProps){
+    const {curGenOptions} = contextStore()
+    let options = Object.create(curGenOptions)
+    
+    let rolesetOptions:Array<string> = []
+    let rolesetActions:Array<(...args:any)=>any> = []
+
+    for(let i = 0; i < props.rolesets.length; i++){
+        let curSet = props.rolesets[i]
+
+        rolesetOptions.push(curSet.name)
+        rolesetActions.push(()=>{
+            options.roleset = curSet
+        })
+    }
+
+    return(
+        <Modal visible={props.visible} transparent={true}>
+            <View style={{flex:1,backgroundColor:"#FFFFFF"}}>
+                <UpperBar icon={ICONS.escala} screenName={props.genOptionsKey.weekend + "" + (props.genOptionsKey.day != undefined ? props.genOptionsKey.day : "")}/>
+                <ScrollView style={{flex:1}}>
+                    <DataSection text={"- Opções"}/>
+
+                    
+                    <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
+                    <RandomnessSelect genOptions={options} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
+
+                    <View style={{flex:1}}>
+                        <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                            <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
+                            <CheckBox checked={options.allRandom} press={()=>{options.allRandom = !options.allRandom}}/>
+                        </View>
+                    </View>
+
+                    
+                    <DataSection text={"- Conjunto de funções"}/>
+                    <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
+
+                    <DataSection text={"- Local"}/>
+                    <PlaceSelect selectedPlaces={options.places}/>
+                </ScrollView>
+                
+                <TextButton text={"Concluir"} press={()=>{
+                    if(props.genOptionsKey.day != undefined){
+                        curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + props.genOptionsKey.day] = options
+                    }
+                    else{
+                        curGenOptions.dateset.days.forEach((day)=>{
+                            curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + day] = options
+                        })
+                    }
+                    
+                    props.onClose()
+                }}/>
+            </View>
+        </Modal>
+    )
+}
+
+type RandomnessSelectProps = {
+    genOptions:any
+    randomnessNames:Array<string>
+}
+function RandomnessSelect(props:RandomnessSelectProps){
+    const [randomness,setRandomness] = useState(Randomness.MEDIUM)
+    let keys = Object.values(Randomness).filter(key => typeof key == "number")
+    let selectors = []
+    for(let i = 0; i < keys.length;i++){
+        let level:Randomness = Number(keys[i])
+        let comp =
+        <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}} key={i}>
+            <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>{props.randomnessNames[i]}</Text>
+            <SingleCheck img={CheckImage(randomness,level)} press={()=>{props.genOptions.randomness = level, setRandomness(level)}}/>
+        </View>;
+        selectors.push(comp)
+        
+    }
+
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
+            {selectors}
+        </View>
+    )
 }

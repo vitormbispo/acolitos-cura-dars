@@ -94,7 +94,8 @@ export const contextStore = create<ContextStates>((set)=>({
             "dayRotation":true,
             "dateset":new DateSet(),
             "places":[],
-            "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
+            "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
+            "exclusiveOptions":{}
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},
     updateSwitchingMember: (member) => set(()=>({switchingMember:member})),

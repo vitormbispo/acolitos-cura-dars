@@ -36,8 +36,9 @@ export default function NewMember(){
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
-            <UpperBar icon={GetMemberAddIcon()}screenName={"-Novo "+typeName}/>
+            <UpperBar icon={GetMemberAddIcon()}screenName={"Novo "+typeName}/>
 
+            <DataSection text={"-Dados pessoais-"} centered={true}/>
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 

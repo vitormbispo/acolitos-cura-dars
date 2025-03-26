@@ -64,9 +64,6 @@ export default function LineupOptions(){
                 text ="Histórico de escalas"
                 link="/screens/LineupListScreen"
                 />
-
-        {MemberData.allLineupsAcolytes != undefined && MemberData.allLineupsAcolytes.length > 0 ?
-        <CompactLineup line={MemberData.allLineupsAcolytes[0].lineups[0]}/> : null}
     </View>
    )
 }

@@ -102,6 +102,13 @@ export const uiStyles = StyleSheet.create({
         borderWidth:0,
         borderColor:"#CCCCCC",
         margin:10
+    },
+    dataSection:{
+        minHeight:70,
+        margin:10,
+        borderColor:"#CCCCCC99",
+        borderWidth:1,
+        borderRadius:10
     }
 
     

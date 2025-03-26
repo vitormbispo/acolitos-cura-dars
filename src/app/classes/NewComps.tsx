@@ -761,6 +761,9 @@ type ExpandableViewProps = {
   title:string
   content:React.JSX.Element
   action?:(...args:any)=>any
+  textStyle?:object
+  color?:string,
+  centered?:boolean
 }
 /**
  * Componente expansível
@@ -772,10 +775,10 @@ export function ExpandableView(props:ExpandableViewProps){
   let content = expanded ? props.content : null
   return(
     <View style={{}}>
-      <Pressable style={{}}onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
-        <Text style={[textStyles.dataSection,{backgroundColor:"#9BFFF9"}]}>{props.title}</Text>
-        {content}
+      <Pressable style={[uiStyles.dataSection,{backgroundColor:props.color}]} onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
+        <Text style={[textStyles.dataSection,{textAlign:props.centered?"center":"auto"},props.textStyle]}>{props.title}</Text>
       </Pressable>
+      {content}
     </View>
     
   )
