@@ -93,7 +93,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "monthDays":Dates.DefaultMonthDays(),
             "dayRotation":true,
             "dateset":new DateSet(),
-            "place":"",
+            "places":[],
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE)
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},

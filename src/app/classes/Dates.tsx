@@ -26,6 +26,46 @@ export class Dates {
 
         return map
     }
+
+    /**
+     * Organiza uma lista de dias de acordo com a ordem de determinado DateSet
+     * @param set DateSet
+     * @param days Lista para organizar
+     * @returns Lista organizada
+     */
+    static OrganizeDays(set:DateSet,days:Array<string>):Array<string>{
+        let organized = []
+        set.days.forEach((setDay)=>{
+            days.forEach((day=>{
+                if(setDay == day){
+                    organized.push(day)
+                }
+            }))
+        })
+        return organized
+    }
+
+    /**
+     * Organiza um mapa de fins de semana de acordo com a ordem de determinado DateSet
+     * @param set 
+     * @param weekendsMap 
+     * @returns Objeto com os fins de semana organizados
+     */
+    static OrganizeWeekends(set:DateSet,weekendsMap:object){
+        let organized = {}
+        let keys = Object.keys(weekendsMap)
+        set.weekends.forEach((setWeekend) => {
+            keys.forEach((weekend)=>{
+                if(setWeekend == weekend){
+                    organized[weekend] = weekendsMap[weekend]
+                }
+            })
+        })
+
+        return organized
+
+    }
+
 }
 
 /**

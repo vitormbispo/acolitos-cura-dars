@@ -835,7 +835,7 @@ export function CompactLineup(props:CompactLineupProps){
     roles.push(component)
   }
   return(
-    <View style={{maxWidth:"50%",backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
+    <View style={{width:200,backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
       <View style={{backgroundColor:theme.primary,borderRadius:15,margin: 10}}>
         <Text style={{fontFamily:"Inter-Bold",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.weekend + props.line.day}</Text>
         
@@ -916,7 +916,7 @@ export function GridLineupView(props:GridLineupViewProps){
     })
     return(
       <View style={{flex:1}}>
-        <ScrollView horizontal={true}>    
+        <ScrollView horizontal={true} style={{flex:1}}>    
           <ScrollView style={{flex:1}}>
             {components}                    
           </ScrollView>               

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView} from "react-native"
-import { CheckBox,DataSection,DropDown,LoadingModal,SingleCheck, TextButton, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,LoadingModal,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -9,7 +9,7 @@ import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles } from "../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../classes/Methods"
-import { DateSet } from "../classes/Dates"
+import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
 import { useState } from "react"
@@ -29,7 +29,7 @@ export type GenerationOptionsType = {
     "dayRotation":boolean,
     "randomness":number,
     "roleset":RoleSet,
-    "place":string
+    "places":Array<string>
     "dateset":DateSet
 }
 
@@ -81,18 +81,7 @@ export default function LineupGenerationOptions(){
             curGenOptions.roleset = curSet
         })
     }
-    // Seleção de local
 
-    let placesOptions:Array<string> = ["Nenhum"]
-    let placesActions:Array<(...args:any)=>any> = [()=>{curGenOptions.place = undefined}]
-
-    for(let i = 0; i < Places.allPlaces.length;i++){
-        let curPlace = Places.allPlaces[i]
-        placesOptions.push(curPlace)
-        placesActions.push(
-            ()=>{curGenOptions.place = curPlace}
-        )
-    }
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
@@ -140,12 +129,11 @@ export default function LineupGenerationOptions(){
                 </View>
 
                 {/* RoleSet */}
-                <Text style={textStyles.dataTitle}> - Conjunto de funções</Text>
+                <DataSection text={"- Conjunto de funções"}/>
                 <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
                 
-                {/* Local */}
-                <Text style={textStyles.dataTitle}> - Local</Text>
-                <DropDown options={placesOptions} actions={placesActions} placeholder="Selecione o local:"/>
+                <DataSection text={"- Local"}/>
+                <PlaceSelect selectedPlaces={generationOptions.places}/>
                 {options}
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
@@ -189,7 +177,7 @@ const SingleLineupOptions = () => {
     return(
         <View style={{flex:1}}>
                 
-            <DataSection text={"Dias e horários"}/>
+            <DataSection text={"- Dias e horários"}/>
             
             <WeekendSelection set={new DateSet()} single={true}/>
             <SingleDaySelection/>  
@@ -207,7 +195,7 @@ const WeekendLineupOptions = () => {
 
     return(
         <View style={{flex:1}}>
-            <DataSection text={"Dias e horários"}/>
+            <DataSection text={"- Dias e horários"}/>
             
             <WeekendSelection set={new DateSet()}/>
 
@@ -231,7 +219,7 @@ const MonthLineupOptions = () => {
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     return(
         <View style={{flex:1}}>
-            <DataSection text={"Dias e horários"}/>
+            <DataSection text={"- Dias e horários"}/>
                 
             <View style={{paddingTop:50}}>               
                 <MonthDaySelection/>
@@ -268,34 +256,52 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
     LineupScreenOptions.lineups = []
     LineupScreenOptions.days = generateOptions.dateset.days
             
-    let weekends = generateOptions.dateset.weekends
+    let weekends = Object.keys(generateOptions.monthDays)
+    
+    generateOptions.places = Places.OrganizePlaceArray(generateOptions.places) // Organiza a ordem dos locais
+    
+    // Organiza a ordem dos dias
+    for(let i = 0; i < weekends.length; i++){
+        let curWeekend = weekends[i]
+        generateOptions.monthDays[curWeekend] = Dates.OrganizeDays(generateOptions.dateset,generateOptions.monthDays[curWeekend])
+    }
+    
+    // Organiza a ordem dos fins de semana
+    generateOptions.monthDays = Dates.OrganizeWeekends(generateOptions.dateset,generateOptions.monthDays) 
+    weekends = Object.keys(generateOptions.monthDays) // Atualiza com os fins de semana organizados
 
-    for(let p = 0; p < Places.allPlaces.length; p++){
-        let curPlace = Places.allPlaces[p]
+    if(generateOptions.places.length == 0 || generateOptions.places == undefined){
+        generateOptions.places = [null]
+    }
+    
+    for(let i = 0; i < weekends.length;i++){
+        let weekendKey = weekends[i] // Finais de semana
+        let curWeekend = generateOptions.monthDays[weekendKey] // Dias no fim de semana
         
-        for(let i = 0; i < weekends.length;i++){
-            let weekendKey = weekends[i] // Finais de semana
-            let curWeekend = generateOptions.monthDays[weekendKey] // Dias no fim de semana
-            
-            generatedLineups[weekendKey] = new Array<Lineup>
-            
-            if(curWeekend != undefined){
-                for(let k = 0; k < curWeekend.length;k++){
-                    let curDay:string = curWeekend[k]
+        generatedLineups[weekendKey] = new Array<Lineup>
+        
+        if(curWeekend != undefined){
+            for(let k = 0; k < curWeekend.length;k++){
+                let curDay:string = curWeekend[k] // Dia
+                
+                for(let p = 0; p < generateOptions.places.length;p++){
+                    let curPlace = generateOptions.places[p]
                     
                     let newLineup = generateOptions.allRandom ?
-                        GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                        GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
+                    GenerateRandomLineup(roleset,type,weekendKey,curDay):
+                    GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
                     generatedLineups[weekendKey].push(newLineup)
                     allLineups.push(newLineup)
                 }
+                
             }
-    
-            if(generatedLineups[weekendKey].length == 0){
-                delete generatedLineups[weekendKey]
-            }  
         }
+
+        if(generatedLineups[weekendKey].length == 0){
+            delete generatedLineups[weekendKey]
+        } 
     }
+    
     
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
@@ -470,4 +476,41 @@ export function WeekendSelection(props:WeekendSelection){
             {checks}
         </View>
     )
+}
+
+type PlaceSelectProps = {
+    selectedPlaces:Array<string>
+}
+function PlaceSelect(props:PlaceSelectProps){
+    let checks:Array<React.JSX.Element> = []
+    const {curGenOptions} = contextStore()
+
+    for(let i = 0; i < Places.allPlaces.length; i++){
+        let curPlace = Places.allPlaces[i]
+        let placeSelectedIndex = curGenOptions.places.indexOf(curPlace)
+        let check = <TextCheckBox checked={placeSelectedIndex != -1} text={curPlace} key={i} press={()=>{
+            placeSelectedIndex = curGenOptions.places.indexOf(curPlace)
+            if(placeSelectedIndex != -1){
+                curGenOptions.places.splice(placeSelectedIndex,1)
+                console.log(curGenOptions.places)
+            } 
+            else{
+                curGenOptions.places.push(curPlace)
+                console.log(curGenOptions.places)
+            }
+            
+            
+        }}/>
+        checks.push(check)
+    }
+
+    return(
+        <View style={{flexDirection:"row",alignItems:"center",flex:1,flexWrap:"wrap",gap:10,padding:10}}>
+            {checks}
+        </View>
+    )
+}
+
+function GenerateSinglePlaceLineups(){
+
 }

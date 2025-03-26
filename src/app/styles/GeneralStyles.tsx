@@ -23,7 +23,7 @@ export const uiStyles = StyleSheet.create({
     buttonIcon:{
         height:64,
         width:64,
-        resizeMode:'contain'
+        resizeMode:'contain',      
     },
     buttonIconSmall:{
         height:64,

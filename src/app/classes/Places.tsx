@@ -195,4 +195,19 @@ export class Places {
         let data = await AsyncStorage.getItem("AllPlaces")
         this.allPlaces = JSON.parse(data)
     }
+
+    static OrganizePlaceArray(places:Array<string>):Array<string>{
+        let organized = []
+        for(let i = 0; i < Places.allPlaces.length; i++){
+            let cur = Places.allPlaces[i]
+            for(let j = 0; j < places.length; j++){
+                if(places[j] == cur){
+                    organized.push(cur)
+                    break
+                }
+            }
+        }
+
+        return organized
+    }
 }
