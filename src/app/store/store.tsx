@@ -1,4 +1,4 @@
-import { MemberType } from '../classes/MemberData'
+import { Member, MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
 import { Lineup, LineupType } from '../classes/Lineup'
@@ -83,6 +83,7 @@ export const contextStore = create<ContextStates>((set)=>({
     curWeekend:Dates.defaultWeekends.slice()[0],
     curDay:Dates.defaultDays.slice()[0],
     curGenOptions:{
+            "members":[],
             "weekend":"1stWE",
             "day":null,
             "allowOut":false,

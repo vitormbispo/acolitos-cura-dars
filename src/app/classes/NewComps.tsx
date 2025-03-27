@@ -3,7 +3,7 @@ import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, Scro
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
-import { Member, MemberType } from "./MemberData";
+import { Member, MemberData, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 
@@ -947,6 +947,74 @@ export function LoadingModal(props:LoadingModalProps){
       <View style={{flex:1,alignContent:"center",alignItems:"center",justifyContent:"center",top:100,backgroundColor:"white"}}>
         <View style={{top:-100}}>
           <ActivityIndicator size="large"/>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+type MemberSelectModalProps = {
+  visible:boolean
+  title:string
+  returnArray:Array<Member>
+  returnCallback:(...args:any)=>void
+  exeptions?:Array<Member>
+  allSelected?:boolean
+  multiselect?:boolean
+  requestClose?:(...args:any)=>void
+  onSubmit?:(...args:any)=>void
+}
+export function MemberSelectModal(props:MemberSelectModalProps){
+  const {theme,type} = menuStore()
+  let members:Array<Member> = []
+  let exeptions = props.exeptions != null ? props.exeptions.slice() : []
+  
+  switch(type){
+    case MemberType.ACOLYTE:
+      members = MemberData.allAcolytes; break
+    case MemberType.COROINHA:
+      members = MemberData.allCoroinhas; break
+  }
+  
+  const [selected,setSelected] = useState(props.allSelected ? members.slice():[])
+
+  let memberComps = []
+  for(let i = 0; i < members.length;i++){
+    let curMember = members[i]
+    let newComp =
+    <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",backgroundColor:selected.includes(curMember) && !props.multiselect ? theme.neutral:"#FFFFFF"}} onPress={()=>{
+      setSelected([curMember])
+    }} key={i} disabled={props.multiselect}>
+      <Image source={GetMemberIcon()} style={uiStyles.buttonIcon}/>
+      <Text style={textStyles.memberNick}>{curMember.nick}</Text>
+      
+      {props.multiselect ?
+      <CheckBox checked={selected.includes(curMember)} press={()=>{
+        selected.includes(curMember) ?
+          selected.splice(selected.indexOf(curMember),1)
+          :
+          selected.push(curMember)
+          }}/>:null}
+      
+    </Pressable>;
+    memberComps.push(newComp)
+  }
+
+  return(
+    <Modal visible={props.visible} transparent={true} animationType="fade" onRequestClose={props.requestClose}>
+      <View style={{flex:1,backgroundColor:"#00000099"}}>
+        <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
+          <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
+            <Text style={textStyles.dataTitle}>{props.title}</Text>
+          </View>
+
+          <ScrollView>
+            {memberComps}
+          </ScrollView>
+
+          <TextButton text={"Concluir"} press={()=>{
+            props.returnCallback(selected)
+            props.onSubmit()
+          }}/>
         </View>
       </View>
     </Modal>

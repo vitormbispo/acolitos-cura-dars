@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Modal, Role} from "react-native"
-import { CheckBox,DataSection,DropDown,ExpandableView,LoadingModal,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -21,6 +21,7 @@ import { Places } from "../classes/Places"
  * Tipo do objeto que armazena as opções de geração
  */
 export type GenerationOptionsType = {
+    "members":Array<Member>
     "weekend":string,
     "day":string,
     "allowOut":boolean,
@@ -51,6 +52,7 @@ enum Randomness{
  */
 export default function LineupGenerationOptions(){    
     const {lineupType,curGenOptions} = contextStore()
+    const [memberSelectOpen,setMemberSelectOpen] = useState(false)
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     const {type} = menuStore()
     const [isGenerating,setIsGenerating] = useState(false)
@@ -114,6 +116,19 @@ export default function LineupGenerationOptions(){
                 {options}
 
                 <AdvancedOptions/>
+                <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
+                    setMemberSelectOpen(true)
+                }}/>
+                <MemberSelectModal title={"Selecione"} returnCallback={
+                    (selected)=>{
+                        generationOptions.members = selected; 
+                        console.log(generationOptions.members.length)
+                    }
+                    
+                }
+                    returnArray={[]} visible={memberSelectOpen} requestClose={()=>{setMemberSelectOpen(false)}} onSubmit={
+                    ()=>{setMemberSelectOpen(false)}} 
+                    multiselect={true} allSelected={true}/>
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
@@ -505,14 +520,14 @@ type AdvancedOptionsProps = {
 function AdvancedOptions(){
     const [isExpanded,setExpanded] = useState(false)
     const {curGenOptions} = contextStore()
-    const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined})
+    const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined,place:undefined})
     const [editingModalOpened,setEditingModalOpened] = useState(false)
     let weekends = Object.keys(curGenOptions.monthDays)
     let wkButtons = []
    
     for(let i = 0; i < weekends.length; i++){
         let newButton = <TextButton text={weekends[i]} press={()=>{
-            setEditingExclusive({weekend:weekends[i],day:undefined})
+            setEditingExclusive({weekend:weekends[i],day:undefined,place:undefined})
             setEditingModalOpened(true)
         }} key={i}/>;
         wkButtons.push(newButton)
@@ -539,6 +554,7 @@ type SingleDayOptionsProps = {
 }
 function SingleDayOptions(props:SingleDayOptionsProps){
     const {curGenOptions} = contextStore()
+    const {theme} = menuStore()
     let options = Object.create(curGenOptions)
     
     let rolesetOptions:Array<string> = []
@@ -554,44 +570,50 @@ function SingleDayOptions(props:SingleDayOptionsProps){
     }
 
     return(
-        <Modal visible={props.visible} transparent={true}>
-            <View style={{flex:1,backgroundColor:"#FFFFFF"}}>
-                <UpperBar icon={ICONS.escala} screenName={props.genOptionsKey.weekend + "" + (props.genOptionsKey.day != undefined ? props.genOptionsKey.day : "")}/>
-                <ScrollView style={{flex:1}}>
-                    <DataSection text={"- Opções"}/>
-
-                    
-                    <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
-                    <RandomnessSelect genOptions={options} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
-
-                    <View style={{flex:1}}>
-                        <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
-                            <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
-                            <CheckBox checked={options.allRandom} press={()=>{options.allRandom = !options.allRandom}}/>
-                        </View>
+        <Modal visible={props.visible} transparent={true} animationType="fade">
+            <View style={{flex:1,backgroundColor:"#00000099"}}>
+                <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
+                    <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
+                        <Text style={textStyles.dataTitle}>Editando {props.genOptionsKey.weekend + (props.genOptionsKey.day != null ? props.genOptionsKey.day : "")}</Text>
                     </View>
-
                     
-                    <DataSection text={"- Conjunto de funções"}/>
-                    <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
+                    <ScrollView style={{flex:1}}>
+                        <DataSection text={"- Opções"}/>
 
-                    <DataSection text={"- Local"}/>
-                    <PlaceSelect selectedPlaces={options.places}/>
-                </ScrollView>
-                
-                <TextButton text={"Concluir"} press={()=>{
-                    if(props.genOptionsKey.day != undefined){
-                        curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + props.genOptionsKey.day] = options
-                    }
-                    else{
-                        curGenOptions.dateset.days.forEach((day)=>{
-                            curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + day] = options
-                        })
-                    }
+                        
+                        <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
+                        <RandomnessSelect genOptions={options} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
+
+                        <View style={{flex:1}}>
+                            <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                                <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
+                                <CheckBox checked={options.allRandom} press={()=>{options.allRandom = !options.allRandom}}/>
+                            </View>
+                        </View>
+
+                        
+                        <DataSection text={"- Conjunto de funções"}/>
+                        <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
+
+                        <DataSection text={"- Local"}/>
+                        <PlaceSelect selectedPlaces={options.places}/>
+                    </ScrollView>
                     
-                    props.onClose()
-                }}/>
+                    <TextButton text={"Concluir"} press={()=>{
+                        if(props.genOptionsKey.day != undefined){
+                            curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + props.genOptionsKey.day] = options
+                        }
+                        else{
+                            curGenOptions.dateset.days.forEach((day)=>{
+                                curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + day] = options
+                            })
+                        }
+                        
+                        props.onClose()
+                    }}/>
+                </View>
             </View>
+            
         </Modal>
     )
 }
