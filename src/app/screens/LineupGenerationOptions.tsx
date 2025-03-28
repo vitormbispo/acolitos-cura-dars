@@ -12,7 +12,7 @@ import { ResetAllLastWeekend } from "../classes/Methods"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Places } from "../classes/Places"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
@@ -119,22 +119,27 @@ export default function LineupGenerationOptions(){
                 <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
                     setMemberSelectOpen(true)
                 }}/>
-                <MemberSelectModal title={"Selecione"} returnCallback={
-                    (selected)=>{
-                        generationOptions.members = selected; 
-                        console.log(generationOptions.members.length)
-                    }
-                    
-                }
-                    returnArray={[]} visible={memberSelectOpen} requestClose={()=>{setMemberSelectOpen(false)}} onSubmit={
-                    ()=>{setMemberSelectOpen(false)}} 
-                    multiselect={true} allSelected={true}/>
+                <MemberSelectModal title={"Selecione"} 
+                    returnCallback={
+                        (selected)=>{
+                            generationOptions.members = selected; 
+                            console.log(generationOptions.members.length)
+                        }}
+                    visible={memberSelectOpen} 
+                    requestClose={()=>{setMemberSelectOpen(false)}} 
+                    onSubmit={()=>{
+                        setMemberSelectOpen(false)
+                    }} 
+                    multiselect={true} 
+                    allSelected={true}
+                />
+
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
                 setTimeout(()=>{
-                    GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},50)})
-                },200)
+                    GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
+                },0)
                 
             }}/>
             <LoadingModal visible={isGenerating}/>
@@ -229,30 +234,14 @@ const MonthLineupOptions = () => {
  * @param finished Ação ao finalizar a geração
  */
 function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args)=>void){
-    let members:Array<Member>
-    
-    switch(type) {
-        case MemberType.ACOLYTE:members = MemberData.allAcolytes;break
-        case MemberType.COROINHA:members = MemberData.allCoroinhas;break
-    }
-    if(members == null || members.length == 0){
-        console.error("Unable to generate lineup. Members is empty.")
-        return
-    }
-    
-    let roleset:RoleSet = generateOptions.roleset
-
     LineupScreenOptions.lineups = []
 
     let generatedLineups:object = {}
     let allLineups:Array<Lineup> = []
 
     LineupScreenOptions.lineups = []
-    LineupScreenOptions.days = generateOptions.dateset.days
             
     let weekends = Object.keys(generateOptions.monthDays)
-    
-    generateOptions.places = Places.OrganizePlaceArray(generateOptions.places) // Organiza a ordem dos locais
     
     // Organiza a ordem dos dias
     for(let i = 0; i < weekends.length; i++){
@@ -263,10 +252,6 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
     // Organiza a ordem dos fins de semana
     generateOptions.monthDays = Dates.OrganizeWeekends(generateOptions.dateset,generateOptions.monthDays) 
     weekends = Object.keys(generateOptions.monthDays) // Atualiza com os fins de semana organizados
-
-    if(generateOptions.places.length == 0 || generateOptions.places == undefined){
-        generateOptions.places = [null]
-    }
     
     for(let i = 0; i < weekends.length;i++){
         let weekendKey = weekends[i] // Finais de semana
@@ -277,26 +262,28 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
         if(curWeekend != undefined){
             for(let k = 0; k < curWeekend.length;k++){
                 let curDay:string = curWeekend[k] // Dia
+                let key:string = weekendKey+""+curDay
+                let opt = generateOptions.exclusiveOptions[key] != undefined ? generateOptions.exclusiveOptions[key] : generateOptions
+                opt.places = Places.OrganizePlaceArray(opt.places)
+                let places:Array<string> = opt.places
                 
-                for(let p = 0; p < generateOptions.places.length;p++){
-                    let curPlace = generateOptions.places[p]
-                    let key = weekendKey+""+curDay
-                    let newLineup
+                if(places.length == 0 || places == undefined){
+                    places = [null]
+                }
 
-                    if(generateOptions.exclusiveOptions[key] != undefined){
-                        let opt = generateOptions.exclusiveOptions[key]
-                        newLineup = GenerateLineup({weekend:weekendKey,day:curDay,roleset:opt.roleset,type:type,randomness:opt.randomness,place:curPlace})
-                    }
-                    else{
-                        newLineup = generateOptions.allRandom ?
-                        GenerateRandomLineup(roleset,type,weekendKey,curDay):
-                        GenerateLineup({weekend:weekendKey,day:curDay,roleset:roleset,type:type,randomness:generateOptions.randomness,place:curPlace})
-                    }
+                for(let p = 0; p < places.length;p++){
+                    let curPlace:string = places[p]
+                    if(curPlace != undefined){key = weekendKey+curDay+curPlace}
                     
+                    let placeOpt = generateOptions.exclusiveOptions[key] != undefined ? generateOptions.exclusiveOptions[key] : Object.create(opt) // Se houver configuração específica para o local
+
+                    let newLineup:Lineup = generateOptions.allRandom ?
+                        GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay):
+                        GenerateLineup({members:placeOpt.members,weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
+        
                     generatedLineups[weekendKey].push(newLineup)
                     allLineups.push(newLineup)
                 }
-                
             }
         }
 
@@ -305,12 +292,20 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
         } 
     }
     
-    
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false
-    LineupScreenOptions.roles = roleset.set
 
+    let members:Array<Member>  
+    switch(type) {
+        case MemberType.ACOLYTE:members = MemberData.allAcolytes;break
+        case MemberType.COROINHA:members = MemberData.allCoroinhas;break
+    }
+    if(members == null || members.length == 0){
+        console.error("Unable to generate lineup. Members is empty.")
+        return
+    }
+    
     if(!generateOptions.allRandom){ResetAllLastWeekend(members)}
 
     LineupScreenOptions.scrollPos = 0
@@ -486,20 +481,17 @@ type PlaceSelectProps = {
 }
 function PlaceSelect(props:PlaceSelectProps){
     let checks:Array<React.JSX.Element> = []
-    const {curGenOptions} = contextStore()
 
     for(let i = 0; i < Places.allPlaces.length; i++){
         let curPlace = Places.allPlaces[i]
-        let placeSelectedIndex = curGenOptions.places.indexOf(curPlace)
+        let placeSelectedIndex = props.selectedPlaces.indexOf(curPlace)
         let check = <TextCheckBox checked={placeSelectedIndex != -1} text={curPlace} key={i} press={()=>{
-            placeSelectedIndex = curGenOptions.places.indexOf(curPlace)
+            placeSelectedIndex = props.selectedPlaces.indexOf(curPlace)
             if(placeSelectedIndex != -1){
-                curGenOptions.places.splice(placeSelectedIndex,1)
-                console.log(curGenOptions.places)
+                props.selectedPlaces.splice(placeSelectedIndex,1)
             } 
             else{
-                curGenOptions.places.push(curPlace)
-                console.log(curGenOptions.places)
+                props.selectedPlaces.push(curPlace)
             }
             
             
@@ -514,49 +506,94 @@ function PlaceSelect(props:PlaceSelectProps){
     )
 }
 
-type AdvancedOptionsProps = {
-
-}
 function AdvancedOptions(){
     const [isExpanded,setExpanded] = useState(false)
     const {curGenOptions} = contextStore()
     const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined,place:undefined})
     const [editingModalOpened,setEditingModalOpened] = useState(false)
+    
+    
+    // Seleção do local
+    let placeOptions = ["Todos"]
+    let placeActions = [()=>{editingExclusive.place = undefined}]
+
+    for(let i = 0; i < Places.allPlaces.length; i++){
+        let curPlace = Places.allPlaces[i]
+
+        placeOptions.push(curPlace)
+        placeActions.push(()=>{setEditingExclusive({weekend:editingExclusive.weekend,day:editingExclusive.day,place:curPlace})})
+    }
+    // Botões de configuração individual
     let weekends = Object.keys(curGenOptions.monthDays)
     let wkButtons = []
    
     for(let i = 0; i < weekends.length; i++){
         let newButton = <TextButton text={weekends[i]} press={()=>{
-            setEditingExclusive({weekend:weekends[i],day:undefined,place:undefined})
+            setEditingExclusive({weekend:weekends[i],day:undefined,place:editingExclusive.place})
             setEditingModalOpened(true)
         }} key={i}/>;
         wkButtons.push(newButton)
     }
 
+    let daysButtons = []
+   
+    for(let i = 0; i < weekends.length; i++){
+        let curWeekend = weekends[i]
+        let days = curGenOptions.monthDays[curWeekend]
+        let rows = []
+        
+        for(let j = 0; j < days.length; j++){
+            let curDay = days[j]
+            let newButton = <TextButton textStyle={{fontSize:10}}text={curWeekend+"\n"+curDay} press={()=>{
+                setEditingExclusive({weekend:curWeekend,day:curDay,place:editingExclusive.place})
+                setEditingModalOpened(true)
+            }} key={j}/>;
+
+            rows.push(newButton)
+        }
+        
+        daysButtons.push(<View style={{flexDirection:"row",justifyContent:"center",alignItems:"center"}} key={i}>{rows}</View>)
+        
+    }
+
+
+
     return(
         <ExpandableView expanded={isExpanded} title={"Opções avançadas"} content={
+            
             <View style={{flex:1}}>
-                <View style={{flexDirection:'row'}}>
+                <DataSection text="Opções individuais:"/>
+                
+                <Text style={textStyles.dataTitle}> - Selecione o local:</Text>
+                <DropDown options={placeOptions} actions={placeActions} placeholder="Todos"/>
+                <Text style={textStyles.dataTitle}> - Por final de semana:</Text>
+                <View style={{flexDirection:'row',justifyContent:"center"}}>
                     {wkButtons}
                 </View>
-                <SingleDayOptions visible={editingModalOpened} genOptionsKey={editingExclusive} rolesets={Roles.acolyteRoleSets} onClose={()=>{setEditingModalOpened(false)}}/>
+                <Text style={textStyles.dataTitle}> - Por dia:</Text>
+                <View style={{flexDirection:'row',justifyContent:'center',flexWrap:'wrap'}}>
+                    {daysButtons}
+                </View>
+                <ExclusiveOptions visible={editingModalOpened} genOptionsKey={editingExclusive} rolesets={Roles.acolyteRoleSets} onClose={()=>{setEditingModalOpened(false)}}/>
             </View>
         }/>
         
     )
 }
 
-type SingleDayOptionsProps = {
+type ExclusiveOptionsProps = {
     visible:boolean
-    genOptionsKey:{weekend:undefined,day:undefined}
+    genOptionsKey:{weekend:string,day:string,place:string}
     rolesets:Array<RoleSet>
     onClose?:(...args:any)=>void
 }
-function SingleDayOptions(props:SingleDayOptionsProps){
+function ExclusiveOptions(props:ExclusiveOptionsProps){
     const {curGenOptions} = contextStore()
+    const [memberSelectOpen,setMemberSelectOpen] = useState(false)
     const {theme} = menuStore()
-    let options = Object.create(curGenOptions)
     
+    const options = useRef({members:curGenOptions.members.slice(),places:curGenOptions.places.slice(),roleset:curGenOptions.roleset,allRandom:curGenOptions.allRandom})
+
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
 
@@ -565,7 +602,8 @@ function SingleDayOptions(props:SingleDayOptionsProps){
 
         rolesetOptions.push(curSet.name)
         rolesetActions.push(()=>{
-            options.roleset = curSet
+            options.current.roleset = curSet
+            console.log(options.current.roleset)
         })
     }
 
@@ -574,7 +612,7 @@ function SingleDayOptions(props:SingleDayOptionsProps){
             <View style={{flex:1,backgroundColor:"#00000099"}}>
                 <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
                     <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
-                        <Text style={textStyles.dataTitle}>Editando {props.genOptionsKey.weekend + (props.genOptionsKey.day != null ? props.genOptionsKey.day : "")}</Text>
+                        <Text style={textStyles.dataTitle}>Editando {props.genOptionsKey.weekend + (props.genOptionsKey.day != null ? props.genOptionsKey.day : "") + (props.genOptionsKey.place != null ? props.genOptionsKey.place : "")}</Text>
                     </View>
                     
                     <ScrollView style={{flex:1}}>
@@ -587,7 +625,7 @@ function SingleDayOptions(props:SingleDayOptionsProps){
                         <View style={{flex:1}}>
                             <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
                                 <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
-                                <CheckBox checked={options.allRandom} press={()=>{options.allRandom = !options.allRandom}}/>
+                                <CheckBox checked={options.current.allRandom} press={()=>{options.current.allRandom = !options.current.allRandom}}/>
                             </View>
                         </View>
 
@@ -595,17 +633,49 @@ function SingleDayOptions(props:SingleDayOptionsProps){
                         <DataSection text={"- Conjunto de funções"}/>
                         <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
 
-                        <DataSection text={"- Local"}/>
-                        <PlaceSelect selectedPlaces={options.places}/>
+                        
+                        
+                        {props.genOptionsKey.place == undefined ? 
+                        <View>
+                            <DataSection text={"- Local"}/>
+                            <PlaceSelect selectedPlaces={options.current.places}/>
+                        </View>
+                        : null}
+
+                        <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
+                            setMemberSelectOpen(true)
+                         }}/>
+                        <MemberSelectModal title={"Selecione"} 
+                            returnCallback={
+                                (selected)=>{
+                                    options.current.members = selected; 
+                                    console.log(options.current.members.length)
+                                }}
+                            visible={memberSelectOpen} 
+                            requestClose={()=>{setMemberSelectOpen(false)}} 
+                            onSubmit={()=>{
+                                setMemberSelectOpen(false)
+                            }} 
+                            multiselect={true} 
+                            allSelected={true}
+                        />
                     </ScrollView>
                     
                     <TextButton text={"Concluir"} press={()=>{
+                        let key = props.genOptionsKey.weekend
+
                         if(props.genOptionsKey.day != undefined){
-                            curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + props.genOptionsKey.day] = options
+                            key += props.genOptionsKey.day
+                            key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+
+                            curGenOptions.exclusiveOptions[key] = options.current
                         }
                         else{
                             curGenOptions.dateset.days.forEach((day)=>{
-                                curGenOptions.exclusiveOptions[props.genOptionsKey.weekend + "" + day] = options
+                                key = props.genOptionsKey.weekend + day
+                                key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+
+                                curGenOptions.exclusiveOptions[key] = options.current
                             })
                         }
                         

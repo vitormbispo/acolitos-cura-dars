@@ -955,7 +955,6 @@ export function LoadingModal(props:LoadingModalProps){
 type MemberSelectModalProps = {
   visible:boolean
   title:string
-  returnArray:Array<Member>
   returnCallback:(...args:any)=>void
   exeptions?:Array<Member>
   allSelected?:boolean
@@ -963,6 +962,14 @@ type MemberSelectModalProps = {
   requestClose?:(...args:any)=>void
   onSubmit?:(...args:any)=>void
 }
+/**
+ * Janela para seleção de membros
+ * @param props Propriedades:
+ * @param visible = visível; @param title título da janela; @param returnCallback função de retorno que recebe a lista de 
+ * membros selecionados como argumento; @param exceptions membros excluídos da lista; @param allSelected todos os membros selectionados?
+ * @param multiselect seleção de múltiplos membros ativa?; @param requestClose ação ao solicitar fechamento do modal; @param onSubmit ação ao confirmar
+ * @returns 
+ */
 export function MemberSelectModal(props:MemberSelectModalProps){
   const {theme,type} = menuStore()
   let members:Array<Member> = []

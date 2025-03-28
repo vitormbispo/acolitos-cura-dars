@@ -5,6 +5,7 @@ import { Lineup } from "./Lineup";
 
 
 type GeneratorSettings = {
+    members:Array<Member>
     weekend:string
     day:string
     roleset:RoleSet
@@ -16,31 +17,23 @@ type GeneratorSettings = {
 /** Gera uma nova escala de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
  * Leva em conta a disponibiliade e as prioridades diárias, de funções e gerais.
  * 
+ * @param members Membros selecionados
  * @param weekend Final de semana
  * @param day Dia
  * @param roleset Conjunto de funções
  * @param type Tipo
  * @param place Local (opcional)
  * @param randomness Aleatoriedade (opcional)
+ * 
  * @returns {Lineup|null} Nova escala montada
  */
 export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
-    let members:Array<Member> = []
-    
-    switch(settings.type){
-        case MemberType.COROINHA : members = MemberData.allCoroinhas; break
-        case MemberType.ACOLYTE : members = MemberData.allAcolytes; break
-        default: 
-            console.error("Invalid type.")
-            return null
-    }
+    let members:Array<Member> = settings.members.slice()
     
     if(members == null){
         console.error("Empty list")
         return null
     }
-
-    members = members.slice()
 
     members = RemoveUnvailable(members,settings.day,settings.weekend,settings.place) // Remover membros indisponíveis
     if(members.length == 0){ // Não há membros disponíveis
