@@ -87,11 +87,12 @@ export default function LineupGenerationOptions(){
         })
     }
 
+    const scrollRef = useRef<ScrollView>(null)
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
             
-            <ScrollView style={{flex:1}}>
+            <ScrollView style={{flex:1}} ref={scrollRef}>
 
                 <DataSection text={"- Opções"}/>
                 
@@ -277,6 +278,9 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
                     
                     let placeOpt = generateOptions.exclusiveOptions[key] != undefined ? generateOptions.exclusiveOptions[key] : Object.create(opt) // Se houver configuração específica para o local
 
+                    if(placeOpt.dayExceptions != undefined && placeOpt.dayExceptions.includes(curDay)){ // Se está nas excessões de dia, pula essa escala
+                        continue
+                    }
                     let newLineup:Lineup = generateOptions.allRandom ?
                         GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay):
                         GenerateLineup({members:placeOpt.members,weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
@@ -506,7 +510,8 @@ function PlaceSelect(props:PlaceSelectProps){
     )
 }
 
-function AdvancedOptions(){
+
+function AdvancedOptions(props:any){
     const [isExpanded,setExpanded] = useState(false)
     const {curGenOptions} = contextStore()
     const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined,place:undefined})
@@ -523,7 +528,7 @@ function AdvancedOptions(){
         placeOptions.push(curPlace)
         placeActions.push(()=>{setEditingExclusive({weekend:editingExclusive.weekend,day:editingExclusive.day,place:curPlace})})
     }
-    // Botões de configuração individual
+    // Botões de configuração individual dos fins de semana
     let weekends = Object.keys(curGenOptions.monthDays)
     let wkButtons = []
    
@@ -535,6 +540,7 @@ function AdvancedOptions(){
         wkButtons.push(newButton)
     }
 
+    // Botões de configuração individual de dias específicos
     let daysButtons = []
    
     for(let i = 0; i < weekends.length; i++){
@@ -556,8 +562,6 @@ function AdvancedOptions(){
         
     }
 
-
-
     return(
         <ExpandableView expanded={isExpanded} title={"Opções avançadas"} content={
             
@@ -577,7 +581,6 @@ function AdvancedOptions(){
                 <ExclusiveOptions visible={editingModalOpened} genOptionsKey={editingExclusive} rolesets={Roles.acolyteRoleSets} onClose={()=>{setEditingModalOpened(false)}}/>
             </View>
         }/>
-        
     )
 }
 
@@ -592,8 +595,9 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     const [memberSelectOpen,setMemberSelectOpen] = useState(false)
     const {theme} = menuStore()
     
-    const options = useRef({members:curGenOptions.members.slice(),places:curGenOptions.places.slice(),roleset:curGenOptions.roleset,allRandom:curGenOptions.allRandom})
+    const options = useRef({members:curGenOptions.members.slice(),places:curGenOptions.places.slice(),roleset:curGenOptions.roleset,allRandom:curGenOptions.allRandom,dayExceptions:[]})
 
+    // Configurar opções do DropDown de seleção de RoleSet
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
 
@@ -605,6 +609,27 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
             options.current.roleset = curSet
             console.log(options.current.roleset)
         })
+    }
+
+    // Criar botões de seleção de dias
+    let daysChecks = []
+    const dayExceptions = useRef([])
+    for(let i = 0; i < curGenOptions.dateset.days.length; i++){
+        let curDay = curGenOptions.dateset.days[i]
+        
+        
+        let comp = <CheckBox checked={!dayExceptions.current.includes(curDay)} press={()=>{
+            let dayIndex = dayExceptions.current.indexOf(curDay)
+            if(dayIndex == -1){
+                dayExceptions.current.push(curDay)
+            }
+            else{
+                dayExceptions.current.splice(dayIndex,1)
+            }
+            console.log(dayExceptions.current)
+        }} topText={curDay} topTextStyle={textStyles.buttonText} key={i}/>
+
+        daysChecks.push(comp)
     }
 
     return(
@@ -634,7 +659,6 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                         <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
 
                         
-                        
                         {props.genOptionsKey.place == undefined ? 
                         <View>
                             <DataSection text={"- Local"}/>
@@ -642,6 +666,15 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                         </View>
                         : null}
 
+                        {props.genOptionsKey.day == undefined ?
+                        <View>
+                            <DataSection text={"Dias"}/>
+                            <View style={{flexDirection:"row",marginTop:35}}>
+                                {daysChecks}
+                            </View>
+                            
+                        </View> : null}
+                        
                         <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
                             setMemberSelectOpen(true)
                          }}/>
@@ -663,7 +696,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                     
                     <TextButton text={"Concluir"} press={()=>{
                         let key = props.genOptionsKey.weekend
-
+                        options.current.dayExceptions = dayExceptions.current
                         if(props.genOptionsKey.day != undefined){
                             key += props.genOptionsKey.day
                             key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
