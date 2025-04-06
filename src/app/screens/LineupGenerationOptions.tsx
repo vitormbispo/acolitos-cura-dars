@@ -7,7 +7,7 @@ import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
-import { textStyles } from "../styles/GeneralStyles"
+import { textStyles, uiStyles } from "../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../classes/Methods"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
@@ -138,10 +138,9 @@ export default function LineupGenerationOptions(){
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
-                setTimeout(()=>{
+                setTimeout(()=>{ // O setTimeout serve apenas para iniciar a animação de loading.
                     GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
-                },0)
-                
+                },10)
             }}/>
             <LoadingModal visible={isGenerating}/>
         </View>
@@ -312,7 +311,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
     
     if(!generateOptions.allRandom){ResetAllLastWeekend(members)}
 
-    LineupScreenOptions.scrollPos = 0
+    LineupScreenOptions.places = generateOptions.places
     finished()
     router.push("/screens/LineupScreen")
 }
@@ -578,7 +577,11 @@ function AdvancedOptions(props:any){
                 <View style={{flexDirection:'row',justifyContent:'center',flexWrap:'wrap'}}>
                     {daysButtons}
                 </View>
-                <ExclusiveOptions visible={editingModalOpened} genOptionsKey={editingExclusive} rolesets={Roles.acolyteRoleSets} onClose={()=>{setEditingModalOpened(false)}}/>
+                {editingModalOpened ? <ExclusiveOptions 
+                    visible={editingModalOpened} 
+                    genOptionsKey={editingExclusive} 
+                    rolesets={Roles.acolyteRoleSets} 
+                    onClose={()=>{setEditingModalOpened(false)}}/> : null}
             </View>
         }/>
     )
@@ -588,15 +591,26 @@ type ExclusiveOptionsProps = {
     visible:boolean
     genOptionsKey:{weekend:string,day:string,place:string}
     rolesets:Array<RoleSet>
-    onClose?:(...args:any)=>void
+    onClose?:(...args:any) => void
 }
 function ExclusiveOptions(props:ExclusiveOptionsProps){
     const {curGenOptions} = contextStore()
     const [memberSelectOpen,setMemberSelectOpen] = useState(false)
+    const isEditing = useRef(false) // As opções estão em processo de edição?
     const {theme} = menuStore()
     
-    const options = useRef({members:curGenOptions.members.slice(),places:curGenOptions.places.slice(),roleset:curGenOptions.roleset,allRandom:curGenOptions.allRandom,dayExceptions:[]})
-
+    let key = props.genOptionsKey.weekend
+    key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
+    key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+    
+    let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
+    const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,dayExceptions:[]})
+    
+    if(!isEditing.current){ // Se ainda não estiver editando:
+        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,dayExceptions:baseOptions.dayExceptions}
+        isEditing.current = true
+    }
+    
     // Configurar opções do DropDown de seleção de RoleSet
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
@@ -607,7 +621,6 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         rolesetOptions.push(curSet.name)
         rolesetActions.push(()=>{
             options.current.roleset = curSet
-            console.log(options.current.roleset)
         })
     }
 
@@ -632,8 +645,35 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         daysChecks.push(comp)
     }
 
+    const Close = ()=>{
+        isEditing.current = false
+        props.onClose()
+    }
+
+    const Submit = ()=>{
+        let key = props.genOptionsKey.weekend
+        options.current.dayExceptions = dayExceptions.current
+        if(props.genOptionsKey.day != undefined){
+            key += props.genOptionsKey.day
+            key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+
+            curGenOptions.exclusiveOptions[key] = options.current
+        }
+        else{
+            curGenOptions.dateset.days.forEach((day)=>{
+                key = props.genOptionsKey.weekend + day
+                key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+
+                curGenOptions.exclusiveOptions[key] = options.current
+            })
+        }
+        
+        isEditing.current = false
+        props.onClose()
+    }
+
     return(
-        <Modal visible={props.visible} transparent={true} animationType="fade">
+        <Modal visible={props.visible} transparent={true} animationType="fade" onRequestClose={Close}>
             <View style={{flex:1,backgroundColor:"#00000099"}}>
                 <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
                     <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
@@ -690,30 +730,21 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                                 setMemberSelectOpen(false)
                             }} 
                             multiselect={true} 
-                            allSelected={true}
+                            allSelected={false}
+                            selectedMembers={options.current.members}
                         />
                     </ScrollView>
                     
-                    <TextButton text={"Concluir"} press={()=>{
-                        let key = props.genOptionsKey.weekend
-                        options.current.dayExceptions = dayExceptions.current
-                        if(props.genOptionsKey.day != undefined){
-                            key += props.genOptionsKey.day
-                            key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+                    <View style={{flexDirection:"row", justifyContent:"center"}}>
+                        <TextButton text="Cancelar" buttonStyle={{backgroundColor:theme.reject}} press={()=>{
+                            Close()
+                        }}/>
 
-                            curGenOptions.exclusiveOptions[key] = options.current
-                        }
-                        else{
-                            curGenOptions.dateset.days.forEach((day)=>{
-                                key = props.genOptionsKey.weekend + day
-                                key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
-
-                                curGenOptions.exclusiveOptions[key] = options.current
-                            })
-                        }
-                        
-                        props.onClose()
-                    }}/>
+                        <TextButton text={"Concluir"} buttonStyle={{backgroundColor:theme.confirm}} press={()=>{
+                            Submit()
+                        }}/>
+                    </View>
+                    
                 </View>
             </View>
             

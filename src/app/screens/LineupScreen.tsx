@@ -12,11 +12,9 @@ import { MemberSelectScreenOptions } from "./MemberSelectScreen"
 
 export class LineupScreenOptions{
     static name = "Nova escala"
-    static roles = ["Ceroferário 1","Ceroferário 2","Cruciferário","Turiferário","Naveteiro","Librífero"]
-
-    static days = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
 
     static lineups:Array<Lineup> = []
+    static places = [] // Locais selecionados
     static monthLineups:object = {} // Ex.: "1stWE":[Lineup,Lineup,Lineup]
 
     static loaded:boolean = false; // A escala exibida é carregada?
@@ -29,10 +27,8 @@ export class LineupScreenOptions{
     public static SaveLineup():StructuredLineup{
         let line = new StructuredLineup()
     
-        line.days = LineupScreenOptions.days
         line.lineups = LineupScreenOptions.lineups
         line.monthLineups = LineupScreenOptions.monthLineups
-        line.roles = LineupScreenOptions.roles
         line.name = LineupScreenOptions.name
 
         return line;
@@ -43,16 +39,10 @@ export class LineupScreenOptions{
      * @param line 
      */
     public static LoadLineup(line:StructuredLineup){
-        LineupScreenOptions.days = line.days
         LineupScreenOptions.lineups = line.lineups
         LineupScreenOptions.monthLineups = line.monthLineups
-        LineupScreenOptions.roles = line.roles 
         LineupScreenOptions.name = line.name
     }
-
-    // Rolagem da tela
-    static scrollPos = 0
-    static scrollRef = null
 }
 
 // Gerenciador de trocas e substituições de membros
@@ -70,11 +60,6 @@ class SwitchHandler{
 
 export default function LineupScreen(){
     const {type, theme} = menuStore()
-    // Rolagem
-    
-    const[scrollPosition, setScrollPosition] = useState(LineupScreenOptions.scrollPos);
-    const scrollViewRef = useRef(LineupScreenOptions.scrollRef);
-    
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
     const upperBtn = LineupScreenOptions.loaded ? 
     <UpperButton img={ICONS.delete} press={()=>{
@@ -82,17 +67,6 @@ export default function LineupScreen(){
     }}/>:
     null
     
-    /**
-     * Salva o estado do scroll da tela
-     * @param event 
-     */
-    const handleScroll = (event:any) => {
-        let pos = event.nativeEvent.contentOffset.y
-        setScrollPosition(pos);
-        LineupScreenOptions.scrollPos = pos;
-        LineupScreenOptions.scrollRef = scrollViewRef;
-    }
-
     let lines = []
     for(let i = 0; i < LineupScreenOptions.lineups.length; i++){
         let curLine = LineupScreenOptions.lineups[i]
@@ -105,7 +79,11 @@ export default function LineupScreen(){
                 <UpperBar icon={ICONS.escala} screenName={"Escala:"}/>
                 {upperBtn}
             </View>
-            <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={true}/>
+            <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
+            <TextButton text={"Salvar escalas"} press={()=>{
+                MemberData.allLineupsAcolytes = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsAcolytes)
+                MemberData.SaveMemberData()
+            }}/>
         </View>
     )
 }
@@ -221,17 +199,8 @@ function ToggleSwitch(role:string,lineup:Lineup){
  */
 
 function SwitchMembers(switchingRole:string,switchingLineup:Lineup,switchedRole:string,switchedLineup:Lineup){
-    
     let switchingMember:Member = GetRoleMember(switchingRole,switchingLineup)
     let switchedMember:Member = GetRoleMember(switchedRole,switchedLineup)
-    if(switchingMember != null){
-        switchingMember.rodizio[switchingRole]=6
-        switchingMember.rodizio[switchedRole]=switchingMember.oldRodizio[switchedRole]
-    }
-    if(switchedMember != null){
-        switchedMember.rodizio[switchedRole]=6
-        switchedMember.rodizio[switchingRole]=switchedMember.oldRodizio[switchingRole]
-    }
     
     switchingLineup.line[switchingRole] = switchedMember
     switchedLineup.line[switchedRole] = switchingMember
@@ -336,5 +305,5 @@ function SaveAllLineups(type:MemberType){
  * Copia um prompt para o Gemini à área de transferência.
  */
 function CopyGeminiPrompt(){
-    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,LineupScreenOptions.roles))
+    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,[]))
 }

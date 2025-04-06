@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator} from "react-native"
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator, Dimensions} from "react-native"
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
@@ -890,10 +890,11 @@ export function GridLineupView(props:GridLineupViewProps){
         )
     }
     
-    let keys = Object.keys(sortedLines)
-    for(let i = 0; i < keys.length;i++){
+    let keys = Object.keys(sortedLines) // Chaves do mapa organizado por fim de semana/dia
+    
+    for(let i = 0; i < keys.length;i++){ // Colunas
     rows.push(
-        <View style={{flexDirection:"row"}} key={i}>
+        <View style={{flex:1,flexDirection:"row",alignSelf:"center"}} key={i}>
             {sortedLines[keys[i]]}
         </View>
         )
@@ -917,10 +918,11 @@ export function GridLineupView(props:GridLineupViewProps){
             },10)
         }
     })
+    
     return(
       <View style={{flex:1}}>
         <ScrollView horizontal={true} style={{flex:1}}>    
-          <ScrollView style={{flex:1}}>
+          <ScrollView style={{flex:1,minWidth:Dimensions.get('window').width}}>
             {components}                    
           </ScrollView>               
         </ScrollView>
@@ -957,6 +959,7 @@ type MemberSelectModalProps = {
   title:string
   returnCallback:(...args:any)=>void
   exeptions?:Array<Member>
+  selectedMembers?:Array<Member>
   allSelected?:boolean
   multiselect?:boolean
   requestClose?:(...args:any)=>void
@@ -982,8 +985,10 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       members = MemberData.allCoroinhas; break
   }
   
-  const [selected,setSelected] = useState(props.allSelected ? members.slice():[])
+  if(props.selectedMembers == undefined){props.selectedMembers = []}
 
+  const [selected,setSelected] = useState(props.allSelected ? members.slice():props.selectedMembers)
+  
   let memberComps = []
   for(let i = 0; i < members.length;i++){
     let curMember = members[i]
