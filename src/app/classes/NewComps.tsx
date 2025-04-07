@@ -6,6 +6,7 @@ import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
+import { GetLineupUnvailableMembers } from "./Methods";
 
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
@@ -786,6 +787,7 @@ export function ExpandableView(props:ExpandableViewProps){
 
 type CompactLineupProps = {
   line:Lineup
+  replaceAction?:(...args:any)=>void
 }
 /**
  * 
@@ -795,8 +797,37 @@ export function CompactLineup(props:CompactLineupProps){
   
   let roles:Array<React.JSX.Element> = []
   const {theme} = menuStore()
-  const {switchingMember,updateSwitchingMember} = contextStore()
+  const {switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
   const [lineup,updateLineup] = useState(props.line)
+
+  const Switch = (role:string)=>{
+    if(switchingMember.switching){
+      props.line.SwitchMembers(switchingMember.role,switchingMember.lineup,role,()=>{
+        switchingMember.update()
+      })
+      switchingMember.switching = false
+      
+      let newState:Lineup = new Lineup()
+      updateLineup(Object.assign(newState,props.line))
+    }
+    else{
+      updateSwitchingMember({role:role,lineup:props.line,switching:true,update:()=>{
+        let newState:Lineup = new Lineup()
+        updateLineup(Object.assign(newState,props.line))
+      }})
+    }
+  }
+
+  const Replace = (role:string)=>{
+    let newState = Object.create(replacingMember)
+    newState.role = role
+    newState.lineup = lineup
+    newState.replacing = true
+    newState.member = lineup.line[role]
+
+    updateReplacingMember(newState)
+  }
+  
   for(let i = 0; i < lineup.members.length; i++){
     
     let role = Object.keys(lineup.line)[i]
@@ -810,28 +841,14 @@ export function CompactLineup(props:CompactLineupProps){
       
       <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}
         press={()=>{
-          
-          if(switchingMember.switching){
-            props.line.SwitchMembers(switchingMember.role,switchingMember.lineup,role,()=>{
-              switchingMember.update()
-            })
-            switchingMember.switching = false
-            
-            let newState:Lineup = new Lineup()
-            updateLineup(Object.assign(newState,props.line))
-            console.log("Switched!")
-          }
-          else{
-            updateSwitchingMember({role:role,lineup:props.line,switching:true,update:()=>{
-              let newState:Lineup = new Lineup()
-              updateLineup(Object.assign(newState,props.line))
-            }})
-            console.log("Switching")
-            
-          }
+          Switch(role)
         }}/>
-      <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}/>
-      
+      <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}
+        press={()=>{
+          console.log("Open")
+          Replace(role)
+        }}
+      />
       
       </View>
 
@@ -868,10 +885,12 @@ type GridLineupViewProps = {
  */
 export function GridLineupView(props:GridLineupViewProps){
     // OBS: Esse componente utiliza renderização em etapas
+    const {type} = menuStore()
     const isRendering = useRef(false) // Está renderizando?
     const renderPhase = useRef(0) // Estágio da renderização
     const [renderComplete,setRenderComplete] = useState(false) // Renderização completa
-    
+    const {replacingMember,updateReplacingMember} = contextStore()
+
     // Construir componentes
     let rows:Array<React.JSX.Element> = []
     let sortedLines = {}
@@ -900,6 +919,13 @@ export function GridLineupView(props:GridLineupViewProps){
         )
     }
 
+    const Replace = (selected:Array<Member>)=>{
+      replacingMember.lineup.ReplaceMember(replacingMember.role,selected[0])
+      let newState = Object.create(replacingMember)
+      newState.replacing = false
+      updateReplacingMember(newState)
+  }
+
     useEffect(()=>{
         if(!isRendering.current){
             isRendering.current = true
@@ -919,6 +945,7 @@ export function GridLineupView(props:GridLineupViewProps){
         }
     })
     
+
     return(
       <View style={{flex:1}}>
         <ScrollView horizontal={true} style={{flex:1}}>    
@@ -926,6 +953,25 @@ export function GridLineupView(props:GridLineupViewProps){
             {components}                    
           </ScrollView>               
         </ScrollView>
+
+        { replacingMember.replacing ? 
+          <MemberSelectModal 
+          visible={replacingMember.replacing} 
+          title={"Substituindo: "+replacingMember.member.nick+"\n"+replacingMember.role} 
+          exceptions={replacingMember.lineup.members}
+          unvailable={GetLineupUnvailableMembers(replacingMember.lineup,type)}
+          returnCallback={Replace}
+          requestClose={()=>{
+            let newState = Object.create(replacingMember)
+            newState.replacing = false
+            updateReplacingMember(newState)
+          }}
+          onSubmit={()=>{
+            let newState = Object.create(replacingMember)
+            newState.replacing = false
+            updateReplacingMember(newState)
+          }}
+          />:null}
 
         {/* Carregamento */}
         <Modal visible={!renderComplete} transparent={true}>
@@ -935,6 +981,8 @@ export function GridLineupView(props:GridLineupViewProps){
             </View>
           </View>
         </Modal>
+
+
       </View>
     )
 }
@@ -958,7 +1006,8 @@ type MemberSelectModalProps = {
   visible:boolean
   title:string
   returnCallback:(...args:any)=>void
-  exeptions?:Array<Member>
+  exceptions?:Array<Member>
+  unvailable?:Array<Member>
   selectedMembers?:Array<Member>
   allSelected?:boolean
   multiselect?:boolean
@@ -976,7 +1025,6 @@ type MemberSelectModalProps = {
 export function MemberSelectModal(props:MemberSelectModalProps){
   const {theme,type} = menuStore()
   let members:Array<Member> = []
-  let exeptions = props.exeptions != null ? props.exeptions.slice() : []
   
   switch(type){
     case MemberType.ACOLYTE:
@@ -987,18 +1035,39 @@ export function MemberSelectModal(props:MemberSelectModalProps){
   
   if(props.selectedMembers == undefined){props.selectedMembers = []}
 
-  const [selected,setSelected] = useState(props.allSelected ? members.slice():props.selectedMembers)
+  const [selected,setSelected] = useState(props.allSelected ? members.slice(): (props.selectedMembers != null ? props.selectedMembers : []))
   
   let memberComps = []
   for(let i = 0; i < members.length;i++){
     let curMember = members[i]
+    
+    if(props.exceptions != undefined && props.exceptions.includes(curMember)){continue}
+    
+    let color = "#FFFFFF"
+    
+    if(props.unvailable != null && props.unvailable.includes(curMember)){
+      color = theme.disabled
+    }
+
+    if(!props.multiselect && selected.includes(curMember)){
+      color = theme.neutral
+    }
+
     let newComp =
-    <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",backgroundColor:selected.includes(curMember) && !props.multiselect ? theme.neutral:"#FFFFFF"}} onPress={()=>{
+    
+    <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",
+      backgroundColor:color}} onPress={()=>{
       setSelected([curMember])
     }} key={i} disabled={props.multiselect}>
       <Image source={GetMemberIcon()} style={uiStyles.buttonIcon}/>
       <Text style={textStyles.memberNick}>{curMember.nick}</Text>
       
+      {props.unvailable != undefined && props.unvailable.includes(curMember) ?
+      <Text style={[textStyles.dataTitle,{color:theme.reject}]}>Indisponível!</Text>
+      :
+      null
+    }
+
       {props.multiselect ?
       <CheckBox checked={selected.includes(curMember)} press={()=>{
         selected.includes(curMember) ?
@@ -1016,7 +1085,7 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       <View style={{flex:1,backgroundColor:"#00000099"}}>
         <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
           <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
-            <Text style={textStyles.dataTitle}>{props.title}</Text>
+            <Text style={[textStyles.dataTitle,{textAlignVertical:"center",textAlign:"center"}]}>{props.title}</Text>
           </View>
 
           <ScrollView>
@@ -1024,8 +1093,13 @@ export function MemberSelectModal(props:MemberSelectModalProps){
           </ScrollView>
 
           <TextButton text={"Concluir"} press={()=>{
-            props.returnCallback(selected)
-            props.onSubmit()
+            
+            (selected != undefined && selected.length != 0) ?
+              props.returnCallback(selected)
+              :  
+              console.warn("No members selected!")
+
+            props.onSubmit != null ? props.onSubmit() : null
           }}/>
         </View>
       </View>

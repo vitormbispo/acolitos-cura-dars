@@ -54,6 +54,12 @@ export class Lineup{
         update()
     }
 
+    ReplaceMember(replaceRole:string,newMember:Member,update?:any){
+        let originalIndex = this.members.indexOf(this.GetRoleMember(replaceRole))
+        this.members[originalIndex] = newMember
+        this.line[replaceRole] = newMember
+    }
+
 }
 
 /**

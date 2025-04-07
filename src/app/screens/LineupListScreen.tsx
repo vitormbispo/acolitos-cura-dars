@@ -58,7 +58,6 @@ export function FetchLineupList(){
             LineupScreenOptions.LoadLineup(line), 
             LineupScreenOptions.loaded=true,
             LineupScreenOptions.loadedLineIndex=i, 
-            LineupScreenOptions.scrollPos=0, 
             router.push("/screens/LineupScreen")}}/>)
         index++;
     })

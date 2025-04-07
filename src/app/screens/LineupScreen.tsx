@@ -1,5 +1,5 @@
 import { View,Text, ScrollView} from "react-native"
-import { ConfirmationModal, GridLineupView, ImageButton, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
+import { ConfirmationModal, GridLineupView, ImageButton, MemberSelectModal, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
 import { router } from "expo-router"
 import { useRef, useState } from "react"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
@@ -61,17 +61,12 @@ class SwitchHandler{
 export default function LineupScreen(){
     const {type, theme} = menuStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
+    const [memberSelectOpen, setMemberSelectOpen] = useState(false)
     const upperBtn = LineupScreenOptions.loaded ? 
     <UpperButton img={ICONS.delete} press={()=>{
         setConfirmDeleteVisible(!confirmDeleteVisible)
     }}/>:
     null
-    
-    let lines = []
-    for(let i = 0; i < LineupScreenOptions.lineups.length; i++){
-        let curLine = LineupScreenOptions.lineups[i]
-        lines.push(<DayLineup line={curLine} type={type} key={"Line"+i}/>)
-    }
 
     return(
         <View style={{flex:1}}>
@@ -80,171 +75,16 @@ export default function LineupScreen(){
                 {upperBtn}
             </View>
             <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
+            <MemberSelectModal visible={memberSelectOpen} title={"Substituir: "} multiselect={false}
+                returnCallback={()=>{
+                    SwitchHandler
+                }}/>
             <TextButton text={"Salvar escalas"} press={()=>{
                 MemberData.allLineupsAcolytes = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsAcolytes)
                 MemberData.SaveMemberData()
             }}/>
         </View>
     )
-}
-
-type LineupMemberType = {
-    nick:string, // Apelido
-    role:string, // Função
-    lineup:Lineup // Escala
-}
-/**
- * 
- * @param props text = Nome da função
- * lineup = escala
- * role = função
- * nick = apelido do membro
- * @returns 
- */
-export function LineupMember(props:LineupMemberType) {
-    return(
-        <View style={{flexDirection:"row",alignSelf:"center",alignItems:"center",alignContent:"center"}}>
-            <Text style={textStyles.functionTitle}>{props.role} - </Text>
-            <Text style={textStyles.memberNick}>{props.nick}</Text>
-            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={ICONS.switch} imgStyle={uiStyles.buttonIcon} press={()=>{
-                ToggleSwitch(props.role,props.lineup)
-            }}/>
-
-            <ImageButton buttonStyle={{alignContent:"center",alignItems:"center"}}img={ICONS.subs} imgStyle={uiStyles.buttonIcon} press={()=>{
-                ReplaceMember(props.role,props.lineup)
-            }}/>
-        </View>
-    )
-}
-
-type DayLineupProps={
-    line:Lineup,
-    type:MemberType
-}
-/**
- * Escala completa de um dia
- * @param props line=Escala type=Tipo de membro
- * @returns 
- */
-function DayLineup(props:DayLineupProps) {
-    const {theme} = menuStore()
-    let roles:Array<string>
-    
-    if(props.line.roleset != undefined){
-        roles = props.line.roleset.set
-    }
-    else{
-        roles = Object.keys(props.line.line)
-    }
-    let members:Array<React.JSX.Element> = []
-
-    for(let i = 0; i < roles.length;i++){
-        let role = roles[i]
-        let member = props.line.line[role]
-        members.push(<LineupMember nick={member!=null ? member.nick : "- Sem escala -"} lineup={props.line} role={role} key={props.line.day+props.line.weekend+i}/>)
-    }
-
-    return(
-        <View style={{flex:1}}>
-            <View style={{flex:1, backgroundColor:theme.accentColor}}>
-                <Text style={textStyles.lineupTitle}>{props.line.weekend} - {props.line.day}</Text>
-            </View>
-            <View style={{flex:1, paddingLeft:10}}>
-                {members}
-            </View>
-            
-        </View>
-    )
-}
-
-/**
- * Retorna o membro escalado em determinada função em determinada escala
- * @param role Função
- * @param lineup Escala
- * @returns Member
- */
-function GetRoleMember(role:string,lineup:Lineup):Member{
-    return lineup.line[role]
-}
-
-/**
- * Alterna o estado da troca de membros.
- * Caso não esteja no estado 'trocando', define o membro a ser trocado e entra no estado 'trocando'.
- * Se já está no estado, define o membro a ser trocado, realiza a troca e atualiza a tela.
- * @param role 
- * @param lineup 
- */
-function ToggleSwitch(role:string,lineup:Lineup){
-    if(!SwitchHandler.isSwitching){
-        SwitchHandler.switchingRole = role
-        SwitchHandler.switchingMemberLineup = lineup
-        SwitchHandler.isSwitching = true
-    }
-    else{
-        SwitchHandler.roleSwitched = role
-        SwitchHandler.memberSwitchedLineup = lineup
-        SwitchHandler.isSwitching = false
-        SwitchMembers(SwitchHandler.switchingRole,SwitchHandler.switchingMemberLineup,SwitchHandler.roleSwitched,SwitchHandler.memberSwitchedLineup)
-        router.replace("/screens/LineupScreen")
-    }     
-}
-/**
- * Troca os membros
- * @param switching membro a ser trocado
- * @param switched membro que substituirá
- * @param switchingRole Função do membro a ser trocado
- * @param switchedRole Função do membro que substituirá
- * @param switchingLineup Escala a ser trocado
- * @param switchedLineup Escala que substituirá
- */
-
-function SwitchMembers(switchingRole:string,switchingLineup:Lineup,switchedRole:string,switchedLineup:Lineup){
-    let switchingMember:Member = GetRoleMember(switchingRole,switchingLineup)
-    let switchedMember:Member = GetRoleMember(switchedRole,switchedLineup)
-    
-    switchingLineup.line[switchingRole] = switchedMember
-    switchedLineup.line[switchedRole] = switchingMember
-}
-
-/**
- * Configura e tela de seleção de membros para realizar uma
- * troca de membros na função de determinada escala
- * @param role 
- * @param lineup 
- */
-function ReplaceMember(role:string,lineup:Lineup){
-    SwitchHandler.isReplacing = true
-    let curLine:Lineup= lineup
-    let thisMember = GetRoleMember(role,curLine)
-    SwitchHandler.memberReplaced = thisMember
-
-    MemberSelectScreenOptions.selectMode="Single"
-    MemberSelectScreenOptions.selected = []
-    
-    MemberSelectScreenOptions.action = ()=>{
-
-        if(SwitchHandler.memberReplaced != null){
-            SwitchHandler.memberReplaced.rodizio[role]=SwitchHandler.memberReplaced.oldRodizio[role]
-            SwitchHandler.memberReplaced.priority=SwitchHandler.memberReplaced.oldPriority
-            SwitchHandler.memberReplaced.weekendPriority=SwitchHandler.memberReplaced.oldWeekendPriority
-        }
-                            
-        SwitchHandler.replacingMember = MemberSelectScreenOptions.selected[0]
-        SwitchHandler.replacingMember.rodizio[role]=6
-        SwitchHandler.replacingMember.priority=4
-        SwitchHandler.replacingMember.weekendPriority[lineup.day]=3
-        
-        curLine.line[role] = SwitchHandler.replacingMember
-        
-        let replacedID = GetMemberIndex(SwitchHandler.memberReplaced,curLine.members)
-        lineup.members.splice(replacedID,1)
-        lineup.members.push(SwitchHandler.replacingMember)
-
-        router.back()
-    }
-    MemberSelectScreenOptions.excludedMembers = curLine.members
-    MemberSelectScreenOptions.lineup = curLine
-    router.push("/screens/MemberSelectScreen")
 }
 
 /**

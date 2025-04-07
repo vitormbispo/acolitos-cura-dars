@@ -4,6 +4,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
 
+export function GetMemberArray(type:MemberType):Array<Member>{
+    switch(type){
+        case MemberType.ACOLYTE:
+            return MemberData.allAcolytes
+        case MemberType.COROINHA:
+            return MemberData.allCoroinhas
+        default:
+            console.error("Invalid type.")
+            return []
+    }
+}
 /**
  * Organiza a *array* de membros em ordem alfabética.
  * @param {Array<Member>} array Lista com os membros
@@ -325,4 +336,27 @@ export function DeepCopyObject(obj:any):any{
  */
 export function SaveData(key:string,data:any) {
     AsyncStorage.setItem(key,JSON.stringify(data))
+}
+
+/**
+ * Retorna uma lista com todos os membros que não possuem disponibilidade
+ * de local ou horário ou que estão marcados como indisponíveis para determinada escala
+ * 
+ * @param lineup Escala
+ * @param type Tipo de membro
+ * @returns Lista com os membros indisponíveis
+ */
+export function GetLineupUnvailableMembers(lineup:Lineup,type:MemberType):Array<Member>{
+    let members:Array<Member> = GetMemberArray(type)
+    let unvailable:Array<Member> = []
+
+    members.forEach((member)=>{
+        if(!member.disp[lineup.weekend][lineup.day] ||
+            lineup.place != undefined && !member.placeDisp[lineup.place] ||
+            !member.onLineup
+        ){
+            unvailable.push(member)
+        }
+    })
+    return unvailable
 }
