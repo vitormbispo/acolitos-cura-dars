@@ -3,9 +3,16 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
+import { menuStore } from "../store/store";
 
-export function GetMemberArray(type:MemberType):Array<Member>{
-    switch(type){
+/**
+ * Retorna a lista de todos os membros do tipo do contexto atual (menuStore)
+ * ou de um determinado tipo.
+ * @param memberType ?= tipo de membro (caso não seja definido, será usado o tipo do contexto)
+ * @returns Lista de membros 
+ */
+export function GetMemberArray(memberType:MemberType):Array<Member>{
+    switch(memberType){
         case MemberType.ACOLYTE:
             return MemberData.allAcolytes
         case MemberType.COROINHA:
@@ -55,18 +62,13 @@ export function LastMemberByNameIndex(array:Array<Member>){
 
 
 /**
- * Encontra o índice do membro dado ou -1 caso o membro não esteja na lista.
+ * Encontra o índice do membro dado na lista geral ou -1 caso o membro não esteja na lista.
  * @param {Member} member membro
- * @param {MemberType} type tipo de membro
+ * @param {MemberType} type OPCIONAL: tipo de membro (caso seja indefinido, utilizará o tipo do contexto atual)
  * @returns 
  */
-export function GetMemberTypeIndex(member:Member,type:MemberType):number{
-    let members:Array<Member>
-    
-    switch(type){
-        case MemberType.ACOLYTE:members = MemberData.allAcolytes; break
-        case MemberType.COROINHA:members = MemberData.allCoroinhas; break
-    }
+export function GetMemberTypeIndex(member:Member,type?:MemberType):number{
+    let members:Array<Member> = GetMemberArray(type)
     
     if(member == null){return -1}
 

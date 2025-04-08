@@ -61,7 +61,6 @@ class SwitchHandler{
 export default function LineupScreen(){
     const {type, theme} = menuStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
-    const [memberSelectOpen, setMemberSelectOpen] = useState(false)
     const upperBtn = LineupScreenOptions.loaded ? 
     <UpperButton img={ICONS.delete} press={()=>{
         setConfirmDeleteVisible(!confirmDeleteVisible)
@@ -75,13 +74,8 @@ export default function LineupScreen(){
                 {upperBtn}
             </View>
             <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
-            <MemberSelectModal visible={memberSelectOpen} title={"Substituir: "} multiselect={false}
-                returnCallback={()=>{
-                    SwitchHandler
-                }}/>
             <TextButton text={"Salvar escalas"} press={()=>{
-                MemberData.allLineupsAcolytes = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsAcolytes)
-                MemberData.SaveMemberData()
+                SaveAllLineups(type)
             }}/>
         </View>
     )

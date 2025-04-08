@@ -3,7 +3,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal, TextCheckBox, DataSection } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { AbbreviateText, OrganizeMemberArrayAlpha} from "../classes/Methods"
+import { AbbreviateText, GetMemberArray, OrganizeMemberArrayAlpha} from "../classes/Methods"
 import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
@@ -142,18 +142,14 @@ export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
  * @param type tipo de membro (MemberType)
  */
 export function EraseMember(id:number,type:MemberType){
-    let members:Array<Member>
+    let members:Array<Member> = GetMemberArray(type)
     let data:string
 
     switch (type){
         case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes
-            data = "AcolyteData"
-            break
+            data = "AcolyteData";break
         case MemberType.COROINHA:
-            members = MemberData.allCoroinhas
-            data = "CoroinhaData"
-            break
+            data = "CoroinhaData";break
     }
 
     members.splice(id,1)

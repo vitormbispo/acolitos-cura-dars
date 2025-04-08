@@ -6,7 +6,7 @@ import { contextStore, menuStore } from "../store/store";
 import { Member, MemberData, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
-import { GetLineupUnvailableMembers } from "./Methods";
+import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
 
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
@@ -924,7 +924,13 @@ export function GridLineupView(props:GridLineupViewProps){
       let newState = Object.create(replacingMember)
       newState.replacing = false
       updateReplacingMember(newState)
-  }
+    }
+
+    const CloseMemberSelect = ()=>{
+      let newState = Object.create(replacingMember)
+      newState.replacing = false
+      updateReplacingMember(newState)
+    }
 
     useEffect(()=>{
         if(!isRendering.current){
@@ -945,7 +951,6 @@ export function GridLineupView(props:GridLineupViewProps){
         }
     })
     
-
     return(
       <View style={{flex:1}}>
         <ScrollView horizontal={true} style={{flex:1}}>    
@@ -954,6 +959,7 @@ export function GridLineupView(props:GridLineupViewProps){
           </ScrollView>               
         </ScrollView>
 
+        {/* Seleção de membros para substituição */}
         { replacingMember.replacing ? 
           <MemberSelectModal 
           visible={replacingMember.replacing} 
@@ -961,16 +967,8 @@ export function GridLineupView(props:GridLineupViewProps){
           exceptions={replacingMember.lineup.members}
           unvailable={GetLineupUnvailableMembers(replacingMember.lineup,type)}
           returnCallback={Replace}
-          requestClose={()=>{
-            let newState = Object.create(replacingMember)
-            newState.replacing = false
-            updateReplacingMember(newState)
-          }}
-          onSubmit={()=>{
-            let newState = Object.create(replacingMember)
-            newState.replacing = false
-            updateReplacingMember(newState)
-          }}
+          requestClose={CloseMemberSelect}
+          onSubmit={CloseMemberSelect}
           />:null}
 
         {/* Carregamento */}
@@ -981,8 +979,6 @@ export function GridLineupView(props:GridLineupViewProps){
             </View>
           </View>
         </Modal>
-
-
       </View>
     )
 }
@@ -1018,20 +1014,13 @@ type MemberSelectModalProps = {
  * Janela para seleção de membros
  * @param props Propriedades:
  * @param visible = visível; @param title título da janela; @param returnCallback função de retorno que recebe a lista de 
- * membros selecionados como argumento; @param exceptions membros excluídos da lista; @param allSelected todos os membros selectionados?
+ * membros selecionados como argumento; @param exceptions membros excluídos da lista; @param unvailable membros indisponíveis na lista (ainda são exibidos e podem ser selecionados, mas com um aviso) @param allSelected todos os membros selectionados?
  * @param multiselect seleção de múltiplos membros ativa?; @param requestClose ação ao solicitar fechamento do modal; @param onSubmit ação ao confirmar
  * @returns 
  */
 export function MemberSelectModal(props:MemberSelectModalProps){
   const {theme,type} = menuStore()
-  let members:Array<Member> = []
-  
-  switch(type){
-    case MemberType.ACOLYTE:
-      members = MemberData.allAcolytes; break
-    case MemberType.COROINHA:
-      members = MemberData.allCoroinhas; break
-  }
+  let members:Array<Member> = GetMemberArray(type)
   
   if(props.selectedMembers == undefined){props.selectedMembers = []}
 
@@ -1041,9 +1030,9 @@ export function MemberSelectModal(props:MemberSelectModalProps){
   for(let i = 0; i < members.length;i++){
     let curMember = members[i]
     
-    if(props.exceptions != undefined && props.exceptions.includes(curMember)){continue}
+    if(props.exceptions != undefined && props.exceptions.includes(curMember)){continue} // Não adiciona caso esteja nas excessões
     
-    let color = "#FFFFFF"
+    let color = "#FFFFFF" // Cor do botão
     
     if(props.unvailable != null && props.unvailable.includes(curMember)){
       color = theme.disabled
@@ -1055,19 +1044,21 @@ export function MemberSelectModal(props:MemberSelectModalProps){
 
     let newComp =
     
-    <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",
-      backgroundColor:color}} onPress={()=>{
+    <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",backgroundColor:color}} 
+    onPress={()=>{
       setSelected([curMember])
     }} key={i} disabled={props.multiselect}>
+      
       <Image source={GetMemberIcon()} style={uiStyles.buttonIcon}/>
       <Text style={textStyles.memberNick}>{curMember.nick}</Text>
       
+      {/* Aviso de indisponibilidade */}
       {props.unvailable != undefined && props.unvailable.includes(curMember) ?
       <Text style={[textStyles.dataTitle,{color:theme.reject}]}>Indisponível!</Text>
       :
       null
-    }
-
+      }
+      {/* Exibe uma checkbox caso o modo multi seleção esteja ativado */}
       {props.multiselect ?
       <CheckBox checked={selected.includes(curMember)} press={()=>{
         selected.includes(curMember) ?

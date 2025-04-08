@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MemberType } from "./MemberData"
-import { SaveData } from "./Methods"
 
 /**
  * Conjunto de funções
@@ -226,4 +225,13 @@ export async function LoadCoroinhaRolesets() {
     if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
     }
+}
+
+/**
+ * Salva os dados no AsyncStorage
+ * @param key Chave
+ * @param data Dados
+ */
+function SaveData(key:string,data:any) {
+    AsyncStorage.setItem(key,JSON.stringify(data))
 }

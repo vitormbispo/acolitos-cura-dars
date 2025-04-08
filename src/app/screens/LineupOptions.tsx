@@ -8,6 +8,7 @@ import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import { ICONS } from "../classes/AssetManager"
 import { MemberData, MemberType } from "../classes/MemberData"
+import { GetMemberArray } from "../classes/Methods"
 
 
 export default function LineupOptions(){
@@ -28,14 +29,7 @@ export default function LineupOptions(){
                         genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = [Dates.defaultDays.slice()[0]]
-
-                        switch(type){
-                                case MemberType.ACOLYTE:
-                                        genOptions.members = MemberData.allAcolytes.slice(); break
-                                case MemberType.COROINHA:
-                                        genOptions.members = MemberData.allCoroinhas.slice(); break
-                        }
-
+                        genOptions.members = GetMemberArray(type).slice()
                 }}/>
        
         <LinkRowImageButton textStyle=
@@ -49,13 +43,7 @@ export default function LineupOptions(){
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = Dates.defaultDays.slice()
                         updateWeekend(Dates.defaultWeekends.slice()[0])
-
-                        switch(type){
-                                case MemberType.ACOLYTE:
-                                        genOptions.members = MemberData.allAcolytes.slice(); break
-                                case MemberType.COROINHA:
-                                        genOptions.members = MemberData.allCoroinhas.slice(); break
-                        }
+                        genOptions.members = GetMemberArray(type).slice()
 
                 }}/>
         
@@ -69,14 +57,7 @@ export default function LineupOptions(){
                         genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}  
                         genOptions.monthDays = Dates.DefaultMonthDays()
-
-                        switch(type){
-                                case MemberType.ACOLYTE:
-                                        genOptions.members = MemberData.allAcolytes.slice(); break
-                                case MemberType.COROINHA:
-                                        genOptions.members = MemberData.allCoroinhas.slice(); break
-                        }
-                                  
+                        genOptions.members = GetMemberArray(type).slice()                    
                 }}/>
         
         <LinkRowImageButton textStyle=

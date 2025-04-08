@@ -1,4 +1,4 @@
-import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray } from "./Methods";
+import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Methods";
 import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
@@ -128,18 +128,8 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
  * @param {string} day Dia
  * @returns {Lineup} Uma nova escala aleatória
  */
-export function GenerateRandomLineup(roleset:RoleSet,type:MemberType,weekend:string="Outro",day:string="Outro",place?:string):Lineup{
-    
-    let members:Array<Member> = []
-
-    switch(type){
-        case MemberType.COROINHA : members = MemberData.allCoroinhas.slice(); break;
-        case MemberType.ACOLYTE : members = MemberData.allAcolytes.slice(); break;
-        default: 
-            console.error("Invalid type.");
-            return null;
-    
-    }
+export function GenerateRandomLineup(roleset:RoleSet,type?:MemberType,weekend:string="Outro",day:string="Outro",place?:string):Lineup{  
+    let members:Array<Member> = GetMemberArray(type).slice()
 
     let availableMembers = []
 
@@ -334,15 +324,10 @@ function IncreaseAllRoleCooldown(member:Member,weight:number,type:MemberType,rol
  * 
  * @param exceptions Exceções
  * @param weight Peso
+ * @param type OPCIONAL: tipo de membro
  */
-function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type:MemberType){
-    let members:Array<Member> = []
-
-    switch(type) {
-        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
-        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
-        default: console.error("Invalid type"); break
-    }
+function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type?:MemberType){
+    let members:Array<Member> = GetMemberArray(type)
 
     for(let i = 0; i < members.length;i++){
         let curMember = members[i]
@@ -358,16 +343,11 @@ function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type:
  * @param exceptions Excessões
  * @param day Dia
  * @param weight Peso
+ * @param type OPCIONAL: tipo de membro
  */
-function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:number,type:MemberType) {
-    let members:Array<Member> = []
+function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:number,type?:MemberType) {
+    let members:Array<Member> = GetMemberArray(type)
 
-    switch(type) {
-        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
-        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
-        default: console.error("Invalid type"); break
-    }
-    
     for(let i = 0; i < members.length;i++) {
         let curMember = members[i]
 
@@ -383,16 +363,11 @@ function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:numbe
  * @param exceptions Excessões
  * @param place Local
  * @param weight Peso
+ * @param type tipo de membro
  */
-function IncreaseAllPlacePriority(exceptions:Array<Member>,place:string,weight:number,type:MemberType) {
-    let members:Array<Member> = []
+function IncreaseAllPlacePriority(exceptions:Array<Member>,place:string,weight:number,type?:MemberType) {
+    let members:Array<Member> = GetMemberArray(type)
 
-    switch(type) {
-        case MemberType.ACOLYTE:  members = MemberData.allAcolytes; break
-        case MemberType.COROINHA: members = MemberData.allCoroinhas; break
-        default: console.error("Invalid type"); break
-    }
-    
     for(let i = 0; i < members.length;i++) {
         let curMember = members[i]
 

@@ -8,7 +8,7 @@ import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
-import { ResetAllLastWeekend } from "../classes/Methods"
+import { GetMemberArray, ResetAllLastWeekend } from "../classes/Methods"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
@@ -299,11 +299,8 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false
 
-    let members:Array<Member>  
-    switch(type) {
-        case MemberType.ACOLYTE:members = MemberData.allAcolytes;break
-        case MemberType.COROINHA:members = MemberData.allCoroinhas;break
-    }
+    let members:Array<Member> = GetMemberArray(type)
+
     if(members == null || members.length == 0){
         console.error("Unable to generate lineup. Members is empty.")
         return
