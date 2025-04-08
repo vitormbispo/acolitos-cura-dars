@@ -913,7 +913,7 @@ export function GridLineupView(props:GridLineupViewProps){
     
     for(let i = 0; i < keys.length;i++){ // Colunas
     rows.push(
-        <View style={{flex:1,flexDirection:"row",alignSelf:"center"}} key={i}>
+        <View style={{flex:1,flexDirection:"row"}} key={i}>
             {sortedLines[keys[i]]}
         </View>
         )

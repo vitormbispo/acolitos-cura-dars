@@ -116,7 +116,8 @@ export function RemoveMemberFromList(member:Member,list:Array<Member>){
  * @param {Array<string>} roles Funções
  * @returns 
  */
-export function GenerateLineupPrompt(lines:Array<Lineup>,roles:Array<string>):string{
+export function GenerateLineupPrompt(lines:Array<Lineup>):string{
+    /*
     let prompts = []
     for(let i = 0; i < lines.length; i++){
         let curLineup = lines[i]
@@ -150,6 +151,71 @@ export function GenerateLineupPrompt(lines:Array<Lineup>,roles:Array<string>):st
     }
     
     return finalPrompt
+    */
+    
+    let placeMappedLines = {}
+    let placeMappedRoles = {}
+    let rolesSet:Set<string> = new Set<string>()
+
+    for(let i = 0; i < lines.length; i++){
+        let curLine = lines[i]
+        if(curLine.place != undefined){
+            if(placeMappedLines[curLine.place] == undefined){
+                placeMappedLines[curLine.place] = [curLine]
+                placeMappedRoles[curLine.place] = new Set<string>()
+                
+                curLine.roleset.set.forEach((role)=>{
+                    placeMappedRoles[curLine.place].add(role)
+                })
+            }
+            else{
+                placeMappedLines[curLine.place].push(curLine)
+                curLine.roleset.set.forEach((role)=>{
+                    placeMappedRoles[curLine.place].add(role)
+                })
+            }
+        }
+
+        curLine.roleset.set.forEach((role)=>{
+            rolesSet.add(role)
+        })
+    }
+    let places = Object.keys(placeMappedLines)
+    
+    let prompts = []
+    let prompt = "Construa algumas tabelas de escala de serviço. Quero que seja construída uma escala INDIVIDUAL para cada local, sendo os locais: "
+
+    places.forEach((place)=>{
+        prompt += place + ";"
+    })
+
+    prompt += ". Cada um desses locais tem funções distintas que definirão as colunas. As colunas(funções) de cada local estão definidas em conjuntos separados por colchetes a seguir. Respectivamente são: "
+
+    Object.keys(placeMappedRoles).forEach((place)=>{
+        let roles:Array<string> = placeMappedRoles[place]
+        prompt += place+":["
+        roles.forEach((role)=>{
+            prompt+= role+","
+        })
+        prompt += "];"
+    })
+
+    prompt += "A seguir, serão descritas todas as escalas de cada local no formato de vetores de objetos, ou seja: local1=[{linha:*nome da linha*,membros:[*lista de membros*]}] e por assim em diante:"
+    Object.keys(placeMappedRoles).forEach((place)=>{
+        let placeLines:Array<Lineup> = placeMappedLines[place]
+        prompt += "\n"+place+"=["
+        placeLines.forEach((line)=>{
+            let members = []
+            line.members.forEach((member)=>{
+                members.push(member.nick)
+            })
+            prompt += "{linha:"+line.weekend+line.day+","+"membros:["+members+"]},"
+        })
+        prompt += "\n];"
+    })
+
+    prompt += "Agora, a partir desses dados, construa uma planilha individual para cada local, relacionando os membros a suas funções em seus respectivos dias e locais,lembrando que os membros de cada linha estão na mesma ordem da função que estão exercendo"
+    return prompt
 }
 
 /**

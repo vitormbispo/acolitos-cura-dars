@@ -624,6 +624,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     // Criar botões de seleção de dias
     let daysChecks = []
     const dayExceptions = useRef([])
+    dayExceptions.current = options.current.dayExceptions != undefined ? options.current.dayExceptions : dayExceptions.current
     for(let i = 0; i < curGenOptions.dateset.days.length; i++){
         let curDay = curGenOptions.dateset.days[i]
         

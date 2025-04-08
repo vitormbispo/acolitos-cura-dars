@@ -47,9 +47,10 @@ export class Lineup{
         console.log("Before: "+aux.name)
 
         this.line[targetRole] = srcLineup.GetRoleMember(srcRole)
-
-        srcLineup.line[srcRole] = aux
+        this.members[this.members.indexOf(aux)] = srcLineup.GetRoleMember(srcRole)
         
+        srcLineup.line[srcRole] = aux
+        this.members[this.members.indexOf(this.GetRoleMember(targetRole))] = aux
         console.log("After: "+this.line[srcRole].name)
         update()
     }

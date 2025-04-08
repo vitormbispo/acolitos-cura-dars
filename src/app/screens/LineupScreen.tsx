@@ -45,19 +45,6 @@ export class LineupScreenOptions{
     }
 }
 
-// Gerenciador de trocas e substituições de membros
-class SwitchHandler{
-    static isSwitching = false
-    static switchingRole:string // Função do membro que está sendo trocado
-    static roleSwitched:string // Função do membro que entrará no lugar
-    static switchingMemberLineup:Lineup
-    static memberSwitchedLineup:Lineup
-
-    static isReplacing = false
-    static memberReplaced:Member // Membro substituído
-    static replacingMember:Member // Membro que substituirá
-}
-
 export default function LineupScreen(){
     const {type, theme} = menuStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
@@ -74,9 +61,26 @@ export default function LineupScreen(){
                 {upperBtn}
             </View>
             <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
-            <TextButton text={"Salvar escalas"} press={()=>{
-                SaveAllLineups(type)
-            }}/>
+            
+            <View style={{flexDirection:"row",justifyContent:"center"}}>
+                <TextButton text={"Salvar escalas"} press={()=>{
+                    SaveAllLineups(type)
+                }}/>
+                <TextButton text={"Copiar prompt gemini"} press={()=>{
+                    CopyGeminiPrompt()
+                }}/>
+            </View>
+            
+
+            <ConfirmationModal 
+                visible={confirmDeleteVisible} 
+                confirmationText={"Deseja excluir a escala: \""+LineupScreenOptions.name+"\"?"} 
+                confirmAction={() => {
+                    EraseLineup(LineupScreenOptions.loadedLineIndex,type)
+                    router.back()}}  
+                declineAction={()=>{
+                    setConfirmDeleteVisible(!confirmDeleteVisible)
+                }}/> 
         </View>
     )
 }
@@ -139,5 +143,5 @@ function SaveAllLineups(type:MemberType){
  * Copia um prompt para o Gemini à área de transferência.
  */
 function CopyGeminiPrompt(){
-    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups,[]))
+    CopyToClipboard(GenerateLineupPrompt(LineupScreenOptions.lineups))
 }
