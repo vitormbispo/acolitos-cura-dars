@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Modal, Role} from "react-native"
-import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps"
+import { View, Text, ScrollView, Modal, Role, Pressable, TextInput} from "react-native"
+import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -14,6 +14,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
 import { useRef, useState } from "react"
 import { Places } from "../classes/Places"
+import { PresetsData } from "../classes/PresetsData"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 
@@ -51,12 +52,11 @@ enum Randomness{
  * Tela das opções de geração de escalas.
  */
 export default function LineupGenerationOptions(){    
-    const {lineupType,curGenOptions} = contextStore()
+    const {lineupType,curGenOptions,updateGenOptions} = contextStore()
     const [memberSelectOpen,setMemberSelectOpen] = useState(false)
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
     const {type} = menuStore()
     const [isGenerating,setIsGenerating] = useState(false)
-    const [randomness,setRandomness] = useState(Randomness.MEDIUM)
     
     let options:React.JSX.Element
 
@@ -75,6 +75,8 @@ export default function LineupGenerationOptions(){
             rolesets = Roles.coroinhaRoleSets.slice(); break
     }
 
+
+
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
 
@@ -87,6 +89,29 @@ export default function LineupGenerationOptions(){
         })
     }
 
+
+    const [presetAddOpen,setPresetAddOpen] = useState(false)
+    const newPresetName = useRef("")
+    let presets = []
+    switch(type){
+        case MemberType.ACOLYTE:
+            presets = PresetsData.AcolyteGenerationPresets; break
+        case MemberType.COROINHA:
+            presets = PresetsData.CoroinhaGenerationPresets; break
+    }
+    let presetsOptions:Array<string> = ["Novo +"]
+    let presetsActions:Array<(...args:any)=>any> = [()=>{setPresetAddOpen(true)}]
+
+    for(let i = 0; i < presets.length; i++){
+        let curSet = presets[i]
+
+        presetsOptions.push(curSet.name)
+        presetsActions.push(()=>{
+            updateGenOptions(curSet.options)
+            console.log("Updated!")
+        })
+    }
+
     const scrollRef = useRef<ScrollView>(null)
     return(
         <View style={{flex:1}}>
@@ -96,6 +121,8 @@ export default function LineupGenerationOptions(){
 
                 <DataSection text={"- Opções"}/>
                 
+                <Text style = {[textStyles.dataTitle,{padding:10}]}>- Predefinições:</Text>
+                <DropDown options={presetsOptions} actions={presetsActions}/>
                 {/* < Opções de aleatoriedade > */}
                 <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
                 <RandomnessSelect genOptions={curGenOptions} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
@@ -113,7 +140,7 @@ export default function LineupGenerationOptions(){
                 <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
                 
                 <DataSection text={"- Local"}/>
-                <PlaceSelect selectedPlaces={generationOptions.places}/>
+                <PlaceSelect selectedPlaces={curGenOptions.places}/>
                 {options}
 
                 <AdvancedOptions/>
@@ -123,8 +150,8 @@ export default function LineupGenerationOptions(){
                 <MemberSelectModal title={"Selecione"} 
                     returnCallback={
                         (selected)=>{
-                            generationOptions.members = selected; 
-                            console.log(generationOptions.members.length)
+                            curGenOptions.members = selected; 
+                            console.log(curGenOptions.members.length)
                         }}
                     visible={memberSelectOpen} 
                     requestClose={()=>{setMemberSelectOpen(false)}} 
@@ -139,10 +166,53 @@ export default function LineupGenerationOptions(){
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
                 setTimeout(()=>{ // O setTimeout serve apenas para iniciar a animação de loading.
-                    GerarEscala(generationOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
+                    GerarEscala(curGenOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
                 },10)
             }}/>
             <LoadingModal visible={isGenerating}/>
+
+            <Modal visible={presetAddOpen} transparent={true}>
+                <Pressable style={{backgroundColor:"#999999",justifyContent:"center",alignItems:"center"}}>
+                    <View style={{borderRadius:15,alignSelf:"center"}}>
+                        <Text>Insira o nome da nova predefinição:</Text>
+                        <TextInputBox title={"Nome:"} onChangeText={(text)=>{newPresetName.current = text}}/>
+                        <TextButton text={"Concluir"} press={()=>{
+
+                            // TODO: Não usar esse método!!! 
+                            // A princípio funciona, mas caso seja necessário utilizar um método 
+                            // de uma das classes armazenadas aqui, a classe não será uma instância, 
+                            // será um objeto e não vai conter o método.
+                            
+                            let newOptions:GenerationOptionsType = {
+                                members:curGenOptions.members.slice(),
+                                weekend:curGenOptions.weekend,
+                                day:curGenOptions.day,
+                                allowOut:curGenOptions.allowOut,
+                                allRandom:curGenOptions.allRandom,
+                                solemnity:curGenOptions.solemnity,
+                                lineupType:curGenOptions.lineupType,
+                                monthDays:Object.create(curGenOptions.monthDays),
+                                dayRotation:curGenOptions.dayRotation,
+                                randomness:curGenOptions.randomness,
+                                roleset:Object.create(curGenOptions).roleset,
+                                places:curGenOptions.places.slice(),
+                                dateset:Object.create(curGenOptions).dateset,
+                                exclusiveOptions:Object.create(curGenOptions.exclusiveOptions)
+
+                            }
+                            let newPreset = {name:newPresetName.current,options:newOptions}
+                            
+                            switch(type){
+                                case MemberType.ACOLYTE:
+                                    PresetsData.AcolyteGenerationPresets.push(newPreset); break
+                                case MemberType.COROINHA:
+                                    PresetsData.CoroinhaGenerationPresets.push(newPreset); break
+                            }
+                            setPresetAddOpen(false)
+                        }}/>
+                    </View>
+                </Pressable>
+            </Modal>
         </View>
     )
 }
@@ -755,9 +825,16 @@ type RandomnessSelectProps = {
     randomnessNames:Array<string>
 }
 function RandomnessSelect(props:RandomnessSelectProps){
-    const [randomness,setRandomness] = useState(Randomness.MEDIUM)
+    const {curGenOptions} = contextStore()
+    const [randomness,setRandomness] = useState(curGenOptions.randomness)
+    
     let keys = Object.values(Randomness).filter(key => typeof key == "number")
     let selectors = []
+    
+    const UpdateRandomess = ()=>{
+        setRandomness(props.genOptions.randomness)
+        console.log("a")
+    }
     for(let i = 0; i < keys.length;i++){
         let level:Randomness = Number(keys[i])
         let comp =
@@ -770,7 +847,7 @@ function RandomnessSelect(props:RandomnessSelectProps){
     }
 
     return(
-        <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
+        <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}} onLayout={()=>{UpdateRandomess()}}>
             {selectors}
         </View>
     )

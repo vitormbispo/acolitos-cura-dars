@@ -27,6 +27,7 @@ export type ContextStates = {
     
     updateReplacingMember: (state:{role:string,lineup:Lineup,replacing:boolean,member:Member,update?:(...args:any)=>void}) => void
     updateSwitchingMember: (state:{role:string,lineup:Lineup,switching:boolean,update?:(...args:any)=>void}) => void
+    updateGenOptions: (state:GenerationOptionsType)=>void
     updateAppStarted: (state:boolean) => void
     updateMemberID: (id:number) => void
     updateRolesetID: (id:number) => void
@@ -106,6 +107,7 @@ export const contextStore = create<ContextStates>((set)=>({
     
     updateReplacingMember: (member) => set(()=>({replacingMember:member})),
     updateSwitchingMember: (member) => set(()=>({switchingMember:member})),
+    updateGenOptions: (newState) => set(()=>({curGenOptions:newState})),
     updateAppStarted: (newState) => set(()=>({appStarted:newState})),
     updateMemberID: (newID) => set(()=>({memberID:newID})),
     updateRolesetID: (newID) => set(()=>({rolesetID:newID})),
