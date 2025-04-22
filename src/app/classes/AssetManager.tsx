@@ -18,6 +18,8 @@ export const ICONS = {
     import:require("@/src/app/item_icons/import_ico.png"),
     document:require("@/src/app/item_icons/document_ico.png"),
     erase_data:require("@/src/app/item_icons/erase_data_ico.png"),
-    alert:require("@/src/app/item_icons/alert_ico.png")
+    alert:require("@/src/app/item_icons/alert_ico.png"),
+    add:require("@/src/app/shapes/add_ico.png"),
+    save:require("@/src/app/shapes/save_ico.png")
 }
 

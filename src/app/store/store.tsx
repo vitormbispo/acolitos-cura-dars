@@ -100,7 +100,8 @@ export const contextStore = create<ContextStates>((set)=>({
             "dateset":new DateSet(),
             "places":[],
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
-            "exclusiveOptions":{}
+            "exclusiveOptions":{},
+            "preset":{}
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},
     replacingMember:{role:undefined,lineup:undefined,replacing:false,member:undefined,update:undefined},

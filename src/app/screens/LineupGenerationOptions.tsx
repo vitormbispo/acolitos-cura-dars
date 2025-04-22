@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Modal, Role, Pressable, TextInput} from "react-native"
-import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps"
+import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid} from "react-native"
+import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -12,7 +12,7 @@ import { GetMemberArray, ResetAllLastWeekend } from "../classes/Methods"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Places } from "../classes/Places"
 import { PresetsData } from "../classes/PresetsData"
 
@@ -35,7 +35,8 @@ export type GenerationOptionsType = {
     "roleset":RoleSet,
     "places":Array<string>,
     "dateset":DateSet,
-    "exclusiveOptions":object
+    "exclusiveOptions":object,
+    "preset":object
 }
 
 /**
@@ -54,8 +55,7 @@ enum Randomness{
 export default function LineupGenerationOptions(){    
     const {lineupType,curGenOptions,updateGenOptions} = contextStore()
     const [memberSelectOpen,setMemberSelectOpen] = useState(false)
-    const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     const [isGenerating,setIsGenerating] = useState(false)
     
     let options:React.JSX.Element
@@ -75,8 +75,6 @@ export default function LineupGenerationOptions(){
             rolesets = Roles.coroinhaRoleSets.slice(); break
     }
 
-
-
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
 
@@ -85,13 +83,18 @@ export default function LineupGenerationOptions(){
 
         rolesetOptions.push(curSet.name)
         rolesetActions.push(()=>{
-            curGenOptions.roleset = curSet
+            let newState:GenerationOptionsType = JSON.parse(JSON.stringify(curGenOptions))
+            newState.roleset = curSet
+            updateGenOptions(newState)
         })
     }
 
-
+    /**
+     * Configurações de predefinições 
+    */  
     const [presetAddOpen,setPresetAddOpen] = useState(false)
     const newPresetName = useRef("")
+    const curPreset = useRef({}) // Referência da predefinição atual. Use essa referência para modificar diretamente a predefinição.
     let presets = []
     switch(type){
         case MemberType.ACOLYTE:
@@ -99,20 +102,49 @@ export default function LineupGenerationOptions(){
         case MemberType.COROINHA:
             presets = PresetsData.CoroinhaGenerationPresets; break
     }
-    let presetsOptions:Array<string> = ["Novo +"]
-    let presetsActions:Array<(...args:any)=>any> = [()=>{setPresetAddOpen(true)}]
+    let presetsOptions:Array<string> = []
+    let presetsActions:Array<(...args:any)=>any> = []
 
     for(let i = 0; i < presets.length; i++){
-        let curSet = presets[i]
+        let curSet = JSON.parse(JSON.stringify(presets[i]))
 
         presetsOptions.push(curSet.name)
         presetsActions.push(()=>{
+            curPreset.current = presets[i] // Definindo a referência
             updateGenOptions(curSet.options)
-            console.log("Updated!")
         })
     }
 
+    // Funções das predefinições:
+    const CreateNewPreset = ()=>{
+        let newOptions:any = CloneGenerationOptions(curGenOptions)                           
+        let newPreset = {name:newPresetName.current,options:newOptions}
+        
+        switch(type){
+            case MemberType.ACOLYTE:
+                PresetsData.AcolyteGenerationPresets.push(newPreset);
+                newOptions.presetID = PresetsData.AcolyteGenerationPresets.length-1
+                break
+            case MemberType.COROINHA:
+                PresetsData.CoroinhaGenerationPresets.push(newPreset);
+                newOptions.presetID = PresetsData.CoroinhaGenerationPresets.length-1
+        }
+        setPresetAddOpen(false)
+    }
+
+    
+
     const scrollRef = useRef<ScrollView>(null)
+    
+    // Funções
+    const SavePreset = () =>{
+
+    }
+    const UpdateRandomness = (newRandomness:number)=>{
+        let newState = JSON.parse(JSON.stringify(curGenOptions))
+        newState.randomness = newRandomness
+        updateGenOptions(newState)
+    }
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
@@ -122,7 +154,18 @@ export default function LineupGenerationOptions(){
                 <DataSection text={"- Opções"}/>
                 
                 <Text style = {[textStyles.dataTitle,{padding:10}]}>- Predefinições:</Text>
-                <DropDown options={presetsOptions} actions={presetsActions}/>
+                <View style={{flexDirection:"row"}}>
+                    <DropDown placeholder={"Selecione: "}options={presetsOptions} actions={presetsActions}/>
+                    <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
+                    <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
+                        curPreset.current = JSON.parse(JSON.stringify(curGenOptions))
+                        if(Platform.OS == "android"){
+                            ToastAndroid.show("Predefinição atualizada!",2)
+                          
+                        }
+                        }}/>
+                </View>
+                
                 {/* < Opções de aleatoriedade > */}
                 <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
                 <RandomnessSelect genOptions={curGenOptions} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
@@ -137,7 +180,11 @@ export default function LineupGenerationOptions(){
 
                 {/* RoleSet */}
                 <DataSection text={"- Conjunto de funções"}/>
-                <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
+                <DropDown 
+                    options={rolesetOptions} 
+                    actions={rolesetActions} 
+                    selectedTextOverride={curGenOptions.roleset.name} 
+                    offset={{x:0,y:0}}/>
                 
                 <DataSection text={"- Local"}/>
                 <PlaceSelect selectedPlaces={curGenOptions.places}/>
@@ -150,8 +197,7 @@ export default function LineupGenerationOptions(){
                 <MemberSelectModal title={"Selecione"} 
                     returnCallback={
                         (selected)=>{
-                            curGenOptions.members = selected; 
-                            console.log(curGenOptions.members.length)
+                            curGenOptions.members = selected;
                         }}
                     visible={memberSelectOpen} 
                     requestClose={()=>{setMemberSelectOpen(false)}} 
@@ -171,47 +217,18 @@ export default function LineupGenerationOptions(){
             }}/>
             <LoadingModal visible={isGenerating}/>
 
-            <Modal visible={presetAddOpen} transparent={true}>
-                <Pressable style={{backgroundColor:"#999999",justifyContent:"center",alignItems:"center"}}>
-                    <View style={{borderRadius:15,alignSelf:"center"}}>
+            {/* Modal para criar nova predefinição */}
+            <Modal visible={presetAddOpen} transparent={true} onRequestClose={()=>{setPresetAddOpen(false)}} animationType="fade">
+                <Pressable style={{flex:1,backgroundColor:"#00000080",alignItems:"center",justifyContent:"center"}} onPress={()=>setPresetAddOpen(false)}>
+                    <View style={{borderRadius:20,alignSelf:"center",backgroundColor:theme.primary,padding:30}}>
                         <Text>Insira o nome da nova predefinição:</Text>
                         <TextInputBox title={"Nome:"} onChangeText={(text)=>{newPresetName.current = text}}/>
                         <TextButton text={"Concluir"} press={()=>{
-
-                            // TODO: Não usar esse método!!! 
-                            // A princípio funciona, mas caso seja necessário utilizar um método 
-                            // de uma das classes armazenadas aqui, a classe não será uma instância, 
-                            // será um objeto e não vai conter o método.
-                            
-                            let newOptions:GenerationOptionsType = {
-                                members:curGenOptions.members.slice(),
-                                weekend:curGenOptions.weekend,
-                                day:curGenOptions.day,
-                                allowOut:curGenOptions.allowOut,
-                                allRandom:curGenOptions.allRandom,
-                                solemnity:curGenOptions.solemnity,
-                                lineupType:curGenOptions.lineupType,
-                                monthDays:Object.create(curGenOptions.monthDays),
-                                dayRotation:curGenOptions.dayRotation,
-                                randomness:curGenOptions.randomness,
-                                roleset:Object.create(curGenOptions).roleset,
-                                places:curGenOptions.places.slice(),
-                                dateset:Object.create(curGenOptions).dateset,
-                                exclusiveOptions:Object.create(curGenOptions.exclusiveOptions)
-
-                            }
-                            let newPreset = {name:newPresetName.current,options:newOptions}
-                            
-                            switch(type){
-                                case MemberType.ACOLYTE:
-                                    PresetsData.AcolyteGenerationPresets.push(newPreset); break
-                                case MemberType.COROINHA:
-                                    PresetsData.CoroinhaGenerationPresets.push(newPreset); break
-                            }
-                            setPresetAddOpen(false)
+                            CreateNewPreset()
                         }}/>
                     </View>
                 </Pressable>
+                
             </Modal>
         </View>
     )
@@ -707,7 +724,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
             else{
                 dayExceptions.current.splice(dayIndex,1)
             }
-            console.log(dayExceptions.current)
+            
         }} topText={curDay} topTextStyle={textStyles.buttonText} key={i}/>
 
         daysChecks.push(comp)
@@ -790,7 +807,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                             returnCallback={
                                 (selected)=>{
                                     options.current.members = selected; 
-                                    console.log(options.current.members.length)
+                                    
                                 }}
                             visible={memberSelectOpen} 
                             requestClose={()=>{setMemberSelectOpen(false)}} 
@@ -825,30 +842,68 @@ type RandomnessSelectProps = {
     randomnessNames:Array<string>
 }
 function RandomnessSelect(props:RandomnessSelectProps){
-    const {curGenOptions} = contextStore()
-    const [randomness,setRandomness] = useState(curGenOptions.randomness)
+    const [randomness,setRandomness] = useState(props.genOptions.randomness)
     
     let keys = Object.values(Randomness).filter(key => typeof key == "number")
     let selectors = []
     
-    const UpdateRandomess = ()=>{
-        setRandomness(props.genOptions.randomness)
-        console.log("a")
-    }
     for(let i = 0; i < keys.length;i++){
         let level:Randomness = Number(keys[i])
         let comp =
         <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}} key={i}>
             <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>{props.randomnessNames[i]}</Text>
-            <SingleCheck img={CheckImage(randomness,level)} press={()=>{props.genOptions.randomness = level, setRandomness(level)}}/>
+            <SingleCheck img={CheckImage(props.genOptions.randomness,level)} press={()=>{setRandomness(level),props.genOptions.randomness = level}}/>
         </View>;
         selectors.push(comp)
         
     }
 
+    useEffect(()=>{
+        setRandomness(props.genOptions.randomness)
+        console.log("Setted")
+      },[props])
+    
     return(
-        <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}} onLayout={()=>{UpdateRandomess()}}>
+        <View style={{flexDirection:"row",alignItems:"center",flex:0.5,alignContent:"center"}}>
             {selectors}
         </View>
     )
+}
+
+function CloneGenerationOptions(source:GenerationOptionsType){
+    let newOptions:any = JSON.parse(JSON.stringify(source)) // Cópia superficial. Referências à valores mutáveis ainda são as mesmas da original.
+
+    // Criando novas instâncias dos valores mutáveis:
+    let newDateset = new DateSet()
+    newDateset.days = source.dateset.days.slice()
+    newDateset.weekends = source.dateset.weekends.slice()
+
+    newOptions.dateset = newDateset
+
+    // Criando cópia profunda de todas as configurações exclusivas:
+    newOptions.exclusiveOptions = {}
+    let exclusiveOptionsKeys = Object.keys(source.exclusiveOptions)
+    for(let i = 0; i < exclusiveOptionsKeys.length; i++){
+        let option = exclusiveOptionsKeys[i]
+        newOptions.exclusiveOptions[option] = CloneExclusiveOptions(source.exclusiveOptions[option])
+    }
+
+    newOptions.members = source.members.slice()
+    
+    newOptions.monthDays = JSON.parse(JSON.stringify(source.monthDays))
+    newOptions.places = source.places.slice()
+
+    return newOptions
+}
+
+function CloneExclusiveOptions(source:object) {
+    let clone = JSON.parse(JSON.stringify(source)) // Cópia superficial
+    
+    clone["members"] = source["members"].slice()
+    
+    let oldRoleset = source["roleset"]
+    clone["roleset"] = new RoleSet(oldRoleset.name,oldRoleset.type,oldRoleset.set.slice(),false)
+    clone["dayExceptions"] = source["dayExceptions"].slice()
+    clone["places"] = source["places"].slice()
+    return clone
 }

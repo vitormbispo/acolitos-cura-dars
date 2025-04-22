@@ -160,6 +160,12 @@ export function CheckBox(props:CheckBoxProps){
     props.press = ()=>{}
   }
 
+  useEffect(()=>{
+    setChecked(props.checked ? 1 : 0)
+    console.log("Setted")
+  },[props])
+
+  
   let topText:React.JSX.Element = props.topText != undefined ? 
     <Text style={[props.topTextStyle,textStyles.imageButtonText,{position:"absolute",bottom:40}]}>{props.topText}</Text> : null
   
@@ -194,20 +200,26 @@ type TextCheckBoxProps = {
  * @returns 
  */
 export function TextCheckBox(props:TextCheckBoxProps){
-
   const[check,setChecked] = props.checked ? useState(1) : useState(0)
   const images = [require("@/src/app/shapes/check_false.png"),require("@/src/app/shapes/check_true.png")]
   
   const changeImage = () =>{
-    setChecked((check === 1) ? 0 : 1)
+    console.log("Chenge it")
+    setChecked(!check ? 1:0)
   }
 
   if(props.press == undefined){
     props.press = ()=>{}
   }
+
   if(props.before == undefined){
     props.before = false
   }
+
+  useEffect(()=>{
+    setChecked(props.checked ? 1 : 0)
+    console.log("Setted")
+  },[props])
 
   let text:React.JSX.Element = <Text style={[props.textStyle,textStyles.imageButtonText,{marginLeft:20}]}>{props.text}</Text>
 
@@ -696,6 +708,7 @@ type DropDownTypes = {
   actions?:Array<(...args:any)=>any>
   placeholder?:string
   offset?:{x:number,y:number}
+  selectedTextOverride?:string
 }
 /**
  * Menu no estilo dropdown de escolha única.
@@ -703,6 +716,7 @@ type DropDownTypes = {
  * actions = ações ao selecionar cada opção (a ordem deve conferir com 'options');
  * placeholder = texto exibido antes de selecionar uma função
  * offset = desvio da posição da caixa de opções
+ * selectedOverride = substitui o texto da caixa
  * @returns 
  */
 
@@ -732,17 +746,19 @@ export function DropDown(props:DropDownTypes){
     options.push(op)
   }
 
+  // Funcões
+  const UpdateModalPosition = ()=>{
+    setModalOpened(!modalOpened)
+    viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
+      setPosition({x:pageX+dropDownOffset.x,y:pageY+dropDownOffset.y})
+    })
+  }
   
   return(
     <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
       <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} 
-      onPress={()=>{
-        setModalOpened(!modalOpened)
-        viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
-          setPosition({x:pageX+dropDownOffset.x,y:pageY+dropDownOffset.y})
-        })
-        }}>
-        <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{selectedOption}</Text>
+      onPress={UpdateModalPosition}>
+        <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{props.selectedTextOverride == null ? selectedOption : props.selectedTextOverride}</Text>
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
           <Pressable style={{flex:1}} onPress={()=>{setModalOpened(false)}}>
