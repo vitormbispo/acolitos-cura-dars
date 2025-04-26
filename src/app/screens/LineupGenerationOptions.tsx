@@ -140,11 +140,6 @@ export default function LineupGenerationOptions(){
     const SavePreset = () =>{
 
     }
-    const UpdateRandomness = (newRandomness:number)=>{
-        let newState = JSON.parse(JSON.stringify(curGenOptions))
-        newState.randomness = newRandomness
-        updateGenOptions(newState)
-    }
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
@@ -183,7 +178,7 @@ export default function LineupGenerationOptions(){
                 <DropDown 
                     options={rolesetOptions} 
                     actions={rolesetActions} 
-                    selectedTextOverride={curGenOptions.roleset.name} 
+                    selectedTextOverride={curGenOptions.roleset.name == "default" ? "Selecione as funções:" : curGenOptions.roleset.name} 
                     offset={{x:0,y:0}}/>
                 
                 <DataSection text={"- Local"}/>
@@ -688,10 +683,12 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
-    const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,dayExceptions:[]})
+    const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
     
     if(!isEditing.current){ // Se ainda não estiver editando:
-        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,dayExceptions:baseOptions.dayExceptions}
+        console.log(baseOptions.randomness)
+        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+        console.log(options.current.randomness)
         isEditing.current = true
     }
     
@@ -770,7 +767,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
 
                         
                         <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
-                        <RandomnessSelect genOptions={options} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
+                        <RandomnessSelect genOptions={options.current} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
 
                         <View style={{flex:1}}>
                             <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
@@ -781,7 +778,12 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
 
                         
                         <DataSection text={"- Conjunto de funções"}/>
-                        <DropDown options={rolesetOptions} actions={rolesetActions} placeholder="Selecione as funções:" offset={{x:0,y:0}}/>
+                        <DropDown 
+                            options={rolesetOptions} 
+                            actions={rolesetActions} 
+                            selectedTextOverride={curGenOptions.roleset.name == "default" ? "Selecione as funções:" : curGenOptions.roleset.name} 
+                            offset={{x:0,y:0}}
+                        />
 
                         
                         {props.genOptionsKey.place == undefined ? 
@@ -852,7 +854,7 @@ function RandomnessSelect(props:RandomnessSelectProps){
         let comp =
         <View style={{flex:(1/5), padding:10, alignSelf:"center",alignContent:"center"}} key={i}>
             <Text numberOfLines={1} style={{fontFamily:"Inter-Light",fontSize:15}}>{props.randomnessNames[i]}</Text>
-            <SingleCheck img={CheckImage(props.genOptions.randomness,level)} press={()=>{setRandomness(level),props.genOptions.randomness = level}}/>
+            <SingleCheck img={CheckImage(randomness,level)} press={()=>{setRandomness(level),props.genOptions.randomness = level}}/>
         </View>;
         selectors.push(comp)
         
@@ -860,7 +862,6 @@ function RandomnessSelect(props:RandomnessSelectProps){
 
     useEffect(()=>{
         setRandomness(props.genOptions.randomness)
-        console.log("Setted")
       },[props])
     
     return(

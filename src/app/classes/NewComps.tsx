@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator, Dimensions} from "react-native"
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator, Dimensions, FlatList} from "react-native"
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
@@ -7,6 +7,7 @@ import { Member, MemberData, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
+import { useShallow } from "zustand/react/shallow";
 
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
@@ -162,7 +163,6 @@ export function CheckBox(props:CheckBoxProps){
 
   useEffect(()=>{
     setChecked(props.checked ? 1 : 0)
-    console.log("Setted")
   },[props])
 
   
@@ -204,7 +204,6 @@ export function TextCheckBox(props:TextCheckBoxProps){
   const images = [require("@/src/app/shapes/check_false.png"),require("@/src/app/shapes/check_true.png")]
   
   const changeImage = () =>{
-    console.log("Chenge it")
     setChecked(!check ? 1:0)
   }
 
@@ -218,7 +217,6 @@ export function TextCheckBox(props:TextCheckBoxProps){
 
   useEffect(()=>{
     setChecked(props.checked ? 1 : 0)
-    console.log("Setted")
   },[props])
 
   let text:React.JSX.Element = <Text style={[props.textStyle,textStyles.imageButtonText,{marginLeft:20}]}>{props.text}</Text>
@@ -811,65 +809,80 @@ type CompactLineupProps = {
  */
 export function CompactLineup(props:CompactLineupProps){
   
-  let roles:Array<React.JSX.Element> = []
+ 
   const {theme} = menuStore()
-  const {switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
+  const {test,updateTest,switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
   const [lineup,updateLineup] = useState(props.line)
 
+  const BuildComponents = ()=>{
+    let comps = []
+    for(let i = 0; i < lineup.members.length; i++){
+    
+      let role = Object.keys(lineup.line)[i]
+      let member:Member = lineup.GetRoleMember(role)
+  
+      let component = 
+      <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
+        <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
+        <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
+        
+        
+        <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}
+          press={()=>{
+            Switch(role)
+          }}/>
+        <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}
+          press={()=>{
+            Replace(role)
+          }}
+        />
+        
+        </View>
+  
+      comps.push(component)
+    }
+    return comps
+  }
+
+  // OBS: Por algum motivo, esse useEffect foi necessário para atualizar
+  // corretamente o valor de 'switchingMember' nesse componente. Não encontrei
+  // o motivo, mas pode ter relação com o escopo, já que isso só passou a ocorrer após a implementação do método 'BuildComponents'
+  const switching = useRef({...switchingMember}) 
+  useEffect(()=>{
+    switching.current = switchingMember
+  },[switchingMember])
+
   const Switch = (role:string)=>{
-    if(switchingMember.switching){
-      props.line.SwitchMembers(switchingMember.role,switchingMember.lineup,role,()=>{
-        switchingMember.update()
+    if(switching.current.switching){
+      props.line.SwitchMembers(switching.current.role,switching.current.lineup,role,()=>{
+        switching.current.update()
       })
-      switchingMember.switching = false
+      switching.current.switching = false
       
-      let newState:Lineup = new Lineup()
-      updateLineup(Object.assign(newState,props.line))
+      setRoles(BuildComponents())
     }
     else{
+      console.log("Triggered Update")
       updateSwitchingMember({role:role,lineup:props.line,switching:true,update:()=>{
-        let newState:Lineup = new Lineup()
-        updateLineup(Object.assign(newState,props.line))
+        setRoles(BuildComponents())
       }})
+      setRoles(BuildComponents())
     }
   }
 
   const Replace = (role:string)=>{
     let newState = Object.create(replacingMember)
     newState.role = role
-    newState.lineup = lineup
+    newState.lineup = props.line
     newState.replacing = true
-    newState.member = lineup.line[role]
-
+    newState.member = props.line.line[role]
+    newState.update = ()=>{setRoles(BuildComponents())}
     updateReplacingMember(newState)
   }
   
-  for(let i = 0; i < lineup.members.length; i++){
-    
-    let role = Object.keys(lineup.line)[i]
-    let member:Member = lineup.GetRoleMember(role)
-
-    let component = 
-    <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
-      <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
-      <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
-      
-      
-      <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}
-        press={()=>{
-          Switch(role)
-        }}/>
-      <ImageButton img={ICONS.subs} imgStyle={{width:24,height:24,resizeMode:"contain"}}
-        press={()=>{
-          console.log("Open")
-          Replace(role)
-        }}
-      />
-      
-      </View>
-
-    roles.push(component)
-  }
+  
+  
+  const [roles,setRoles] = useState(BuildComponents())
   return(
     <View style={{width:200,backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
       <View style={{backgroundColor:theme.primary,borderRadius:15,margin: 10}}>
@@ -912,7 +925,8 @@ export function GridLineupView(props:GridLineupViewProps){
     let sortedLines = {}
     const [components,setComponents] = useState([])
 
-    for(let i = 0; i < props.allLineups.length; i++){
+    const BuildComponents = ()=>{
+      for(let i = 0; i < props.allLineups.length; i++){
         let curLine:Lineup = props.allLineups[i] // Escala
         let mapKey = props.multiplePlace ? curLine.weekend+curLine.day : curLine.weekend
 
@@ -923,22 +937,25 @@ export function GridLineupView(props:GridLineupViewProps){
         sortedLines[mapKey].push(
             <CompactLineup line={curLine} key={i}/>
         )
+      }
+    
+      let keys = Object.keys(sortedLines) // Chaves do mapa organizado por fim de semana/dia
+      
+      for(let i = 0; i < keys.length;i++){ // Colunas
+      rows.push(
+          <View style={{flex:1,flexDirection:"row"}} key={i}>
+              {sortedLines[keys[i]]}
+          </View>
+          )
+      }
     }
     
-    let keys = Object.keys(sortedLines) // Chaves do mapa organizado por fim de semana/dia
-    
-    for(let i = 0; i < keys.length;i++){ // Colunas
-    rows.push(
-        <View style={{flex:1,flexDirection:"row"}} key={i}>
-            {sortedLines[keys[i]]}
-        </View>
-        )
-    }
 
     const Replace = (selected:Array<Member>)=>{
       replacingMember.lineup.ReplaceMember(replacingMember.role,selected[0])
       let newState = Object.create(replacingMember)
       newState.replacing = false
+      replacingMember.update()
       updateReplacingMember(newState)
     }
 
@@ -950,6 +967,7 @@ export function GridLineupView(props:GridLineupViewProps){
 
     useEffect(()=>{
         if(!isRendering.current){
+            BuildComponents()
             isRendering.current = true
             setTimeout(()=>{         
                 components.push(rows[renderPhase.current])
@@ -970,9 +988,8 @@ export function GridLineupView(props:GridLineupViewProps){
     return(
       <View style={{flex:1}}>
         <ScrollView horizontal={true} style={{flex:1}}>    
-          <ScrollView style={{flex:1,minWidth:Dimensions.get('window').width}}>
-            {components}                    
-          </ScrollView>               
+          <FlatList data={components} style={{flex:1,minWidth:Dimensions.get('window').width}}
+          renderItem={({item})=>item}/>             
         </ScrollView>
 
         {/* Seleção de membros para substituição */}
@@ -1088,16 +1105,14 @@ export function MemberSelectModal(props:MemberSelectModalProps){
   }
 
   return(
-    <Modal visible={props.visible} transparent={true} animationType="fade" onRequestClose={props.requestClose}>
+    <Modal visible={props.visible} transparent={true} onRequestClose={props.requestClose}>
       <View style={{flex:1,backgroundColor:"#00000099"}}>
         <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
           <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
             <Text style={[textStyles.dataTitle,{textAlignVertical:"center",textAlign:"center"}]}>{props.title}</Text>
           </View>
 
-          <ScrollView>
-            {memberComps}
-          </ScrollView>
+          <FlatList data={memberComps} renderItem={({item})=>(item)} removeClippedSubviews={true} maxToRenderPerBatch={2}/>
 
           <TextButton text={"Concluir"} press={()=>{
             
@@ -1112,4 +1127,9 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       </View>
     </Modal>
   )
+}
+
+function UpdateFuckingZustandStateimDrivingCrazyOnThisShit() {
+  const {test,updateTest} = contextStore()
+  
 }

@@ -24,7 +24,8 @@ export type ContextStates = {
     curGenOptions:GenerationOptionsType
     switchingMember:{role:string,lineup:Lineup,switching:boolean,update?:(...args:any)=>void}
     replacingMember:{role:string,lineup:Lineup,replacing:boolean,member:Member,update?:(...args:any)=>void}
-    
+    test:number
+    updateTest:(state:number) => void
     updateReplacingMember: (state:{role:string,lineup:Lineup,replacing:boolean,member:Member,update?:(...args:any)=>void}) => void
     updateSwitchingMember: (state:{role:string,lineup:Lineup,switching:boolean,update?:(...args:any)=>void}) => void
     updateGenOptions: (state:GenerationOptionsType)=>void
@@ -105,9 +106,13 @@ export const contextStore = create<ContextStates>((set)=>({
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},
     replacingMember:{role:undefined,lineup:undefined,replacing:false,member:undefined,update:undefined},
+    test:0,
     
+    updateTest: (newState:any) => set(()=>({test:newState})),
     updateReplacingMember: (member) => set(()=>({replacingMember:member})),
-    updateSwitchingMember: (member) => set(()=>({switchingMember:member})),
+    updateSwitchingMember: 
+    (member) => 
+        set(()=>({switchingMember:member})),
     updateGenOptions: (newState) => set(()=>({curGenOptions:newState})),
     updateAppStarted: (newState) => set(()=>({appStarted:newState})),
     updateMemberID: (newID) => set(()=>({memberID:newID})),
