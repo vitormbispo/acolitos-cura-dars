@@ -3,7 +3,7 @@ import  Home  from "./screens/HomeScreen"
 import { MemberData, MemberType} from "./classes/MemberData";
 import { LoadAcolyteRolesets, LoadCoroinhaRolesets, Roles } from "./classes/Roles";
 import { Places } from "./classes/Places";
-import { LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
+import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
 import { contextStore } from "./store/store";
 
 
@@ -22,7 +22,11 @@ export default function App() {
     );
   }
 
+/**
+ * Inicializa a aplicação carregando e validando os dados salvos
+ */
 function InitializeApp(){
+    // Carrega e valida dados dos membros:
     LoadAcolyteData().then(()=>{
         VerifyMembersIntegrity(MemberData.allAcolytes)
     })
@@ -30,25 +34,29 @@ function InitializeApp(){
     LoadCoroinhaData().then(()=>{
         VerifyMembersIntegrity(MemberData.allCoroinhas)
     })
-    MemberData.VerifyMemberDataIntegrity()
     
+    MemberData.VerifyMemberDataIntegrity() // Valida a integridade de todos os dados dos membros
+    
+    // Carregando conjuntos de funções
     LoadAcolyteRolesets()
     LoadCoroinhaRolesets().then(()=>{
         Roles.VerifyRolesIntegrity()
     })
 
+    // Carregando locais
     Places.LoadPlaceData().then(()=>{
         Places.VerifyPlacesIntegrity()
     })
     
-    if(Places.allPlaces == undefined || Places.allPlaces == null){
+    // Validações de locais e conjuntos
+    if(Places.allPlaces == null){
         Places.allPlaces = Places.defaultPlaces.slice()
     }
-    if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets == undefined || Roles.acolyteRoleSets.length == 0){
+    if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets.length == 0){
         Roles.InitializeSets(MemberType.ACOLYTE)
     }
     
-    if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets == undefined || Roles.coroinhaRoleSets.length == 0){
+    if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
     }  
 

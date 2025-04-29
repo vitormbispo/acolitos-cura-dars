@@ -88,7 +88,7 @@ export class MemberData{
         if(this.allLineupsCoroinhas == null){
             this.allLineupsCoroinhas = []
         }
-        this.SaveMemberData
+        this.SaveMemberData()
     }
 
     /**

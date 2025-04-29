@@ -812,7 +812,7 @@ export function CompactLineup(props:CompactLineupProps){
   
  
   const {theme} = menuStore()
-  const {test,updateTest,switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
+  const {switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
   const [lineup,updateLineup] = useState(props.line)
 
   const BuildComponents = ()=>{
@@ -1127,9 +1127,4 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       </View>
     </Modal>
   )
-}
-
-function UpdateFuckingZustandStateimDrivingCrazyOnThisShit() {
-  const {test,updateTest} = contextStore()
-  
 }

@@ -14,7 +14,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
 import { useEffect, useRef, useState } from "react"
 import { Places } from "../classes/Places"
-import { PresetsData } from "../classes/PresetsData"
+import { Preset, PresetsData } from "../classes/PresetsData"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 
@@ -36,7 +36,7 @@ export type GenerationOptionsType = {
     "places":Array<string>,
     "dateset":DateSet,
     "exclusiveOptions":object,
-    "preset":object
+    "preset":Preset
 }
 
 /**
@@ -94,41 +94,49 @@ export default function LineupGenerationOptions(){
     */  
     const [presetAddOpen,setPresetAddOpen] = useState(false)
     const newPresetName = useRef("")
-    const curPreset = useRef({}) // Referência da predefinição atual. Use essa referência para modificar diretamente a predefinição.
-    let presets = []
+    const [curPreset,setCurPreset] = useState(new Preset()) // Referência da predefinição atual. Use essa referência para modificar diretamente a predefinição.
+    
+    let presets:Array<Preset> = []
     switch(type){
         case MemberType.ACOLYTE:
-            presets = PresetsData.AcolyteGenerationPresets; break
+            presets = PresetsData.acolyteGenerationPresets; break
         case MemberType.COROINHA:
-            presets = PresetsData.CoroinhaGenerationPresets; break
+            presets = PresetsData.coroinhaGenerationPresets; break
     }
+    
     let presetsOptions:Array<string> = []
     let presetsActions:Array<(...args:any)=>any> = []
 
     for(let i = 0; i < presets.length; i++){
-        let curSet = JSON.parse(JSON.stringify(presets[i]))
+        
+        let curSet = new Preset()
+        curSet.UpdatePreset(presets[i].options,presets[i].name)
 
         presetsOptions.push(curSet.name)
         presetsActions.push(()=>{
-            curPreset.current = presets[i] // Definindo a referência
+            curSet.UpdatePreset(presets[i].options,presets[i].name) // Atualiza novamente para o contexto de quando o botão é pressionado
+            setCurPreset(presets[i]) // Definindo a referência
+            
             updateGenOptions(curSet.options)
         })
     }
 
     // Funções das predefinições:
     const CreateNewPreset = ()=>{
-        let newOptions:any = CloneGenerationOptions(curGenOptions)                           
-        let newPreset = {name:newPresetName.current,options:newOptions}
-        
+        let newOptions = CloneGenerationOptions(curGenOptions)                           
+        let newPreset:Preset = new Preset()
+        newPreset.name = newPresetName.current,
+        newPreset.options = newOptions
         switch(type){
             case MemberType.ACOLYTE:
-                PresetsData.AcolyteGenerationPresets.push(newPreset);
-                newOptions.presetID = PresetsData.AcolyteGenerationPresets.length-1
+                PresetsData.acolyteGenerationPresets.push(newPreset);
+                newOptions.presetID = PresetsData.acolyteGenerationPresets.length-1
                 break
             case MemberType.COROINHA:
-                PresetsData.CoroinhaGenerationPresets.push(newPreset);
-                newOptions.presetID = PresetsData.CoroinhaGenerationPresets.length-1
+                PresetsData.coroinhaGenerationPresets.push(newPreset);
+                newOptions.presetID = PresetsData.coroinhaGenerationPresets.length-1
         }
+        PresetsData.SavePresets()
         setPresetAddOpen(false)
     }
 
@@ -138,7 +146,8 @@ export default function LineupGenerationOptions(){
     
     // Funções
     const SavePreset = () =>{
-
+        presets[curPreset.options.presetID].UpdatePreset(CloneGenerationOptions(curGenOptions))
+        console.log("Updated preset!")
     }
     return(
         <View style={{flex:1}}>
@@ -153,7 +162,8 @@ export default function LineupGenerationOptions(){
                     <DropDown placeholder={"Selecione: "}options={presetsOptions} actions={presetsActions}/>
                     <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
                     <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
-                        curPreset.current = JSON.parse(JSON.stringify(curGenOptions))
+                        SavePreset()
+                        
                         if(Platform.OS == "android"){
                             ToastAndroid.show("Predefinição atualizada!",2)
                           
@@ -916,7 +926,7 @@ function CloneGenerationOptions(source:GenerationOptionsType){
     }
 
     newOptions.members = source.members.slice()
-    
+    newOptions.randomness = source.randomness
     newOptions.monthDays = JSON.parse(JSON.stringify(source.monthDays))
     newOptions.places = source.places.slice()
 

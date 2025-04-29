@@ -395,3 +395,4 @@ export function GetLineupUnvailableMembers(lineup:Lineup,type:MemberType):Array<
     })
     return unvailable
 }
+

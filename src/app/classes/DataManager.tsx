@@ -6,6 +6,7 @@ import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
 import { Roles, RoleSet } from "./Roles"
 import { Lineup, StructuredLineup } from "./Lineup"
+import { Preset, PresetsData } from "./PresetsData"
 
 export type AppData = {
     "allAcolytes":{name:string,data:Member[]},
@@ -16,7 +17,9 @@ export type AppData = {
     "allMembers":{name:string,data:Member[]},
     "acolyteRoleSets":{name:string,data:RoleSet[]},
     "coroinhaRoleSets":{name:string,data:RoleSet[]},
-    "allPlaces":{name:string,data:string[]}
+    "allPlaces":{name:string,data:string[]},
+    "acolyteLineupPresets":{name:string,data:Array<Preset>},
+    "coroinhaLineupPresets":{name:string,data:Array<Preset>}
 }
 
 /**
@@ -33,7 +36,9 @@ export function RetrieveAppData():AppData{
         "allMembers":{name:"Todos os membros",data:MemberData.allMembers},
         "acolyteRoleSets":{name:"Funções dos acólitos",data:Roles.acolyteRoleSets},
         "coroinhaRoleSets":{name:"Funções dos coroinhas",data:Roles.coroinhaRoleSets},
-        "allPlaces":{name:"Locais",data:Places.allPlaces}
+        "allPlaces":{name:"Locais",data:Places.allPlaces},
+        "acolyteLineupPresets":{name:"Predefinições dos acólitos",data:PresetsData.acolyteGenerationPresets},
+        "coroinhaLineupPresets":{name:"Predefinições dos coroinhas",data:PresetsData.coroinhaGenerationPresets}
     }
     return data
 }
@@ -64,19 +69,23 @@ export const LoadAcolyteData = async() => {
     try {
         let acolyteData = await AsyncStorage.getItem("AcolyteData")
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
+        let acolytePresets = await AsyncStorage.getItem("AcolytePresets")
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
+        PresetsData.acolyteGenerationPresets = JSON.parse(acolytePresets)
         
         ConvertDataToClasses()
-        
 
         OrganizeMemberArrayAlpha(MemberData.allAcolytes)
 
-        if (MemberData.allAcolytes == null || MemberData.allAcolytes == undefined){
+        if (MemberData.allAcolytes == null){
             MemberData.allAcolytes = []
         }
-        if (MemberData.allLineupsAcolytes == null || MemberData.allLineupsAcolytes == undefined){
+        if (MemberData.allLineupsAcolytes == null){
             MemberData.allLineupsAcolytes = []
+        }
+        if(PresetsData.acolyteGenerationPresets == null || PresetsData.acolyteGenerationPresets == undefined){
+            PresetsData.acolyteGenerationPresets = []
         }
     } catch (error) {
         console.log(error)
@@ -91,8 +100,10 @@ export const LoadCoroinhaData = async() => {
     try {
         let coroinhaData = await AsyncStorage.getItem("CoroinhaData")
         let coroinhaLineups = await AsyncStorage.getItem("CoroinhaLineups")
+        let coroinhaPresets = await AsyncStorage.getItem("CoroinhaPresets")
         MemberData.allCoroinhas = JSON.parse(coroinhaData)
         MemberData.allLineupsCoroinhas = JSON.parse(coroinhaLineups)
+        PresetsData.coroinhaGenerationPresets = JSON.parse(coroinhaPresets)
 
         OrganizeMemberArrayAlpha(MemberData.allCoroinhas)
 
@@ -101,6 +112,9 @@ export const LoadCoroinhaData = async() => {
         }
         if (MemberData.allLineupsCoroinhas == null || MemberData.allLineupsCoroinhas == undefined){
             MemberData.allLineupsCoroinhas = []
+        }
+        if(PresetsData.coroinhaGenerationPresets == null){
+            PresetsData.coroinhaGenerationPresets = []
         }
 
     } catch (error) {
@@ -176,6 +190,18 @@ export function ConvertDataToClasses(){
             curLine.lineups[h] = ConvertObjectToLineup(line)
         }
     }
+
+    let acoPresets = PresetsData.acolyteGenerationPresets
+    for(let i = 0; i < acoPresets.length;i++){
+        let curPreset = acoPresets[i]
+        acoPresets[i] = ConvertObjectToPreset(curPreset)
+    }
+    
+    let coroinhaPresets = PresetsData.coroinhaGenerationPresets
+    for(let i = 0; i < coroinhaPresets.length;i++){
+        let curPreset = coroinhaPresets[i]
+        coroinhaPresets[i] = ConvertObjectToPreset(curPreset)
+    }
 }
 
 /**
@@ -194,6 +220,7 @@ export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
     return newLine
 }
 
+
 /**
  * Converte um objeto para um tipo escala (Lineup)
  * @param obj 
@@ -209,6 +236,23 @@ export function ConvertObjectToLineup(obj:any):Lineup{
 
     return newLine
 }
+
+/**
+ * Converte um objeto para uma predefinição (Preset)
+ * @param obj 
+ * @returns 
+ */
+export function ConvertObjectToPreset(obj:any):Preset{
+    let newPreset = new Preset()
+    let props = Object.keys(obj)
+    
+    props.forEach((prop)=>{
+        newPreset[prop] = obj[prop]
+    })
+    console.log("new preset! ",newPreset.UpdatePreset)
+    return newPreset
+}
+
 
 
 
