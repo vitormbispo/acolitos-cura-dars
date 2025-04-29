@@ -592,6 +592,7 @@ function PlaceSelect(props:PlaceSelectProps){
 function AdvancedOptions(props:any){
     const [isExpanded,setExpanded] = useState(false)
     const {curGenOptions} = contextStore()
+    const {type} = menuStore()
     const [editingExclusive,setEditingExclusive] = useState({weekend:undefined,day:undefined,place:undefined})
     const [editingModalOpened,setEditingModalOpened] = useState(false)
     
@@ -610,6 +611,14 @@ function AdvancedOptions(props:any){
     let weekends = Object.keys(curGenOptions.monthDays)
     let wkButtons = []
    
+    let rolesets:Array<RoleSet> = []
+    switch(type){
+        case MemberType.ACOLYTE:
+            rolesets = Roles.acolyteRoleSets; break
+        case MemberType.COROINHA:
+            rolesets = Roles.coroinhaRoleSets; break
+    }
+
     for(let i = 0; i < weekends.length; i++){
         let newButton = <TextButton text={weekends[i]} press={()=>{
             setEditingExclusive({weekend:weekends[i],day:undefined,place:editingExclusive.place})
@@ -659,7 +668,7 @@ function AdvancedOptions(props:any){
                 {editingModalOpened ? <ExclusiveOptions 
                     visible={editingModalOpened} 
                     genOptionsKey={editingExclusive} 
-                    rolesets={Roles.acolyteRoleSets} 
+                    rolesets={rolesets} 
                     onClose={()=>{setEditingModalOpened(false)}}/> : null}
             </View>
         }/>
@@ -672,6 +681,12 @@ type ExclusiveOptionsProps = {
     rolesets:Array<RoleSet>
     onClose?:(...args:any) => void
 }
+/**
+ * Modal de configuração para uma configuração exclusiva.
+ * 
+ * @param props visible = visível; genOptionsKey = chave da opção exclusiva que está sendo editada; rolesets = todos os conjuntos de função;
+ * @returns 
+ */
 function ExclusiveOptions(props:ExclusiveOptionsProps){
     const {curGenOptions} = contextStore()
     const [memberSelectOpen,setMemberSelectOpen] = useState(false)
@@ -684,11 +699,10 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
     const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
+    const [roleSet,setRoleSet] = useState(props.rolesets[0]) // Estado do roleset
     
     if(!isEditing.current){ // Se ainda não estiver editando:
-        console.log(baseOptions.randomness)
         options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
-        console.log(options.current.randomness)
         isEditing.current = true
     }
     
@@ -702,6 +716,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         rolesetOptions.push(curSet.name)
         rolesetActions.push(()=>{
             options.current.roleset = curSet
+            setRoleSet(curSet)
         })
     }
 
@@ -727,11 +742,17 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         daysChecks.push(comp)
     }
 
+    /**
+     * Fechar o modal.
+     */
     const Close = ()=>{
         isEditing.current = false
         props.onClose()
     }
 
+    /**
+     * Confirmar nova configuração exclusiva.
+     */
     const Submit = ()=>{
         let key = props.genOptionsKey.weekend
         options.current.dayExceptions = dayExceptions.current
@@ -781,7 +802,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                         <DropDown 
                             options={rolesetOptions} 
                             actions={rolesetActions} 
-                            selectedTextOverride={curGenOptions.roleset.name == "default" ? "Selecione as funções:" : curGenOptions.roleset.name} 
+                            selectedTextOverride={roleSet.name == "default" ? "Selecione as funções:" : roleSet.name} 
                             offset={{x:0,y:0}}
                         />
 
@@ -843,6 +864,11 @@ type RandomnessSelectProps = {
     genOptions:any
     randomnessNames:Array<string>
 }
+/**
+ * Seleção de aleatoriedade
+ * @param props genOptions = Opções de geração em edição; randomnessNames = nomes das aleatoriedades.
+ * @returns 
+ */
 function RandomnessSelect(props:RandomnessSelectProps){
     const [randomness,setRandomness] = useState(props.genOptions.randomness)
     

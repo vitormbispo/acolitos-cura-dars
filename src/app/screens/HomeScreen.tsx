@@ -27,7 +27,6 @@ export function AppBody(){
     return(
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-        <LinkRowImageButton img={ICONS.acolito} text={"TESTE"} link={"/screens/TestScreen"}/>
     </View> : null
     )
 }

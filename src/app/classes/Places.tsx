@@ -196,6 +196,12 @@ export class Places {
         this.allPlaces = JSON.parse(data)
     }
 
+    /**
+     * Organiza uma lista de locais de acordo com a ordem disposta
+     * na array original que armazena todos os locais.
+     * @param places Lista de locais a organizar
+     * @returns 
+     */
     static OrganizePlaceArray(places:Array<string>):Array<string>{
         let organized = []
         for(let i = 0; i < Places.allPlaces.length; i++){

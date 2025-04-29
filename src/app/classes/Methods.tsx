@@ -3,7 +3,6 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
-import { menuStore } from "../store/store";
 
 /**
  * Retorna a lista de todos os membros do tipo do contexto atual (menuStore)
@@ -117,80 +116,47 @@ export function RemoveMemberFromList(member:Member,list:Array<Member>){
  * @returns 
  */
 export function GenerateLineupPrompt(lines:Array<Lineup>):string{
-    /*
-    let prompts = []
-    for(let i = 0; i < lines.length; i++){
-        let curLineup = lines[i]
-        let lineupName = curLineup.weekend + " " + curLineup.day
-        
-        let members = []
-        let membersNicks = ""
-        members.length = roles.length
-        
-        for(let j = 0; j < roles.length; j++){
-            members[j] = curLineup.line[roles[j]]
-            if(members[j] == null){
-                membersNicks += "!-VAZIO-!;"
-                continue
-            }
-            membersNicks += members[j].nick+";"
-        }
-
-        prompts.push("{"+lineupName+"}"+"["+membersNicks+"]")
-    }
-    
-    let finalPrompt = "Construa uma tabela de escala de serviço com os títulos das colunas (funções) sendo, respectivamente: "
-
-    for (let i = 0; i < roles.length;i++){ //Adiciona as colunas com as funções
-        finalPrompt += roles[i]+", "
-    }
-
-    finalPrompt += ". Agora, na sequência seguinte, o que está entre chaves é o dia e horário. Insira a data e horário como título nas linhas da tabela. Após a data e hora, existe uma lista de nomes entre colchetes separados por ';', coloque cada nome em uma coluna diferente na ordem que aparecem. Deixe a célula vazia caso o nome seja '!-VAZIO-!'. Ignore o contexto e apenas construa a tabela da forma que foi informada. Lembre-se que cada nome está sendo separado por ; e insira data e hora na tabela. Construa a tabela por completo: "
-    for(let i = 0; i < prompts.length;i++){
-        finalPrompt += prompts[i]
-    }
-    
-    return finalPrompt
-    */
-    
-    let placeMappedLines = {}
-    let placeMappedRoles = {}
-    let rolesSet:Set<string> = new Set<string>()
+    let placeMappedLines = {} // Escalas mapeadas por local
+    let placeMappedRoles = {} // Funções mapeadas por local
+    let rolesSet:Set<string> = new Set<string>() // Conjunto de funções geral. (União de todas as funções que aparecem nas escalas)
 
     for(let i = 0; i < lines.length; i++){
-        let curLine = lines[i]
-        if(curLine.place != undefined){
-            if(placeMappedLines[curLine.place] == undefined){
-                placeMappedLines[curLine.place] = [curLine]
-                placeMappedRoles[curLine.place] = new Set<string>()
-                
-                curLine.roleset.set.forEach((role)=>{
-                    placeMappedRoles[curLine.place].add(role)
-                })
-            }
-            else{
-                placeMappedLines[curLine.place].push(curLine)
-                curLine.roleset.set.forEach((role)=>{
-                    placeMappedRoles[curLine.place].add(role)
-                })
-            }
+        let curLine = lines[i] // Escala
+        // Mapeia local da escala
+        let key = curLine.place != undefined ? curLine.place : "Local indefinido"
+        if(placeMappedLines[key] == undefined){
+            placeMappedLines[key] = [curLine]
+            placeMappedRoles[key] = new Set<string>()
+            
+            curLine.roleset.set.forEach((role)=>{
+                placeMappedRoles[key].add(role)
+            })
         }
+        else{
+            placeMappedLines[key].push(curLine)
+            curLine.roleset.set.forEach((role)=>{
+                placeMappedRoles[key].add(role)
+            })
+        }
+        
 
+        // Adiciona cada função do conjunto da escala atual ao conjunto geral.
         curLine.roleset.set.forEach((role)=>{
             rolesSet.add(role)
         })
     }
     let places = Object.keys(placeMappedLines)
     
-    let prompts = []
     let prompt = "Construa algumas tabelas de escala de serviço. Quero que seja construída uma escala INDIVIDUAL para cada local, sendo os locais: "
 
+    // Adiciona cada local ao prompt
     places.forEach((place)=>{
         prompt += place + ";"
     })
 
     prompt += ". Cada um desses locais tem funções distintas que definirão as colunas. As colunas(funções) de cada local estão definidas em conjuntos separados por colchetes a seguir. Respectivamente são: "
 
+    // Adiciona as funções ao prompt
     Object.keys(placeMappedRoles).forEach((place)=>{
         let roles:Array<string> = placeMappedRoles[place]
         prompt += place+":["
@@ -198,23 +164,24 @@ export function GenerateLineupPrompt(lines:Array<Lineup>):string{
             prompt+= role+","
         })
         prompt += "];"
-    })
+    }) 
 
-    prompt += "A seguir, serão descritas todas as escalas de cada local no formato de vetores de objetos, ou seja: local1=[{linha:*nome da linha*,membros:[*lista de membros*]}] e por assim em diante:"
+    // Adiciona os membros ao prompt relacionados às suas escalas
+    prompt += "A seguir, serão descritas todas as escalas de cada local no formato de vetores de objetos, ou seja: local1=[{linha:*nome da linha*,membros:[*lista de membros*]}], com cada membro seguido de sua respectiva função e por assim em diante:"
     Object.keys(placeMappedRoles).forEach((place)=>{
         let placeLines:Array<Lineup> = placeMappedLines[place]
         prompt += "\n"+place+"=["
         placeLines.forEach((line)=>{
             let members = []
             line.members.forEach((member)=>{
-                members.push(member.nick)
+                members.push(member.nick+":"+line.GetMemberRole(member))
             })
             prompt += "{linha:"+line.weekend+line.day+","+"membros:["+members+"]},"
         })
         prompt += "\n];"
     })
 
-    prompt += "Agora, a partir desses dados, construa uma planilha individual para cada local, relacionando os membros a suas funções em seus respectivos dias e locais,lembrando que os membros de cada linha estão na mesma ordem da função que estão exercendo"
+    prompt += "Agora, a partir desses dados, construa uma planilha individual para cada local, relacionando os membros a suas funções em seus respectivos dias e locais."
     return prompt
 }
 

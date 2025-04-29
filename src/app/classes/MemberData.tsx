@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StructuredLineup } from "./Lineup"
-import { menuStore } from "../store/store"
 
 /**
  * Tipo de membro
@@ -108,6 +107,10 @@ export class MemberData{
         return MemberData.allAcolytes.concat(MemberData.allCoroinhas)
     }
 
+    /**
+     * Retorna uma lista com todas as escalas dos acólitos e coroinhas
+     * @returns 
+     */
     static GetAllLineups():Array<StructuredLineup>{
         return MemberData.allLineupsAcolytes.concat(MemberData.allLineupsCoroinhas)
     }

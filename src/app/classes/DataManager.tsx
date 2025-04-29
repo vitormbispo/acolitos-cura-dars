@@ -162,6 +162,9 @@ export function VerifyMembersIntegrity(members:Array<Member>){
     })
 }
 
+/**
+ * Converte todos os dados salvos como objetos comuns em classes estruturadas.
+ */
 export function ConvertDataToClasses(){
     let allLineups = MemberData.GetAllLineups()
     for(let i = 0; i < allLineups.length; i++){
@@ -175,6 +178,11 @@ export function ConvertDataToClasses(){
     }
 }
 
+/**
+ * Converte um objeto para uma escala estruturada (StructuredLineup)
+ * @param obj 
+ * @returns 
+ */
 export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
     let newLine = new StructuredLineup()
     let props = Object.keys(newLine)
@@ -186,6 +194,11 @@ export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
     return newLine
 }
 
+/**
+ * Converte um objeto para um tipo escala (Lineup)
+ * @param obj 
+ * @returns 
+ */
 export function ConvertObjectToLineup(obj:any):Lineup{
     let newLine = new Lineup()
     let props = Object.keys(newLine)

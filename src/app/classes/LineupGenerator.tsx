@@ -1,5 +1,5 @@
 import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Methods";
-import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
+import { Member, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 
@@ -38,11 +38,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     members = RemoveUnvailable(members,settings.day,settings.weekend,settings.place) // Remover membros indisponíveis
     if(members.length == 0){ // Não há membros disponíveis
         console.warn("Any members available. Lineup is empty.")
-        let emptyLine = new Lineup()
-        emptyLine.day = settings.day
-        emptyLine.weekend = settings.weekend
-        emptyLine.roleset = settings.roleset
-        return emptyLine      
+        return EmptyLineup(settings.day,settings.weekend,settings.roleset)      
     }
     // Excluir membros que já estão nesse fim de semana
     if(settings.weekend != "Outro"){

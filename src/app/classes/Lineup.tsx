@@ -21,40 +21,54 @@ export class Lineup{
     weekend:string = ""
     place:string = ""
 
-
-    Generic(){
-        console.log("Hello World!")
-    }
-
+    /** Retorna o membro relacionado a determinada função dessa escala
+    *   @param role Função
+    */ 
     GetRoleMember(role:string):Member{
         return this.line[role]
     }
 
+    /** Retorna a função relacionada a determinado membro dessa escala
+    *   @param member Membero
+    */ 
     GetMemberRole(member:Member):string{
-        Object.keys(this.line).forEach((role)=>{
-            let curAco = this.line[role]
-            if(this.line[role].name == member.name){
-                return role
+        let roles = Object.keys(this.line)
+        for(let i = 0; i < roles.length; i++){
+            let curAco = this.line[roles[i]]
+            if(curAco.name == member.name){
+                return roles[i]
             }
-        })
+        }
         return null
     }
 
+    /**
+     * Troca dois membros de função/posição a partir
+     * das funções e escalas das quais estão relacionados
+     * 
+     * @param srcRole Função do membro fonte
+     * @param srcLineup Escala do membro fonte
+     * @param targetRole Função do membro alvo
+     * @param update Função para atualizar os componentes após a troca
+     */
     SwitchMembers(srcRole:string,srcLineup:Lineup,targetRole:string,update?:any){
         
         let aux = this.GetRoleMember(targetRole)
-
-        console.log("Before: "+aux.name)
 
         this.line[targetRole] = srcLineup.GetRoleMember(srcRole)
         this.members[this.members.indexOf(aux)] = srcLineup.GetRoleMember(srcRole)
         
         srcLineup.line[srcRole] = aux
         this.members[this.members.indexOf(this.GetRoleMember(targetRole))] = aux
-        console.log("After: "+this.line[srcRole].name)
         update()
     }
 
+    /**
+     * Substitui um membro escalado em determinada função dessa escala
+     * @param replaceRole Função a ser substituído
+     * @param newMember Membro substituto
+     * @param update Função para atualizar o componente após substituição
+     */
     ReplaceMember(replaceRole:string,newMember:Member,update?:any){
         let originalIndex = this.members.indexOf(this.GetRoleMember(replaceRole))
         this.members[originalIndex] = newMember

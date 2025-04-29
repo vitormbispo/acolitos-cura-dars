@@ -3,11 +3,10 @@ import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, Scro
 import { Href, router} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
-import { Member, MemberData, MemberType } from "./MemberData";
+import { Member, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
-import { useShallow } from "zustand/react/shallow";
 
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
@@ -760,8 +759,10 @@ export function DropDown(props:DropDownTypes){
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
           <Pressable style={{flex:1}} onPress={()=>{setModalOpened(false)}}>
-            <ScrollView style={{backgroundColor:"#FFFFFF",borderRadius:10,zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"20%",borderColor:"#1E1E1E",borderWidth:1}}>
-              {options}
+            <ScrollView style={{zIndex:-1,top:position.y+dropDownOffset.y,left:position.x+dropDownOffset.x,width:"50%",maxHeight:"20%"}}>
+              <View style={{backgroundColor:"#FFFFFF",borderRadius:10,borderColor:"#1E1E1E",borderWidth:1,overflow:"scroll"}}>
+                {options}
+              </View>
             </ScrollView>
           </Pressable>
           
@@ -862,7 +863,6 @@ export function CompactLineup(props:CompactLineupProps){
       setRoles(BuildComponents())
     }
     else{
-      console.log("Triggered Update")
       updateSwitchingMember({role:role,lineup:props.line,switching:true,update:()=>{
         setRoles(BuildComponents())
       }})
