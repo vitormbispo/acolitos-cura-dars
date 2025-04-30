@@ -27,13 +27,15 @@ export class PresetsData {
      * Verifica a integridade dos dados dos presets
      */
     static VerifyPresetsIntegrity(){
-        if(this.acolyteGenerationPresets == null){
-            this.acolyteGenerationPresets = []
+        console.log("Verifying Integrity")
+        if(PresetsData.acolyteGenerationPresets == null){
+            PresetsData.acolyteGenerationPresets = []
+            console.log("Acolytes incorrect")
         }
-        if(this.coroinhaGenerationPresets == null){
-            this.coroinhaGenerationPresets = []
+        if(PresetsData.coroinhaGenerationPresets == null){
+            PresetsData.coroinhaGenerationPresets = []
         }
-        this.SavePresets()
+        PresetsData.SavePresets()
     }
 
     /**

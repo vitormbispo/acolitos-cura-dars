@@ -922,7 +922,7 @@ export function GridLineupView(props:GridLineupViewProps){
     return(
       <View style={{flex:1}}>
         <ScrollView horizontal={true} style={{flex:1}}>    
-          <FlatList data={components} style={{flex:1,minWidth:Dimensions.get('window').width}}
+          <FlatList data={components} style={{flex:1}}
           renderItem={({item})=>item}/>             
         </ScrollView>
 

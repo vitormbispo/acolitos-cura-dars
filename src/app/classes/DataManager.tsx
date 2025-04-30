@@ -86,9 +86,8 @@ export const LoadAcolyteData = async() => {
         if (MemberData.allLineupsAcolytes == null){
             MemberData.allLineupsAcolytes = []
         }
-        if(PresetsData.acolyteGenerationPresets == null || PresetsData.acolyteGenerationPresets == undefined){
-            PresetsData.acolyteGenerationPresets = []
-        }
+        console.log("Acolyte Loaded!")
+        PresetsData.VerifyPresetsIntegrity()
     } catch (error) {
         console.log(error)
     }
