@@ -16,6 +16,27 @@ type ImageButtonProps = {
   buttonStyle?:object,
   press?: (...args:any) => any
 }
+
+/** Retorna o ícone de usuário referente ao tipo de menu atual contido
+ * na menuStore: acólito ou coroinha
+* 
+* @returns Ícone de usuário
+*/
+export function GetMemberIcon() {
+  const {type} = menuStore()
+  return USER_ICONS[type]
+}
+
+/** Retorna o ícone de adicionar usuário referente ao tipo de menu atual contido
+ * na menuStore: acólito ou coroinha
+* 
+* @returns Ícone de adicionar usuário
+*/
+export function GetMemberAddIcon(){
+  const {type} = menuStore()
+  return ADD_ICONS[type]
+}
+
 /**
  * Botão com imagem
  * @param props Propriedades: 
@@ -25,13 +46,12 @@ type ImageButtonProps = {
  * press = Ação quando o botão é pressionado     
  * @returns
  */
+
+
 export function ImageButton(props:ImageButtonProps) {
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
   return (
     
-       <Pressable style={props.buttonStyle} onPress={props.press}>
+       <Pressable style={props.buttonStyle} onPress={props.press != undefined ? props.press : ()=>{}}>
           <Image source={props.img} style={props.imgStyle}/>
        </Pressable>
       );
@@ -57,11 +77,8 @@ type RowImageButtonProps = {
  */
 export function RowImageButton(props:RowImageButtonProps){
   const {theme} = menuStore()
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
     return(
-      <Pressable onPress={props.press} style={[uiStyles.rowButton,{backgroundColor:theme.neutral},props.rowStyle]}>
+      <Pressable onPress={props.press != undefined ? props.press : ()=>{}} style={[uiStyles.rowButton,{backgroundColor:theme.neutral},props.rowStyle]}>
         <Image source={props.img} style={[uiStyles.buttonIcon,props.imgStyle]}/>
         <Text style={{paddingLeft:10, fontFamily:"Inter-Light",fontSize:20,color:theme.primaryText}}>{props.text}</Text>       
       </Pressable>
@@ -86,28 +103,24 @@ type RowMemberProps = {
    */
 export function RowMember(props:RowMemberProps){
   const {updateMemberID} = contextStore()
+  const OpenProfile = ()=>{
+    updateMemberID(props.id)
+    router.push("/screens/MemberProfile")
+  }
   return(
-    <Pressable style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={() => {updateMemberID(props.id) ; OpenMemberProfile()}}>
+    <Pressable style={{flexDirection:"row",alignItems:"center",padding:10,flex:1}} onPress={OpenProfile}>
       <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
       <Text style={props.textStyle}>{props.nick}</Text>
     </Pressable>
   )
   }
 
-/**
- * Abre o perfil do membro de índice *id* na lista geral.
- * @param id Índice
- */
-function OpenMemberProfile(){
-  router.push("/screens/MemberProfile")
-}
-
-
 type TextButtonProps = {
   text:string
   press: (...args:any) => any
   textStyle?:object,
   buttonStyle?:object,
+  disabled?:boolean
 }
 /** Botão com texto
  * 
@@ -119,12 +132,9 @@ type TextButtonProps = {
  * @returns 
  */
 export function TextButton(props:TextButtonProps) {
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
   const {theme} = menuStore()
   return (
-      <Pressable style={[uiStyles.textButton,{backgroundColor:theme.neutral},props.buttonStyle]} onPress={props.press}>
+      <Pressable style={[uiStyles.textButton,{backgroundColor:!props.disabled ? theme.neutral : theme.disabled},props.buttonStyle]} onPress={props.press != undefined && !props.disabled ? props.press : ()=>{}}>
           <Text style={[textStyles.textButton,props.textStyle]}>{props.text}</Text>
       </Pressable>
       
@@ -154,10 +164,6 @@ export function CheckBox(props:CheckBoxProps){
   
   const changeImage = () =>{
     setChecked((check === 1) ? 0 : 1)
-  }
-
-  if(props.press == undefined){
-    props.press = ()=>{}
   }
 
   useEffect(()=>{
@@ -206,10 +212,6 @@ export function TextCheckBox(props:TextCheckBoxProps){
     setChecked(!check ? 1:0)
   }
 
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
-
   if(props.before == undefined){
     props.before = false
   }
@@ -246,10 +248,6 @@ type SingleCheckProps = {
  * @returns 
  */
 export function SingleCheck(props:SingleCheckProps){
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
-
   return(
     <Pressable style={{flex:1}} onPress={()=>{
       props.press()}}>
@@ -257,49 +255,6 @@ export function SingleCheck(props:SingleCheckProps){
         <Text style={{paddingBottom:10,fontFamily:"Inter-Light"}}>{props.topText}</Text>
         <Image style={{height:32,width:32}} source={props.img}/>
       </View>
-    </Pressable>
-    
-  )
-}
-
-type SingleCheckColorProps = {
-  checked:boolean,
-  color:string
-  press: (...args:any) => any
-}
-/**
- * 
- * @param props Propriedades:
- * checked = Checado ou não     
- * color = Cor     
- * press = Ação ao pressionar
- * 
- * @returns 
- */
-export function SingleCheckColor(props:SingleCheckColorProps){
-  
-  const[check,setChecked] = useState(props.checked)
-  const[liturgicalColors,setColor] = useState(props.color)
-
-  const checkNum = check ? 1 : 0
-  const images:any = {
-    "green":[require("@/src/app/shapes/check_green_f.png"),require("@/src/app/shapes/check_green_t.png")],
-    "red":[require("@/src/app/shapes/check_red_f.png"),require("@/src/app/shapes/check_red_t.png")],
-    "white":[require("@/src/app/shapes/check_white_f.png"),require("@/src/app/shapes/check_white_t.png")],
-    "pink":[require("@/src/app/shapes/check_pink_f.png"),require("@/src/app/shapes/check_pink_t.png")],
-    "purple":[require("@/src/app/shapes/check_purple_f.png"),require("@/src/app/shapes/check_purple_t.png")]}
-  
-  if(props.press == undefined){
-    props.press = ()=>{}
-  }
-
-  return(
-    <Pressable style={{flex:1}} onPress={()=>{
-      props.press()}}>
-      <View style={{paddingBottom:26,alignContent:"center",alignItems:"center"}}>
-        <Image style={{height:32,width:32}} source={images[liturgicalColors][checkNum]}/>
-      </View>
-      
     </Pressable>
     
   )
@@ -435,13 +390,10 @@ type ToggleButtonProps = {
  */
 export function ToggleButton(props:ToggleButtonProps) {
   if(!props.enabled){return null}
-  const {type,toggleTheme} = menuStore()
+  const {toggleTheme} = menuStore()
   return(
   <View style = {{flex:1,flexDirection:"row",justifyContent:"flex-end"}}>
-    <ImageButton img={
-      type==MemberType.ACOLYTE ? 
-      ICONS.coroinha:
-      ICONS.acolito} 
+    <ImageButton img={GetMemberIcon()} 
       
       imgStyle={[uiStyles.buttonIcon,{margin:10}]} press={toggleTheme}/>
   </View>
@@ -470,14 +422,15 @@ type LinkRowImageButtonProps = {
  */
 export function LinkRowImageButton(props:LinkRowImageButtonProps){
   const {theme} = menuStore()
+  const GoToLink = ()=>{
+    if(props.press != null){
+      props.press() 
+    }
+    
+    router.push(props.link)
+  }
   return(
-      <Pressable style={[uiStyles.rowButton,{backgroundColor:theme.neutral,flexWrap:"wrap"}]} onPress={() => {
-        if(props.press != null){
-          props.press() 
-        }
-        
-        router.push(props.link)}
-        }>
+      <Pressable style={[uiStyles.rowButton,{backgroundColor:theme.neutral,flexWrap:"wrap"}]} onPress={GoToLink}>
         <Image source={props.img} style={{width:64,height:64,resizeMode:"contain"}}/>
         <Text style={[textStyles.buttonText,props.textStyle]}>{props.text}</Text>       
       </Pressable>
@@ -503,16 +456,16 @@ type LinkImageButtonProps = {
  * @returns
  */
   export function LinkImageButton(props:LinkImageButtonProps) {
+    const GoToLink = ()=>{
+      props.press == null ? ()=>{} : props.press()
+            
+      if(props.link != null) {
+        router.push(props.link)
+      }
+    }
     return (
         <View style={props.viewStyle}>
-          <Pressable style={props.buttonStyle} onPress={() => {
-            props.press == null ? ()=>{} : props.press()
-            
-            if(props.link != null) {
-              router.push(props.link)
-            }
-            
-          }}>
+          <Pressable style={props.buttonStyle} onPress={GoToLink}>
             <Image source={props.img} style={props.imgStyle}/>
           </Pressable>
         </View>
@@ -529,6 +482,7 @@ type TextInputBoxProps = {
   maxLength?:number
   keyboardType?:KeyboardTypeOptions,
   onChangeText?: (...args:any) => any
+  onBlur?:(...args:any) => any
 }
 /**
  * 
@@ -550,7 +504,8 @@ export function TextInputBox(props:TextInputBoxProps) {
           defaultValue={props.default}
           keyboardType={props.keyboardType}
           onChangeText={props.onChangeText}
-          maxLength={props.maxLength}/>
+          maxLength={props.maxLength}
+          onBlur={props.onBlur}/>
       </View>
   )
 }
@@ -571,26 +526,6 @@ export function DataDisplay(props:DataDisplayProps) {
     <Text style={[{flex:1,fontFamily:"Inter-Regular",fontSize:16,alignSelf:"center"},props.dataStyle]}>{props.data}</Text>
   </View>
   )
-}
-
-/** Retorna o ícone de usuário referente ao tipo de menu atual contido
- * na menuStore: acólito ou coroinha
-* 
-* @returns Ícone de usuário
-*/
-export function GetMemberIcon() {
-  const {type} = menuStore()
-  return USER_ICONS[type]
-}
-
-/** Retorna o ícone de adicionar usuário referente ao tipo de menu atual contido
- * na menuStore: acólito ou coroinha
-* 
-* @returns Ícone de adicionar usuário
-*/
-export function GetMemberAddIcon(){
-  const {type} = menuStore()
-  return ADD_ICONS[type]
 }
 
 
@@ -726,6 +661,7 @@ export function DropDown(props:DropDownTypes){
   const {theme} = menuStore()
 
   let options = []
+  
   for(let i = 0; i < props.options.length;i++){
     let selected = props.options[i] == selectedOption
     let op = 
@@ -745,7 +681,7 @@ export function DropDown(props:DropDownTypes){
 
   // Funcões
   const UpdateModalPosition = ()=>{
-    setModalOpened(!modalOpened)
+    
     viewRef.current.measure((x,y,width,height,pageX,pageY)=>{
       setPosition({x:pageX+dropDownOffset.x,y:pageY+dropDownOffset.y})
     })
@@ -754,7 +690,7 @@ export function DropDown(props:DropDownTypes){
   return(
     <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
       <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} 
-      onPress={UpdateModalPosition}>
+      onLayout={UpdateModalPosition} onPress={()=>{setModalOpened(!modalOpened);UpdateModalPosition()}}>
         <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{props.selectedTextOverride == null ? selectedOption : props.selectedTextOverride}</Text>
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
@@ -809,11 +745,9 @@ type CompactLineupProps = {
  * @param props 
  */
 export function CompactLineup(props:CompactLineupProps){
-  
- 
   const {theme} = menuStore()
   const {switchingMember,updateSwitchingMember,replacingMember,updateReplacingMember} = contextStore()
-  const [lineup,updateLineup] = useState(props.line)
+  const [lineup] = useState(props.line)
 
   const BuildComponents = ()=>{
     let comps = []
@@ -981,7 +915,7 @@ export function GridLineupView(props:GridLineupViewProps){
                 }
                 
                 setComponents(components.slice())
-            },10)
+            },20)
         }
     })
     

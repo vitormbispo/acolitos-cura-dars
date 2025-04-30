@@ -11,7 +11,6 @@ export class PresetsData {
      * @returns 
      */
    static GetAllPresets(){
-        console.log(PresetsData.acolyteGenerationPresets)
         return  PresetsData.acolyteGenerationPresets.concat(
                 PresetsData.coroinhaGenerationPresets)
     }
@@ -22,6 +21,35 @@ export class PresetsData {
     static SavePresets(){
         SaveData("AcolytePresets",this.acolyteGenerationPresets)
         SaveData("CoroinhaPresets",this.coroinhaGenerationPresets)
+    }
+
+    /**
+     * Verifica a integridade dos dados dos presets
+     */
+    static VerifyPresetsIntegrity(){
+        if(this.acolyteGenerationPresets == null){
+            this.acolyteGenerationPresets = []
+        }
+        if(this.coroinhaGenerationPresets == null){
+            this.coroinhaGenerationPresets = []
+        }
+        this.SavePresets()
+    }
+
+    /**
+     * Verifica se um nome está disponível para um preset
+     * @param name Nome
+     * @param presets Lista de presets
+     * @returns 
+     */
+    static IsNameAvailable(name:string,presets:Array<Preset>){
+        for(let i = 0; i < presets.length; i++){
+            let set = presets[i]
+            if(set.name == name){
+                return false// Nome igual!
+            }
+        }
+        return true
     }
 }
 
@@ -40,11 +68,9 @@ export class Preset {
      */
     UpdatePreset(newOptions:any,newName?:string){
         this.options = CloneGenerationOptions(newOptions)
-        
         newName != undefined ? this.name = newName : null
+        PresetsData.SavePresets()
     }
-
-    
 }
 
 function CloneGenerationOptions(source:GenerationOptionsType){

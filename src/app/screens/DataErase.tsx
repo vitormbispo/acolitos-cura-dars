@@ -10,6 +10,7 @@ import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
+import { PresetsData } from "../classes/PresetsData";
 
 export default function DataErase(){
     const [confirmationVisible, setConfirmationVisible] = useState(false)
@@ -91,10 +92,15 @@ function EraseSelectedData(selectedData:Array<string>){
         else if(Places[data] != undefined){
             Places[data] = null
         }
+
+        else if(PresetsData[data] != undefined){
+            PresetsData[data] = null
+        }
         
     })
     MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
     Roles.VerifyRolesIntegrity()
     MemberData.SaveMemberData()
+    PresetsData.VerifyPresetsIntegrity()
 }

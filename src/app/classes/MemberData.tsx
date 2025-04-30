@@ -114,8 +114,36 @@ export class MemberData{
     static GetAllLineups():Array<StructuredLineup>{
         return MemberData.allLineupsAcolytes.concat(MemberData.allLineupsCoroinhas)
     }
-        
     
+    /**
+     * Checa se um nome já está em uso ou não
+     * @param name nome
+     * @param members membros
+     * @returns 
+     */
+    static IsNameAvailable(name:string,members:Array<Member>):boolean{
+        for(let i = 0; i < members.length; i++){
+            if(members[i].name == name){
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * Checa se um apelido já está em uso ou não
+     * @param nick apelido
+     * @param members membros
+     * @returns 
+     */
+    static IsNickAvailable(nick:string,members:Array<Member>):boolean{
+        for(let i = 0; i < members.length; i++){
+            if(members[i].nick == nick){
+                return false
+            }
+        }
+        return true
+    }
 }
 
 /**

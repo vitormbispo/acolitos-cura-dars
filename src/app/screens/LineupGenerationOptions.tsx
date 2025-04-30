@@ -93,7 +93,7 @@ export default function LineupGenerationOptions(){
      * Configurações de predefinições 
     */  
     const [presetAddOpen,setPresetAddOpen] = useState(false)
-    const newPresetName = useRef("")
+    const [newPresetName,setNewPresetName] = useState("")
     const [curPreset,setCurPreset] = useState(new Preset()) // Referência da predefinição atual. Use essa referência para modificar diretamente a predefinição.
     
     let presets:Array<Preset> = []
@@ -125,7 +125,7 @@ export default function LineupGenerationOptions(){
     const CreateNewPreset = ()=>{
         let newOptions = CloneGenerationOptions(curGenOptions)                           
         let newPreset:Preset = new Preset()
-        newPreset.name = newPresetName.current,
+        newPreset.name = newPresetName,
         newPreset.options = newOptions
         switch(type){
             case MemberType.ACOLYTE:
@@ -147,7 +147,6 @@ export default function LineupGenerationOptions(){
     // Funções
     const SavePreset = () =>{
         presets[curPreset.options.presetID].UpdatePreset(CloneGenerationOptions(curGenOptions))
-        console.log("Updated preset!")
     }
     return(
         <View style={{flex:1}}>
@@ -217,7 +216,7 @@ export default function LineupGenerationOptions(){
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
                 setIsGenerating(true)
                 setTimeout(()=>{ // O setTimeout serve apenas para iniciar a animação de loading.
-                    GerarEscala(curGenOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
+                    BeginGeneration(curGenOptions,type,()=>{setTimeout(()=>{setIsGenerating(false)},100)})
                 },10)
             }}/>
             <LoadingModal visible={isGenerating}/>
@@ -227,10 +226,14 @@ export default function LineupGenerationOptions(){
                 <Pressable style={{flex:1,backgroundColor:"#00000080",alignItems:"center",justifyContent:"center"}} onPress={()=>setPresetAddOpen(false)}>
                     <View style={{borderRadius:20,alignSelf:"center",backgroundColor:theme.primary,padding:30}}>
                         <Text>Insira o nome da nova predefinição:</Text>
-                        <TextInputBox title={"Nome:"} onChangeText={(text)=>{newPresetName.current = text}}/>
-                        <TextButton text={"Concluir"} press={()=>{
+                        <TextInputBox title={"Nome:"} onChangeText={(text)=>{setNewPresetName(text)}}/>
+                        {!PresetsData.IsNameAvailable(newPresetName,presets) ? 
+                        <Text style={[textStyles.dataTitle,{color:theme.reject}]}>Esse nome já está em uso!</Text> : null}
+                        <TextButton text={"Concluir"} disabled={!PresetsData.IsNameAvailable(newPresetName,presets)}press={()=>{
                             CreateNewPreset()
+                            setNewPresetName("")
                         }}/>
+                        
                     </View>
                 </Pressable>
                 
@@ -325,7 +328,7 @@ const MonthLineupOptions = () => {
  * @param type Tipo de membro a gerar
  * @param finished Ação ao finalizar a geração
  */
-function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args)=>void){
+function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args)=>void){
     LineupScreenOptions.lineups = []
 
     let generatedLineups:object = {}
@@ -373,7 +376,7 @@ function GerarEscala(generateOptions:GenerationOptionsType,type:MemberType,finis
                         continue
                     }
                     let newLineup:Lineup = generateOptions.allRandom ?
-                        GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay):
+                        GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay,curPlace):
                         GenerateLineup({members:placeOpt.members,weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
         
                     generatedLineups[weekendKey].push(newLineup)
@@ -907,6 +910,12 @@ function RandomnessSelect(props:RandomnessSelectProps){
     )
 }
 
+/**
+ * Faz uma cópia profunda de um objeto de Opções de Geração
+ * 
+ * @param source Objeto fonte
+ * @returns Cópia do objeto
+ */
 function CloneGenerationOptions(source:GenerationOptionsType){
     let newOptions:any = JSON.parse(JSON.stringify(source)) // Cópia superficial. Referências à valores mutáveis ainda são as mesmas da original.
 
@@ -932,7 +941,12 @@ function CloneGenerationOptions(source:GenerationOptionsType){
 
     return newOptions
 }
-
+/** 
+ * Faz uma cópia profunda de um objeto de Opções Exclusivas
+ * 
+ * @param source Objeto fonte
+ * @returns Cópia do objeto
+*/
 function CloneExclusiveOptions(source:object) {
     let clone = JSON.parse(JSON.stringify(source)) // Cópia superficial
     

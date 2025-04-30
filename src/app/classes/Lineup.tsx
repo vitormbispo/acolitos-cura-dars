@@ -45,6 +45,8 @@ export class Lineup{
     /**
      * Troca dois membros de função/posição a partir
      * das funções e escalas das quais estão relacionados
+     * e, se especificado, executa uma função para 
+     * atualizar o componente relacionado à essa escala
      * 
      * @param srcRole Função do membro fonte
      * @param srcLineup Escala do membro fonte
@@ -65,6 +67,9 @@ export class Lineup{
 
     /**
      * Substitui um membro escalado em determinada função dessa escala
+     * e, se especificado, executa uma função para 
+     * atualizar o componente relacionado à essa escala
+     * 
      * @param replaceRole Função a ser substituído
      * @param newMember Membro substituto
      * @param update Função para atualizar o componente após substituição

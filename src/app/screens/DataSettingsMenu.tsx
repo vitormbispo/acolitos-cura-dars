@@ -19,7 +19,6 @@ export default function DataSettingsMenu(){
         </View>
     )
 }
-
 /**
  * Solicita ao usuário que selecione um arquivo para importação
  */
@@ -35,6 +34,4 @@ async function LoadDataFile() {
         .catch(()=>console.error("Reading file failed"))
     })
     .catch(()=>console.error("Impossible to read file."))
-
-    console.log(doc)
 }

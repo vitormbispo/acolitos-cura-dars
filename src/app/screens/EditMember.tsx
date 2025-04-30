@@ -21,24 +21,40 @@ export default function EditMember(){
     const { memberID } = contextStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
     
-    let originalMembers:Array<Member> = type == MemberType.ACOLYTE ? MemberData.allAcolytes : MemberData.allCoroinhas
-    let curMember:Member = JSON.parse(JSON.stringify(originalMembers))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
+    let members:Array<Member> = []
+    let typeName:string
 
-   let availabilities:Array<React.JSX.Element> = []
+    switch (type){
+        case MemberType.ACOLYTE:
+            typeName = "Acólito"
+            members = MemberData.allAcolytes
+            break
+        case MemberType.COROINHA:
+            typeName = "Coroinha"
+            members = MemberData.allCoroinhas
+            break
+    }
+
+    let curMember:Member = JSON.parse(JSON.stringify(members))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
+
+    let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
         let curWeekend:string = Dates.defaultWeekends[i]
         let available:React.JSX.Element = <WeekendAvailability member={curMember} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
 
+    const originalName = curMember.name
+    const originalNick = curMember.nick
+    const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
+    const [nickAvailable,setNickAvailable] = useState(true) //
+
     return(
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{
-                    console.log("Button pressed")
                     setConfirmDeleteVisible(!confirmDeleteVisible)
-                    console.log(confirmDeleteVisible)
                 }}
                         
                     backgroundColor={theme.accentColor}/>
@@ -47,18 +63,45 @@ export default function EditMember(){
             <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
                 
                 
-                <TextInputBox 
-                    title={"-Nome: "} 
-                    enabled={true} 
-                    default={curMember.name} 
-                    onChangeText={(text:string)=>curMember.name=text.toString()}/>
-    
-                <TextInputBox 
-                    title={"-Apelido: "} 
-                    enabled={true} 
-                    default={curMember.nick} 
-                    onChangeText={(text:string)=>curMember.nick=text.toString()}
-                    maxLength={20}/>
+            {!nameAvailable ? 
+                <Text style={
+                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse nome!</Text>
+                    :
+                    null
+            }
+            <TextInputBox 
+                title={"-Nome: "} 
+                enabled={true} 
+                onChangeText={(text:any)=>curMember.name=text.toString()} 
+                placeholder="Nome..."
+                default={curMember.name}
+                onBlur={()=>{
+                    if(curMember.name != originalName){
+                        setNameAvailable(MemberData.IsNameAvailable(curMember.name,members))
+                    }
+                    
+                }}/>
+
+            {!nickAvailable ? 
+                <Text style={
+                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse apelido!</Text>
+                    :
+                    null
+            }
+            <TextInputBox 
+                title={"-Apelido: "} 
+                enabled={true} 
+                maxLength={20}
+                onChangeText={(text:any)=>curMember.nick=text.toString()} 
+                placeholder="Apelido..."
+                default={curMember.nick}
+                onBlur={()=>{
+                    if(curMember.nick != originalNick){
+                        setNickAvailable(MemberData.IsNickAvailable(curMember.nick,members))
+                    }
+                    
+                }}/>
+
     
                 <TextInputBox 
                     title={"-Responsável: "} 
@@ -79,6 +122,7 @@ export default function EditMember(){
                 
                 <Text style={textStyles.dataTitle}>- Local:</Text>
                 <PlaceAvailability member={curMember}/>
+                {/** */}
     
                 <View style={{paddingTop:20}}>              
                     <View style={{marginTop:30}}>             
@@ -93,7 +137,7 @@ export default function EditMember(){
                 </View>         
             </KeyboardAwareScrollView>
             {/*} Botão concluir {*/}
-            <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} 
+            <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} disabled={!(nickAvailable && nameAvailable)}
                 press={()=>{
                     SaveChanges(curMember,memberID,type)
                 }}/>

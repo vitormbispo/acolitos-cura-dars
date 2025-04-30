@@ -3,7 +3,6 @@ import { Member, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberD
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 
-
 type GeneratorSettings = {
     members:Array<Member>
     weekend:string
@@ -145,6 +144,7 @@ export function GenerateRandomLineup(roleset:RoleSet,type?:MemberType,weekend:st
     generatedLineup.day = day
     generatedLineup.weekend = weekend
     generatedLineup.roleset = roleset
+    generatedLineup.place = place
     return generatedLineup
 }
 

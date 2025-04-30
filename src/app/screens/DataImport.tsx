@@ -10,6 +10,7 @@ import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
+import { PresetsData } from "../classes/PresetsData";
 
 
 export class DataImportOptions{
@@ -94,6 +95,9 @@ function LoadData(data:AppData|object,properties:Array<string>){
         else if(Places[prop] != undefined){
             Places[prop] = propData
         }
+        else if (PresetsData[prop] != undefined){
+            PresetsData[prop] = propData
+        }
         
     })
     MemberData.SaveMemberData()
@@ -102,4 +106,5 @@ function LoadData(data:AppData|object,properties:Array<string>){
     Roles.VerifyRolesIntegrity()
     VerifyMembersIntegrity(MemberData.allAcolytes)
     VerifyMembersIntegrity(MemberData.allCoroinhas)
+    PresetsData.VerifyPresetsIntegrity()
 }

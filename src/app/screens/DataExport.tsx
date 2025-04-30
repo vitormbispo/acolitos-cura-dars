@@ -1,14 +1,10 @@
 import { ToastAndroid, View } from "react-native";
 import { DataSection, TextButton, TextCheckBox, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
-import { menuStore } from "../store/store";
 import { router } from "expo-router";
 import { AppData, RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
 
-// TODO Troca da localização dos métodos de dados quebrou completamente
-// Esse sistema. Ajustar para ficar o mais flexível possível a partir desse ponto.
 export default function DataExport(){
-    const {theme} = menuStore()
     let allProperties = RetrieveAppData()
     let selectedProperties = RetrieveAppDataProperties()
     return(

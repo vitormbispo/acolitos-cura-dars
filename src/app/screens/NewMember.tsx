@@ -11,15 +11,23 @@ import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
 import { VerifyMembersIntegrity } from "../classes/DataManager";
+import { useState } from "react";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
     let currentData:Member = new Member()
+    let members:Array<Member> = []
     let typeName:string
 
     switch (type){
-        case MemberType.ACOLYTE:typeName = "Acólito"; break
-        case MemberType.COROINHA:typeName = "Coroinha"; break
+        case MemberType.ACOLYTE:
+            typeName = "Acólito"
+            members = MemberData.allAcolytes
+            break
+        case MemberType.COROINHA:
+            typeName = "Coroinha"
+            members = MemberData.allCoroinhas
+            break
     }
     
     currentData.disp = DefaultDispMap()
@@ -32,6 +40,9 @@ export default function NewMember(){
         let available:React.JSX.Element = <WeekendAvailability member={currentData} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
+
+    const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
+    const [nickAvailable,setNickAvailable] = useState(true) //
     return(
         
         <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
@@ -39,18 +50,37 @@ export default function NewMember(){
             <UpperBar icon={GetMemberAddIcon()}screenName={"Novo "+typeName}/>
 
             <DataSection text={"-Dados pessoais-"} centered={true}/>
+            
+            {!nameAvailable ? 
+                <Text style={
+                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse nome!</Text>
+                    :
+                    null
+            }
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
                 onChangeText={(text:any)=>currentData.name=text.toString()} 
-                placeholder="Nome..."/>
+                placeholder="Nome..."
+                onBlur={()=>{
+                    setNameAvailable(MemberData.IsNameAvailable(currentData.name,members))
+                }}/>
 
+            {!nickAvailable ? 
+                <Text style={
+                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse apelido!</Text>
+                    :
+                    null
+            }
             <TextInputBox 
                 title={"-Apelido: "} 
                 enabled={true} 
                 maxLength={20}
                 onChangeText={(text:any)=>currentData.nick=text.toString()} 
-                placeholder="Apelido..."/>
+                placeholder="Apelido..."
+                onBlur={()=>{
+                    setNickAvailable(MemberData.IsNickAvailable(currentData.nick,members))
+                }}/>
 
             <TextInputBox 
                 title={"-Responsável: "} 
@@ -77,13 +107,13 @@ export default function NewMember(){
                 </View>
                 
                 <View style={{flexDirection:"row",alignItems:"center"}}>
-                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Dispnível: </Text>
+                    <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
                     <CheckBox checked={true}press = {()=>
                         {currentData.onLineup = !currentData.onLineup}}/>
                 </View>
             </View>
             
-            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}}/>
+            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}} disabled={!(nameAvailable && nickAvailable)}/>
         </KeyboardAwareScrollView>
     )
 }

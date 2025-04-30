@@ -18,8 +18,8 @@ export type AppData = {
     "acolyteRoleSets":{name:string,data:RoleSet[]},
     "coroinhaRoleSets":{name:string,data:RoleSet[]},
     "allPlaces":{name:string,data:string[]},
-    "acolyteLineupPresets":{name:string,data:Array<Preset>},
-    "coroinhaLineupPresets":{name:string,data:Array<Preset>}
+    "acolyteGenerationPresets":{name:string,data:Array<Preset>},
+    "coroinhaGenerationPresets":{name:string,data:Array<Preset>}
 }
 
 /**
@@ -37,8 +37,8 @@ export function RetrieveAppData():AppData{
         "acolyteRoleSets":{name:"Funções dos acólitos",data:Roles.acolyteRoleSets},
         "coroinhaRoleSets":{name:"Funções dos coroinhas",data:Roles.coroinhaRoleSets},
         "allPlaces":{name:"Locais",data:Places.allPlaces},
-        "acolyteLineupPresets":{name:"Predefinições dos acólitos",data:PresetsData.acolyteGenerationPresets},
-        "coroinhaLineupPresets":{name:"Predefinições dos coroinhas",data:PresetsData.coroinhaGenerationPresets}
+        "acolyteGenerationPresets":{name:"Predefinições dos acólitos",data:PresetsData.acolyteGenerationPresets},
+        "coroinhaGenerationPresets":{name:"Predefinições dos coroinhas",data:PresetsData.coroinhaGenerationPresets}
     }
     return data
 }
@@ -58,7 +58,9 @@ export function RetrieveAppDataProperties():Array<string>{
         "allMembers",
         "acolyteRoleSets",
         "coroinhaRoleSets",
-        "allPlaces"
+        "allPlaces",
+        "acolyteGenerationPresets",
+        "coroinhaGenerationPresets"
     ]
 }
 
@@ -124,8 +126,8 @@ export const LoadCoroinhaData = async() => {
 
 /**
  * Solicita ao usuário um diretório para então salvar todos os dados da aplicação
- * @param name 
- * @param mimetype 
+ * @param name Nome do arquivo
+ * @param mimetype Tipo de arquivo para salvar
  */
 
 export async function SaveDataFile(name:string,mimetype:string,properties:Array<string>){
@@ -206,7 +208,7 @@ export function ConvertDataToClasses(){
 
 /**
  * Converte um objeto para uma escala estruturada (StructuredLineup)
- * @param obj 
+ * @param obj Objeto a converter
  * @returns 
  */
 export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
@@ -223,7 +225,7 @@ export function ConvertObjectToStructuredLineup(obj:any):StructuredLineup{
 
 /**
  * Converte um objeto para um tipo escala (Lineup)
- * @param obj 
+ * @param obj Objeto a converter
  * @returns 
  */
 export function ConvertObjectToLineup(obj:any):Lineup{
@@ -239,7 +241,7 @@ export function ConvertObjectToLineup(obj:any):Lineup{
 
 /**
  * Converte um objeto para uma predefinição (Preset)
- * @param obj 
+ * @param obj Objeto a converter
  * @returns 
  */
 export function ConvertObjectToPreset(obj:any):Preset{
@@ -249,7 +251,6 @@ export function ConvertObjectToPreset(obj:any):Preset{
     props.forEach((prop)=>{
         newPreset[prop] = obj[prop]
     })
-    console.log("new preset! ",newPreset.UpdatePreset)
     return newPreset
 }
 
