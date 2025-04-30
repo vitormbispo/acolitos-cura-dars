@@ -94,7 +94,8 @@ export default function MemberProfile() {
                 <Text style={textStyles.dataTitle}>- Local:</Text>
                 <VisualPlaceAvailability member={curMember}/>
 
-                <View style={{paddingTop:20}}>
+                <Text style={textStyles.dataTitle}>- Dias e Horários:</Text>
+                <View style={{paddingTop:40}}>
                     <View>
                         {availabilities}
                     </View>

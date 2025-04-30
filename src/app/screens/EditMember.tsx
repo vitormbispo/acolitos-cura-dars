@@ -10,7 +10,7 @@ import { Dates } from "../classes/Dates";
 import { PlaceAvailability, WeekendAvailability } from "./NewMember";
 import { textStyles} from "../styles/GeneralStyles";
 import { ICONS } from "../classes/AssetManager";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export class EditMemberScreen{
     static id:number = 0
@@ -35,24 +35,24 @@ export default function EditMember(){
             break
     }
 
-    let curMember:Member = JSON.parse(JSON.stringify(members))[memberID] // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
+    const curMember = useRef(JSON.parse(JSON.stringify(members))[memberID]) // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
     let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
         let curWeekend:string = Dates.defaultWeekends[i]
-        let available:React.JSX.Element = <WeekendAvailability member={curMember} weekend={curWeekend} key={curWeekend+i}/>
+        let available:React.JSX.Element = <WeekendAvailability member={curMember.current} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
 
-    const originalName = curMember.name
-    const originalNick = curMember.nick
+    const originalName = curMember.current.name
+    const originalNick = curMember.current.nick
     const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
     const [nickAvailable,setNickAvailable] = useState(true) //
 
     return(
         <View style={{flex:1}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.nick,25)}/>
+                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.nick,25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{
                     setConfirmDeleteVisible(!confirmDeleteVisible)
                 }}
@@ -72,12 +72,12 @@ export default function EditMember(){
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                onChangeText={(text:any)=>curMember.name=text.toString()} 
+                onChangeText={(text:any)=>curMember.current.name=text.toString()} 
                 placeholder="Nome..."
-                default={curMember.name}
+                default={curMember.current.name}
                 onBlur={()=>{
-                    if(curMember.name != originalName){
-                        setNameAvailable(MemberData.IsNameAvailable(curMember.name,members))
+                    if(curMember.current.name != originalName){
+                        setNameAvailable(MemberData.IsNameAvailable(curMember.current.name,members))
                     }
                     
                 }}/>
@@ -92,12 +92,12 @@ export default function EditMember(){
                 title={"-Apelido: "} 
                 enabled={true} 
                 maxLength={20}
-                onChangeText={(text:any)=>curMember.nick=text.toString()} 
+                onChangeText={(text:any)=>curMember.current.nick=text.toString()} 
                 placeholder="Apelido..."
-                default={curMember.nick}
+                default={curMember.current.nick}
                 onBlur={()=>{
-                    if(curMember.nick != originalNick){
-                        setNickAvailable(MemberData.IsNickAvailable(curMember.nick,members))
+                    if(curMember.current.nick != originalNick){
+                        setNickAvailable(MemberData.IsNickAvailable(curMember.current.nick,members))
                     }
                     
                 }}/>
@@ -106,45 +106,46 @@ export default function EditMember(){
                 <TextInputBox 
                     title={"-Responsável: "} 
                     enabled={type == MemberType.COROINHA} 
-                    default={curMember.parents}
-                    placeholder={curMember.parents}
-                    onChangeText={(text:any)=>curMember.parents=text.toString()}/>
+                    default={curMember.current.parents}
+                    placeholder={curMember.current.parents}
+                    onChangeText={(text:any)=>curMember.current.parents=text.toString()}/>
     
                 <TextInputBox 
                     title={"-Contato: "} 
-                    enabled={true} placeholder={curMember.contact} 
+                    enabled={true} placeholder={curMember.current.contact} 
                     keyboardType="numeric"
-                    default={curMember.contact}
-                    onChangeText={(text:string)=>curMember.contact = text.toString()}/>
+                    default={curMember.current.contact}
+                    onChangeText={(text:string)=>curMember.current.contact = text.toString()}/>
     
                 
                 <DataSection text={"- Disponibilidade -"} centered={true} />
                 
                 <Text style={textStyles.dataTitle}>- Local:</Text>
-                <PlaceAvailability member={curMember}/>
-                {/** */}
-    
-                <View style={{paddingTop:20}}>              
+                <PlaceAvailability member={curMember.current}/>
+
+                <Text style={textStyles.dataTitle}>- Dias e Horários:</Text>
+
+                <View style={{paddingTop:40}}>              
                     <View style={{marginTop:30}}>             
                         {availabilities}
                     </View>
     
                     <View style={{flexDirection:"row",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
-                        <CheckBox checked={curMember.onLineup}press = {()=>
-                            {curMember.onLineup = !curMember.onLineup}}/>
+                        <CheckBox checked={curMember.current.onLineup}press = {()=>
+                            {curMember.current.onLineup = !curMember.current.onLineup}}/>
                     </View>
                 </View>         
             </KeyboardAwareScrollView>
             {/*} Botão concluir {*/}
             <TextButton text="Concluir" textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} disabled={!(nickAvailable && nameAvailable)}
                 press={()=>{
-                    SaveChanges(curMember,memberID,type)
+                    SaveChanges(curMember.current,memberID,type)
                 }}/>
 
             <ConfirmationModal 
                 visible={confirmDeleteVisible}
-                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.nick+"\"?"} 
+                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.current.nick+"\"?"} 
                 confirmAction={()=>EraseMember(memberID,type)} 
                 declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
                 requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}

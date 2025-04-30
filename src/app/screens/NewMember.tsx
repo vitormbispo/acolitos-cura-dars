@@ -11,11 +11,11 @@ import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
 import { VerifyMembersIntegrity } from "../classes/DataManager";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
-    let currentData:Member = new Member()
+    const currentData = useRef(new Member())
     let members:Array<Member> = []
     let typeName:string
 
@@ -30,14 +30,14 @@ export default function NewMember(){
             break
     }
     
-    currentData.disp = DefaultDispMap()
-    currentData.placeDisp = Places.PlacesDispMap()
-    currentData.placeRotation = Places.PlacesRotationMap()
+    currentData.current.disp = DefaultDispMap()
+    currentData.current.placeDisp = Places.PlacesDispMap()
+    currentData.current.placeRotation = Places.PlacesRotationMap()
 
     let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
         let curWeekend:string = Dates.defaultWeekends[i]
-        let available:React.JSX.Element = <WeekendAvailability member={currentData} weekend={curWeekend} key={curWeekend+i}/>
+        let available:React.JSX.Element = <WeekendAvailability member={currentData.current} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
 
@@ -60,10 +60,10 @@ export default function NewMember(){
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                onChangeText={(text:any)=>currentData.name=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.name=text.toString()} 
                 placeholder="Nome..."
                 onBlur={()=>{
-                    setNameAvailable(MemberData.IsNameAvailable(currentData.name,members))
+                    setNameAvailable(MemberData.IsNameAvailable(currentData.current.name,members))
                 }}/>
 
             {!nickAvailable ? 
@@ -76,30 +76,32 @@ export default function NewMember(){
                 title={"-Apelido: "} 
                 enabled={true} 
                 maxLength={20}
-                onChangeText={(text:any)=>currentData.nick=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.nick=text.toString()} 
                 placeholder="Apelido..."
                 onBlur={()=>{
-                    setNickAvailable(MemberData.IsNickAvailable(currentData.nick,members))
+                    setNickAvailable(MemberData.IsNickAvailable(currentData.current.nick,members))
                 }}/>
 
             <TextInputBox 
                 title={"-Responsável: "} 
                 enabled={type == MemberType.COROINHA} 
-                onChangeText={(text:any)=>currentData.parents=text.toString()}
+                onChangeText={(text:any)=>currentData.current.parents=text.toString()}
                 placeholder="Responsável..."/>
             <TextInputBox 
                 title={"-Contato: "} 
                 enabled={true} 
                 keyboardType={"numeric"} 
-                onChangeText={(text:any)=>currentData.contact=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.contact=text.toString()} 
                 placeholder="Contato..."/>
             
             <DataSection text={"- Disponibilidade -"} centered={true}/>
 
             <Text style={textStyles.dataTitle}>- Local</Text>
-            <PlaceAvailability member={currentData}/>
+            <PlaceAvailability member={currentData.current}/>
+            
+            <Text style={textStyles.dataTitle}>- Dias e Horários:</Text>
 
-            <View style={{paddingTop:20}}>
+            <View style={{paddingTop:40}}>
                 <View style={{marginTop:30}}>
                     
                     {availabilities}
@@ -109,11 +111,11 @@ export default function NewMember(){
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
                     <CheckBox checked={true}press = {()=>
-                        {currentData.onLineup = !currentData.onLineup}}/>
+                        {currentData.current.onLineup = !currentData.current.onLineup}}/>
                 </View>
             </View>
             
-            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData,type)}} disabled={!(nameAvailable && nickAvailable)}/>
+            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData.current,type)}} disabled={!(nameAvailable && nickAvailable)}/>
         </KeyboardAwareScrollView>
     )
 }
