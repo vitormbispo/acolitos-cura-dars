@@ -26,6 +26,7 @@ export default function App() {
  * Inicializa a aplicação carregando e validando os dados salvos
  */
 function InitializeApp(){
+    console.log("Initializing app")
     // Carrega e valida dados dos membros:
     LoadAcolyteData().then(()=>{
         VerifyMembersIntegrity(MemberData.allAcolytes)
@@ -33,6 +34,7 @@ function InitializeApp(){
 
     LoadCoroinhaData().then(()=>{
         VerifyMembersIntegrity(MemberData.allCoroinhas)
+        ConvertDataToClasses()
     })
     
     MemberData.VerifyMemberDataIntegrity() // Valida a integridade de todos os dados dos membros

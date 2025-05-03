@@ -68,18 +68,18 @@ export function RetrieveAppDataProperties():Array<string>{
  * Carrega os dados dos acólitos.
  */
 export const LoadAcolyteData = async() => {
+    console.log("Carregando")
     try {
+        console.log("Entrou no try")
         let acolyteData = await AsyncStorage.getItem("AcolyteData")
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         let acolytePresets = await AsyncStorage.getItem("AcolytePresets")
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
         PresetsData.acolyteGenerationPresets = JSON.parse(acolytePresets)
-        
-        ConvertDataToClasses()
 
         OrganizeMemberArrayAlpha(MemberData.allAcolytes)
-
+        
         if (MemberData.allAcolytes == null){
             MemberData.allAcolytes = []
         }
@@ -182,6 +182,7 @@ export function VerifyMembersIntegrity(members:Array<Member>){
  */
 export function ConvertDataToClasses(){
     let allLineups = MemberData.GetAllLineups()
+    console.log("Lineups: "+MemberData.GetAllLineups())
     for(let i = 0; i < allLineups.length; i++){
         let curLine = allLineups[i]
         allLineups[i] = ConvertObjectToStructuredLineup(curLine)

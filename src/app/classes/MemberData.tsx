@@ -111,8 +111,12 @@ export class MemberData{
      * Retorna uma lista com todas as escalas dos acólitos e coroinhas
      * @returns 
      */
-    static GetAllLineups():Array<StructuredLineup>{
-        return MemberData.allLineupsAcolytes.concat(MemberData.allLineupsCoroinhas)
+    static GetAllLineups():Array<any>{
+        let joined = MemberData.allLineupsAcolytes.concat(MemberData.allLineupsCoroinhas)
+        if(joined == null){
+            joined = []
+        }
+        return joined
     }
     
     /**

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid} from "react-native"
-import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { GenerateLineup, GenerateRandomLineup } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -222,22 +222,24 @@ export default function LineupGenerationOptions(){
             <LoadingModal visible={isGenerating}/>
 
             {/* Modal para criar nova predefinição */}
-            <Modal visible={presetAddOpen} transparent={true} onRequestClose={()=>{setPresetAddOpen(false)}} animationType="fade">
-                <Pressable style={{flex:1,backgroundColor:"#00000080",alignItems:"center",justifyContent:"center"}} onPress={()=>setPresetAddOpen(false)}>
-                    <View style={{borderRadius:20,alignSelf:"center",backgroundColor:theme.primary,padding:30}}>
-                        <Text>Insira o nome da nova predefinição:</Text>
-                        <TextInputBox title={"Nome:"} onChangeText={(text)=>{setNewPresetName(text)}}/>
-                        {!PresetsData.IsNameAvailable(newPresetName,presets) ? 
-                        <Text style={[textStyles.dataTitle,{color:theme.reject}]}>Esse nome já está em uso!</Text> : null}
-                        <TextButton text={"Concluir"} disabled={!PresetsData.IsNameAvailable(newPresetName,presets)}press={()=>{
-                            CreateNewPreset()
-                            setNewPresetName("")
-                        }}/>
-                        
-                    </View>
-                </Pressable>
+            <TextInputModal 
+                visible={presetAddOpen} 
+                isTextValid={PresetsData.IsNameAvailable(newPresetName,presets)}
+
+                title={"Nome"} 
+                description={"Insira o nome da nova predefinição"} 
+                unvalidTextMessage="Esse nome já está em uso!"
                 
-            </Modal>
+                onRequestClose={()=>{
+                    setPresetAddOpen(false)
+                }}
+                submitAction={()=>{
+                    CreateNewPreset()
+                    setNewPresetName("")
+                }}
+                onChangeText={(text:string)=>{
+                    setNewPresetName(text)
+                }}/>
         </View>
     )
 }
@@ -706,55 +708,98 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     const isEditing = useRef(false) // As opções estão em processo de edição?
     const {theme} = menuStore()
     
+    const daysChecks = useRef([])
+    const dayExceptions = useRef([])
+
+
+    const rolesetOptions = useRef([])
+    const rolesetActions = useRef([])
+
     let key = props.genOptionsKey.weekend
-    key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
-    key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
-    
+        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
+        key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
     const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
     const [roleSet,setRoleSet] = useState(props.rolesets[0]) // Estado do roleset
-    
+    const [builded,setBuilded] = useState(false)
     if(!isEditing.current){ // Se ainda não estiver editando:
         options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
         isEditing.current = true
     }
     
-    // Configurar opções do DropDown de seleção de RoleSet
-    let rolesetOptions:Array<string> = []
-    let rolesetActions:Array<(...args:any)=>any> = []
-
-    for(let i = 0; i < props.rolesets.length; i++){
-        let curSet = props.rolesets[i]
-
-        rolesetOptions.push(curSet.name)
-        rolesetActions.push(()=>{
-            options.current.roleset = curSet
-            setRoleSet(curSet)
-        })
-    }
-
+    /**
+     * Constrói os componentes da tela
+     */
+    const BuildComponents = ()=>{
     // Criar botões de seleção de dias
-    let daysChecks = []
-    const dayExceptions = useRef([])
-    dayExceptions.current = options.current.dayExceptions != undefined ? options.current.dayExceptions : dayExceptions.current
-    for(let i = 0; i < curGenOptions.dateset.days.length; i++){
-        let curDay = curGenOptions.dateset.days[i]
+        daysChecks.current = []
+        dayExceptions.current = options.current.dayExceptions != undefined ? options.current.dayExceptions : dayExceptions.current
+        console.log(curGenOptions.dateset.days)
         
-        
-        let comp = <CheckBox checked={!dayExceptions.current.includes(curDay)} press={()=>{
-            let dayIndex = dayExceptions.current.indexOf(curDay)
-            if(dayIndex == -1){
-                dayExceptions.current.push(curDay)
-            }
-            else{
-                dayExceptions.current.splice(dayIndex,1)
-            }
-            
-        }} topText={curDay} topTextStyle={textStyles.buttonText} key={i}/>
 
-        daysChecks.push(comp)
+        for(let i = 0; i < curGenOptions.dateset.days.length; i++){
+            console.log("Building "+i)
+            let curDay = curGenOptions.dateset.days[i]
+            console.log(curDay)
+            let comp = <CheckBox checked={!dayExceptions.current.includes(curDay)} press={()=>{
+                let dayIndex = dayExceptions.current.indexOf(curDay)
+                if(dayIndex == -1){
+                    dayExceptions.current.push(curDay)
+                }
+                else{
+                    dayExceptions.current.splice(dayIndex,1)
+                }
+                
+            }} topText={curDay} topTextStyle={textStyles.buttonText} key={i}/>
+
+            console.log(comp)
+            daysChecks.current.push(comp)
+            console.log(daysChecks.current)
+            setBuilded(true)
+        }
     }
+    
+    // Atualiza os dados quando a chave da opção exclusiva é alterada (outras opções exclusivas são selecionadas).
+    useEffect(()=>{
+        console.log("Update Key")
+        let key = props.genOptionsKey.weekend
+        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
+        key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
+    
+        baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
+        if(!isEditing.current){ // Se ainda não estiver editando:
+            options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+            isEditing.current = true
+        }
+        setRoleSet(options.current.roleset)
+        BuildComponents()
+        console.log(daysChecks.current)
+    },[props.genOptionsKey])
 
+    // Atualiza as opções do roleset quand outro é selecionado
+    useEffect(()=>{
+        console.log("Roleset changed")
+        UpdateRolesetOptions()
+        BuildComponents()
+        console.log(daysChecks.current)
+    },[roleSet,props.rolesets])
+
+    /**
+     * Atualiza as informações do DropDown de funções
+     */
+    const UpdateRolesetOptions = ()=>{
+        for(let i = 0; i < props.rolesets.length; i++){
+            let curSet = props.rolesets[i]
+    
+            rolesetOptions.current.push(curSet.name)
+            rolesetActions.current.push(()=>{
+                options.current.roleset = curSet
+                setRoleSet(curSet)
+                UpdateRolesetOptions()
+                BuildComponents()
+            })
+        }
+    }
     /**
      * Fechar o modal.
      */
@@ -787,7 +832,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         isEditing.current = false
         props.onClose()
     }
-
+    console.log("Before return: ",daysChecks.current)
     return(
         <Modal visible={props.visible} transparent={true} animationType="fade" onRequestClose={Close}>
             <View style={{flex:1,backgroundColor:"#00000099"}}>
@@ -813,8 +858,8 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                         
                         <DataSection text={"- Conjunto de funções"}/>
                         <DropDown 
-                            options={rolesetOptions} 
-                            actions={rolesetActions} 
+                            options={rolesetOptions.current} 
+                            actions={rolesetActions.current} 
                             selectedTextOverride={roleSet.name == "default" ? "Selecione as funções:" : roleSet.name} 
                             offset={{x:0,y:0}}
                         />
@@ -831,7 +876,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                         <View>
                             <DataSection text={"Dias"}/>
                             <View style={{flexDirection:"row",marginTop:35}}>
-                                {daysChecks}
+                                {daysChecks.current}
                             </View>
                             
                         </View> : null}
