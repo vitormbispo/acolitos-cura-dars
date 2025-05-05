@@ -61,6 +61,25 @@ export type ThemeStates = {
     
 }
 
+
+export type GenerationStates = {
+    lineups:Array<Lineup>
+    curIndex:number
+}
+export const DefaultGenerationStates = {
+    lineups:[],
+    curIndex:0
+}
+
+export const generationStore = create<GenerationStates>((set)=>({
+    lineups:[],
+    curIndex:0,
+
+    updateLineups: (newState)=>set(()=>({lineups:newState})),
+    incrementIndex: ()=>set((state)=>({curIndex:state.curIndex+1})),
+    resetIndex: ()=>set(()=>({curIndex:0})),
+    resetLineups: ()=>set(()=>({lineups:[]}))
+}))
 export const menuStore = create<ThemeStates>((set)=>({
     name:"Acólitos",
     type:MemberType.ACOLYTE,

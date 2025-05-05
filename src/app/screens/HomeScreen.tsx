@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { CompactLineup, DropDown, ExpandableView, GetMemberIcon, ImageTextButton, LinkRowImageButton, TextPosition, UpperBar } from "../classes/NewComps";
+import { CompactLineup, DropDown, ExpandableView, GetMemberIcon, ImageTextButton, LinkRowImageButton, TextButton, TextPosition, UpperBar } from "../classes/NewComps";
 import { uiStyles} from "../styles/GeneralStyles";
 import { contextStore, menuStore} from "@/src/app/store/store";
 import { ICONS } from "../classes/AssetManager";
@@ -27,6 +27,9 @@ export function AppBody(){
     return(
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
+        <TextButton text={"Verify"} press={()=>{
+            ConvertDataToClasses()
+        }}/>
     </View> : null
     )
 }

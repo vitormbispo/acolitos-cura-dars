@@ -1,8 +1,48 @@
 import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Methods";
-import { Member, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
+import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
+import { useEffect } from "react";
+import { generationStore } from "../store/store";
 
+/**
+ *  Armazena dados temporários da geração de escalas
+ */
+export class GenerationCache {
+    static lineups = []
+    static curIndex = 0
+
+    static IncrementIndex = ()=>{
+        this.curIndex++
+    }
+
+    static ResetIndex = ()=>{
+        this.curIndex = 0
+    }
+    
+    static ResetLineups = ()=>{
+        this.lineups = []
+    }
+
+    static AddLineup = (line:Lineup)=>{
+        this.lineups.push(line)
+        this.IncrementIndex()
+    }
+
+    static ClearAllMemberCache = ()=>{
+        MemberData.allAcolytes.forEach((acolyte)=>{
+            acolyte.selectedOnLineups = []
+        })
+        MemberData.allCoroinhas.forEach((coroinha)=>{
+            coroinha.selectedOnLineups = []
+        })
+    }
+    static Reset = ()=>{
+        this.ResetIndex()
+        this.ResetLineups()
+        this.ClearAllMemberCache()
+    }
+}
 type GeneratorSettings = {
     members:Array<Member>
     weekend:string
@@ -28,7 +68,6 @@ type GeneratorSettings = {
  */
 export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     let members:Array<Member> = settings.members.slice()
-    
     if(members == null){
         console.error("Empty list")
         return null
@@ -81,7 +120,10 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         
         newLineup.line[role] = member
         newLineup.members.push(member)
-        
+
+        // Relacionando índice da escala ao membro
+        member.selectedOnLineups.push(GenerationCache.curIndex) 
+
         RemoveMember(member,chosenMembers)
 
         if(chosenMembers.length == 0 && i+1 < settings.roleset.size){
@@ -112,6 +154,8 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         case MemberType.ACOLYTE:  SaveAcolyteData(); break
         case MemberType.COROINHA: SaveCoroinhaData(); break
     }
+
+    GenerationCache.AddLineup(newLineup)
     return newLineup
 }
 
@@ -412,4 +456,120 @@ function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
     emptyLine.roleset = roleset
     
     return emptyLine
+}
+
+
+function IsMemberAvailable(member:Member,lineup:Lineup){
+    return member.onLineup && 
+    !lineup.members.includes(member) &&
+    member.disp[lineup.weekend][lineup.day] && 
+    (lineup.place == undefined || member.placeDisp[lineup.place])
+}
+
+/**
+ * Balanceia as escalas do buffer de geração atual (GenerationBuffer)
+ * entre os membros
+ * @param members Membros que serão balanceados
+ * @returns Essa função altera diretamente as escalas no buffer.
+ */
+export function BalanceLineups(members:Array<Member>){
+    let timesSelected = SortByTimesSelected(members)
+    let classes = []
+
+    Object.keys(timesSelected).forEach((times)=>{
+        classes.push(Number(times))
+    })
+    
+    let min = 0
+    let max = classes.length-1
+    let diff = classes[max]-classes[min]
+    
+    // Explicitando caso base:
+    if(diff < 2){return}
+
+    while (min < max){
+        diff = classes[max]-classes[min]
+        
+        if(diff < 2){break} // Caso base implícito
+        let least:Array<Member> = timesSelected[classes[min]]
+        let most:Array<Member> = timesSelected[classes[max]]
+
+        // Tentar trocar os que foram mais escalados pelos que foram menos
+        BalanceTwoClasses(least,most)
+
+        if(least.length > 0 && ((classes[max-1]-classes[min]) >= 2)){
+            max--
+        }
+        else{
+            let nextMembers = members.filter((member) => !least.includes(member))
+            return BalanceLineups(nextMembers) // Caso recursivo
+        }
+    }  
+}
+
+
+type SortedTimesSelected = {
+    min:number
+    max:number
+}
+/**
+ * Separa os membros em um objeto por quantidade de vezes escalados
+ * o objeto também armazena o valor mínimo e máximo da quantidade de vezes
+ * nos campos "min" e "max" respectivamente.
+ * 
+ * @param members Membros
+ * @returns Objeto com os membros separados por vezes escalados
+ */
+function SortByTimesSelected(members:Array<Member>):object{
+    let timesSelected = {}
+
+    for(let i = 0; i < members.length; i++){
+        let curMember:Member = members[i]
+        
+        //if(!curMember.onLineup){continue}
+
+        let selected = curMember.selectedOnLineups.length
+
+        if(timesSelected[selected] == undefined){
+            timesSelected[selected] = [curMember]
+        }
+        else{
+            timesSelected[selected].push(curMember)
+        }
+    }
+
+    return timesSelected
+}
+
+function BalanceTwoClasses(least:Array<Member>,most:Array<Member>) {
+    // Explicitando caso base da recursão
+    if(least.length == 0 || most.length == 0){
+        return
+    }
+    
+    for(let i = 0; i < least.length;i++){
+        let curMember:Member = least[i]
+
+        for(let h = 0; h < most.length;h++){
+            let compare:Member = most[h]
+            let lineupsToCompare = compare.selectedOnLineups
+
+            for(let j = 0; j < lineupsToCompare.length; j++){
+                let curLine:Lineup = GenerationCache.lineups[lineupsToCompare[j]]
+                if(IsMemberAvailable(curMember,curLine)){
+                    curLine.ReplaceMember(curLine.GetMemberRole(compare),curMember)
+                    compare.selectedOnLineups.splice(compare.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
+                    curMember.selectedOnLineups.push(lineupsToCompare[j])
+                    
+                    least.splice(least.indexOf(curMember),1)
+                    most.splice(most.indexOf(compare),1)
+
+                    console.log("Switch occurred")
+                    return BalanceTwoClasses(least,most) // Caso recursivo sobre a lista atualizada.
+                }
+                
+            }
+
+        }
+    }
 }

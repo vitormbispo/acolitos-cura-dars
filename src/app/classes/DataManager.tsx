@@ -181,8 +181,17 @@ export function VerifyMembersIntegrity(members:Array<Member>){
  * Converte todos os dados salvos como objetos comuns em classes estruturadas.
  */
 export function ConvertDataToClasses(){
+    let acolytes = MemberData.allAcolytes
+    for(let i = 0; i < acolytes.length; i++){
+        acolytes[i] = ConvertObjectToMember(acolytes[i])
+    }
+    
+    let coroinhas = MemberData.allCoroinhas
+    for(let i = 0; i < coroinhas.length; i++){
+        coroinhas[i] = ConvertObjectToMember(coroinhas[i])
+    }
+    
     let allLineups = MemberData.GetAllLineups()
-    console.log("Lineups: "+MemberData.GetAllLineups())
     for(let i = 0; i < allLineups.length; i++){
         let curLine = allLineups[i]
         allLineups[i] = ConvertObjectToStructuredLineup(curLine)
@@ -252,6 +261,21 @@ export function ConvertObjectToPreset(obj:any):Preset{
         newPreset[prop] = obj[prop]
     })
     return newPreset
+}
+
+/**
+ * Converte um objeto para uma predefinição (Preset)
+ * @param obj Objeto a converter
+ * @returns 
+ */
+export function ConvertObjectToMember(obj:any):Member{
+    let newMember = new Member()
+    let props = Object.keys(obj)
+    
+    props.forEach((prop)=>{
+        newMember[prop] = obj[prop]
+    })
+    return newMember
 }
 
 

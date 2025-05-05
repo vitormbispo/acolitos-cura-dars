@@ -58,6 +58,7 @@ export class Member {
     onLineup = true // Disponível
 
     lastWeekend = "" // Último fim de semana servido
+    selectedOnLineups = []
 }
 
 /**

@@ -5,6 +5,7 @@ import { LoadAcolyteRolesets, LoadCoroinhaRolesets, Roles } from "./classes/Role
 import { Places } from "./classes/Places";
 import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
 import { contextStore } from "./store/store";
+import { DistinctRandomNumbers } from "./classes/Methods";
 
 
 export default function App() {
@@ -61,5 +62,4 @@ function InitializeApp(){
     if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
     }  
-
 }
