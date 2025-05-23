@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid} from "react-native"
 import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
-import { BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
+import { BalanceAdjacent, BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
@@ -394,6 +394,10 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
     }
     
     BalanceLineups(MemberData.allAcolytes)
+    BalanceAdjacent(MemberData.allAcolytes)
+    BalanceDiscarded(MemberData.allAcolytes)
+    BalanceLineups(MemberData.allAcolytes)
+    
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false

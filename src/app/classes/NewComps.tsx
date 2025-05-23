@@ -347,8 +347,10 @@ type UpperBarProps = {
 export function UpperBar(props:UpperBarProps){
   
   const {theme} = menuStore()
+  const backButton = <ImageButton img={require("@/src/app/item_icons/back_ico.png")} press={()=>{router.back()}} imgStyle={uiStyles.buttonIconSmall}/>
   return(
       <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
+          {router.canGoBack() ? backButton : null}
           <Image style = {[uiStyles.buttonIcon]} source={props.icon}/>
           <Text style = {textStyles.menuTitle}>- {props.screenName}</Text>
           <ToggleButton enabled={props.toggleEnabled}/>

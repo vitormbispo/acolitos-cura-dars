@@ -9,8 +9,9 @@ import { generationStore } from "../store/store";
  *  Armazena dados temporários da geração de escalas
  */
 export class GenerationCache {
-    static lineups = []
-    static curIndex = 0
+    static lineups:Array<Lineup> = []
+    static curIndex:number = 0
+    static discardedMembers:Array<Member> = []
 
     static IncrementIndex = ()=>{
         this.curIndex++
@@ -22,6 +23,10 @@ export class GenerationCache {
     
     static ResetLineups = ()=>{
         this.lineups = []
+    }
+
+    static ResetDiscardedMembers() {
+        this.discardedMembers = []
     }
 
     static AddLineup = (line:Lineup)=>{
@@ -41,6 +46,7 @@ export class GenerationCache {
         this.ResetIndex()
         this.ResetLineups()
         this.ClearAllMemberCache()
+        this.ResetDiscardedMembers()
     }
 }
 type GeneratorSettings = {
@@ -502,16 +508,12 @@ export function BalanceLineups(members:Array<Member>){
         }
         else{
             let nextMembers = members.filter((member) => !least.includes(member))
+            GenerationCache.discardedMembers = GenerationCache.discardedMembers.concat(members.filter((member) => least.includes(member)))
             return BalanceLineups(nextMembers) // Caso recursivo
         }
     }  
 }
 
-
-type SortedTimesSelected = {
-    min:number
-    max:number
-}
 /**
  * Separa os membros em um objeto por quantidade de vezes escalados
  * o objeto também armazena o valor mínimo e máximo da quantidade de vezes
@@ -520,7 +522,7 @@ type SortedTimesSelected = {
  * @param members Membros
  * @returns Objeto com os membros separados por vezes escalados
  */
-function SortByTimesSelected(members:Array<Member>):object{
+function SortByTimesSelected(members:Array<Member>,removeZero?:boolean):object{
     let timesSelected = {}
 
     for(let i = 0; i < members.length; i++){
@@ -537,7 +539,9 @@ function SortByTimesSelected(members:Array<Member>):object{
             timesSelected[selected].push(curMember)
         }
     }
-
+    if(removeZero){
+        delete timesSelected["0"]
+    }
     return timesSelected
 }
 
@@ -567,9 +571,54 @@ function BalanceTwoClasses(least:Array<Member>,most:Array<Member>) {
                     console.log("Switch occurred")
                     return BalanceTwoClasses(least,most) // Caso recursivo sobre a lista atualizada.
                 }
-                
             }
-
         }
+    }
+}
+
+export function BalanceDiscarded(members:Array<Member>) {
+    for(let i = 0; i < members.length; i++){
+        let compare:Member = members[i]
+
+        for(let j = 0; j < GenerationCache.discardedMembers.length; j++) {
+            let cur:Member = GenerationCache.discardedMembers[j]
+            
+            if(cur.name == compare.name){continue}
+
+            let lineupsToCompare = compare.selectedOnLineups
+            if(cur.selectedOnLineups.length >= lineupsToCompare.length+1) {
+                for(let k = 0; k < lineupsToCompare.length; k++){
+                    let curLine:Lineup = lineupsToCompare[k]
+                    if(IsMemberAvailable(cur,curLine)){
+                        curLine.ReplaceMember(curLine.GetMemberRole(compare),cur)
+                        compare.selectedOnLineups.splice(compare.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
+                        cur.selectedOnLineups.push(lineupsToCompare[j])
+
+                        console.log("Switch occurred on discarded.")
+                    }
+                }
+            }
+        }
+    }
+}
+
+export function BalanceAdjacent(members:Array<Member>){
+    let sorted = SortByTimesSelected(members,true)
+    let keys = Object.keys(sorted)
+    for(let i = 0; i < keys.length-1; i++){
+        let most = sorted[keys[i]]
+        let least = sorted[keys[i]]
+
+        if(sorted[keys[i]].length > sorted[keys[i+1]].length){
+            least = sorted[keys[i+1]]
+        }
+        else if(sorted[keys[i]].length < sorted[keys[i+1]].length){
+            most = sorted[keys[i+1]]
+        }
+        else{
+            console.log("Adjacent balanced!")
+            return
+        }
+        BalanceTwoClasses(least,most)
     }
 }
