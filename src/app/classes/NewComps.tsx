@@ -362,7 +362,7 @@ type UpperButtonProps = {
   img:any
   press?: (...args:any) => any,
   backgroundColor?:string,
-  link?:Href<string|object>,
+  link?:Href,
   style?:object
 }
 /**
@@ -405,7 +405,7 @@ export function ToggleButton(props:ToggleButtonProps) {
 type LinkRowImageButtonProps = {
   img:any,
   text:string,
-  link:Href<string|object>,
+  link:Href,
   press?: (...args:any) => any,
   imgStyle?:object,
   rowstyle?:object,
@@ -441,7 +441,7 @@ export function LinkRowImageButton(props:LinkRowImageButtonProps){
 
 type LinkImageButtonProps = {
   img:any,
-  link:Href<string|object>,
+  link:Href,
   press?: (...args:any) => any,
   imgStyle?:object,
   buttonStyle?:object,
@@ -544,7 +544,7 @@ type ImageTextButtonProps = {
   imgButtonStyle?:object
   textStyle?:object
   imgStyle?:object
-  link?:Href<string|object>
+  link?:Href
 }
 /**
  * Botão com imagem e texto superior ou inferior.
