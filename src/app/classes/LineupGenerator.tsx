@@ -464,7 +464,12 @@ function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
     return emptyLine
 }
 
-
+/** 
+ * Checa se o membro está disponível para a escala.
+ * 
+ * @param member Membro
+ * @param lineup Escala
+ */
 function IsMemberAvailable(member:Member,lineup:Lineup){
     return member.onLineup && 
     !lineup.members.includes(member) &&
@@ -480,30 +485,30 @@ function IsMemberAvailable(member:Member,lineup:Lineup){
  */
 export function BalanceLineups(members:Array<Member>){
     let timesSelected = SortByTimesSelected(members)
-    let classes = []
+    let times = [] // Conjunto contendo quantas vezes os membros foram escalados
 
-    Object.keys(timesSelected).forEach((times)=>{
-        classes.push(Number(times))
+    Object.keys(timesSelected).forEach((time)=>{
+        times.push(Number(time))
     })
     
     let min = 0
-    let max = classes.length-1
-    let diff = classes[max]-classes[min]
+    let max = times.length-1
+    let diff = times[max]-times[min]
     
     // Explicitando caso base:
     if(diff < 2){return}
 
     while (min < max){
-        diff = classes[max]-classes[min]
+        diff = times[max]-times[min]
         
         if(diff < 2){break} // Caso base implícito
-        let least:Array<Member> = timesSelected[classes[min]]
-        let most:Array<Member> = timesSelected[classes[max]]
+        let least:Array<Member> = timesSelected[times[min]]
+        let most:Array<Member> = timesSelected[times[max]]
 
         // Tentar trocar os que foram mais escalados pelos que foram menos
         BalanceTwoClasses(least,most)
 
-        if(least.length > 0 && ((classes[max-1]-classes[min]) >= 2)){
+        if(least.length > 0 && ((times[max-1]-times[min]) >= 2)){
             max--
         }
         else{
@@ -545,30 +550,35 @@ function SortByTimesSelected(members:Array<Member>,removeZero?:boolean):object{
     return timesSelected
 }
 
+/**
+ * Faz o balanceamento entre duas listas: uma menor e outra maior
+ * @param least Menor lista
+ * @param most Maior lista
+ * @returns 
+ */
 function BalanceTwoClasses(least:Array<Member>,most:Array<Member>) {
     // Explicitando caso base da recursão
     if(least.length == 0 || most.length == 0){
         return
     }
-    
+
     for(let i = 0; i < least.length;i++){
-        let curMember:Member = least[i]
+        let replacing:Member = least[i]
 
         for(let h = 0; h < most.length;h++){
-            let compare:Member = most[h]
-            let lineupsToCompare = compare.selectedOnLineups
+            let toReplace:Member = most[h]
+            let lineupsToCompare = toReplace.selectedOnLineups
 
             for(let j = 0; j < lineupsToCompare.length; j++){
                 let curLine:Lineup = GenerationCache.lineups[lineupsToCompare[j]]
-                if(IsMemberAvailable(curMember,curLine)){
-                    curLine.ReplaceMember(curLine.GetMemberRole(compare),curMember)
-                    compare.selectedOnLineups.splice(compare.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
-                    curMember.selectedOnLineups.push(lineupsToCompare[j])
+                if(IsMemberAvailable(replacing,curLine)){
+                    curLine.ReplaceMember(curLine.GetMemberRole(toReplace),replacing)
+                    toReplace.selectedOnLineups.splice(toReplace.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
+                    replacing.selectedOnLineups.push(lineupsToCompare[j])
                     
-                    least.splice(least.indexOf(curMember),1)
-                    most.splice(most.indexOf(compare),1)
+                    least.splice(least.indexOf(replacing),1)
+                    most.splice(most.indexOf(toReplace),1)
 
-                    console.log("Switch occurred")
                     return BalanceTwoClasses(least,most) // Caso recursivo sobre a lista atualizada.
                 }
             }
@@ -576,49 +586,30 @@ function BalanceTwoClasses(least:Array<Member>,most:Array<Member>) {
     }
 }
 
+/**
+ * Tenta balancear os membros que foram descartados no primeiro balanceamento.
+ * @param members Todos os membros
+ */
 export function BalanceDiscarded(members:Array<Member>) {
     for(let i = 0; i < members.length; i++){
-        let compare:Member = members[i]
+        let toReplace:Member = members[i] // Membro a ser possivelmente substituído
 
         for(let j = 0; j < GenerationCache.discardedMembers.length; j++) {
-            let cur:Member = GenerationCache.discardedMembers[j]
+            let replacing:Member = GenerationCache.discardedMembers[j] // Membro que possivelmente substituirá
             
-            if(cur.name == compare.name){continue}
+            if(replacing.name == toReplace.name){continue} // Se for o mesmo membro, continua.
 
-            let lineupsToCompare = compare.selectedOnLineups
-            if(cur.selectedOnLineups.length >= lineupsToCompare.length+1) {
-                for(let k = 0; k < lineupsToCompare.length; k++){
-                    let curLine:Lineup = lineupsToCompare[k]
-                    if(IsMemberAvailable(cur,curLine)){
-                        curLine.ReplaceMember(curLine.GetMemberRole(compare),cur)
-                        compare.selectedOnLineups.splice(compare.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
-                        cur.selectedOnLineups.push(lineupsToCompare[j])
-
-                        console.log("Switch occurred on discarded.")
+            let lineupsToReplace = toReplace.selectedOnLineups
+            if((lineupsToReplace.length - replacing.selectedOnLineups.length) >= 2) {
+                for(let k = 0; k < lineupsToReplace.length; k++){
+                    let curLine:Lineup = GenerationCache.lineups[lineupsToReplace[k]]
+                    if(IsMemberAvailable(replacing,curLine)){
+                        curLine.ReplaceMember(curLine.GetMemberRole(toReplace),replacing)
+                        toReplace.selectedOnLineups.splice(toReplace.selectedOnLineups.indexOf(lineupsToReplace[j]),1)
+                        replacing.selectedOnLineups.push(lineupsToReplace[j])
                     }
                 }
             }
         }
-    }
-}
-
-export function BalanceAdjacent(members:Array<Member>){
-    let sorted = SortByTimesSelected(members,true)
-    let keys = Object.keys(sorted)
-    for(let i = 0; i < keys.length-1; i++){
-        let most = sorted[keys[i]]
-        let least = sorted[keys[i]]
-
-        if(sorted[keys[i]].length > sorted[keys[i+1]].length){
-            least = sorted[keys[i+1]]
-        }
-        else if(sorted[keys[i]].length < sorted[keys[i+1]].length){
-            most = sorted[keys[i+1]]
-        }
-        else{
-            console.log("Adjacent balanced!")
-            return
-        }
-        BalanceTwoClasses(least,most)
     }
 }

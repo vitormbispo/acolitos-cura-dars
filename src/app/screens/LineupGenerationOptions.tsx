@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid} from "react-native"
 import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
-import { BalanceAdjacent, BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
+import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
@@ -330,7 +330,7 @@ const MonthLineupOptions = () => {
  * @param type Tipo de membro a gerar
  * @param finished Ação ao finalizar a geração
  */
-function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args)=>void){
+function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,finished?:(...args:any)=>void){
     GenerationCache.Reset()
     LineupScreenOptions.lineups = []
 
@@ -393,16 +393,14 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
         } 
     }
     
-    BalanceLineups(MemberData.allAcolytes)
-    BalanceAdjacent(MemberData.allAcolytes)
-    BalanceDiscarded(MemberData.allAcolytes)
-    BalanceLineups(MemberData.allAcolytes)
+    let members:Array<Member> = GetMemberArray(type)
+
+    BalanceLineups(members)
+    BalanceDiscarded(members)
     
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
     LineupScreenOptions.loaded = false
-
-    let members:Array<Member> = GetMemberArray(type)
 
     if(members == null || members.length == 0){
         console.error("Unable to generate lineup. Members is empty.")
