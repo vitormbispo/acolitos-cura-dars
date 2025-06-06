@@ -19,7 +19,6 @@ export const uiStyles = StyleSheet.create({
         alignItems:'center',
         height:125,
         paddingLeft:15,
-        paddingTop:25
     },
     buttonIcon:{
         height:64,

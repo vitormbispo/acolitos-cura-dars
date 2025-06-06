@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator, Dimensions, FlatList} from "react-native"
-import { Href, router} from "expo-router"
+import { useContext, useEffect, useRef, useState } from "react";
+import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, ScrollView, ActivityIndicator, Dimensions, FlatList, Button} from "react-native"
+import { Href, router, useSegments} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
 import { Member, MemberType } from "./MemberData";
@@ -212,12 +212,13 @@ export function TextCheckBox(props:TextCheckBoxProps){
     setChecked(!check ? 1:0)
   }
 
-  if(props.before == undefined){
-    props.before = false
-  }
+  
 
   useEffect(()=>{
     setChecked(props.checked ? 1 : 0)
+    if(props.before == undefined){
+      props.before = false
+    }
   },[props])
 
   let text:React.JSX.Element = <Text style={[props.textStyle,textStyles.imageButtonText,{marginLeft:20}]}>{props.text}</Text>
@@ -335,6 +336,7 @@ type UpperBarProps = {
   icon:any
   screenName:string,
   toggleEnabled?:boolean
+  hideGoBack?:boolean
 }
 /**
  * Barra superior
@@ -350,7 +352,7 @@ export function UpperBar(props:UpperBarProps){
   const backButton = <ImageButton img={require("@/src/app/item_icons/back_ico.png")} press={()=>{router.back()}} imgStyle={uiStyles.buttonIconSmall}/>
   return(
       <View style = {[uiStyles.upperBar,{backgroundColor:theme.accentColor}]}>
-          {router.canGoBack() ? backButton : null}
+          {props.hideGoBack ? null : backButton}
           <Image style = {[uiStyles.buttonIcon]} source={props.icon}/>
           <Text style = {textStyles.menuTitle}>- {props.screenName}</Text>
           <ToggleButton enabled={props.toggleEnabled}/>
@@ -693,7 +695,14 @@ export function DropDown(props:DropDownTypes){
     <View style={{margin:10, maxWidth:"70%",maxHeight:"10%"}}>
       <Pressable ref={viewRef} style={{flexDirection:"row",marginBottom:50,justifyContent:"flex-start",minWidth:"50%",minHeight:50,borderRadius:10,borderColor:"#1E1E1E",borderWidth:1}} 
       onLayout={UpdateModalPosition} onPress={()=>{setModalOpened(!modalOpened);UpdateModalPosition()}}>
-        <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{props.selectedTextOverride == null ? selectedOption : props.selectedTextOverride}</Text>
+        
+        <View style={{justifyContent:"center",flexDirection:"row"}}>
+          <Text style={[{marginLeft:10, alignSelf:"center"},textStyles.dataText]}>{props.selectedTextOverride == null ? selectedOption : props.selectedTextOverride}</Text>
+          {/*}
+          <Image style={{width:32,height:32,alignSelf:"center"}} source={require("@/src/app/item_icons/arrow_ico.png")}/>
+            */}
+          </View>
+        
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
           <Pressable style={{flex:1}} onPress={()=>{setModalOpened(false)}}>

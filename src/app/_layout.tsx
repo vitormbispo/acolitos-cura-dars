@@ -8,14 +8,14 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    InterRegular: require('@/src/app/fonts/Inter-Regular.ttf'),
-    InterMedium: require('@/src/app/fonts/Inter-Medium.ttf'),
-    InterBold: require('@/src/app/fonts/Inter-Bold.ttf'),
-    InterExtraBold: require('@/src/app/fonts/Inter-ExtraBold.ttf'),
-    InterExtraLight: require('@/src/app/fonts/Inter-ExtraLight.ttf'),
-    InterLight: require('@/src/app/fonts/Inter-Light.ttf'),
-    InterSemiBold: require('@/src/app/fonts/Inter-SemiBold.ttf'),
-    InterThin: require('@/src/app/fonts/Inter-Thin.ttf'),
+    'Inter-Regular': require('@/src/app/fonts/Inter-Regular.ttf'),
+    'Inter-Medium': require('@/src/app/fonts/Inter-Medium.ttf'),
+    'Inter-Bold': require('@/src/app/fonts/Inter-Bold.ttf'),
+    'Inter-ExtraBold': require('@/src/app/fonts/Inter-ExtraBold.ttf'),
+    'Inter-ExtraLight': require('@/src/app/fonts/Inter-ExtraLight.ttf'),
+    'Inter-Light': require('@/src/app/fonts/Inter-Light.ttf'),
+    'Inter-SemiBold': require('@/src/app/fonts/Inter-SemiBold.ttf'),
+    'Inter-Thin': require('@/src/app/fonts/Inter-Thin.ttf'),
   });
 
   

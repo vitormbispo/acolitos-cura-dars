@@ -6,16 +6,19 @@ import { Places } from "./classes/Places";
 import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
 import { contextStore } from "./store/store";
 import { DistinctRandomNumbers } from "./classes/Methods";
+import { useEffect } from "react";
 
 
 export default function App() {
     const {appStarted,updateAppStarted} = contextStore()
     
-    if(!appStarted){
-        InitializeApp()
-        updateAppStarted(true)
-    }
     
+    useEffect(()=>{
+        if(!appStarted){
+            InitializeApp()
+            updateAppStarted(true)
+        }
+    },[appStarted])
     return (
       
       <Home/>

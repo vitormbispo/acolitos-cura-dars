@@ -1,0 +1,7 @@
+TODOS:
+
+Aperfeiçoar a interface
+Corrigir botão de voltar não sendo exibido corretamente depois de trocar o tema entre acólitos e coroinhas fora da home screen
+Analisar possível bug com o sistema de carregamento de dados
+Analisar possível bug de tela cinza na versão prod
+Tentar ver porque as vezes a transição do router tem uma borda preta esquisita

@@ -7,7 +7,7 @@ import { menuStore } from "../store/store";
 import { router} from "expo-router";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { AppData, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
+import { AppData, ConvertDataToClasses, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 import { PresetsData } from "../classes/PresetsData";
@@ -107,4 +107,5 @@ function LoadData(data:AppData|object,properties:Array<string>){
     VerifyMembersIntegrity(MemberData.allAcolytes)
     VerifyMembersIntegrity(MemberData.allCoroinhas)
     PresetsData.VerifyPresetsIntegrity()
+    ConvertDataToClasses()
 }

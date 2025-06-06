@@ -12,7 +12,7 @@ export default function Home(){
     const {name} = menuStore()
     return(
         <View style = {{flex:1}}>
-            <UpperBar screenName={"Tela inicial | "+name} icon={ICONS.home} toggleEnabled={true}/>
+            <UpperBar screenName={"Tela inicial | "+name} icon={ICONS.home} toggleEnabled={true} hideGoBack={true}/>
             <AppBody/>
             
             <LowerBar/> 
