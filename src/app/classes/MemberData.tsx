@@ -13,6 +13,7 @@ export enum MemberType{
  * Classe base dos membros
  */
 export class Member {
+    id:number // Chave primária de até 4 dígitos
     TYPE:MemberType = MemberType.ACOLYTE // Tipo de membro
     
     name:string="" // Nome

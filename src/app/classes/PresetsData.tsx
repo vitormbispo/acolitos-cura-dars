@@ -2,6 +2,7 @@ import { GenerationOptionsType } from "../screens/LineupGenerationOptions"
 import { DateSet } from "./Dates"
 import { RoleSet } from "./Roles"
 import { SaveData } from "./Methods"
+import { MemberData } from "./MemberData"
 export class PresetsData {
     static acolyteGenerationPresets:Array<Preset> = []
     static coroinhaGenerationPresets:Array<Preset> = []
@@ -27,14 +28,50 @@ export class PresetsData {
      * Verifica a integridade dos dados dos presets
      */
     static VerifyPresetsIntegrity(){
-        console.log("Verifying Integrity")
+        console.log("Verifying Integrity Presets")
         if(PresetsData.acolyteGenerationPresets == null){
             PresetsData.acolyteGenerationPresets = []
-            console.log("Acolytes incorrect")
         }
         if(PresetsData.coroinhaGenerationPresets == null){
             PresetsData.coroinhaGenerationPresets = []
         }
+
+        PresetsData.acolyteGenerationPresets.forEach((preset)=>{
+            let setMembers = preset.options.members
+            for(let i = 0; i < setMembers.length; i++){
+                let setAcolyte = setMembers[i]
+                for(let j = 0; j < MemberData.allAcolytes.length; j++){
+                    let acolyte = MemberData.allAcolytes[j]
+                    if(acolyte.name == setAcolyte.name){
+                        setAcolyte = acolyte
+                        console.log("Acolyte: "+acolyte.nick+" validated.")
+                        break
+                    }
+                    if(j >= MemberData.allAcolytes.length-1){
+                        console.error("Acolyte not find")
+                    }
+                }
+            }
+
+            let exclusive = preset.options.exclusiveOptions
+            exclusive.forEach((option)=>{
+                let setMembers = option.members
+                for(let i = 0; i < setMembers.length; i++){
+                    let setAcolyte = setMembers[i]
+                    for(let j = 0; j < MemberData.allAcolytes.length; j++){
+                        let acolyte = MemberData.allAcolytes[j]
+                        if(acolyte.name == setAcolyte.name){
+                            setAcolyte = acolyte
+                            console.log("Acolyte: "+acolyte.nick+" validated.")
+                            break
+                        }
+                        if(j >= MemberData.allAcolytes.length-1){
+                            console.error("Acolyte not find")
+                        }
+                    }
+                }
+            })
+        })
         PresetsData.SavePresets()
     }
 

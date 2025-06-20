@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Member, MemberData } from "./MemberData"
-import { OrganizeMemberArrayAlpha } from "./Methods"
+import { OrganizeMemberArrayAlpha, RandomNumber } from "./Methods"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
@@ -162,11 +162,45 @@ export async function SaveDataFile(name:string,mimetype:string,properties:Array<
 }
 
 /**
+ * Gera um novo ID de membro que não se repita
+ * @returns  ID
+ */
+export function GenerateMemberID(){
+    let allMembers = MemberData.GetAllMembers()
+    if(allMembers.length > 10000){
+        throw new Error("Quantidade de membros ultrapassou a quantidade representável pelo ID (10000).")
+    }
+    let id = RandomNumber(0,9999)
+
+    while(GetMemberByID(id,allMembers) != null){
+        id = RandomNumber(0,9999)
+    }
+    return id
+}
+/**
+ * Retorna o membro com determinado ID
+ * @param id ID
+ * @param members Lista de membros 
+ */
+export function GetMemberByID(id:number,members:Array<Member>):Member{
+    for(let i = 0; i < members.length; i++){
+        if(members[i].id == id) {
+            return members[i]
+        } 
+    }
+    return null
+}
+/**
  * Verifica a integridade dos dados dos membros de determinada lista
  * @param members Lista de membros
  */
 export function VerifyMembersIntegrity(members:Array<Member>){
     members.forEach((member)=>{
+
+        if(member.id == undefined){
+            member.id = GenerateMemberID()
+        }
+        
         if(member.placeDisp == undefined){
             member.placeDisp = Places.PlacesDispMap()
         }

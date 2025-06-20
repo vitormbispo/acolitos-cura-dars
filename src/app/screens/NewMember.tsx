@@ -10,7 +10,7 @@ import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
-import { VerifyMembersIntegrity } from "../classes/DataManager";
+import { GenerateMemberID, VerifyMembersIntegrity } from "../classes/DataManager";
 import { useRef, useState } from "react";
 
 export default function NewMember(){
@@ -142,7 +142,8 @@ function SubmitNewMember(member:any,type:MemberType){
         members = []
     }
 
-    VerifyMembersIntegrity([member])
+    member.id = GenerateMemberID()
+    VerifyMembersIntegrity([member]) // Deefine valores padrão
     members.push(member)
     members = OrganizeMemberArrayAlpha(members)
     AsyncStorage.setItem(storageData,JSON.stringify(members))
