@@ -1,11 +1,11 @@
-import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid} from "react-native"
+import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid, Settings} from "react-native"
 import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberData, MemberType } from "../classes/MemberData"
+import { Member, MemberData, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
 import { GetMemberArray, ResetAllLastWeekend } from "../classes/Methods"
@@ -22,7 +22,7 @@ import { Preset, PresetsData } from "../classes/PresetsData"
  * Tipo do objeto que armazena as opções de geração
  */
 export type GenerationOptionsType = {
-    "members":Array<Member>
+    "members":Array<number> // Lista de IDs
     "weekend":string,
     "day":string,
     "allowOut":boolean,
@@ -36,7 +36,8 @@ export type GenerationOptionsType = {
     "places":Array<string>,
     "dateset":DateSet,
     "exclusiveOptions":object,
-    "preset":Preset
+    "preset":Preset,
+    "balance":boolean
 }
 
 /**
@@ -140,13 +141,16 @@ export default function LineupGenerationOptions(){
         setPresetAddOpen(false)
     }
 
-    
-
     const scrollRef = useRef<ScrollView>(null)
     
     // Funções
     const SavePreset = () =>{
         presets[curPreset.options.presetID].UpdatePreset(CloneGenerationOptions(curGenOptions))
+    }
+
+    const DeletePreset = () => {
+        presets.splice(curPreset.options.presetID,1)
+        setCurPreset(new Preset())
     }
     return(
         <View style={{flex:1}}>
@@ -158,16 +162,22 @@ export default function LineupGenerationOptions(){
                 
                 <Text style = {[textStyles.dataTitle,{padding:10}]}>- Predefinições:</Text>
                 <View style={{flexDirection:"row"}}>
-                    <DropDown placeholder={"Selecione: "}options={presetsOptions} actions={presetsActions}/>
-                    <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
-                    <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
-                        SavePreset()
-                        
-                        if(Platform.OS == "android"){
-                            ToastAndroid.show("Predefinição atualizada!",2)
-                          
-                        }
+                    <DropDown selectedTextOverride={curPreset.name != undefined ? curPreset.name : "Nenhum"} options={presetsOptions} actions={presetsActions}/>
+                    <View style={{flexDirection:"row",justifyContent:"center"}}>
+                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
+                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
+                            SavePreset()
+                            
+                            if(Platform.OS == "android"){
+                                ToastAndroid.show("Predefinição atualizada!",2)
+                            
+                            }
+                            }}/>
+                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.delete} press={()=>{
+                            DeletePreset()
                         }}/>
+                    </View>
+                    
                 </View>
                 
                 {/* < Opções de aleatoriedade > */}
@@ -211,6 +221,13 @@ export default function LineupGenerationOptions(){
                     multiselect={true} 
                     allSelected={true}
                 />
+
+                <View style={{flex:1}}>
+                    <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Auto-balancear escalas</Text>
+                        <CheckBox checked={curGenOptions.balance} press={()=>{curGenOptions.balance = !curGenOptions.balance}}/>
+                    </View>
+                </View>
 
             </ScrollView>
             <TextButton text="Gerar escala" textStyle={textStyles.textButtonText} press={()=>{
@@ -362,8 +379,8 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
                 let curDay:string = curWeekend[k] // Dia
                 let key:string = weekendKey+""+curDay
                 let opt = generateOptions.exclusiveOptions[key] != undefined ? generateOptions.exclusiveOptions[key] : generateOptions
-                opt.places = Places.OrganizePlaceArray(opt.places)
-                let places:Array<string> = opt.places
+                //opt.places = Places.OrganizePlaceArray(opt.places)
+                let places:Array<string> = Places.OrganizePlaceArray(opt.places)
                 
                 if(places.length == 0 || places == undefined){
                     places = [null]
@@ -380,7 +397,7 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
                     }
                     let newLineup:Lineup = generateOptions.allRandom ?
                         GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay,curPlace):
-                        GenerateLineup({members:placeOpt.members,weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
+                        GenerateLineup({members:MembersFromIDs(placeOpt.members),weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
         
                     generatedLineups[weekendKey].push(newLineup)
                     allLineups.push(newLineup)
@@ -395,8 +412,12 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
     
     let members:Array<Member> = GetMemberArray(type)
 
-    BalanceLineups(members)
-    BalanceDiscarded(members)
+    if(generateOptions.balance){
+        console.log("Balanceando")
+        BalanceLineups(members)
+        BalanceDiscarded(members)
+    }
+    
     
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
@@ -715,7 +736,6 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     const daysChecks = useRef([])
     const dayExceptions = useRef([])
 
-
     const rolesetOptions = useRef([])
     const rolesetActions = useRef([])
 
@@ -723,11 +743,11 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
         key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
-    const options = useRef({members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
+    const options = useRef({members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
     const [roleSet,setRoleSet] = useState(props.rolesets[0]) // Estado do roleset
     const [builded,setBuilded] = useState(false)
     if(!isEditing.current){ // Se ainda não estiver editando:
-        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+        options.current = {members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
         isEditing.current = true
     }
     
@@ -772,7 +792,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     
         baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
         if(!isEditing.current){ // Se ainda não estiver editando:
-            options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+            options.current = {members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
             isEditing.current = true
         }
         setRoleSet(options.current.roleset)
@@ -901,7 +921,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                             }} 
                             multiselect={true} 
                             allSelected={false}
-                            selectedMembers={options.current.members}
+                            selectedMembersIDs={options.current.members}
                         />
                     </ScrollView>
                     

@@ -27,9 +27,6 @@ export function AppBody(){
     return(
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
-        <TextButton text={"Verify"} press={()=>{
-            ConvertDataToClasses()
-        }}/>
     </View> : null
     )
 }

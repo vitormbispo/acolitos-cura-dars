@@ -121,7 +121,8 @@ export const contextStore = create<ContextStates>((set)=>({
             "places":[],
             "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
             "exclusiveOptions":{},
-            "preset":new Preset()
+            "preset":new Preset(),
+            "balance":true
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},
     replacingMember:{role:undefined,lineup:undefined,replacing:false,member:undefined,update:undefined},

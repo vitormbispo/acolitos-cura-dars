@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StructuredLineup } from "./Lineup"
+import { GetMemberByID } from "./DataManager"
 
 /**
  * Tipo de membro
@@ -166,4 +167,31 @@ export function SaveAcolyteData(){
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
+}
+
+/**
+ * Retorna uma lista com os IDs dos membros presentes em uma lista
+ * @param members Lista de membros
+ * @returns Lista de IDs
+ */
+export function MemberIDList(members:Array<Member>):Array<number>{
+    let ids = []
+    members.forEach((member)=>{
+        ids.push(member.id)
+    })
+    return ids
+}
+
+/** 
+ * Retorna uma lista de Membros a partir de uma lista de IDs.
+ * @param ids Lista de IDs
+ * @returns Lista de membros
+ */
+export function MembersFromIDs(ids:Array<number>):Array<Member>{
+    let members = []
+    let allMembers = MemberData.GetAllMembers()
+    ids.forEach((id)=>{
+        members.push(GetMemberByID(id,allMembers))
+    })
+    return members
 }

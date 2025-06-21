@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import { ICONS } from "../classes/AssetManager"
-import { MemberData, MemberType } from "../classes/MemberData"
+import { MemberData, MemberIDList, MemberType } from "../classes/MemberData"
 import { GetMemberArray } from "../classes/Methods"
 
 
@@ -29,7 +29,7 @@ export default function LineupOptions(){
                         genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = [Dates.defaultDays.slice()[0]]
-                        genOptions.members = GetMemberArray(type).slice()
+                        genOptions.members = MemberIDList(GetMemberArray(type).slice())
                 }}/>
        
         <LinkRowImageButton textStyle=
@@ -43,7 +43,7 @@ export default function LineupOptions(){
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = Dates.defaultDays.slice()
                         updateWeekend(Dates.defaultWeekends.slice()[0])
-                        genOptions.members = GetMemberArray(type).slice()
+                        genOptions.members = MemberIDList(GetMemberArray(type).slice())
 
                 }}/>
         
@@ -57,7 +57,7 @@ export default function LineupOptions(){
                         genOptions.roleset = Roles.GetDefaultRoleset(type)
                         genOptions.monthDays = {}  
                         genOptions.monthDays = Dates.DefaultMonthDays()
-                        genOptions.members = GetMemberArray(type).slice()                    
+                        genOptions.members = MemberIDList(GetMemberArray(type).slice())               
                 }}/>
         
         <LinkRowImageButton textStyle=

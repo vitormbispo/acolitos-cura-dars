@@ -3,7 +3,7 @@ import { View,Text,Image, Pressable, TextInput, KeyboardTypeOptions, Modal, Scro
 import { Href, router, useSegments} from "expo-router"
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { contextStore, menuStore } from "../store/store";
-import { Member, MemberType } from "./MemberData";
+import { Member, MemberIDList, MembersFromIDs, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
@@ -896,8 +896,8 @@ export function GridLineupView(props:GridLineupViewProps){
     }
     
 
-    const Replace = (selected:Array<Member>)=>{
-      replacingMember.lineup.ReplaceMember(replacingMember.role,selected[0])
+    const Replace = (selected:Array<number>)=>{
+      replacingMember.lineup.ReplaceMember(replacingMember.role,MembersFromIDs(selected)[0])
       let newState = Object.create(replacingMember)
       newState.replacing = false
       replacingMember.update()
@@ -979,30 +979,30 @@ export function LoadingModal(props:LoadingModalProps){
 type MemberSelectModalProps = {
   visible:boolean
   title:string
-  returnCallback:(...args:any)=>void
+  returnCallback:(membersIDs:Array<number>)=>void
   exceptions?:Array<Member>
   unvailable?:Array<Member>
-  selectedMembers?:Array<Member>
+  selectedMembersIDs?:Array<number>
   allSelected?:boolean
   multiselect?:boolean
   requestClose?:(...args:any)=>void
   onSubmit?:(...args:any)=>void
 }
 /**
- * Janela para seleção de membros
+ * Janela para seleção de membros.
  * @param props Propriedades:
  * @param visible = visível; @param title título da janela; @param returnCallback função de retorno que recebe a lista de 
- * membros selecionados como argumento; @param exceptions membros excluídos da lista; @param unvailable membros indisponíveis na lista (ainda são exibidos e podem ser selecionados, mas com um aviso) @param allSelected todos os membros selectionados?
+ * IDs dos membros selecionados como argumento; @param exceptions membros excluídos da lista; @param unvailable membros indisponíveis na lista (ainda são exibidos e podem ser selecionados, mas com um aviso) @param allSelected todos os membros selectionados?
  * @param multiselect seleção de múltiplos membros ativa?; @param requestClose ação ao solicitar fechamento do modal; @param onSubmit ação ao confirmar
  * @returns 
  */
 export function MemberSelectModal(props:MemberSelectModalProps){
   const {theme,type} = menuStore()
   let members:Array<Member> = GetMemberArray(type)
-  
-  if(props.selectedMembers == undefined){props.selectedMembers = []}
+  let membersIDs:Array<number> = MemberIDList(members)
+  if(props.selectedMembersIDs == undefined){props.selectedMembersIDs = []}
 
-  const [selected,setSelected] = useState(props.allSelected ? members.slice(): (props.selectedMembers != null ? props.selectedMembers : []))
+  const [selected,setSelected] = useState(props.allSelected ? membersIDs.slice(): (props.selectedMembersIDs != null ? props.selectedMembersIDs : []))
   
   let memberComps = []
   for(let i = 0; i < members.length;i++){
@@ -1016,7 +1016,7 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       color = theme.disabled
     }
 
-    if(!props.multiselect && selected.includes(curMember)){
+    if(!props.multiselect && selected.includes(curMember.id)){
       color = theme.neutral
     }
 
@@ -1024,7 +1024,7 @@ export function MemberSelectModal(props:MemberSelectModalProps){
     
     <Pressable style={{height:100,alignItems:"center",justifyContent:"center",flex:1,flexDirection:"row",backgroundColor:color}} 
     onPress={()=>{
-      setSelected([curMember])
+      setSelected([curMember.id])
     }} key={i} disabled={props.multiselect}>
       
       <Image source={GetMemberIcon()} style={uiStyles.buttonIcon}/>
@@ -1038,11 +1038,11 @@ export function MemberSelectModal(props:MemberSelectModalProps){
       }
       {/* Exibe uma checkbox caso o modo multi seleção esteja ativado */}
       {props.multiselect ?
-      <CheckBox checked={selected.includes(curMember)} press={()=>{
-        selected.includes(curMember) ?
-          selected.splice(selected.indexOf(curMember),1)
+      <CheckBox checked={selected.includes(curMember.id)} press={()=>{
+        selected.includes(curMember.id) ?
+          selected.splice(selected.indexOf(curMember.id),1)
           :
-          selected.push(curMember)
+          selected.push(curMember.id)
           }}/>:null}
       
     </Pressable>;
