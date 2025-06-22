@@ -1,8 +1,10 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Slot, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { menuStore } from './store/store';
+import { StackRouter } from '@react-navigation/native';
+import { View } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,11 +31,18 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <Stack screenOptions={{
-      headerShown:false
-    }
-      }>
-
-    </Stack>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <Stack 
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+          // Adicione esta configuração para garantir o tema claro
+          navigationBarColor: '#FFFFFF', // Para Android
+          statusBarStyle: 'dark',        // Ícones escuros na barra de status
+        }}
+      />
+    </View>
   );
 }

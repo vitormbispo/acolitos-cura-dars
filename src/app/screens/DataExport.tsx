@@ -4,8 +4,10 @@ import { ICONS } from "../classes/AssetManager";
 import { router } from "expo-router";
 import { AppData, RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
 import { useRef, useState } from "react";
+import { menuStore } from "../store/store";
 
 export default function DataExport(){
+    const {theme} = menuStore()
     const allProperties = RetrieveAppData()
     const selectedProperties = useRef(RetrieveAppDataProperties())
     
@@ -18,7 +20,7 @@ export default function DataExport(){
             .catch(()=>{ToastAndroid.show("Salvamento cancelado.",2)})
     }
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.export} screenName={"Exportar dados"}/>
             <DataSection text={"Selecione os dados para exportar:"} textStyle={{fontSize:20}}/>
             <DataSelectors allProperties={allProperties} selectedProperties={selectedProperties.current}/>

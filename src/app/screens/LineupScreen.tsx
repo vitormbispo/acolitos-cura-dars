@@ -55,7 +55,7 @@ export default function LineupScreen(){
     null
 
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row', backgroundColor:theme.accentColor}}>
                 <UpperBar icon={ICONS.escala} screenName={"Escala:"}/>
                 {upperBtn}

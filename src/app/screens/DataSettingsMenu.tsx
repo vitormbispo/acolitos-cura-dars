@@ -5,11 +5,12 @@ import { router } from "expo-router";
 import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
 import { DataImportOptions } from "./DataImport";
+import { menuStore } from "../store/store";
 
 export default function DataSettingsMenu(){
-    
+    const {theme} = menuStore()
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.document} screenName={"Dados"}/>
             <LinkRowImageButton img={ICONS.export} text={"Exportar dados"} link={"/screens/DataExport"}/>
             <RowImageButton img={ICONS.import} text={"Importar dados"} press={()=>{

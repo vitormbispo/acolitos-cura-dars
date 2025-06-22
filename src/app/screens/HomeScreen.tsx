@@ -9,9 +9,9 @@ import { Lineup, StructuredLineup } from "../classes/Lineup";
 
 // Tela
 export default function Home(){
-    const {name} = menuStore()
+    const {name,theme} = menuStore()
     return(
-        <View style = {{flex:1}}>
+        <View style = {{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar screenName={"Tela inicial | "+name} icon={ICONS.home} toggleEnabled={true} hideGoBack={true}/>
             <AppBody/>
             
@@ -24,6 +24,7 @@ export default function Home(){
 // Corpo da tela
 export function AppBody(){
     const {appStarted} = contextStore()
+
     return(
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
@@ -36,9 +37,8 @@ export const LowerBar = () => {
     const {type,theme} = menuStore()
     return(
         <View style = {[uiStyles.lowerBar,{backgroundColor:theme.accentColor}]}>
-            <ImageTextButton img={GetMemberIcon()} imgStyle={uiStyles.buttonIconSmall} text={"Membros"} textPos={TextPosition.BOTTOM} link={"/screens/MemberListScreen"}/>
-            
             <ImageTextButton img={ICONS.home} imgStyle={uiStyles.buttonIconSmall} text={"Início"} textPos={TextPosition.BOTTOM}/>
+            <ImageTextButton img={GetMemberIcon()} imgStyle={uiStyles.buttonIconSmall} text={"Membros"} textPos={TextPosition.BOTTOM} link={"/screens/MemberListScreen"}/>
             <ImageTextButton img={ICONS.escala} imgStyle={uiStyles.buttonIconSmall} text={"Escalas"} textPos={TextPosition.BOTTOM} link={"/screens/LineupOptions"}/>
             <ImageTextButton img={ICONS.menu} imgStyle={uiStyles.buttonIconSmall} text={"Menu"} textPos={TextPosition.BOTTOM} link={"/screens/SettingsMenu"}/>
             

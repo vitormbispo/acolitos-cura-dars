@@ -153,45 +153,35 @@ export default function LineupGenerationOptions(){
         setCurPreset(new Preset())
     }
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
             
             <ScrollView style={{flex:1}} ref={scrollRef}>
-
-                <DataSection text={"- Opções"}/>
                 
-                <Text style = {[textStyles.dataTitle,{padding:10}]}>- Predefinições:</Text>
-                <View style={{flexDirection:"row"}}>
-                    <DropDown selectedTextOverride={curPreset.name != undefined ? curPreset.name : "Nenhum"} options={presetsOptions} actions={presetsActions}/>
-                    <View style={{flexDirection:"row",justifyContent:"center"}}>
-                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
-                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
-                            SavePreset()
-                            
-                            if(Platform.OS == "android"){
-                                ToastAndroid.show("Predefinição atualizada!",2)
-                            
-                            }
+                {lineupType == LineupType.MONTH ?
+                <View>
+                    <DataSection text={"Predefinições"}/>
+                    <View style={{flexDirection:"row"}}>
+                        <DropDown selectedTextOverride={curPreset.name != undefined ? curPreset.name : "Nenhum"} options={presetsOptions} actions={presetsActions}/>
+                        <View style={{flexDirection:"row",justifyContent:"center"}}>
+                            <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.add} press={()=>{setPresetAddOpen(true)}}/>
+                            <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.save} press={()=>{
+                                SavePreset()
+                                
+                                if(Platform.OS == "android"){
+                                    ToastAndroid.show("Predefinição atualizada!",2)
+                                }
+                                }}/>
+                            <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.delete} press={()=>{
+                                DeletePreset()
                             }}/>
-                        <ImageButton imgStyle={uiStyles.buttonIcon} img={ICONS.delete} press={()=>{
-                            DeletePreset()
-                        }}/>
-                    </View>
-                    
-                </View>
-                
-                {/* < Opções de aleatoriedade > */}
-                <Text style = {[textStyles.dataTitle,{padding:10}]}>- Aleatoriedade</Text>
-                <RandomnessSelect genOptions={curGenOptions} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
-                
-
-                <View style={{flex:1}}>
-                    <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
-                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
-                        <CheckBox checked={curGenOptions.allRandom} press={()=>{curGenOptions.allRandom = !curGenOptions.allRandom}}/>
+                        </View>
+                        
                     </View>
                 </View>
-
+                :
+                null}
+                
                 {/* RoleSet */}
                 <DataSection text={"- Conjunto de funções"}/>
                 <DropDown 
@@ -203,6 +193,20 @@ export default function LineupGenerationOptions(){
                 <DataSection text={"- Local"}/>
                 <PlaceSelect selectedPlaces={curGenOptions.places}/>
                 {options}
+
+                {/* < Opções de aleatoriedade > */}
+                <DataSection text={"- Aleatoriedade"}/>
+                <RandomnessSelect genOptions={curGenOptions} randomnessNames={["+Baixa","Baixa","Média","Alta","+Alta"]}/>
+                
+
+                <View style={{flex:1}}>
+                    <View style={{flexDirection:"row",alignItems:"center",padding:10}}>
+                        <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Totalmente aleatório</Text>
+                        <CheckBox checked={curGenOptions.allRandom} press={()=>{curGenOptions.allRandom = !curGenOptions.allRandom}}/>
+                    </View>
+                </View>
+
+                
 
                 <AdvancedOptions/>
                 <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
@@ -413,7 +417,6 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
     let members:Array<Member> = GetMemberArray(type)
 
     if(generateOptions.balance){
-        console.log("Balanceando")
         BalanceLineups(members)
         BalanceDiscarded(members)
     }
@@ -660,7 +663,7 @@ function AdvancedOptions(props:any){
     }
 
     for(let i = 0; i < weekends.length; i++){
-        let newButton = <TextButton text={weekends[i]} press={()=>{
+        let newButton = <TextButton buttonStyle={{padding:0}} text={weekends[i]} press={()=>{
             setEditingExclusive({weekend:weekends[i],day:undefined,place:editingExclusive.place})
             setEditingModalOpened(true)
         }} key={i}/>;
@@ -698,11 +701,11 @@ function AdvancedOptions(props:any){
                 <Text style={textStyles.dataTitle}> - Selecione o local:</Text>
                 <DropDown options={placeOptions} actions={placeActions} placeholder="Todos"/>
                 <Text style={textStyles.dataTitle}> - Por final de semana:</Text>
-                <View style={{flexDirection:'row',justifyContent:"center"}}>
+                <View style={{flexDirection:'row',justifyContent:"center",flexWrap:'wrap',flexShrink:1,margin:10}}>
                     {wkButtons}
                 </View>
                 <Text style={textStyles.dataTitle}> - Por dia:</Text>
-                <View style={{flexDirection:'row',justifyContent:'center',flexWrap:'wrap'}}>
+                <View style={{flexDirection:'row',justifyContent:'center',flexWrap:'wrap',margin:10}}>
                     {daysButtons}
                 </View>
                 {editingModalOpened ? <ExclusiveOptions 
@@ -746,8 +749,9 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     const options = useRef({members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
     const [roleSet,setRoleSet] = useState(props.rolesets[0]) // Estado do roleset
     const [builded,setBuilded] = useState(false)
+
     if(!isEditing.current){ // Se ainda não estiver editando:
-        options.current = {members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
         isEditing.current = true
     }
     
@@ -758,13 +762,10 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     // Criar botões de seleção de dias
         daysChecks.current = []
         dayExceptions.current = options.current.dayExceptions != undefined ? options.current.dayExceptions : dayExceptions.current
-        console.log(curGenOptions.dateset.days)
         
 
         for(let i = 0; i < curGenOptions.dateset.days.length; i++){
-            console.log("Building "+i)
             let curDay = curGenOptions.dateset.days[i]
-            console.log(curDay)
             let comp = <CheckBox checked={!dayExceptions.current.includes(curDay)} press={()=>{
                 let dayIndex = dayExceptions.current.indexOf(curDay)
                 if(dayIndex == -1){
@@ -776,16 +777,13 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                 
             }} topText={curDay} topTextStyle={textStyles.buttonText} key={i}/>
 
-            console.log(comp)
             daysChecks.current.push(comp)
-            console.log(daysChecks.current)
             setBuilded(true)
         }
     }
     
     // Atualiza os dados quando a chave da opção exclusiva é alterada (outras opções exclusivas são selecionadas).
     useEffect(()=>{
-        console.log("Update Key")
         let key = props.genOptionsKey.weekend
         key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
         key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
@@ -797,15 +795,12 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         }
         setRoleSet(options.current.roleset)
         BuildComponents()
-        console.log(daysChecks.current)
     },[props.genOptionsKey])
 
     // Atualiza as opções do roleset quand outro é selecionado
     useEffect(()=>{
-        console.log("Roleset changed")
         UpdateRolesetOptions()
         BuildComponents()
-        console.log(daysChecks.current)
     },[roleSet,props.rolesets])
 
     /**
@@ -856,7 +851,6 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
         isEditing.current = false
         props.onClose()
     }
-    console.log("Before return: ",daysChecks.current)
     return(
         <Modal visible={props.visible} transparent={true} animationType="fade" onRequestClose={Close}>
             <View style={{flex:1,backgroundColor:"#00000099"}}>

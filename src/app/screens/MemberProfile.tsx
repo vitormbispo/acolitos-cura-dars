@@ -73,7 +73,7 @@ export default function MemberProfile() {
         setScrollPos(event.nativeEvent.contentOffset.y)
     }
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={curMember.nick}/>
                 <UpperButton img={ICONS.edit} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>

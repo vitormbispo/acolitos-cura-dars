@@ -45,7 +45,7 @@ export default function NewMember(){
     const [nickAvailable,setNickAvailable] = useState(true) //
     return(
         
-        <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
+        <KeyboardAwareScrollView style={{flex:1,flexDirection:"column",backgroundColor:theme.backgroundColor}}>
                 
             <UpperBar icon={GetMemberAddIcon()}screenName={"Novo "+typeName}/>
 

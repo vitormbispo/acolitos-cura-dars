@@ -50,7 +50,7 @@ export default function EditMember(){
     const [nickAvailable,setNickAvailable] = useState(true) //
 
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
                 <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.nick,25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{

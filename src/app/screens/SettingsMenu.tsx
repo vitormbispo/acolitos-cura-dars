@@ -1,9 +1,11 @@
 import { View } from "react-native";
 import { LinkRowImageButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
+import { menuStore } from "../store/store";
 export default function SettingsMenu(){
+    const {theme} = menuStore()
     return(
-        <View>
+        <View style={{backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.menu} screenName={"Menu"}/>
             <LinkRowImageButton img={ICONS.document} text={"- Dados"}
                 textStyle={{

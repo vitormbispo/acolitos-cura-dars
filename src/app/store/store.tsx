@@ -48,7 +48,8 @@ export type ThemeStates = {
         neutral:string,
         primaryText: string,
         backgroundColor: string,
-        disabled:string
+        disabled:string,
+        window:string
     }
     name:string
     type:MemberType

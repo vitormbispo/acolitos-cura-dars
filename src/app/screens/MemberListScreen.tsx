@@ -12,7 +12,7 @@ export class MemberList{
 }
 
 export default function List() {
-    
+    const {theme} = menuStore()
     const[scrollPosition, setScrollPosition] = useState(MemberList.scrollPos);
     const scrollViewRef = useRef(MemberList.scrollRef);
     
@@ -56,7 +56,7 @@ export default function List() {
     }
     
     return(
-        <View style={{flex:1,flexDirection:"column"}}>
+        <View style={{flex:1,flexDirection:"column",backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={GetMemberIcon()} screenName={name} toggleEnabled={true}/>
 
             <ScrollView 

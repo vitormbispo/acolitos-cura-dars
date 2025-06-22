@@ -16,7 +16,7 @@ export class MemberSelectScreenOptions{
 
 export default function List(){
     const members = []
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
 
     let all:Array<Member>
     switch (type){
@@ -44,7 +44,7 @@ export default function List(){
 
     return(
         
-        <View style={{flex:1,flexDirection:"column"}}>
+        <View style={{flex:1,flexDirection:"column",backgroundColor:theme.backgroundColor}}>
             <UpperBar screenName="Selecione o(s) acólito(s)" icon={GetMemberIcon()}/>
 
         <ScrollView style={{flex:1}}> 

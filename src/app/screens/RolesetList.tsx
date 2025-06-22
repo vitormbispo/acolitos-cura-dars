@@ -9,7 +9,7 @@ import { uiStyles } from "../styles/GeneralStyles";
 import { useState } from "react";
 export default function RolesetList(){
     
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     const [rolesets,setRolesets] = useState({set:[]})
     let setsComps = []
     switch(type){
@@ -30,7 +30,7 @@ export default function RolesetList(){
     }
 
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.acolito} screenName={"Funções"} toggleEnabled={true}/>
             <RowImageButton img={ICONS.acolito} text={"Adicionar novo conjunto"} press={()=>{
                 router.push("/screens/NewRoleset")

@@ -21,7 +21,7 @@ export default function DataImport(){
     const {theme} = menuStore()
     const [confirmationVisible, setConfirmationVisible] = useState(false)
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.import} screenName={"Importar dados"}/>
             <DataSection text={"Selecione quais dados importar:"} textStyle={{fontSize:20}}/>
             <DataSelectors allProperties={DataImportOptions.data} selectedProperties={DataImportOptions.selectedProperties}/>
@@ -34,7 +34,7 @@ export default function DataImport(){
                 onRequestClose={()=>{setConfirmationVisible(!confirmationVisible)}}>
                 
                 <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
-                    <View style={[{backgroundColor:theme.accentColor},uiStyles.modal,{height:"70%",width:"90%"}]}>
+                    <View style={[{backgroundColor:theme.window},uiStyles.modal,{height:"70%",width:"90%"}]}>
                         <View>
                             <Image source={ICONS.alert} style={{width:64,height:64,alignSelf:"center"}}/>
                             <Text style={{fontFamily:'Inter-Bold',textAlign:"center",alignSelf:"center",fontSize:24,color:"#EE2D24"}}>ATENÇÃO!</Text>

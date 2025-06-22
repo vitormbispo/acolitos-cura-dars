@@ -598,7 +598,7 @@ export function ConfirmationModal(props:ConfirmationModalProps){
       onRequestClose={props.requestClose != null ? props.requestClose : null}>
       
       <View style={{flex:1,justifyContent:"center",backgroundColor:"#0000005F"}}>
-          <View style={[{backgroundColor:theme.primary},uiStyles.modal,props.modalStyle]}>
+          <View style={[{backgroundColor:theme.window},uiStyles.modal,props.modalStyle]}>
               
               {props.alert ? 
               <View>
@@ -633,7 +633,7 @@ type DataSectionProps = {
 export function DataSection(props:DataSectionProps){
   const {theme} = menuStore()
   return(
-    <View style={{backgroundColor:theme.neutral,minHeight:70,margin:10,borderColor:"#CCCCCC99",borderWidth:1,borderRadius:10}}>
+    <View style={{backgroundColor:theme.primary,minHeight:70,margin:10,borderRadius:10}}>
       <Text style={[textStyles.dataSection,{backgroundColor:props.color,textAlign:props.centered?"center":"auto"},props.textStyle]}>{props.text}</Text>
     </View>
   )
@@ -735,10 +735,11 @@ type ExpandableViewProps = {
  */
 export function ExpandableView(props:ExpandableViewProps){
   const [expanded,setExpanded] = useState(props.expanded)
+  const {theme} = menuStore()
   let content = expanded ? props.content : null
   return(
     <View style={{}}>
-      <Pressable style={[uiStyles.dataSection,{backgroundColor:props.color}]} onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
+      <Pressable style={[uiStyles.dataSection,{backgroundColor:theme.neutral}]} onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
         <Text style={[textStyles.dataSection,{textAlign:props.centered?"center":"auto"},props.textStyle]}>{props.title}</Text>
       </Pressable>
       {content}
@@ -1053,7 +1054,7 @@ export function MemberSelectModal(props:MemberSelectModalProps){
     <Modal visible={props.visible} transparent={true} onRequestClose={props.requestClose}>
       <View style={{flex:1,backgroundColor:"#00000099"}}>
         <View style={{flex:1,backgroundColor:"#FFFFFF",marginHorizontal:20,marginVertical:40,borderRadius:15}}>
-          <View style={{backgroundColor:theme.primary,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
+          <View style={{backgroundColor:theme.window,height:100,borderRadius:15,margin:10,justifyContent:"center",alignItems:"center"}}>
             <Text style={[textStyles.dataTitle,{textAlignVertical:"center",textAlign:"center"}]}>{props.title}</Text>
           </View>
 

@@ -13,8 +13,9 @@ export class LineupList{
 // Tela
 export default function LineupListScreen(){
     let lines = FetchLineupList();
+    const {theme} = menuStore()
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.escala} screenName="Escalas"/>
             <ScrollView style={{flex:1}}>
                 {lines}

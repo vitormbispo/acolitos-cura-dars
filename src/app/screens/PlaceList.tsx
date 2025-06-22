@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
 
 export default function PlaceList(){
-    
+    const {theme} = menuStore()
     const [places,setPlaces] = useState(Places.allPlaces.slice())
     const [modalVisible,setModalVisible] = useState(false)
     const [renameModalVisible,setRenameModalVisible] = useState(false)
@@ -29,7 +29,7 @@ export default function PlaceList(){
         comps.push(newComp)
     }
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.home} screenName={"Locais"}/>
             <ScrollView style={{flex:1}}>
                 <RowImageButton img={ICONS.home} text={"Adicionar novo local"} press={()=>{

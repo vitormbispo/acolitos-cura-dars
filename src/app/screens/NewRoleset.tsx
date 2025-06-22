@@ -11,18 +11,16 @@ import { router } from "expo-router";
 export default function NewRoleset(){
     const [newSet,updateSet] = useState({name:"",roles:[]})
     const [modalVisible,setModalVisible] = useState(false)
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     let rolesComps:Array<React.JSX.Element> = []
     
-    // TODO Remover rerender forçado
     for(let i = 0; i < newSet.roles.length;i++){
         let newComp = <RowRole allRoles={newSet.roles} role={newSet.roles[i]} index={i} key={i} deleteAction={()=>{newSet.roles.splice(i,1); router.replace("/screens/NewRoleset")}}/>
         rolesComps.push(newComp)
     }
 
-    
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.acolito} screenName={"Novo conjunto"}/>
             <TextInputBox title={"Nome: "} placeholder="Conjunto..." onChangeText={(text)=>{newSet.name=text}}/>
             <RowImageButton img={ICONS.acolito} text={"Adicionar função..."} press={()=>{

@@ -12,7 +12,7 @@ import { AbbreviateText, DeepCopyObject } from "../classes/Methods";
 export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)
     
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     const {rolesetID} = contextStore()
     
     let setsArray:Array<RoleSet>
@@ -36,7 +36,7 @@ export default function EditRoleset(){
     }
 
     return(
-        <View style={{flex:1}}>
+        <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.acolito} screenName={AbbreviateText("Conjunto: "+newSet.name,25)}/>
             <TextInputBox title={"Nome: "} default={newSet.name} onChangeText={(text)=>{newSet.name=text}}/>
             <RowImageButton img={ICONS.acolito} text={"Adicionar..."} press={()=>{

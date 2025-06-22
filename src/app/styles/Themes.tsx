@@ -7,8 +7,9 @@ export const acolyteLight = {
     reject: '#FF6961',
     neutral: '#8FD7FF',
     primaryText: '#1E1E1E',
-    backgroundColor: '#F5F5F5',
-    disabled: '#E5E5E5'
+    backgroundColor: '#FFFFFF',
+    disabled: '#E5E5E5',
+    window: '#FFF799'
 }
 
 export const acolyteDark = {
@@ -23,11 +24,12 @@ export const coroinhaLight = {
     secondary: '#FFD700',
     highlight: '#B388FF',
     confirm: '#77DD77',
-    reject: '#FF6961',
+    reject: '#F06961',
     neutral: '#8FD7FF',
     primaryText: '#1E1E1E',
-    backgroundColor: '#F5F5F5',
-    disabled: '#E5E5E5'
+    backgroundColor: '#FFFFFF',
+    disabled: '#E5E5E5',
+    window: '#FF8A8A'
 }
 
 

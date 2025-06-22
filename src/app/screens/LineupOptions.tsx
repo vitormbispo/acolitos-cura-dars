@@ -13,10 +13,10 @@ import { GetMemberArray } from "../classes/Methods"
 
 export default function LineupOptions(){
     const {setLineupType,updateWeekend} = contextStore()
-    const {type} = menuStore()
+    const {type,theme} = menuStore()
     const genOptions = contextStore(useShallow((state)=>state.curGenOptions))
     return(
-    <View style={{flex:1}}>
+    <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
         <UpperBar icon={ICONS.escala} screenName={"Gerar escalas"} toggleEnabled={true}/>
 
         <LinkRowImageButton textStyle=
