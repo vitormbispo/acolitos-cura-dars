@@ -40,6 +40,7 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-web": "^0.20.0",
+    "rive-react-native": "^9.3.4",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

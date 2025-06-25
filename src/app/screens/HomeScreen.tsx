@@ -6,7 +6,7 @@ import { ICONS } from "../classes/AssetManager";
 import { Member, MemberData } from "../classes/MemberData";
 import { ConvertDataToClasses } from "../classes/DataManager";
 import { Lineup, StructuredLineup } from "../classes/Lineup";
-
+import Rive from "rive-react-native";
 // Tela
 export default function Home(){
     const {name,theme} = menuStore()
@@ -28,6 +28,12 @@ export function AppBody(){
     return(
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
+        <Rive
+            url="https://public.rive.app/community/runtime-files/2195-4346-avatar-pack-use-case.riv"
+            artboardName="Avatar 1"
+            stateMachineName="avatar"
+            style={{width: 400, height: 400}}
+         />
     </View> : null
     )
 }

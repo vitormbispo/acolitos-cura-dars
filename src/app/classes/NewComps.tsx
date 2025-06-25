@@ -7,7 +7,7 @@ import { Member, MemberIDList, MembersFromIDs, MemberType } from "./MemberData";
 import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
-
+import Rive from 'rive-react-native'
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
 type ImageButtonProps = {
@@ -701,7 +701,8 @@ export function DropDown(props:DropDownTypes){
           {/*}
           <Image style={{width:32,height:32,alignSelf:"center"}} source={require("@/src/app/item_icons/arrow_ico.png")}/>
             */}
-          </View>
+          
+        </View>
         
         
         <Modal visible={modalOpened} transparent={true} onRequestClose={()=>setModalOpened(!modalOpened)}>
