@@ -576,6 +576,7 @@ export function WeekendSelection(props:WeekendSelection){
 
     let weekends = props.set.weekends
     let checks = []
+    
     for(let i = 0; i < weekends.length;i++){
         let week = weekends[i]
         checks.push(
