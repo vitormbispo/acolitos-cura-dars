@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StructuredLineup } from "./Lineup"
-import { GetMemberByID } from "./DataManager"
 
 /**
  * Tipo de membro
@@ -194,4 +193,18 @@ export function MembersFromIDs(ids:Array<number>):Array<Member>{
         members.push(GetMemberByID(id,allMembers))
     })
     return members
+}
+
+/**
+ * Retorna o membro com determinado ID
+ * @param id ID
+ * @param members Lista de membros 
+ */
+export function GetMemberByID(id:number,members:Array<Member>):Member{
+    for(let i = 0; i < members.length; i++){
+        if(members[i].id == id) {
+            return members[i]
+        } 
+    }
+    return null
 }

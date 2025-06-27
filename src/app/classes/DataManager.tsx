@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { Member, MemberData } from "./MemberData"
+import { GetMemberByID, Member, MemberData } from "./MemberData"
 import { OrganizeMemberArrayAlpha, RandomNumber } from "./Methods"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
@@ -177,19 +177,7 @@ export function GenerateMemberID(){
     }
     return id
 }
-/**
- * Retorna o membro com determinado ID
- * @param id ID
- * @param members Lista de membros 
- */
-export function GetMemberByID(id:number,members:Array<Member>):Member{
-    for(let i = 0; i < members.length; i++){
-        if(members[i].id == id) {
-            return members[i]
-        } 
-    }
-    return null
-}
+
 /**
  * Verifica a integridade dos dados dos membros de determinada lista
  * @param members Lista de membros

@@ -3,7 +3,7 @@ import { MemberData } from "./MemberData"
 import { SaveData } from "./Methods"
 
 export class Places {
-    static allPlaces:Array<string>
+    static allPlaces:Array<string> = null
     static defaultPlaces:Array<string> = [
         "Matriz","Água Boa","Cap. Cristo Ressucitado",
         "Cap. S. Judas Tadeu",

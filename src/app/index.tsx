@@ -15,6 +15,7 @@ export default function App() {
     
     useEffect(()=>{
         if(!appStarted){
+            console.log("Initializing")
             InitializeApp()
             updateAppStarted(true)
         }
@@ -42,6 +43,9 @@ function InitializeApp(){
     })
     
     MemberData.VerifyMemberDataIntegrity() // Valida a integridade de todos os dados dos membros
+    console.log("Integridade dos membros: ")
+    console.log(MemberData.allAcolytes)
+    
     
     // Carregando conjuntos de funções
     LoadAcolyteRolesets()
@@ -56,7 +60,9 @@ function InitializeApp(){
     
     // Validações de locais e conjuntos
     if(Places.allPlaces == null){
+        console.log("Sem locais")
         Places.allPlaces = Places.defaultPlaces.slice()
+        console.log("Definido: "+Places.allPlaces)
     }
     if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets.length == 0){
         Roles.InitializeSets(MemberType.ACOLYTE)
