@@ -8,14 +8,9 @@ import { ICONS } from "./AssetManager";
 import { Lineup } from "./Lineup";
 import { GetLineupUnvailableMembers, GetMemberArray } from "./Methods";
 import Rive from 'rive-react-native'
+import { ImageButton } from "../components/ImageButton";
 const USER_ICONS = [require("@/src/app/item_icons/acolito_ico.png"),require("@/src/app/item_icons/coroinha_ico.png")]
 const ADD_ICONS = [require("@/src/app/item_icons/add_acolito_ico.png"),require("@/src/app/item_icons/add_coroinha_ico.png")]
-type ImageButtonProps = {
-  img:any,
-  imgStyle?:object,
-  buttonStyle?:object,
-  press?: (...args:any) => any
-}
 
 /** Retorna o ícone de usuário referente ao tipo de menu atual contido
  * na menuStore: acólito ou coroinha
@@ -36,26 +31,6 @@ export function GetMemberAddIcon(){
   const {type} = menuStore()
   return ADD_ICONS[type]
 }
-
-/**
- * Botão com imagem
- * @param props Propriedades: 
- * img = Imagem     
- * imgStyle = Estilo do componente de imagem     
- * buttonStyle = Estilo do componente Pressable     
- * press = Ação quando o botão é pressionado     
- * @returns
- */
-
-
-export function ImageButton(props:ImageButtonProps) {
-  return (
-    
-       <Pressable style={props.buttonStyle} onPress={props.press != undefined ? props.press : ()=>{}}>
-          <Image source={props.img} style={props.imgStyle}/>
-       </Pressable>
-      );
-  }
 
 
 type RowImageButtonProps = {
@@ -741,10 +716,18 @@ export function ExpandableView(props:ExpandableViewProps){
   const [expanded,setExpanded] = useState(props.expanded)
   const {theme} = menuStore()
   let content = expanded ? props.content : null
+  const riveRef = useRef(null)
+  
+  useEffect(()=>{
+    riveRef.current.setInputState("State Machine 1","isShown",expanded)
+  },[expanded])
   return(
     <View style={{}}>
-      <Pressable style={[uiStyles.dataSection,{backgroundColor:theme.neutral}]} onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
-        <Text style={[textStyles.dataSection,{textAlign:props.centered?"center":"auto"},props.textStyle]}>{props.title}</Text>
+      <Pressable style={[uiStyles.dataSection,{backgroundColor:theme.neutral,flexDirection:"row"}]} onPress={()=>{props.action != undefined ? props.action() : null;setExpanded(!expanded)}}>
+        <Text style={[textStyles.dataSection,{textAlign:props.centered?"center":"auto",wordWrap:"nowrap"},props.textStyle]}>{props.title}</Text>
+        <View style={{flex:1}}>
+          <Rive resourceName="untitled" style={{width:32,height:32,pointerEvents:"none",alignSelf:"flex-end",margin:10}} ref={riveRef} stateMachineName="State Machine 1"/>
+        </View>
       </Pressable>
       {content}
     </View>
@@ -830,13 +813,11 @@ export function CompactLineup(props:CompactLineupProps){
     updateReplacingMember(newState)
   }
   
-  
-  
   const [roles,setRoles] = useState(BuildComponents())
   return(
     <View style={{width:200,backgroundColor:theme.backgroundColor,borderRadius:15,margin:10}}>
       <View style={{backgroundColor:theme.primary,borderRadius:15,margin: 10}}>
-        <Text style={{fontFamily:"Inter-Bold",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.weekend + props.line.day}</Text>
+        <Text style={{fontFamily:"Inter-Bold",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.weekend != "Outro" ? props.line.weekend + props.line.day : "Outro"}</Text>
         
         {props.line.place != undefined ?
           <Text style={{fontFamily:"Inter-Regular",fontSize:15,textAlign:"center",marginTop:5}}>{props.line.place}</Text> 

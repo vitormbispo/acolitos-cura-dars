@@ -1,11 +1,12 @@
 import { Modal, ScrollView, Text, View } from "react-native";
-import { ImageButton, RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
+import { RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
 import { menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { Roles} from "../classes/Roles";
 import { router } from "expo-router";
+import { ImageButton } from "../components/ImageButton";
 
 
 export default function NewRoleset(){

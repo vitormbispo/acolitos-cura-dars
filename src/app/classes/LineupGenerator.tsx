@@ -57,7 +57,7 @@ type GeneratorSettings = {
     type:MemberType
     place?:string
     randomness?:number
-    
+    anyDay?:boolean
 }
 /** Gera uma nova escala de acordo com o tipo (Acólito/Coroinha), fim de semana e dia dadas as funções.
  * Leva em conta a disponibiliade e as prioridades diárias, de funções e gerais.
@@ -77,6 +77,11 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     if(members == null){
         console.error("Empty list")
         return null
+    }
+
+    if(settings.anyDay) {
+        settings.day = "Outro"
+        settings.weekend = "Outro"
     }
 
     members = RemoveUnvailable(members,settings.day,settings.weekend,settings.place) // Remover membros indisponíveis
@@ -473,7 +478,7 @@ function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
 function IsMemberAvailable(member:Member,lineup:Lineup){
     return member.onLineup && 
     !lineup.members.includes(member) &&
-    member.disp[lineup.weekend][lineup.day] && 
+    ((lineup.weekend == "Outro" && lineup.day == "Outro") || member.disp[lineup.weekend][lineup.day]) && 
     (lineup.place == undefined || member.placeDisp[lineup.place])
 }
 

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid, Settings} from "react-native"
-import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,ImageButton,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
+import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
@@ -15,6 +15,7 @@ import { ICONS } from "../classes/AssetManager"
 import { useEffect, useRef, useState } from "react"
 import { Places } from "../classes/Places"
 import { Preset, PresetsData } from "../classes/PresetsData"
+import { ImageButton } from "../components/ImageButton"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 
@@ -30,6 +31,7 @@ export type GenerationOptionsType = {
     "solemnity":boolean,
     "lineupType":LineupType,
     "monthDays":object,
+    "anyDays":boolean
     "dayRotation":boolean,
     "randomness":number,
     "roleset":RoleSet,
@@ -37,7 +39,7 @@ export type GenerationOptionsType = {
     "dateset":DateSet,
     "exclusiveOptions":object,
     "preset":Preset,
-    "balance":boolean
+    "balance":boolean,
 }
 
 /**
@@ -289,12 +291,17 @@ function CheckImage(value:any,id:any){
  */
 const SingleLineupOptions = () => {
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
-
-    const {type} = menuStore()
+    const [anyTime,setAnyTime] = useState(generationOptions.anyDays)
     return(
         <View style={{flex:1}}>
                 
             <DataSection text={"- Dias e horários"}/>
+            <View style={{padding:25}}>
+                <TextCheckBox checked={anyTime} press={()=>{
+                setAnyTime(!anyTime)
+                generationOptions.anyDays = !anyTime
+            }} text={"Qualquer horário"}/>
+            </View>
             
             <WeekendSelection set={new DateSet()} single={true}/>
             <SingleDaySelection/>  
@@ -309,15 +316,22 @@ const SingleLineupOptions = () => {
 const WeekendLineupOptions = () => {
     const {type} = menuStore()
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
-
+    const [anyTime,setAnyTime] = useState(generationOptions.anyDays)
     return(
         <View style={{flex:1}}>
             <DataSection text={"- Dias e horários"}/>
-            
-            <WeekendSelection set={new DateSet()}/>
+            <View style={{padding:25}}>
+                    <TextCheckBox checked={anyTime} press={()=>{
+                    setAnyTime(!anyTime)
+                    generationOptions.anyDays = !anyTime
+                }} text={"Qualquer horário"}/>
+            </View>
 
+            <WeekendSelection set={new DateSet()}/>
+            
             <View style={{flexDirection:"row",alignItems:"center"}}>
                 <Text style={{fontFamily:"Inter-Light",fontSize:20,padding:10}}>Horário</Text>
+                
                 <DaySelection/>
             </View>
         </View>
@@ -334,10 +348,16 @@ const MonthLineupOptions = () => {
     const {type} = menuStore()
     
     const generationOptions = contextStore(useShallow((state)=>state.curGenOptions))
+    const [anyTime,setAnyTime] = useState(generationOptions.anyDays)
     return(
         <View style={{flex:1}}>
             <DataSection text={"- Dias e horários"}/>
-                
+            <View style={{padding:25}}>
+                    <TextCheckBox checked={anyTime} press={()=>{
+                    setAnyTime(!anyTime)
+                    generationOptions.anyDays = !anyTime
+                }} text={"Qualquer horário"}/>
+            </View>
             <View style={{paddingTop:50}}>               
                 <MonthDaySelection/>
             </View>
@@ -401,7 +421,7 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
                     }
                     let newLineup:Lineup = generateOptions.allRandom ?
                         GenerateRandomLineup(placeOpt.roleset,type,weekendKey,curDay,curPlace):
-                        GenerateLineup({members:MembersFromIDs(placeOpt.members),weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace})
+                        GenerateLineup({members:MembersFromIDs(placeOpt.members),weekend:weekendKey,day:curDay,roleset:placeOpt.roleset,type:type,randomness:placeOpt.randomness,place:curPlace,anyDay:placeOpt.anyDays})
         
                     generatedLineups[weekendKey].push(newLineup)
                     allLineups.push(newLineup)
@@ -743,19 +763,21 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     const rolesetOptions = useRef([])
     const rolesetActions = useRef([])
 
+    
+
     let key = props.genOptionsKey.weekend
         key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
         key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
-    const options = useRef({members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[]})
+    const options = useRef({members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[],anyDays:baseOptions.anyDays})
     const [roleSet,setRoleSet] = useState(props.rolesets[0]) // Estado do roleset
     const [builded,setBuilded] = useState(false)
 
     if(!isEditing.current){ // Se ainda não estiver editando:
-        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+        options.current = {members:baseOptions.members.slice(),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions,anyDays:baseOptions.anyDays}
         isEditing.current = true
     }
-    
+    const [anyTime,setAnyTime] = useState(options.current.anyDays)    
     /**
      * Constrói os componentes da tela
      */
@@ -791,7 +813,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     
         baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
         if(!isEditing.current){ // Se ainda não estiver editando:
-            options.current = {members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions}
+            options.current = {members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,allRandom:baseOptions.allRandom,randomness:baseOptions.randomness,dayExceptions:baseOptions.dayExceptions,anyDays:baseOptions.anyDays}
             isEditing.current = true
         }
         setRoleSet(options.current.roleset)
@@ -890,15 +912,34 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
                             <PlaceSelect selectedPlaces={options.current.places}/>
                         </View>
                         : null}
-
+                        
                         {props.genOptionsKey.day == undefined ?
                         <View>
                             <DataSection text={"Dias"}/>
+                            <View style={{padding:25}}>
+                                    <TextCheckBox checked={anyTime} press={()=>{
+                                    setAnyTime(!anyTime)
+                                    options.current.anyDays = !anyTime
+                                }} text={"Qualquer horário"}/>
+                            </View>
                             <View style={{flexDirection:"row",marginTop:35}}>
+                                
                                 {daysChecks.current}
                             </View>
                             
-                        </View> : null}
+                        </View> : 
+                        <View>
+                            <DataSection text={"Dias"}/>
+                            <View style={{padding:25}}>
+                                <TextCheckBox checked={anyTime} 
+                                    press={()=>{
+                                    setAnyTime(!anyTime)
+                                    options.current.anyDays = !anyTime
+                                }} text={"Qualquer horário"}/>
+                            </View>
+                        </View>
+                        
+                            }
                         
                         <RowImageButton img={GetMemberIcon()}text="Selecionar membros" press={()=>{
                             setMemberSelectOpen(true)

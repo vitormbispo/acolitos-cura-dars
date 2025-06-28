@@ -117,6 +117,7 @@ export const contextStore = create<ContextStates>((set)=>({
             "randomness":1.6,
             "lineupType":LineupType.SINGLE,
             "monthDays":Dates.DefaultMonthDays(),
+            "anyDays":false,
             "dayRotation":true,
             "dateset":new DateSet(),
             "places":[],

@@ -1,5 +1,5 @@
 import { View,Text, ScrollView } from "react-native"
-import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, ImageButton, DataSection } from "../classes/NewComps"
+import { GetMemberIcon, UpperBar, VisualCheckBox, UpperButton, DataDisplay, TextVisualCheckBox, ExpandableView, DataSection } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
 import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
 import { textStyles, uiStyles} from "../styles/GeneralStyles"
@@ -8,6 +8,7 @@ import { ICONS } from "../classes/AssetManager"
 import { Places } from "../classes/Places"
 import { Roles } from "../classes/Roles"
 import { useRef, useState } from "react"
+import { ImageButton } from "../components/ImageButton"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()

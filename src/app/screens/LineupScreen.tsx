@@ -1,5 +1,5 @@
 import { View,Text, ScrollView} from "react-native"
-import { ConfirmationModal, GridLineupView, ImageButton, MemberSelectModal, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
+import { ConfirmationModal, GridLineupView, MemberSelectModal, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
 import { router } from "expo-router"
 import { useRef, useState } from "react"
 import { Lineup, StructuredLineup } from "../classes/Lineup"

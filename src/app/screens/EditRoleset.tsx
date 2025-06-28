@@ -1,5 +1,5 @@
 import { Modal, ScrollView, Text, View } from "react-native";
-import { ImageButton, RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
+import { RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
@@ -8,6 +8,7 @@ import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
 import { MemberType } from "../classes/MemberData";
 import { AbbreviateText, DeepCopyObject } from "../classes/Methods";
+import { ImageButton } from "../components/ImageButton";
 
 export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)
