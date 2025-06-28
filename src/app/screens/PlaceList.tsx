@@ -96,7 +96,7 @@ function AddModal(props:AddModalProps){
     let placeName = ""
     return(
         <Modal visible={props.visible} animationType="fade" transparent={true} onRequestClose={()=>{props.requestClose != undefined ? props.requestClose() : null}}>
-            <View style={{flex:1,justifyContent:"center"}}>
+            <Pressable style={{flex:1,justifyContent:"center"}} onPress={()=>{props.requestClose()}}>
                 <View style={{alignSelf:"center",justifyContent:"center",height:"40%",width:"80%",backgroundColor:theme.accentColor,borderRadius:50}}>
                     
                     <TextInputBox title={"Nome do local: "} boxBelow={true} placeholder="Local..." onChangeText={(text)=>{placeName=text}}/>
@@ -112,7 +112,7 @@ function AddModal(props:AddModalProps){
                         props.onSubmit != undefined ? props.onSubmit() : null
                     }}/>
                 </View>
-            </View>
+            </Pressable>
             
         </Modal>
     )
@@ -131,7 +131,7 @@ function RenameModal(props:RenameModalProps){
     let placeName = props.place
     return(
         <Modal visible={props.visible} animationType="fade" transparent={true} onRequestClose={()=>{props.requestClose != undefined ? props.requestClose() : null}}>
-            <View style={{flex:1,justifyContent:"center"}}>
+            <Pressable style={{flex:1,justifyContent:"center"}} onPress={()=>{props.requestClose()}}>
                 <View style={{alignSelf:"center",justifyContent:"center",height:"40%",width:"80%",backgroundColor:theme.accentColor,borderRadius:50}}>
                     
                     <TextInputBox title={"Novo nome: "} boxBelow={true} default={props.place} onChangeText={(text)=>{placeName=text}}/>
@@ -145,7 +145,7 @@ function RenameModal(props:RenameModalProps){
                         props.onSubmit != undefined ? props.onSubmit() : null
                     }}/>
                 </View>
-            </View>
+            </Pressable>
             
         </Modal>
     )

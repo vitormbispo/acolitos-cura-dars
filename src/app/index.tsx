@@ -7,6 +7,8 @@ import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersI
 import { contextStore } from "./store/store";
 import { DistinctRandomNumbers } from "./classes/Methods";
 import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View } from "react-native";
 
 
 export default function App() {
@@ -15,14 +17,17 @@ export default function App() {
     
     useEffect(()=>{
         if(!appStarted){
-            console.log("Initializing")
-            InitializeApp()
-            updateAppStarted(true)
+            InitializeApp().then(()=>{
+                updateAppStarted(true)
+            })
+            
         }
     },[appStarted])
     return (
+      <View style={{flex:1}}>
+        {appStarted?<Home/>:null}
+      </View>
       
-      <Home/>
       
     );
   }
@@ -30,39 +35,31 @@ export default function App() {
 /**
  * Inicializa a aplicação carregando e validando os dados salvos
  */
-function InitializeApp(){
-    console.log("Initializing app")
+async function InitializeApp(){
     // Carrega e valida dados dos membros:
-    LoadAcolyteData().then(()=>{
+    await LoadAcolyteData().then(()=>{
         VerifyMembersIntegrity(MemberData.allAcolytes)
     })
 
-    LoadCoroinhaData().then(()=>{
+    await LoadCoroinhaData().then(()=>{
         VerifyMembersIntegrity(MemberData.allCoroinhas)
         ConvertDataToClasses()
-    })
-    
-    MemberData.VerifyMemberDataIntegrity() // Valida a integridade de todos os dados dos membros
-    console.log("Integridade dos membros: ")
-    console.log(MemberData.allAcolytes)
-    
+    }).then(()=>{MemberData.VerifyMemberDataIntegrity()})
     
     // Carregando conjuntos de funções
-    LoadAcolyteRolesets()
-    LoadCoroinhaRolesets().then(()=>{
+    await LoadAcolyteRolesets()
+    await LoadCoroinhaRolesets().then(()=>{
         Roles.VerifyRolesIntegrity()
     })
 
     // Carregando locais
-    Places.LoadPlaceData().then(()=>{
+    await Places.LoadPlaceData().then(()=>{
         Places.VerifyPlacesIntegrity()
     })
     
     // Validações de locais e conjuntos
     if(Places.allPlaces == null){
-        console.log("Sem locais")
-        Places.allPlaces = Places.defaultPlaces.slice()
-        console.log("Definido: "+Places.allPlaces)
+        Places.ResetToDefault()
     }
     if(Roles.acolyteRoleSets == null || Roles.acolyteRoleSets.length == 0){
         Roles.InitializeSets(MemberType.ACOLYTE)
@@ -70,5 +67,6 @@ function InitializeApp(){
     
     if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
-    }  
+    } 
+    return Promise.resolve()
 }

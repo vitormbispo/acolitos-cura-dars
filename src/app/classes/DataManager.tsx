@@ -68,17 +68,13 @@ export function RetrieveAppDataProperties():Array<string>{
  * Carrega os dados dos acólitos.
  */
 export const LoadAcolyteData = async() => {
-    console.log("Carregando")
     try {
-        console.log("Entrou no try")
         let acolyteData = await AsyncStorage.getItem("AcolyteData")
         let acolyteLineups = await AsyncStorage.getItem("AcolyteLineups")
         let acolytePresets = await AsyncStorage.getItem("AcolytePresets")
         MemberData.allAcolytes = JSON.parse(acolyteData)
         MemberData.allLineupsAcolytes = JSON.parse(acolyteLineups)
         PresetsData.acolyteGenerationPresets = JSON.parse(acolytePresets)
-
-        OrganizeMemberArrayAlpha(MemberData.allAcolytes)
         
         if (MemberData.allAcolytes == null){
             MemberData.allAcolytes = []
@@ -86,10 +82,10 @@ export const LoadAcolyteData = async() => {
         if (MemberData.allLineupsAcolytes == null){
             MemberData.allLineupsAcolytes = []
         }
-        console.log("Acolyte Loaded!")
+        OrganizeMemberArrayAlpha(MemberData.allAcolytes)
         PresetsData.VerifyPresetsIntegrity()
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 
 }
@@ -106,20 +102,18 @@ export const LoadCoroinhaData = async() => {
         MemberData.allLineupsCoroinhas = JSON.parse(coroinhaLineups)
         PresetsData.coroinhaGenerationPresets = JSON.parse(coroinhaPresets)
 
-        OrganizeMemberArrayAlpha(MemberData.allCoroinhas)
-
         if (MemberData.allCoroinhas == null || MemberData.allCoroinhas == undefined){
             MemberData.allCoroinhas = []
         }
         if (MemberData.allLineupsCoroinhas == null || MemberData.allLineupsCoroinhas == undefined){
             MemberData.allLineupsCoroinhas = []
         }
-        if(PresetsData.coroinhaGenerationPresets == null){
-            PresetsData.coroinhaGenerationPresets = []
-        }
+
+        OrganizeMemberArrayAlpha(MemberData.allCoroinhas)
+        PresetsData.VerifyPresetsIntegrity()
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 

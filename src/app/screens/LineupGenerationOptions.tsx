@@ -1,11 +1,11 @@
-import { View, Text, ScrollView, Modal, Role, Pressable, TextInput, Platform, ToastAndroid, Settings} from "react-native"
+import { View, Text, ScrollView, Modal, Platform, ToastAndroid} from "react-native"
 import { CheckBox,DataSection,DropDown,ExpandableView,GetMemberIcon,LoadingModal,MemberSelectModal,RowImageButton,SingleCheck, TextButton, TextCheckBox, TextInputBox, TextInputModal, UpperBar } from "../classes/NewComps"
 import { Lineup, LineupType } from "../classes/Lineup"
 import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberData, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
+import { Member, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
 import { GetMemberArray, ResetAllLastWeekend } from "../classes/Methods"
@@ -830,6 +830,8 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
      * Atualiza as informações do DropDown de funções
      */
     const UpdateRolesetOptions = ()=>{
+        rolesetOptions.current = []
+        rolesetActions.current = []
         for(let i = 0; i < props.rolesets.length; i++){
             let curSet = props.rolesets[i]
     

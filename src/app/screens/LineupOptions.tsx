@@ -1,5 +1,5 @@
 import { View } from "react-native"
-import { CompactLineup, LinkRowImageButton, UpperBar} from "../classes/NewComps"
+import { LinkRowImageButton, UpperBar} from "../classes/NewComps"
 import { textStyles } from "../styles/GeneralStyles"
 import { contextStore, menuStore } from "../store/store"
 import { LineupType } from "../classes/Lineup"

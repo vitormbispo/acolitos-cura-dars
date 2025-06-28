@@ -190,7 +190,8 @@ export function MembersFromIDs(ids:Array<number>):Array<Member>{
     let members = []
     let allMembers = MemberData.GetAllMembers()
     ids.forEach((id)=>{
-        members.push(GetMemberByID(id,allMembers))
+        let member = GetMemberByID(id,allMembers)
+        member != null ? members.push(member) : null
     })
     return members
 }

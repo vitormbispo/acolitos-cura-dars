@@ -1,4 +1,4 @@
-import { Modal, ScrollView, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { RowImageButton, TextButton, TextInputBox, UpperBar } from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
@@ -54,7 +54,7 @@ function AddModal(props:AddModalProps){
     const roleName = useRef("")
     return(
         <Modal visible={props.visible} animationType="fade" transparent={true} onRequestClose={()=>{props.requestClose != undefined ? props.requestClose() : null}}>
-            <View style={{flex:1,justifyContent:"center"}}>
+            <Pressable style={{flex:1,justifyContent:"center"}} onPress={()=>{props.requestClose()}}>
                 <View style={{alignSelf:"center",justifyContent:"center",height:"40%",width:"80%",backgroundColor:theme.accentColor,borderRadius:50}}>
                     
                     <TextInputBox title={"Nome da função: "} boxBelow={true} placeholder="Função..." onChangeText={(text)=>{roleName.current=text}}/>
@@ -70,7 +70,7 @@ function AddModal(props:AddModalProps){
                         props.onSubmit != undefined ? props.onSubmit() : null
                     }}/>
                 </View>
-            </View>
+            </Pressable>
             
         </Modal>
     )

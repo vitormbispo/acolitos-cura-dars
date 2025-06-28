@@ -194,6 +194,9 @@ export class Places {
     static async LoadPlaceData(){
         let data = await AsyncStorage.getItem("AllPlaces")
         this.allPlaces = JSON.parse(data)
+        if(this.allPlaces == null){
+            this.ResetToDefault()
+        }
     }
 
     /**

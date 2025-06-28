@@ -28,7 +28,6 @@ export class PresetsData {
      * Verifica a integridade dos dados dos presets
      */
     static VerifyPresetsIntegrity(){
-        console.log("Verifying Integrity Presets")
         if(PresetsData.acolyteGenerationPresets == null){
             PresetsData.acolyteGenerationPresets = []
         }
