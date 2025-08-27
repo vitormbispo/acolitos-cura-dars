@@ -1,5 +1,4 @@
 import { View, Image, Text, Pressable } from "react-native";
-import { RowImageButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
 import { MemberType } from "../classes/MemberData";
@@ -7,7 +6,9 @@ import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
 import { uiStyles } from "../styles/GeneralStyles";
 import { useState } from "react";
-import { ImageButton } from "../components/ImageButton";
+import { ImageButton } from "../components/buttons/ImageButton";
+import { RowImageButton } from "../components/buttons/RowImageButton";
+import { UpperBar } from "../components/display/UpperBar";
 export default function RolesetList(){
     
     const {type,theme} = menuStore()

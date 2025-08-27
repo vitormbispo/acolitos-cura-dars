@@ -1,6 +1,6 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, DataSection, GetMemberAddIcon, TextButton, TextCheckBox, TextInputBox, UpperBar } from "../classes/NewComps";
+import { GetMemberAddIcon } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
@@ -12,6 +12,12 @@ import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
 import { GenerateMemberID, VerifyMembersIntegrity } from "../classes/DataManager";
 import { useRef, useState } from "react";
+import { TextButton } from "../components/buttons/TextButton";
+import { CheckBox } from "../components/input/CheckBox";
+import { TextCheckBox } from "../components/input/TextCheckBox";
+import { UpperBar } from "../components/display/UpperBar";
+import { DataSection } from "../components/display/DataSection";
+import { TextInputBox } from "../components/input/TextInputBox";
 
 export default function NewMember(){
     const {theme, type} = menuStore()

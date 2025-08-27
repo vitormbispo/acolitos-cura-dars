@@ -1,8 +1,10 @@
 import { View} from "react-native";
-import { GetMemberIcon, ImageTextButton, TextPosition, UpperBar } from "../classes/NewComps";
+import { GetMemberIcon } from "../classes/NewComps";
 import { uiStyles} from "../styles/GeneralStyles";
 import { contextStore, menuStore} from "@/src/app/store/store";
 import { ICONS } from "../classes/AssetManager";
+import { UpperBar } from "../components/display/UpperBar";
+import { ImageTextButton, TextPosition } from "../components/buttons/ImageTextButton";
 
 // Tela//
 export default function Home(){

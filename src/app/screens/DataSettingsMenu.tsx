@@ -1,11 +1,13 @@
 import { View } from "react-native";
-import { LinkRowImageButton, RowImageButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { router } from "expo-router";
 import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
 import { DataImportOptions } from "./DataImport";
 import { menuStore } from "../store/store";
+import { RowImageButton } from "../components/buttons/RowImageButton";
+import { UpperBar } from "../components/display/UpperBar";
+import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton";
 
 export default function DataSettingsMenu(){
     const {theme} = menuStore()
