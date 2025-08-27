@@ -1,5 +1,4 @@
 import { View} from "react-native"
-import { ConfirmationModal, GridLineupView, TextButton, UpperBar, UpperButton} from "../classes/NewComps"
 import { router } from "expo-router"
 import { useState } from "react"
 import { Lineup, StructuredLineup } from "../classes/Lineup"
@@ -7,6 +6,11 @@ import { CopyToClipboard, GenerateLineupPrompt} from "../classes/Methods"
 import { menuStore } from "../store/store"
 import { MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
 import {ICONS} from "../classes/AssetManager"
+import { TextButton } from "../components/buttons/TextButton"
+import { UpperBar } from "../components/display/UpperBar"
+import { UpperButton } from "../components/buttons/UpperButton"
+import { GridLineupView } from "../components/frames/GridLineupView"
+import { ConfirmationModal } from "../components/input/ConfirmationModal"
 
 export class LineupScreenOptions{
     static name = "Nova escala"

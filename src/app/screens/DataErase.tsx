@@ -1,5 +1,4 @@
 import { Modal, Platform, ToastAndroid, View, Image, Text} from "react-native";
-import { DataSection, TextButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { DataSelectors } from "./DataExport";
 import { MemberData} from "../classes/MemberData";
@@ -11,6 +10,9 @@ import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../cla
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 import { PresetsData } from "../classes/PresetsData";
+import { TextButton } from "../components/buttons/TextButton";
+import { UpperBar } from "../components/display/UpperBar";
+import { DataSection } from "../components/display/DataSection";
 
 export default function DataErase(){
     const [confirmationVisible, setConfirmationVisible] = useState(false)

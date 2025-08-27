@@ -1,10 +1,13 @@
 import { View, ScrollView } from "react-native";
-import { UpperBar,LinkRowImageButton, RowMember, GetMemberIcon, GetMemberAddIcon} from "../classes/NewComps";
+import { GetMemberIcon, GetMemberAddIcon} from "../classes/NewComps";
 import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberData, MemberType } from "../classes/MemberData";
 import { ICONS } from "../classes/AssetManager";
+import { RowMember } from "../components/buttons/RowMember";
+import { UpperBar } from "../components/display/UpperBar";
+import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton";
 
 export class MemberList{
     static scrollPos = 0;

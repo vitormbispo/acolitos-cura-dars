@@ -1,10 +1,14 @@
 import { ToastAndroid, View } from "react-native";
-import { DataSection, TextButton, TextCheckBox, TextInputModal, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { router } from "expo-router";
 import { AppData, RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
 import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
+import { TextButton } from "../components/buttons/TextButton";
+import { TextCheckBox } from "../components/input/TextCheckBox";
+import { UpperBar } from "../components/display/UpperBar";
+import { DataSection } from "../components/display/DataSection";
+import { TextInputModal } from "../components/input/TextInputModal";
 
 export default function DataExport(){
     const {theme} = menuStore()

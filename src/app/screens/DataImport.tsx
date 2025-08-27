@@ -1,5 +1,4 @@
 import { Modal, View, Image, Text, Platform, ToastAndroid } from "react-native";
-import { DataSection, TextButton, UpperBar } from "../classes/NewComps";
 import { ICONS } from "../classes/AssetManager";
 import { MemberData} from "../classes/MemberData";
 import { DataSelectors } from "./DataExport";
@@ -11,6 +10,9 @@ import { AppData, ConvertDataToClasses, SaveDataFile, VerifyMembersIntegrity } f
 import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 import { PresetsData } from "../classes/PresetsData";
+import { TextButton } from "../components/buttons/TextButton";
+import { UpperBar } from "../components/display/UpperBar";
+import { DataSection } from "../components/display/DataSection";
 
 
 export class DataImportOptions{

@@ -1,5 +1,4 @@
 import { View } from "react-native"
-import { LinkRowImageButton, UpperBar} from "../classes/NewComps"
 import { textStyles } from "../styles/GeneralStyles"
 import { contextStore, menuStore } from "../store/store"
 import { LineupType } from "../classes/Lineup"
@@ -7,8 +6,10 @@ import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import { ICONS } from "../classes/AssetManager"
-import { MemberData, MemberIDList, MemberType } from "../classes/MemberData"
+import { MemberIDList } from "../classes/MemberData"
 import { GetMemberArray } from "../classes/Methods"
+import { UpperBar } from "../components/display/UpperBar"
+import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton"
 
 
 export default function LineupOptions(){

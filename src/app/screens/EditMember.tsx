@@ -1,6 +1,6 @@
 import { View,Text } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { CheckBox, GetMemberIcon, TextButton, UpperBar, UpperButton, TextInputBox, ConfirmationModal, DataSection } from "../classes/NewComps";
+import { GetMemberIcon } from "../classes/NewComps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { AbbreviateText, GetMemberArray, OrganizeMemberArrayAlpha} from "../classes/Methods"
@@ -11,6 +11,13 @@ import { PlaceAvailability, WeekendAvailability } from "./NewMember";
 import { textStyles} from "../styles/GeneralStyles";
 import { ICONS } from "../classes/AssetManager";
 import { useRef, useState } from "react";
+import { TextButton } from "../components/buttons/TextButton";
+import { CheckBox } from "../components/input/CheckBox";
+import { UpperBar } from "../components/display/UpperBar";
+import { UpperButton } from "../components/buttons/UpperButton";
+import { TextInputBox } from "../components/input/TextInputBox";
+import { DataSection } from "../components/display/DataSection";
+import { ConfirmationModal } from "../components/input/ConfirmationModal";
 
 export class EditMemberScreen{
     static id:number = 0
