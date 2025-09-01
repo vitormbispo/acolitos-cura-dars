@@ -1,4 +1,4 @@
-import { Dates } from "../Dates"
+import { Dates } from "./Dates"
 import { MemberAvailability } from "./MemberAvailability"
 import { MemberType } from "../MemberData"
 import { MemberGenOptions } from "./MemberGenOptions"
@@ -30,11 +30,11 @@ export class Member {
         this.rotation = new MemberRotation()
 
         this.rotation.placeRotation.setMap(Places.defaultPlaces)
-        this.rotation.dayRotation.setMap(Dates.DefaultMonthDays())
 
         switch(type) {
             case MemberType.ACOLYTE: {
                 this.rotation.roleRotation.setMap(Rotation.defaultRotationMap(Roles.DEFAULT_ACOLYTE_ROLES))
+                this.rotation.dayRotation.setMap(Rotation.dayRotationMap(Dates.days,Dates.weekends))
             }
 
             case MemberType.COROINHA: {

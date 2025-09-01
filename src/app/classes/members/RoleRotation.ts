@@ -8,11 +8,14 @@ export class RoleRotation extends Rotation{
         let curMap:object = this.getMap()
         let roles:Array<string>
         switch(this.getType()) {
-            case MemberType.ACOLYTE: roles = Roles.DEFAULT_ACOLYTE_ROLES
-            case MemberType.COROINHA: roles = Roles.DEFAULT_COROINHA_ROLES
+            case MemberType.ACOLYTE: roles = Roles.DEFAULT_ACOLYTE_ROLES; break
+            case MemberType.COROINHA: roles = Roles.DEFAULT_COROINHA_ROLES; break
         }
+
         roles.forEach((role)=> {
             rotation[role] = Object.keys(curMap).includes(role) ? curMap[role] : 0
         })
+
+        this.setMap(rotation)
     }
 }
