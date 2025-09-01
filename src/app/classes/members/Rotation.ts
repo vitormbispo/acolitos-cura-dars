@@ -1,7 +1,11 @@
-export class Rotation {
+import { MemberType } from "../MemberData"
+import { Roles } from "./Roles"
+
+export abstract class Rotation {
     private id:number
     private map:object
-    
+    private type:MemberType
+
     constructor() {
         this.map = {}
     }
@@ -30,6 +34,14 @@ export class Rotation {
         this.map[key] = value
     }
 
+    getType():MemberType {
+        return this.type
+    }
+
+    setType(type:MemberType):void {
+        this.type = type
+    }
+    
     /**
      * Aumenta o valor do rodízio da chave 'key' em 1
      * @param key Chave
@@ -61,4 +73,25 @@ export class Rotation {
     resetKey(key:string):void {
         this.map[key] = 0
     }
+
+    public static defaultRotationMap(keys:Array<string>):object {
+        let map:object = {}
+        keys.forEach(key => map[key] = 0)
+        return map
+    }
+
+    public static dayRotationMap(days:Array<string>,weekends:Array<string>):object {
+        let map:object = {}
+
+        weekends.forEach(
+            weekend => days.forEach(
+                day => {
+                    if(map[weekend] == undefined) map[weekend] = {}
+                    map[weekend][day] = 1
+                }
+            ))
+        return map
+    }
+
+    abstract updateMap():void
 }

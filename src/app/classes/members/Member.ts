@@ -4,7 +4,8 @@ import { MemberType } from "../MemberData"
 import { MemberGenOptions } from "./MemberGenOptions"
 import { MemberRotation } from "./MemberRotation"
 import { Places } from "../Places"
-import { Roles } from "../Roles"
+import { Roles } from "./Roles"
+import { Rotation } from "./Rotation"
 
 export class Member {
     private id:number
@@ -28,12 +29,18 @@ export class Member {
         
         this.rotation = new MemberRotation()
 
-        switch(type) {
-            case MemberType.ACOLYTE: this.rotation.roleRotation.setMap(Roles.defaultAcolyteRoles)
-            case MemberType.COROINHA: this.rotation.roleRotation.setMap(Roles.defaultCoroinhaRoles)
-        }
         this.rotation.placeRotation.setMap(Places.defaultPlaces)
         this.rotation.dayRotation.setMap(Dates.DefaultMonthDays())
+
+        switch(type) {
+            case MemberType.ACOLYTE: {
+                this.rotation.roleRotation.setMap(Rotation.defaultRotationMap(Roles.DEFAULT_ACOLYTE_ROLES))
+            }
+
+            case MemberType.COROINHA: {
+                this.rotation.roleRotation.setMap(Rotation.defaultRotationMap(Roles.DEFAULT_COROINHA_ROLES))
+            }
+        }
 
         this.availability = new MemberAvailability()
     }
