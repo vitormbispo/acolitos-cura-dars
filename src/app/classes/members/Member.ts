@@ -47,6 +47,9 @@ export class Member {
     public getId(): number {return this.id}
     public setId(id:number): void {this.id = id}
 
+    public getType(): MemberType {return this.type}
+    public setType(type:MemberType): void {this.type = type}
+
     public getName(): string { return this.name }
     public setName(name: string): void { this.name = name }
 

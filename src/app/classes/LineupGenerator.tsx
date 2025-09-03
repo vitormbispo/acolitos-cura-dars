@@ -1,5 +1,5 @@
 import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Methods";
-import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "./MemberData";
+import { Member, MemberData, MemberType } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";
 import { useEffect } from "react";
@@ -160,12 +160,14 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         IncreaseAllPlacePriority(newLineup.members,settings.place,1,settings.type)
     }
 
+    /*
     // Salvar listas
     switch(settings.type){
         case MemberType.ACOLYTE:  SaveAcolyteData(); break
         case MemberType.COROINHA: SaveCoroinhaData(); break
     }
-
+    */
+   
     GenerationCache.AddLineup(newLineup)
     return newLineup
 }

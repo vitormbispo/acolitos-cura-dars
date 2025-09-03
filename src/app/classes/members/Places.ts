@@ -1,31 +1,31 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { MemberData } from "@/src/app/classes/MemberData"
+import { MemberData } from "./MemberData"
 import { SaveData } from "./Methods"
+import { Member } from "./Member"
 
 export class Places {
-    static allPlaces:Array<string> = null
-    static defaultPlaces:Array<string> = [
+    private static places:Array<string> = null
+    private static readonly DEFAULT_PLACES:Array<string> = [
         "Matriz","Água Boa","Cap. Cristo Ressucitado",
         "Cap. S. Judas Tadeu",
         "Cap. S. José Operário", "Cap. S. Rita", "Cap N. S. Carmo"
     ]
 
+
+    public static getPlaces():Array<string> { return this.places }
+    public static setPlaces(places:Array<string>) { this.places = places }
+    
     /**
      * Adiciona um novo local,
      * fazendo também as atualizações necessárias em todos os membros.
      * @param place Nome do local
      */
+
     static AddPlace(place:string):void{
-        this.allPlaces.push(place)
+        this.places.push(place)
 
         let allMembers = MemberData.GetAllMembers()
-        allMembers.forEach((member)=>{
-            member.placeDisp[place] = true
-            member.placeRotation[place] = 0
-        })
-
-        SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
+        allMembers.forEach(member => {})
     }
 
     /**
@@ -35,10 +35,10 @@ export class Places {
      * @returns 
      */
     static RemovePlace(place:string):void{
-        let index = this.allPlaces.indexOf(place)
+        let index = this.places.indexOf(place)
         if(index == -1){console.error("Place not found!");return}
 
-        this.allPlaces.splice(index,1)
+        this.places.splice(index,1)
 
         let allMembers = MemberData.GetAllMembers()
         allMembers.forEach((member)=>{
@@ -46,8 +46,8 @@ export class Places {
             delete member.placeRotation[place]
         })
 
-        SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
+        SaveData("AllPlaces",this.places)
+        MemberData.SaveMemberData()
     }
 
     /**
@@ -58,7 +58,7 @@ export class Places {
      * @returns 
      */
     static RenamePlace(place:string,newPlace:string):void{
-        let index = this.allPlaces.indexOf(place)
+        let index = this.places.indexOf(place)
         if(index == -1){console.error("Place not found!");return}
 
         let allMembers = MemberData.GetAllMembers()
@@ -72,10 +72,10 @@ export class Places {
             delete member.placeRotation[place]
         })
         
-        this.allPlaces[index] = newPlace
+        this.places[index] = newPlace
 
-        SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
+        SaveData("AllPlaces",this.places)
+        MemberData.SaveMemberData()
     }
 
     /**
@@ -86,10 +86,10 @@ export class Places {
      * @returns 
      */
     static RenamePlaceIndex(placeIndex:number,newPlace:string):void{
-        if(placeIndex > this.allPlaces.length){console.error("Place index out of range.");return}
+        if(placeIndex > this.places.length){console.error("Place index out of range.");return}
         
         let allMembers = MemberData.GetAllMembers()
-        let place = this.allPlaces[placeIndex]
+        let place = this.places[placeIndex]
 
         allMembers.forEach((member)=>{
             // Cria a chave com os dados da antiga
@@ -101,10 +101,10 @@ export class Places {
             delete member.placeRotation[place]
         })
 
-        this.allPlaces[placeIndex] = newPlace
+        this.places[placeIndex] = newPlace
 
-        SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
+        SaveData("AllPlaces",this.places)
+        MemberData.SaveMemberData()
     }
 
     /**
@@ -149,7 +149,7 @@ export class Places {
      * Reinicia os locais para o padrão, fazendo também as atualizações necessárias em todos os membros.
      */
     static ResetToDefault(){
-        this.allPlaces = this.PlacesArray()
+        this.places = this.PlacesArray()
         let allMembers = MemberData.GetAllMembers()
 
         this.VerifyPlacesIntegrity()
@@ -159,14 +159,14 @@ export class Places {
             
             // Deletar locais
             memberPlaces.forEach((place=>{
-                if(!this.allPlaces.includes(place)){ // Caso exista um local que não é padrão
+                if(!this.places.includes(place)){ // Caso exista um local que não é padrão
                     delete member.placeDisp[place]
                     delete member.placeRotation[place]
                 }
             }))
             
             // Adicionar locais padrão
-            this.allPlaces.forEach((place)=>{
+            this.places.forEach((place)=>{
                 if(!memberPlaces.includes(place)){ // Caso não exista um dos locais padrão
                     member.placeDisp[place] = true
                     member.placeRotation[place] = 0
@@ -174,7 +174,7 @@ export class Places {
             })
         })
             
-        //MemberData.SaveMemberData()
+        MemberData.SaveMemberData()
         
     }
 
@@ -182,10 +182,10 @@ export class Places {
      * Verifica a integridade da lista de locais.
      */
     static VerifyPlacesIntegrity(){
-        if(this.allPlaces == null){
-            this.allPlaces = []
+        if(this.places == null){
+            this.places = []
         }
-        SaveData("AllPlaces",this.allPlaces)
+        SaveData("AllPlaces",this.places)
     }
 
     /**
@@ -193,8 +193,8 @@ export class Places {
      */
     static async LoadPlaceData(){
         let data = await AsyncStorage.getItem("AllPlaces")
-        this.allPlaces = JSON.parse(data)
-        if(this.allPlaces == null){
+        this.places = JSON.parse(data)
+        if(this.places == null){
             this.ResetToDefault()
         }
     }
@@ -207,8 +207,8 @@ export class Places {
      */
     static OrganizePlaceArray(places:Array<string>):Array<string>{
         let organized = []
-        for(let i = 0; i < Places.allPlaces.length; i++){
-            let cur = Places.allPlaces[i]
+        for(let i = 0; i < Places.places.length; i++){
+            let cur = Places.places[i]
             for(let j = 0; j < places.length; j++){
                 if(places[j] == cur){
                     organized.push(cur)

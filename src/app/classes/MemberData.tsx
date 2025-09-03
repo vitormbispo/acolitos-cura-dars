@@ -90,17 +90,18 @@ export class MemberData{
         if(this.allLineupsCoroinhas == null){
             this.allLineupsCoroinhas = []
         }
-        this.SaveMemberData()
+        //this.SaveMemberData()
     }
 
     /**
      * Salva todos os dados dos membros
      */
+    /*
     static SaveMemberData(){
         SaveAcolyteData()
         SaveCoroinhaData()
     }
-
+    */
     /**
      * Retorna uma lista com todos os membros acólitos e coroinhas
      * @returns 
@@ -152,21 +153,28 @@ export class MemberData{
     }
 }
 
+
+
 /**
  * Salva os dados dos acólitos localmente.
  */
+/*
 export function SaveAcolyteData(){
     AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
     AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
 }
-
+*/
 /**
  * Salva os dados dos coroinhas localmente.
  */
+/*
 export function SaveCoroinhaData(){
     AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
     AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
 }
+*/
+
+
 
 /**
  * Retorna uma lista com os IDs dos membros presentes em uma lista
