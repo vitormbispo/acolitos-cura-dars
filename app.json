@@ -51,7 +51,8 @@
         }
       ],
       "expo-document-picker",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

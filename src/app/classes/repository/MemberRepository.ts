@@ -31,6 +31,8 @@ export class MemberRepository {
             `)
     }
 
+
+    // CREATE
     public static async InsertMember(member:Member) {
         this.database.execAsync(`
             INSERT INTO members (type,name,nick,contact,parents) VALUES (
@@ -43,6 +45,7 @@ export class MemberRepository {
             `)
     }
 
+    //READ
     public static async FindMemberById(id:number) {
         const row:MemberObject = await this.database.getFirstAsync(`SELECT FROM members WHERE id=${id}`)
         if(row == null) return null
@@ -65,11 +68,30 @@ export class MemberRepository {
         return found
     }
 
+
+    // UPDATE
+    public static async UpdateMember(member:Member) {
+        const result = await this.database.runAsync(`
+            UPDATE members SET 
+            type = "${member.getType}", 
+            name = "${member.getName()}", 
+            nick = "${member.getNick()}",
+            contact = "${member.getContact}",
+            parents = "${member.getParents()}"
+            WHERE id = ${member.getId()}
+            `)
+        console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
+    }
+
+
+    // DELETE
     public static async DeleteMemberById(id:number) {
         const result = await this.database.runAsync(`DELETE FROM members WHERE id=${id}`)
         console.log(`DELETED member with id: ${id}. ${result.changes} row(s) affected.`)
     }
 
+
+    // Funções auxiliares
     private static BuildMember(obj:MemberObject):Member {
         let newMember = new Member(
                 MemberType[obj.type],
