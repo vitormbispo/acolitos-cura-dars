@@ -4,12 +4,13 @@ import { SaveData } from "../Methods"
 import { Member } from "./Member"
 
 export class Places {
-    private static places:Array<string> = null
+    
     private static readonly DEFAULT_PLACES:Array<string> = [
         "Matriz","Água Boa","Cap. Cristo Ressucitado",
         "Cap. S. Judas Tadeu",
         "Cap. S. José Operário", "Cap. S. Rita", "Cap N. S. Carmo"
     ]
+    private static places:Array<string> = this.DEFAULT_PLACES.slice()
 
 
     public static getPlaces():Array<string> { return this.places }

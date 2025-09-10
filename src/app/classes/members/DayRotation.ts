@@ -1,9 +1,13 @@
-import { MemberType } from "../MemberData";
+import { Member } from "./Member";
 import { Dates } from "./Dates";
-import { Roles } from "./Roles";
-import { Rotation } from "./Rotation";
+import { Rotation, RotationTypes } from "./Rotation";
 
 export class DayRotation extends Rotation{
+    constructor(memberRef:Member=null) {
+        super(memberRef)
+        this.rotationType = RotationTypes.DAYS
+    }
+
     updateMap(): void {
         let rotation:object = {}
         let curMap:object = this.getMap()

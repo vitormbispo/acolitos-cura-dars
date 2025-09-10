@@ -9,6 +9,7 @@ import { DistinctRandomNumbers } from "./classes/Methods";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "react-native";
+import { MemberRepository } from "./classes/repository/MemberRepository";
 
 
 export default function App() {

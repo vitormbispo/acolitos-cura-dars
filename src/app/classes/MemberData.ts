@@ -1,5 +1,6 @@
 //import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StructuredLineup } from "./Lineup"
+import { MemberRepository } from "./repository/MemberRepository"
 
 /**
  * Tipo de membro

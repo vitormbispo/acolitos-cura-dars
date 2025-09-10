@@ -1,20 +1,38 @@
 import { MemberType } from "../MemberData"
+import { Member } from "./Member"
 import { Roles } from "./Roles"
 
-export abstract class Rotation {
-    private id:number
-    private map:object
-    private type:MemberType
+export enum RotationTypes {
+    DAYS,
+    PLACES,
+    ROLES
+}
 
-    constructor() {
+export abstract class Rotation {
+    protected id:number
+    protected map:object
+    protected rotationType:RotationTypes
+    protected memberType:MemberType
+    protected memberRef:Member
+    
+    constructor(memberRef:Member) {
+        this.memberRef = memberRef
+        this.memberType = memberRef.getType()
         this.map = {}
     }
-    getMap():object {
-        return this.map
-    }
-    setMap(map:object):void {
-        this.map = map
-    }
+
+    getId():number {return this.id}
+    setId(id:number):void {this.id = id}
+
+    getMemberRef():Member {return this.memberRef}
+    setMemberRef(ref:Member):void {this.memberRef = ref}
+    
+    getMap():object { return this.map }
+    setMap(map:object):void { this.map = map }
+
+    getRotationType(): RotationTypes { return this.rotationType }
+    setRotationType(type:RotationTypes): void { this.rotationType = type }
+
 
     /**
      * Retorna o valor do rodízio de chave 'key'
@@ -34,12 +52,12 @@ export abstract class Rotation {
         this.map[key] = value
     }
 
-    getType():MemberType {
-        return this.type
+    getMemberType():MemberType {
+        return this.memberType
     }
 
-    setType(type:MemberType):void {
-        this.type = type
+    setMemberType(type:MemberType):void {
+        this.memberType = type
     }
     
     /**

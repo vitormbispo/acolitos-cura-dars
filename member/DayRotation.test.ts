@@ -1,6 +1,7 @@
-import { Dates } from "../../members/Dates";
-import { MemberType } from "../../MemberData";
-import {DayRotation} from "../../members/DayRotation"
+import { Dates } from "../src/app/classes/members/Dates";
+import { MemberType } from "../src/app/classes/MemberData";
+import {DayRotation} from "../src/app/classes/members/DayRotation"
+
 
 test('update DayRotation map', () => {
     let rot:DayRotation = new DayRotation()

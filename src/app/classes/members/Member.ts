@@ -20,28 +20,14 @@ export class Member {
     
     public genOptions:MemberGenOptions
 
-    constructor(type:MemberType,name:string,nick:string,contact:string,parents:string="") {
+    constructor(type:MemberType=MemberType.ACOLYTE,name:string="",nick:string="",contact:string="",parents:string="") {
         this.type = type
         this.name = name
         this.nick = nick
         this.contact = contact
         this.parents = parents
         
-        this.rotation = new MemberRotation()
-
-        this.rotation.placeRotation.setMap(Places.defaultPlaces)
-
-        switch(type) {
-            case MemberType.ACOLYTE: {
-                this.rotation.roleRotation.setMap(Rotation.defaultRotationMap(Roles.DEFAULT_ACOLYTE_ROLES))
-                this.rotation.dayRotation.setMap(Rotation.dayRotationMap(Dates.days,Dates.weekends))
-            }
-
-            case MemberType.COROINHA: {
-                this.rotation.roleRotation.setMap(Rotation.defaultRotationMap(Roles.DEFAULT_COROINHA_ROLES))
-            }
-        }
-
+        this.rotation = new MemberRotation(this)
         this.availability = new MemberAvailability()
     }
     public getId(): number {return this.id}

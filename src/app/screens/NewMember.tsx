@@ -5,7 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { OrganizeMemberArrayAlpha } from "../classes/Methods"
 import { menuStore } from "../store/store";
-import { Member, MemberData, MemberType } from "../classes/MemberData";
+import { MemberData, MemberType } from "../classes/MemberData";
+import { Member } from "../classes/members/Member"
 import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
@@ -18,33 +19,30 @@ import { TextCheckBox } from "../components/input/TextCheckBox";
 import { UpperBar } from "../components/display/UpperBar";
 import { DataSection } from "../components/display/DataSection";
 import { TextInputBox } from "../components/input/TextInputBox";
+import { MemberRepository } from "../classes/repository/MemberRepository";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
     const currentData = useRef(new Member())
-    let members:Array<Member> = []
+    const availabilities = 
+    <View>
+        <WeekendAvailability member={currentData.current} weekend={"1º"}/>
+        <WeekendAvailability member={currentData.current} weekend={"2º"}/>
+        <WeekendAvailability member={currentData.current} weekend={"3º"}/>
+        <WeekendAvailability member={currentData.current} weekend={"4º"}/>
+        <WeekendAvailability member={currentData.current} weekend={"5º"}/>
+    </View>
+
+    let members:Array<Member> = MemberRepository.FindAllByMemberType(type)
     let typeName:string
 
     switch (type){
         case MemberType.ACOLYTE:
             typeName = "Acólito"
-            members = MemberData.allAcolytes
             break
         case MemberType.COROINHA:
             typeName = "Coroinha"
-            members = MemberData.allCoroinhas
             break
-    }
-    
-    currentData.current.disp = DefaultDispMap()
-    currentData.current.placeDisp = Places.PlacesDispMap()
-    currentData.current.placeRotation = Places.PlacesRotationMap()
-
-    let availabilities:Array<React.JSX.Element> = []
-    for(let i = 0; i < Dates.defaultWeekends.length;i++){
-        let curWeekend:string = Dates.defaultWeekends[i]
-        let available:React.JSX.Element = <WeekendAvailability member={currentData.current} weekend={curWeekend} key={curWeekend+i}/>
-        availabilities.push(available)
     }
 
     const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
@@ -66,10 +64,10 @@ export default function NewMember(){
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                onChangeText={(text:any)=>currentData.current.name=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.setName(text.toString())} 
                 placeholder="Nome..."
                 onBlur={()=>{
-                    setNameAvailable(MemberData.IsNameAvailable(currentData.current.name,members))
+                    //setNameAvailable(MemberData.IsNameAvailable(currentData.current.getName(),members))
                 }}/>
 
             {!nickAvailable ? 
@@ -82,22 +80,22 @@ export default function NewMember(){
                 title={"-Apelido: "} 
                 enabled={true} 
                 maxLength={20}
-                onChangeText={(text:any)=>currentData.current.nick=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.setNick(text.toString())} 
                 placeholder="Apelido..."
                 onBlur={()=>{
-                    setNickAvailable(MemberData.IsNickAvailable(currentData.current.nick,members))
+                    //setNickAvailable(MemberData.IsNickAvailable(currentData.current.nick,members))
                 }}/>
 
             <TextInputBox 
                 title={"-Responsável: "} 
                 enabled={type == MemberType.COROINHA} 
-                onChangeText={(text:any)=>currentData.current.parents=text.toString()}
+                onChangeText={(text:any)=>currentData.current.setParents(text.toString())}
                 placeholder="Responsável..."/>
             <TextInputBox 
                 title={"-Contato: "} 
                 enabled={true} 
                 keyboardType={"numeric"} 
-                onChangeText={(text:any)=>currentData.current.contact=text.toString()} 
+                onChangeText={(text:any)=>currentData.current.setContact(text.toString())} 
                 placeholder="Contato..."/>
             
             <DataSection text={"- Disponibilidade -"} centered={true}/>
@@ -117,7 +115,7 @@ export default function NewMember(){
                 <View style={{flexDirection:"row",alignItems:"center"}}>
                     <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
                     <CheckBox checked={true}press = {()=>
-                        {currentData.current.onLineup = !currentData.current.onLineup}}/>
+                        {/*currentData.current.onLineup = !currentData.current.onLineup*/}}/>
                 </View>
             </View>
             
@@ -126,10 +124,13 @@ export default function NewMember(){
     )
 }
 
-function SubmitNewMember(member:any,type:MemberType){
+function SubmitNewMember(member:Member,type:MemberType){
     let members:Array<any>
     let storageData:string
 
+    MemberRepository.InsertMember(member)
+
+    /*
     if(type == MemberType.ACOLYTE){
         member.rodizio = Roles.defaultAcolyteRoles
         member.oldRodizio = Roles.defaultAcolyteRoles
@@ -160,7 +161,7 @@ function SubmitNewMember(member:any,type:MemberType){
     else if (type == MemberType.COROINHA){
         MemberData.allCoroinhas = members
     }
-
+    */
     router.back()
 }
 
@@ -168,18 +169,20 @@ type WeekendAvailabilityProps = {
     member:Member,
     weekend:string
 }
+
+
 export function WeekendAvailability(props:WeekendAvailabilityProps){
     let checks = []
     let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
-    
+    const availability = props.member.availability.dayAvailability.getMap()
     for(let i = 0; i < Dates.defaultDays.length;i++){
         let curDay = Dates.defaultDays[i]
         
         let check = 
             <CheckBox 
-                checked={props.member.disp[props.weekend][curDay]} 
+                checked={availability[props.weekend][curDay]} 
                 press={()=>{
-                    props.member.disp[props.weekend][curDay] = !props.member.disp[props.weekend][curDay]
+                    availability[props.weekend][curDay] = !availability[props.weekend][curDay]
                 }} 
                 key={props.weekend+curDay+i}
                 topText={isFirstWeekend ? curDay:null}/>
@@ -194,37 +197,17 @@ export function WeekendAvailability(props:WeekendAvailabilityProps){
     )
 }
 
-export function DefaultDispMap(){
-    let map = {}
-
-    Dates.defaultWeekends.forEach((weekend)=>{
-        map[weekend] = {}
-        Dates.defaultDays.forEach((days)=>{
-            map[weekend][days] = true
-        })
-    })
-
-    return map
-}
-
-export function DefaultDayPriorityMap(){
-    let map = {}
-    
-    Dates.defaultWeekends.forEach((weekend)=>{
-        map[weekend] = 0
-    })
-}
-
 type PlaceAvailabilityProps = {
     member:Member
 }
 
 export function PlaceAvailability(props:PlaceAvailabilityProps){
     let checks:Array<React.JSX.Element> = []
+    const availability = props.member.availability.placeAvailability
     for(let i = 0; i < Places.allPlaces.length; i++){
         let curPlace = Places.allPlaces[i]
-        let check = <TextCheckBox checked={props.member.placeDisp[curPlace]} text={curPlace} key={i} press={()=>{
-            props.member.placeDisp[curPlace] = !props.member.placeDisp[curPlace]
+        let check = <TextCheckBox checked={availability.isAvailable(curPlace)} text={curPlace} key={i} press={()=>{
+            availability.setAvailable(curPlace,!availability.isAvailable(curPlace))
         }}/>
         checks.push(check)
     }

@@ -4,10 +4,12 @@ import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberData, MemberType } from "../classes/MemberData";
+import { Member } from "../classes/members/Member";
 import { ICONS } from "../classes/AssetManager";
 import { RowMember } from "../components/buttons/RowMember";
 import { UpperBar } from "../components/display/UpperBar";
 import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton";
+import { MemberRepository } from "../classes/repository/MemberRepository";
 
 export class MemberList{
     static scrollPos = 0;
@@ -30,7 +32,7 @@ export default function List() {
         MemberList.scrollRef = scrollViewRef;
     }
 
-    let members = []
+    let membersComponents = []
     const {name,type} = menuStore()
     let typeName:string
 
@@ -41,8 +43,11 @@ export default function List() {
 
     if(type == MemberType.ACOLYTE) {
         if(MemberData.allAcolytes!=null){
-            for(let i =0;i<MemberData.allAcolytes.length;i++){
-                members.push(<RowMember nick={MemberData.allAcolytes[i].nick} id={i} img={ICONS.acolito} key={i} 
+            let members:Array<Member> = MemberRepository.FindAllByMemberType(MemberType.ACOLYTE)
+
+            console.log("Members = "+members)
+            for(let i =0;i < members.length;i++){
+                membersComponents.push(<RowMember nick={members[i].getNick()} id={i} img={ICONS.acolito} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -51,7 +56,7 @@ export default function List() {
     else if(type == MemberType.COROINHA) {
         if(MemberData.allCoroinhas != null){
             for(let i = 0; i < MemberData.allCoroinhas.length; i++){
-                members.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={ICONS.coroinha} key={i} 
+                membersComponents.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={ICONS.coroinha} key={i} 
                 textStyle={textStyles.names}
                 />)
             }
@@ -78,7 +83,7 @@ export default function List() {
                     press={()=>{}}
                     />
                 
-                {members}
+                {membersComponents}
                 
             </ScrollView>   
         </View>

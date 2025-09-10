@@ -2,8 +2,8 @@ export class Dates {
     public static readonly DEFAULT_DAYS:Array<string> = ["Sábado - 19h","Domingo - 08h","Domingo - 19h"]
     public static readonly DEFAULT_WEEKENDS:Array<string> = ["1º","2º","3º","4º","5º"]
 
-    public static days:Array<string>
-    public static weekends:Array<string>
+    public static days:Array<string> = this.DEFAULT_DAYS
+    public static weekends:Array<string> = this.DEFAULT_WEEKENDS
 
     public static addDay(day:string):void {
         this.days.push(day)

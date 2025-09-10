@@ -1,13 +1,37 @@
-export class Availability {
+import { MemberType } from "../MemberData"
+
+export enum AvailabilityTypes {
+    DAYS,
+    PLACES,
+    ROLES
+}
+
+export abstract class Availability {
     private id:number
     private map:object
-    
+    private memberType:MemberType
+    private availabilityType:AvailabilityTypes
+    private memberId:number
+
     constructor() {
         this.map = {}
     }
 
-    public getMap():object { return this.map }
-    public setMap(map:object):void { this.map = map }
+
+    public getId(): number { return this.id }
+    public setId(id:number): void { this.id = id }
+
+    public getMemberId(): number { return this.memberId }
+    public setMemberId(id:number): void { this.memberId = id }
+
+    public getMap(): object { return this.map }
+    public setMap(map:object) :void { this.map = map }
+
+    public getMemberType(): MemberType { return this.memberType}
+    public setMemberType(memberType:MemberType): void {this.memberType = memberType}
+
+    public getAvailabilityType(): AvailabilityTypes { return this.availabilityType}
+    public setAvailabilityType(availabilityType:AvailabilityTypes): void {this.availabilityType = availabilityType}
 
     /**
      * Verifica se há disponibilidade para determinada chave
@@ -43,4 +67,6 @@ export class Availability {
     removeKey(key:string):void {
         delete this.map[key]
     }
+
+    abstract updateMap():void
 }
