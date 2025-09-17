@@ -12,6 +12,7 @@ import { RotationRepository } from "../classes/repository/RotationRepository";
 import { RoleRotation } from "../classes/members/RoleRotation";
 import { MemberType } from "../classes/MemberData";
 import { RotationTypes } from "../classes/members/Rotation";
+import { RepositoryManager } from "../classes/repository/RepositoryManager";
 
 // Tela//
 export default function Home(){
@@ -35,8 +36,8 @@ export function AppBody(){
     appStarted ?
     <View style={{flex:1, flexDirection:"column",alignSelf:"center",padding:10}}>
         <TextButton text={"Inicializar"} press={() => {
-            //MemberRepository.InitRepository()
-            RotationRepository.InitRepository()
+            MemberRepository.InitRepository()
+            //RotationRepository.InitRepository()
         }}/>
 
         <TextButton text={"Selecionar"} press={() => {
@@ -44,7 +45,16 @@ export function AppBody(){
                 console.log(MemberRepository.FindAllMembers())
             //RotationRepository.FindAllRotations().then(result => {console.log(result)})
         }}/>
-
+        <TextButton text={"Info"} press={() => {
+            //MemberRepository.FindAllMembersByType().then(result => {console.log(result)})
+               RepositoryManager.database.getAllSync("PRAGMA table_info(members)").forEach(e => console.log(e))
+            //RotationRepository.FindAllRotations().then(result => {console.log(result)})
+        }}/>
+        <TextButton text={"Drop"} press={() => {
+            //MemberRepository.FindAllMembersByType().then(result => {console.log(result)})
+                RepositoryManager.database.execSync("DROP TABLE members")
+            //RotationRepository.FindAllRotations().then(result => {console.log(result)})
+        }}/>
         <TextButton text={"Inserir"} press={() => {
             let member = new Member()
             //MemberRepository.InsertMember(member).then(()=>console.log("Inserido"),e => console.log("Erro: "+e))

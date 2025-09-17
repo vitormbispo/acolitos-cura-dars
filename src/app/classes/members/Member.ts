@@ -1,11 +1,7 @@
-import { Dates } from "./Dates"
-import { MemberAvailability } from "./MemberAvailability"
+import { MemberAvailability } from "./availability/MemberAvailability"
 import { MemberType } from "../MemberData"
 import { MemberGenOptions } from "./MemberGenOptions"
 import { MemberRotation } from "./MemberRotation"
-import { Places } from "../Places"
-import { Roles } from "./Roles"
-import { Rotation } from "./Rotation"
 
 export class Member {
     private id:number
@@ -29,6 +25,7 @@ export class Member {
         
         this.rotation = new MemberRotation(this)
         this.availability = new MemberAvailability()
+        this.genOptions = new MemberGenOptions()
     }
     public getId(): number {return this.id}
     public setId(id:number): void {this.id = id}
@@ -47,4 +44,13 @@ export class Member {
 
     public getParents(): string { return this.parents }
     public setParents(parents: string): void { this.parents = parents }
+
+    public getGenOptions(): MemberGenOptions { return this.genOptions }
+    public setGenOptions(genOptions: MemberGenOptions) {this.genOptions = genOptions}
+
+    public getRotation(): MemberRotation { return this.rotation }
+    public setRotation(rotation: MemberRotation): void { this.rotation = rotation }
+
+    public getAvailability(): MemberAvailability { return this.availability }
+    public setAvailability(availability: MemberAvailability): void { this.availability = availability }
 }

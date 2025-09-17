@@ -1,11 +1,13 @@
 import { Member } from "./Member";
 import { Dates } from "./Dates";
 import { Rotation, RotationTypes } from "./Rotation";
+import { MemberType } from "../MemberData";
 
 export class DayRotation extends Rotation{
-    constructor(memberRef:Member=null) {
-        super(memberRef)
+    constructor(memberType:MemberType=MemberType.ACOLYTE) {
+        super(memberType)
         this.rotationType = RotationTypes.DAYS
+        
     }
 
     updateMap(): void {

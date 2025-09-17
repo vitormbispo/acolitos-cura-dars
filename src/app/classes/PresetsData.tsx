@@ -1,8 +1,7 @@
 import { GenerationOptionsType } from "../screens/LineupGenerationOptions"
 import { DateSet } from "./Dates"
 import { RoleSet } from "./Roles"
-import { SaveData } from "./Methods"
-import { MemberData } from "./MemberData"
+
 export class PresetsData {
     static acolyteGenerationPresets:Array<Preset> = []
     static coroinhaGenerationPresets:Array<Preset> = []
@@ -20,8 +19,8 @@ export class PresetsData {
      * Salva os dados das predefinições no AsyncStorage
      */
     static SavePresets(){
-        SaveData("AcolytePresets",this.acolyteGenerationPresets)
-        SaveData("CoroinhaPresets",this.coroinhaGenerationPresets)
+        //SaveData("AcolytePresets",this.acolyteGenerationPresets)
+        //SaveData("CoroinhaPresets",this.coroinhaGenerationPresets)
     }
 
     /**

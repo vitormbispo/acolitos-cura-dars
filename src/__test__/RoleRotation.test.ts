@@ -1,10 +1,9 @@
-import { MemberType } from "../src/app/classes/MemberData";
-import { RoleRotation } from "../src/app/classes/members/RoleRotation";
+import { MemberType } from "../app/classes/MemberData";
+import { RoleRotation } from "../app/classes/members/RoleRotation";
 
 
 test('update acolyte RoleRotation map', () => {
-    let rot:RoleRotation = new RoleRotation()
-    rot.setMemberType(MemberType.ACOLYTE)
+    let rot:RoleRotation = new RoleRotation(MemberType.ACOLYTE)
     rot.updateMap()
     expect(rot.getMap()).toEqual({
         "Ceroferário 1":0,
@@ -17,7 +16,7 @@ test('update acolyte RoleRotation map', () => {
 });
 
 test("update coroinha RoleRotation map",() => {
-    let rot = new RoleRotation()
+    let rot = new RoleRotation(MemberType.ACOLYTE)
     rot.setMemberType(MemberType.COROINHA)
     rot.updateMap()
     expect(rot.getMap()).toEqual({
@@ -29,7 +28,7 @@ test("update coroinha RoleRotation map",() => {
 })
 
 test("update existing coroinha RoleRotation map",() => {
-    let rot = new RoleRotation()
+    let rot = new RoleRotation(MemberType.ACOLYTE)
     rot.setMemberType(MemberType.COROINHA)
     rot.setMap({
         "Dons D.": 10,

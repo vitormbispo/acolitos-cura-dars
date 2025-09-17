@@ -1,6 +1,5 @@
-import { Dates } from "../src/app/classes/members/Dates";
-import { MemberType } from "../src/app/classes/MemberData";
-import {DayRotation} from "../src/app/classes/members/DayRotation"
+import { Dates } from "../app/classes/members/Dates";
+import {DayRotation} from "../app/classes/members/DayRotation"
 
 
 test('update DayRotation map', () => {

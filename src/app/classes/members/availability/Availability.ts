@@ -1,4 +1,6 @@
-import { MemberType } from "../MemberData"
+import { PlaceAvailability } from "./PlaceAvailability"
+import { MemberType } from "../../MemberData"
+import { DayAvailability } from "./DayAvailability"
 
 export enum AvailabilityTypes {
     DAYS,
@@ -38,9 +40,7 @@ export abstract class Availability {
      * @param key Chave
      * @returns true se houver disponibilidade
      */
-    public isAvailable(key:string):boolean {
-        return this.map[key];
-    }
+    public abstract isAvailable(...args:any): boolean
     
     /**
      * Define se há disponibilidade para determinada chave.
@@ -48,9 +48,7 @@ export abstract class Availability {
      * @param key Chave
      * @param available Disponível
      */
-    public setAvailable(key:string,available:boolean) {
-        this.map[key] = available
-    }
+    public abstract setAvailable(...args:any): void
 
     /**
      * Define todos os valores do mapa para um determinado valor 'value'
@@ -68,5 +66,9 @@ export abstract class Availability {
         delete this.map[key]
     }
 
-    abstract updateMap():void
+    public asJSON():string {
+        return JSON.stringify(this)
+    }
+
+    public abstract updateMap():void
 }

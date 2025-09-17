@@ -1,7 +1,7 @@
 import { View,Text, ScrollView } from "react-native"
 import { GetMemberIcon } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
+import { MemberData, MemberType } from "../classes/MemberData"
 import { textStyles, uiStyles} from "../styles/GeneralStyles"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
@@ -16,36 +16,31 @@ import { UpperButton } from "../components/buttons/UpperButton"
 import { DataDisplay } from "../components/display/DataDisplay"
 import { DataSection } from "../components/display/DataSection"
 import { ExpandableView } from "../components/frames/ExpandableView"
+import { MemberRepository } from "../classes/repository/MemberRepository"
+import { Member } from "../classes/members/Member"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()
     const {memberID} = contextStore()
     
-    let members:Array<Member>
+    //let members:Array<Member> = MemberRepository.FindAllByMemberType(type)
     let defaultRoles:Array<string> = []
-
-    switch (type){
-        case MemberType.ACOLYTE:
-            members = MemberData.allAcolytes
-            defaultRoles = Object.keys(Roles.defaultAcolyteRoles)
-            break
-        case MemberType.COROINHA:
-            members = MemberData.allCoroinhas 
-            defaultRoles = Object.keys(Roles.defaultCoroinhaRoles)
-            break
-    }
     
-    let curMember:Member = members[memberID]
+    let curMember:Member = MemberRepository.FindMemberById(memberID)
     
     const parents =  type == MemberType.COROINHA? 
-    <DataDisplay dataTitle={"- Responsável: "} data={curMember.parents} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
+    <DataDisplay dataTitle={"- Responsável: "} data={curMember.getParents()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
     
 
     const rodizio = []
     const [rodizioAlt,setRodizioAlt] = useState([])
     
-    Object.keys(curMember.rodizio).forEach((role) => {
-        let display = <DataDisplay dataTitle={role} data={curMember.rodizio[role]} key={role}/>
+    const roleRotation = curMember.rotation.roleRotation
+    const roleMap = roleRotation.getMap()
+
+    Object.keys(roleMap).forEach((role) => {
+        let display = <DataDisplay dataTitle={role} data={roleMap[role]} key={role}/>
+        
         if(defaultRoles.includes(role)){
             rodizio.push(display)
         }
@@ -54,13 +49,7 @@ export default function MemberProfile() {
             <View style={{flexDirection:"row"}} key={role}>
                 {display}
                 <ImageButton img={ICONS.delete} imgStyle={uiStyles.buttonIconSmall} press={()=>{
-                    delete curMember.rodizio[role]
-                    switch(type){
-                        case MemberType.ACOLYTE:
-                            SaveAcolyteData()
-                        case MemberType.COROINHA:
-                            SaveCoroinhaData()
-                    }
+                    curMember.rotation.roleRotation.removeRotationKey(role)
                     setRodizioAlt([]) // Causa um rerender
                     }}/>
             </View>
@@ -83,7 +72,7 @@ export default function MemberProfile() {
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={curMember.nick}/>
+                <UpperBar icon={GetMemberIcon()} screenName={curMember.getNick()}/>
                 <UpperButton img={ICONS.edit} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>
             </View>
             
@@ -91,12 +80,12 @@ export default function MemberProfile() {
             <ScrollView style={{flex:1}} ref={scrollRef}>
                 <DataSection text={"- Dados pessoais -"} centered={true}/>
                 
-                <DataDisplay dataTitle={"- Nome: "} data={curMember.name} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
-                <DataDisplay dataTitle={"- Apelido: "} data={curMember.nick} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Nome: "} data={curMember.getName()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Apelido: "} data={curMember.getNick()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
                 {parents}
 
-                <DataDisplay dataTitle={"- Contato: "} data={curMember.contact} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Contato: "} data={curMember.getContact()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
                 <DataSection text={"- Disponibilidade -"} centered={true}/>
                 <Text style={textStyles.dataTitle}>- Local:</Text>
@@ -110,12 +99,12 @@ export default function MemberProfile() {
                         
                     <View style={{flexDirection:"row",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
-                        <VisualCheckBox enabled={curMember.onLineup}/>
+                        <VisualCheckBox enabled={curMember.availability.isAvailable()}/>
                     </View>
                  </View>
 
                 <DataSection text={"- Rodízio -"} centered={true}/>
-                <DataDisplay dataTitle={"Geral: "} data={curMember.priority.toString()}
+                <DataDisplay dataTitle={"Geral: "} data={curMember.genOptions.getPriority().toString()}
                              titleStyle={{fontFamily:"Inter-Bold",fontSize:30,alignSelf:"center"}}
                              dataStyle={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}/>
                 
@@ -145,11 +134,12 @@ type VisualWeekendAvailabilityProps = {
 export function VisualWeekendAvailability(props:VisualWeekendAvailabilityProps){
     let checks = []
     let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
+
     for(let i = 0; i < Dates.defaultDays.length;i++){
         let curDay = Dates.defaultDays[i]
         let check = 
         <VisualCheckBox 
-            enabled={props.member.disp[props.weekend][curDay]} 
+            enabled={props.member.availability.dayAvailability.isAvailable(props.weekend,curDay)} 
             key={props.weekend+curDay+i}
             topText={isFirstWeekend ? curDay : null}
         
@@ -172,7 +162,7 @@ export function VisualPlaceAvailability(props:VisualPlaceAvailabilityProps){
     let checks:Array<React.JSX.Element> = []
     for(let i = 0; i < Places.allPlaces.length; i++){
         let curPlace = Places.allPlaces[i]
-        let check = <TextVisualCheckBox enabled={props.member.placeDisp[curPlace]} text={curPlace}key={i}/>
+        let check = <TextVisualCheckBox enabled={props.member.availability.placeAvailability.isAvailable(curPlace)} text={curPlace}key={i}/>
         checks.push(check)
     }
 

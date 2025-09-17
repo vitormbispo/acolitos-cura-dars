@@ -69,5 +69,7 @@ async function InitializeApp(){
     if(Roles.coroinhaRoleSets == null || Roles.coroinhaRoleSets.length == 0){
         Roles.InitializeSets(MemberType.COROINHA)
     } 
+
+    
     return Promise.resolve()
 }

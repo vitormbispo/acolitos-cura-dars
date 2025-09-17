@@ -1,6 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MemberData } from "../MemberData"
-import { SaveData } from "../Methods"
 import { Member } from "./Member"
 
 export class Places {
@@ -47,7 +45,7 @@ export class Places {
             delete member.placeRotation[place]
         })
 
-        SaveData("AllPlaces",this.places)
+        //SaveData("AllPlaces",this.places)
         //MemberData.SaveMemberData()
     }
 
@@ -75,7 +73,7 @@ export class Places {
         
         this.places[index] = newPlace
 
-        SaveData("AllPlaces",this.places)
+        //SaveData("AllPlaces",this.places)
         //MemberData.SaveMemberData()
     }
 
@@ -104,7 +102,7 @@ export class Places {
 
         this.places[placeIndex] = newPlace
 
-        SaveData("AllPlaces",this.places)
+        //SaveData("AllPlaces",this.places)
         //MemberData.SaveMemberData()
     }
 
@@ -186,18 +184,7 @@ export class Places {
         if(this.places == null){
             this.places = []
         }
-        SaveData("AllPlaces",this.places)
-    }
-
-    /**
-     * Carrega os dados de locais do AsyncStorage
-     */
-    static async LoadPlaceData(){
-        let data = await AsyncStorage.getItem("AllPlaces")
-        this.places = JSON.parse(data)
-        if(this.places == null){
-            this.ResetToDefault()
-        }
+        //SaveData("AllPlaces",this.places)
     }
 
     /**

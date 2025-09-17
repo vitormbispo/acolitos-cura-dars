@@ -11,9 +11,11 @@ export class MemberRotation {
 
     constructor(memberRef:Member){
         this.memberRef = memberRef
-        this.dayRotation = new DayRotation(memberRef)
+        this.dayRotation = new DayRotation(memberRef.getType())
         //this.placeRotation = new Rotation()
-        this.roleRotation = new RoleRotation(memberRef)
+        this.roleRotation = new RoleRotation(memberRef.getType())
+
+
 
         this.dayRotation.updateMap()
         this.roleRotation.updateMap()

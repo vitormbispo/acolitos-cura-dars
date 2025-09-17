@@ -13,19 +13,14 @@ export abstract class Rotation {
     protected map:object
     protected rotationType:RotationTypes
     protected memberType:MemberType
-    protected memberRef:Member
     
-    constructor(memberRef:Member) {
-        this.memberRef = memberRef
-        this.memberType = memberRef.getType()
+    constructor(memberType:MemberType) {
+        this.setMemberType(memberType)
         this.map = {}
     }
 
     getId():number {return this.id}
     setId(id:number):void {this.id = id}
-
-    getMemberRef():Member {return this.memberRef}
-    setMemberRef(ref:Member):void {this.memberRef = ref}
     
     getMap():object { return this.map }
     setMap(map:object):void { this.map = map }

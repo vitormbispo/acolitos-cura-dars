@@ -1,6 +1,6 @@
 import { Member, MemberType } from "./MemberData";
 import * as Clipboard from 'expo-clipboard';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+//import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
 
@@ -369,9 +369,9 @@ export function DeepCopyObject(obj:any):any{
  * @param key Chave
  * @param data Dados
  */
-export function SaveData(key:string,data:any) {
-    AsyncStorage.setItem(key,JSON.stringify(data))
-}
+//export function SaveData(key:string,data:any) {
+  //  AsyncStorage.setItem(key,JSON.stringify(data))
+//}
 
 /**
  * Retorna uma lista com todos os membros que não possuem disponibilidade

@@ -174,15 +174,15 @@ type WeekendAvailabilityProps = {
 export function WeekendAvailability(props:WeekendAvailabilityProps){
     let checks = []
     let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
-    const availability = props.member.availability.dayAvailability.getMap()
+    const availability = props.member.availability.dayAvailability
     for(let i = 0; i < Dates.defaultDays.length;i++){
         let curDay = Dates.defaultDays[i]
         
         let check = 
             <CheckBox 
-                checked={availability[props.weekend][curDay]} 
+                checked={availability.isAvailable(props.weekend,curDay)} 
                 press={()=>{
-                    availability[props.weekend][curDay] = !availability[props.weekend][curDay]
+                    availability.setAvailable(props.weekend,curDay,!availability.isAvailable(props.weekend,curDay))
                 }} 
                 key={props.weekend+curDay+i}
                 topText={isFirstWeekend ? curDay:null}/>

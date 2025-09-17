@@ -1,7 +1,11 @@
 import * as SQLite from "expo-sqlite"
 import { Member } from "../members/Member"
 import { MemberType } from "../MemberData"
-
+import { Migrations } from "./migrations/Migrations"
+import migration from "./migrations/json/member_migrations.json"
+import { MemberGenOptions } from "../members/MemberGenOptions"
+import { Availability } from "../members/availability/Availability"
+import { MemberAvailability } from "../members/availability/MemberAvailability"
 
 export type MemberObject = {
     id:number
@@ -9,7 +13,10 @@ export type MemberObject = {
     name:string,
     nick:string,
     contact:string,
-    parents:string
+    parents:string,
+    genOptions:string,
+    availability:string,
+    rotation:string
 }
 
 export class MemberRepository {
@@ -20,33 +27,46 @@ export class MemberRepository {
         console.log("Exec")
         this.database.execAsync(`
             PRAGMA journal_mode = WAL;
+            PRAGMA foreign_keys = TRUE;
             CREATE TABLE IF NOT EXISTS members (
 	            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                type VARCHAR(15),
+                type VARCHAR(15) NOT NULL,
                 name VARCHAR(100) NOT NULL,
                 nick VARCHAR(20) NOT NULL,
-                contact VARCHARa(20),
-                parents VARCHAR(100)
+                contact VARCHAR(20),
+                parents VARCHAR(100),
+                genOptions TEXT,
+                availability TEXT,
+                rotation TEXT
             );
             `).then( () => {
                 console.log("Database succefully started.")
             }).catch((e)=> {
                 console.error("Error opening database: "+e)
             })
+        const version:number = await this.database.getFirstAsync("PRAGMA user_version");
+        /*Migrations.Migrate(version["user_version"],migration)
+            .then(
+                v => { console.log("Migrated from version "+version+" to "+v) },
+                e => { console.error("Error: "+e) }
+            )*/
     }
 
     // CREATE
     public static async InsertMemberAsync(member:Member) {
         const typeName:string = MemberType[member.getType()]
+
         return this.database.runAsync(`
-            INSERT INTO members (type,name,nick,contact,parents) VALUES (
+            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability) VALUES (
                 "${typeName}",
                 "${member.getName()}",
                 "${member.getNick()}",
                 "${member.getContact()}",
-                "${member.getParents()}"
+                "${member.getParents()}",
+                '${member.getGenOptions().asJSON()}',
+                '${member.getAvailability().asJSON()}'
             )
-            `).catch(e => "Error: " + e)
+            `).then(result => member.setId(result.lastInsertRowId),e => console.error("Error: "+e))
     }
 
     //READ
@@ -82,7 +102,9 @@ export class MemberRepository {
             name = "${member.getName()}", 
             nick = "${member.getNick()}",
             contact = "${member.getContact}",
-            parents = "${member.getParents()}"
+            parents = "${member.getParents()}",
+            genOptions = "${member.getGenOptions().asJSON()}",
+            availability = "${member.getAvailability().asJSON()}"
             WHERE id = ${member.getId()}
             `)
         console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
@@ -104,15 +126,19 @@ export class MemberRepository {
     // CREATE
     public static InsertMember(member:Member) {
         const typeName:string = MemberType[member.getType()]
-        return this.database.runSync(`
-            INSERT INTO members (type,name,nick,contact,parents) VALUES (
+        
+        let result = this.database.runSync(`
+            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability) VALUES (
                 "${typeName}",
                 "${member.getName()}",
                 "${member.getNick()}",
                 "${member.getContact()}",
-                "${member.getParents()}"
+                "${member.getParents()}",
+                '${member.getGenOptions().asJSON()}',
+                '${member.getAvailability().asJSON()}'
             )
             `)
+        member.setId(result.lastInsertRowId)
     }
 
     //READ
@@ -175,7 +201,13 @@ export class MemberRepository {
                 obj.contact,
                 obj.parents
             )
-            newMember.setId(obj.id)
+
+        newMember.setId(obj.id)
+        let opt = JSON.parse(obj.genOptions)
+        let genOptions:MemberGenOptions = new MemberGenOptions(0,opt.priority,opt.dayPriority,opt.lastWeekend,opt.selectedOnLineups)
+        newMember.setGenOptions(genOptions)
+        newMember.setAvailability(MemberAvailability.fromJSON(obj.availability))
+            
         return newMember
     }
 

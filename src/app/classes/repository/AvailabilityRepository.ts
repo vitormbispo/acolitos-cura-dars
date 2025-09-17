@@ -1,11 +1,9 @@
 import * as SQLite from "expo-sqlite"
 import { Rotation, RotationTypes } from "../members/Rotation"
-import { DayRotation } from "../members/DayRotation"
-import { RoleRotation } from "../members/RoleRotation"
 import { MemberType } from "../MemberData"
-import { Availability, AvailabilityTypes } from "../members/Availability"
-import { DayAvailability } from "../members/DayAvailability"
-import { PlaceAvailability } from "../members/PlaceAvailability"
+import { Availability, AvailabilityTypes } from "../members/availability/Availability"
+import { DayAvailability } from "../members/availability/DayAvailability"
+import { PlaceAvailability } from "../members/availability/PlaceAvailability"
 
 
 type AvailabilityObject = {

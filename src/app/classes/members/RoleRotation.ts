@@ -4,8 +4,8 @@ import { Roles } from "./Roles";
 import { Rotation, RotationTypes } from "./Rotation";
 
 export class RoleRotation extends Rotation{
-    constructor(memberRef:Member=null) {
-        super(memberRef)
+    constructor(memberType:MemberType) {
+        super(memberType)
         this.rotationType = RotationTypes.ROLES
     }
     
