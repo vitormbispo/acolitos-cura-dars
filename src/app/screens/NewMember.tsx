@@ -129,7 +129,7 @@ function SubmitNewMember(member:Member,type:MemberType){
     let storageData:string
 
     MemberRepository.InsertMember(member)
-
+    MemberData.LoadMembersFromDatabase()
     /*
     if(type == MemberType.ACOLYTE){
         member.rodizio = Roles.defaultAcolyteRoles

@@ -26,7 +26,7 @@ export default function MemberProfile() {
     //let members:Array<Member> = MemberRepository.FindAllByMemberType(type)
     let defaultRoles:Array<string> = []
     
-    let curMember:Member = MemberRepository.FindMemberById(memberID)
+    let curMember:Member = MemberData.GetMemberById(memberID)
     
     const parents =  type == MemberType.COROINHA? 
     <DataDisplay dataTitle={"- Responsável: "} data={curMember.getParents()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
@@ -49,7 +49,7 @@ export default function MemberProfile() {
             <View style={{flexDirection:"row"}} key={role}>
                 {display}
                 <ImageButton img={ICONS.delete} imgStyle={uiStyles.buttonIconSmall} press={()=>{
-                    curMember.rotation.roleRotation.removeRotationKey(role)
+                    curMember.rotation.roleRotation.removeKey(role)
                     setRodizioAlt([]) // Causa um rerender
                     }}/>
             </View>

@@ -108,6 +108,7 @@ export class MemberRepository {
             WHERE id = ${member.getId()}
             `)
         console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
+        return result
     }
 
 

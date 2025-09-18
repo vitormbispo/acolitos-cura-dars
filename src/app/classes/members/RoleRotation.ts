@@ -9,7 +9,15 @@ export class RoleRotation extends Rotation{
         this.rotationType = RotationTypes.ROLES
     }
     
-    updateMap(): void {
+    public setRotation(key:string,value:number=0) {
+        this.map[key] = value
+    }
+
+    public getRotation(key:string): number {
+        return this.map[key]
+    }
+
+    public updateMap(): void {
         let rotation:object = {}
         let curMap:object = this.getMap()
         let roles:Array<string>

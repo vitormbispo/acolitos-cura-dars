@@ -28,24 +28,8 @@ export abstract class Rotation {
     getRotationType(): RotationTypes { return this.rotationType }
     setRotationType(type:RotationTypes): void { this.rotationType = type }
 
-
-    /**
-     * Retorna o valor do rodízio de chave 'key'
-     * @param key Chave
-     * @returns Valor do rodízio
-     */
-    getRotation(key:string): number {
-        return this.map[key]
-    }
-
-    /**
-     * Cria ou atualiza o valor 'value' do rodízio de chave 'key'
-     * @param key Chave
-     * @param value Valor
-     */
-    setRotation(key:string,value:number=0):void {
-        this.map[key] = value
-    }
+    abstract getRotation(...args:any): number
+    abstract setRotation(...args:any)
 
     getMemberType():MemberType {
         return this.memberType
@@ -75,7 +59,7 @@ export abstract class Rotation {
      * Remove determinada chave 'key' do mapa
      * @param key Chave
      */
-    removeRotationKey(key:string):void {
+    removeKey(key:string):void {
         delete this.map[key]
     }
 

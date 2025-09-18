@@ -37,6 +37,7 @@ export default function App() {
  * Inicializa a aplicação carregando e validando os dados salvos
  */
 async function InitializeApp(){
+    await MemberData.LoadMembersFromDatabase()
     // Carrega e valida dados dos membros:
     await LoadAcolyteData().then(()=>{
         VerifyMembersIntegrity(MemberData.allAcolytes)

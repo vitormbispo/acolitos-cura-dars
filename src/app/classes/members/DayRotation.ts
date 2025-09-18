@@ -10,7 +10,15 @@ export class DayRotation extends Rotation{
         
     }
 
-    updateMap(): void {
+    public setRotation(weekend:string,day:string,value:number=0) {
+        this.map[weekend][day] = value
+    }
+
+    public getRotation(weekend:string,day:string): number{
+        return this.map[weekend][day]
+    }
+
+    public updateMap(): void {
         let rotation:object = {}
         let curMap:object = this.getMap()
 

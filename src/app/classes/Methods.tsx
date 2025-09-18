@@ -1,26 +1,12 @@
-import { Member, MemberType } from "./MemberData";
+import { MemberType } from "./MemberData";
+
 import * as Clipboard from 'expo-clipboard';
 //import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
 import { Lineup } from "./Lineup";
+import { Member } from "./members/Member";
 
-/**
- * Retorna a lista de todos os membros do tipo do contexto atual (menuStore)
- * ou de um determinado tipo.
- * @param memberType ?= tipo de membro (caso não seja definido, será usado o tipo do contexto)
- * @returns Lista de membros 
- */
-export function GetMemberArray(memberType:MemberType):Array<Member>{
-    switch(memberType){
-        case MemberType.ACOLYTE:
-            return MemberData.allAcolytes
-        case MemberType.COROINHA:
-            return MemberData.allCoroinhas
-        default:
-            console.error("Invalid type.")
-            return []
-    }
-}
+
 /**
  * Organiza a *array* de membros em ordem alfabética.
  * @param {Array<Member>} array Lista com os membros
@@ -52,7 +38,7 @@ export function LastMemberByNameIndex(array:Array<Member>){
     for(let i = 0; i < array.length;i++){
         let curAco = array[i]
 
-        if(curAco.name.toUpperCase() > array[last].name.toUpperCase())
+        if(curAco.getName().toUpperCase() > array[last].getName().toUpperCase())
             last = i
     }
 
@@ -67,7 +53,7 @@ export function LastMemberByNameIndex(array:Array<Member>){
  * @returns 
  */
 export function GetMemberTypeIndex(member:Member,type?:MemberType):number{
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
     
     if(member == null){return -1}
 
@@ -92,7 +78,7 @@ export function GetMemberIndex(member:Member,list:Array<Member>){
     let i = 0
 
     while(i < list.length && chosen == -1){
-        if(list[i].name == member.name){
+        if(list[i].getName() == member.getName()){
             chosen = i
         } 
         i++
@@ -290,7 +276,7 @@ export function HasMember(member:Member,array:Array<Member>):boolean {
  */
 export function ResetAllLastWeekend(members:Array<Member>){
     members.forEach((member) => {
-        member.lastWeekend = ""
+        member.genOptions.setLastWeekend("")
     })
 }
 
@@ -334,7 +320,7 @@ export function GetIndexFromArray(obj:any,array:Array<any>){
  */
 export function ShufflePriorities(members:Array<Member>){
     members.forEach((member) => {
-        member.priority = RandomNumber(0,4)
+        member.genOptions.setPriority(RandomNumber(0,4))
     })
 }
 
@@ -382,16 +368,17 @@ export function DeepCopyObject(obj:any):any{
  * @returns Lista com os membros indisponíveis
  */
 export function GetLineupUnvailableMembers(lineup:Lineup,type:MemberType):Array<Member>{
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
     let unvailable:Array<Member> = []
 
     members.forEach((member)=>{
-        if(!member.disp[lineup.weekend][lineup.day] ||
-            lineup.place != undefined && !member.placeDisp[lineup.place] ||
-            !member.onLineup
-        ){
-            unvailable.push(member)
-        }
+        const dayAvailability = member.availability.dayAvailability
+        const placeAvailability = member.availability.placeAvailability
+        if(!dayAvailability.isAvailable(lineup.weekend,lineup.day) ||
+            (lineup.place != undefined && !placeAvailability.isAvailable(lineup.place)) ||
+            !member.availability.isAvailable()) {
+                unvailable.push(member)
+            }
     })
     return unvailable
 }

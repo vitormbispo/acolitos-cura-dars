@@ -27,6 +27,11 @@ export class Member {
         this.availability = new MemberAvailability()
         this.genOptions = new MemberGenOptions()
     }
+
+    public equals(other:Member) {
+        return this.id == other.id
+    }
+
     public getId(): number {return this.id}
     public setId(id:number): void {this.id = id}
 

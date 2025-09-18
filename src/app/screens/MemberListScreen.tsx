@@ -41,26 +41,13 @@ export default function List() {
         case MemberType.COROINHA:typeName = "Coroinha"; break
     }
 
-    if(type == MemberType.ACOLYTE) {
-        if(MemberData.allAcolytes!=null){
-            let members:Array<Member> = MemberRepository.FindAllByMemberType(MemberType.ACOLYTE)
+    let members = MemberData.FindMembersByType(type)
 
-            console.log("Members = "+members)
-            for(let i =0;i < members.length;i++){
-                membersComponents.push(<RowMember nick={members[i].getNick()} id={i} img={ICONS.acolito} key={i} 
-                textStyle={textStyles.names}
-                />)
-            }
-        }
-    }
-    else if(type == MemberType.COROINHA) {
-        if(MemberData.allCoroinhas != null){
-            for(let i = 0; i < MemberData.allCoroinhas.length; i++){
-                membersComponents.push(<RowMember nick={MemberData.allCoroinhas[i].nick} id={i} img={ICONS.coroinha} key={i} 
-                textStyle={textStyles.names}
-                />)
-            }
-        }
+    console.log("Members = "+members)
+    for(let i =0;i < members.length;i++){
+        membersComponents.push(<RowMember nick={members[i].getNick()} id={members[i].getId()} img={ICONS.acolito} key={i} 
+        textStyle={textStyles.names}
+        />)
     }
     
     return(

@@ -20,12 +20,11 @@ export class Places {
 
         let allMembers = MemberData.GetAllMembers()
         allMembers.forEach((member)=>{
-            member.placeDisp[place] = true
-            member.placeRotation[place] = 0
-        })
+            member.availability.placeAvailability.setAvailable(place,0)
+            member.rotation.placeRotation.setRotation(place)
+            MemberData.UpdateMemberOnDB(member)
 
-        //SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
+        })
     }
 
     /**
@@ -42,12 +41,10 @@ export class Places {
 
         let allMembers = MemberData.GetAllMembers()
         allMembers.forEach((member)=>{
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
+            member.availability.placeAvailability.removeKey(place)
+            member.rotation.placeRotation.removeKey(place)
+            MemberData.UpdateMemberOnDB(member)
         })
-
-        //SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
     }
 
     /**
@@ -64,18 +61,19 @@ export class Places {
         let allMembers = MemberData.GetAllMembers()
         allMembers.forEach((member)=>{
             // Cria a chave com os dados da antiga
-            member.placeDisp[newPlace] = member.placeDisp[place]
-            member.placeRotation[newPlace] = member.placeRotation[place]
+            const availability = member.availability.placeAvailability
+            const rotation = member.rotation.placeRotation
 
-            // Deleta as chaves antigas
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
+            availability.setAvailable(newPlace,availability.isAvailable(place))
+            rotation.setRotation(newPlace,availability.isAvailable(place))
+            
+            availability.removeKey(place)
+            rotation.removeKey(place)
+            
+            MemberData.UpdateMemberOnDB(member)
         })
         
         this.allPlaces[index] = newPlace
-
-        //SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
     }
 
     /**
@@ -93,25 +91,26 @@ export class Places {
 
         allMembers.forEach((member)=>{
             // Cria a chave com os dados da antiga
-            member.placeDisp[newPlace] = member.placeDisp[place]
-            member.placeRotation[newPlace] = member.placeRotation[place]
+            const availability = member.availability.placeAvailability
+            const rotation = member.rotation.placeRotation
 
-            // Deleta as chaves antigas
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
+            availability.setAvailable(newPlace,availability.isAvailable(place))
+            rotation.setRotation(newPlace,availability.isAvailable(place))
+            
+            availability.removeKey(place)
+            rotation.removeKey(place)
+            
+            MemberData.UpdateMemberOnDB(member)
         })
 
         this.allPlaces[placeIndex] = newPlace
-
-        //SaveData("AllPlaces",this.allPlaces)
-        //MemberData.SaveMemberData()
     }
 
     /**
      * Retorna uma lista com os nomes dos locais padrão.
      * @returns Array<string>
      */
-    static PlacesArray():Array<string>{
+    static GetDefaultPlaces():Array<string>{
         return this.defaultPlaces.slice()
     }
 
@@ -120,7 +119,7 @@ export class Places {
      * @returns object
      */
     static PlacesRotationMap():object{
-        let array:Array<string> = this.PlacesArray()
+        let array:Array<string> = this.GetDefaultPlaces()
         let map = {}
         
         array.forEach((place)=>{
@@ -135,7 +134,7 @@ export class Places {
      * @returns 
      */
     static PlacesDispMap():object{
-        let array:Array<string> = this.PlacesArray()
+        let array:Array<string> = this.GetDefaultPlaces()
         let map = {}
         
         array.forEach((place)=>{
@@ -149,27 +148,29 @@ export class Places {
      * Reinicia os locais para o padrão, fazendo também as atualizações necessárias em todos os membros.
      */
     static ResetToDefault(){
-        this.allPlaces = this.PlacesArray()
+        this.allPlaces = this.GetDefaultPlaces()
         let allMembers = MemberData.GetAllMembers()
 
         this.VerifyPlacesIntegrity()
           
         allMembers.forEach((member)=>{
-            let memberPlaces:Array<string> = Object.keys(member.placeDisp)
+            const availability = member.availability.placeAvailability
+            const rotation = member.rotation.placeRotation
+            let memberPlaces:Array<string> = Object.keys(availability.getMap())
             
             // Deletar locais
             memberPlaces.forEach((place=>{
                 if(!this.allPlaces.includes(place)){ // Caso exista um local que não é padrão
-                    delete member.placeDisp[place]
-                    delete member.placeRotation[place]
+                    availability.removeKey(place)
+                    rotation.removeKey(place)
                 }
             }))
             
             // Adicionar locais padrão
             this.allPlaces.forEach((place)=>{
                 if(!memberPlaces.includes(place)){ // Caso não exista um dos locais padrão
-                    member.placeDisp[place] = true
-                    member.placeRotation[place] = 0
+                    availability.setAvailable(place,true)
+                    rotation.setRotation(place,0)
                 }
             })
         })

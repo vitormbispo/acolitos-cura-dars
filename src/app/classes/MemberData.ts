@@ -1,5 +1,6 @@
 //import AsyncStorage from "@react-native-async-storage/async-storage"
 import { StructuredLineup } from "./Lineup"
+import { Member } from "./members/Member"
 import { MemberRepository } from "./repository/MemberRepository"
 
 /**
@@ -13,6 +14,7 @@ export enum MemberType{
 /**
  * Classe base dos membros
  */
+/*
 export class Member {
     id:number // Chave primária de até 4 dígitos
     TYPE:MemberType = MemberType.ACOLYTE // Tipo de membro
@@ -62,14 +64,14 @@ export class Member {
     lastWeekend = "" // Último fim de semana servido
     selectedOnLineups = []          
 }
-
+*/
 /**
  *  Dados armazenados dos Membros
  */
 export class MemberData{ 
     static allAcolytes: Member[] = []
     static allCoroinhas: Member[] = []
-    static allMembers: Member[] = []
+    private static allMembers: Member[] = []
     static allLineups = [];
     static allLineupsAcolytes:Array<StructuredLineup> = []
     static allLineupsCoroinhas:Array<StructuredLineup> = []
@@ -94,6 +96,51 @@ export class MemberData{
         //this.SaveMemberData()
     }
 
+    public static SortMembersList() {
+        this.allMembers.sort((a, b) => a.getName().localeCompare(b.getName()))
+    }
+
+    public static AddNewMember(member:Member,sortList:boolean=true) {
+        this.allMembers.push(member)
+        this.SortMembersList()
+    }
+
+    public static RemoveMember(member:Member) {
+        let index = this.allMembers.findIndex((m:Member) => m.equals(member))
+        this.allMembers.splice(index,1)
+    }
+
+    public static GetAllMembers() {
+        return this.allMembers
+    }
+
+    public static GetAllMembersCopy() {
+        return this.allMembers.slice()
+    }
+    
+    public static GetMemberById(id:number): Member {
+        let member:Member = this.allMembers.find((m:Member) => m.getId() == id)
+        return member
+    }
+
+    public static async LoadMembersFromDatabase() {
+        MemberRepository.FindAllMembersAsync().then(
+            (result) => {
+                this.allMembers = result
+                this.SortMembersList()
+            },
+            (e) => console.error("Error: " + e)
+        )
+    }
+
+    public static async InsertMemberOnDB(member: Member,updateMemberList:boolean=true) {
+        if(updateMemberList) this.AddNewMember(member)
+        return MemberRepository.InsertMemberAsync(member)
+    }
+
+    public static async UpdateMemberOnDB(member: Member) {
+        return MemberRepository.UpdateMemberAsync(member)
+    }
     /**
      * Salva todos os dados dos membros
      */
@@ -103,14 +150,10 @@ export class MemberData{
         SaveCoroinhaData()
     }
     */
-    /**
-     * Retorna uma lista com todos os membros acólitos e coroinhas
-     * @returns 
-     */
-    static GetAllMembers():Array<Member>{
-        return MemberData.allAcolytes.concat(MemberData.allCoroinhas)
-    }
 
+    static FindMembersByType(type:MemberType):Array<Member> {
+        return this.allMembers.filter((member) => member.getType() == type)
+    }
     /**
      * Retorna uma lista com todas as escalas dos acólitos e coroinhas
      * @returns 
@@ -131,7 +174,7 @@ export class MemberData{
      */
     static IsNameAvailable(name:string,members:Array<Member>):boolean{
         for(let i = 0; i < members.length; i++){
-            if(members[i].name == name){
+            if(members[i].getName() == name){
                 return false
             }
         }
@@ -146,7 +189,7 @@ export class MemberData{
      */
     static IsNickAvailable(nick:string,members:Array<Member>):boolean{
         for(let i = 0; i < members.length; i++){
-            if(members[i].nick == nick){
+            if(members[i].getNick() == nick){
                 return false
             }
         }
@@ -185,7 +228,7 @@ export function SaveCoroinhaData(){
 export function MemberIDList(members:Array<Member>):Array<number>{
     let ids = []
     members.forEach((member)=>{
-        ids.push(member.id)
+        ids.push(member.getId())
     })
     return ids
 }
@@ -212,7 +255,7 @@ export function MembersFromIDs(ids:Array<number>):Array<Member>{
  */
 export function GetMemberByID(id:number,members:Array<Member>):Member{
     for(let i = 0; i < members.length; i++){
-        if(members[i].id == id) {
+        if(members[i].getId() == id) {
             return members[i]
         } 
     }
