@@ -23,7 +23,7 @@ export class Member {
         this.contact = contact
         this.parents = parents
         
-        this.rotation = new MemberRotation(this)
+        this.rotation = new MemberRotation(type)
         this.availability = new MemberAvailability()
         this.genOptions = new MemberGenOptions()
     }
@@ -32,6 +32,20 @@ export class Member {
         return this.id == other.id
     }
 
+    public clone(): Member {
+        let newMember = new Member(
+            this.type,
+            this.name,
+            this.nick,
+            this.contact,
+            this.parents
+        )
+        newMember.setAvailability(this.availability.clone())
+        newMember.setRotation(this.rotation.clone())
+        newMember.setGenOptions(this.genOptions.clone())
+        newMember.setId(this.id)
+        return newMember
+    }
     public getId(): number {return this.id}
     public setId(id:number): void {this.id = id}
 

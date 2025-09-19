@@ -1,3 +1,4 @@
+import { Member } from "../Member";
 import { Availability } from "./Availability";
 import { DayAvailability } from "./DayAvailability";
 import { PlaceAvailability } from "./PlaceAvailability";
@@ -40,6 +41,10 @@ export class MemberAvailability {
         availability.placeAvailability.updateMap()
 
         return availability
+    }
+
+    public clone(): MemberAvailability {
+        return MemberAvailability.fromJSON(this.asJSON())
     }
 
 }

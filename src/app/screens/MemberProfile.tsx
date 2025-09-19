@@ -26,7 +26,7 @@ export default function MemberProfile() {
     //let members:Array<Member> = MemberRepository.FindAllByMemberType(type)
     let defaultRoles:Array<string> = []
     
-    let curMember:Member = MemberData.GetMemberById(memberID)
+    let curMember:Member = MemberData.FindMemberById(memberID)
     
     const parents =  type == MemberType.COROINHA? 
     <DataDisplay dataTitle={"- Responsável: "} data={curMember.getParents()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null

@@ -7,7 +7,7 @@ import { Dates } from "../classes/Dates"
 import { Roles } from "../classes/Roles"
 import { ICONS } from "../classes/AssetManager"
 import { MemberIDList } from "../classes/MemberData"
-import { GetMemberArray } from "../classes/Methods"
+import { GetMemberArray } from "../classes/Util"
 import { UpperBar } from "../components/display/UpperBar"
 import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton"
 

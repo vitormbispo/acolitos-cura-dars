@@ -1,17 +1,13 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { GetMemberAddIcon } from "../classes/NewComps";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { OrganizeMemberArrayAlpha } from "../classes/Methods"
 import { menuStore } from "../store/store";
 import { MemberData, MemberType } from "../classes/MemberData";
 import { Member } from "../classes/members/Member"
-import { Roles } from "../classes/Roles";
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
 import { Places } from "../classes/Places";
-import { GenerateMemberID, VerifyMembersIntegrity } from "../classes/DataManager";
 import { useRef, useState } from "react";
 import { TextButton } from "../components/buttons/TextButton";
 import { CheckBox } from "../components/input/CheckBox";
@@ -19,11 +15,10 @@ import { TextCheckBox } from "../components/input/TextCheckBox";
 import { UpperBar } from "../components/display/UpperBar";
 import { DataSection } from "../components/display/DataSection";
 import { TextInputBox } from "../components/input/TextInputBox";
-import { MemberRepository } from "../classes/repository/MemberRepository";
 
 export default function NewMember(){
     const {theme, type} = menuStore()
-    const currentData = useRef(new Member())
+    const currentData = useRef(new Member(type))
     const availabilities = 
     <View>
         <WeekendAvailability member={currentData.current} weekend={"1º"}/>
@@ -33,7 +28,6 @@ export default function NewMember(){
         <WeekendAvailability member={currentData.current} weekend={"5º"}/>
     </View>
 
-    let members:Array<Member> = MemberRepository.FindAllByMemberType(type)
     let typeName:string
 
     switch (type){
@@ -119,49 +113,13 @@ export default function NewMember(){
                 </View>
             </View>
             
-            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData.current,type)}} disabled={!(nameAvailable && nickAvailable)}/>
+            <TextButton textStyle={textStyles.textButtonText} buttonStyle={{alignSelf:"center"}} text={"Adicionar "+typeName} press={()=>{SubmitNewMember(currentData.current)}} disabled={!(nameAvailable && nickAvailable)}/>
         </KeyboardAwareScrollView>
     )
 }
 
-function SubmitNewMember(member:Member,type:MemberType){
-    let members:Array<any>
-    let storageData:string
-
-    MemberRepository.InsertMember(member)
-    MemberData.LoadMembersFromDatabase()
-    /*
-    if(type == MemberType.ACOLYTE){
-        member.rodizio = Roles.defaultAcolyteRoles
-        member.oldRodizio = Roles.defaultAcolyteRoles
-
-        members = MemberData.allAcolytes
-        storageData = "AcolyteData"
-    }
-    else if (type == MemberType.COROINHA){
-        member.rodizio = Roles.defaultCoroinhaRoles
-        member.oldRodizio = Roles.defaultCoroinhaRoles
-
-        members = MemberData.allCoroinhas
-        storageData = "CoroinhaData"
-    }
-    if(members == null){
-        members = []
-    }
-
-    member.id = GenerateMemberID()
-    VerifyMembersIntegrity([member]) // Deefine valores padrão
-    members.push(member)
-    members = OrganizeMemberArrayAlpha(members)
-    AsyncStorage.setItem(storageData,JSON.stringify(members))
-
-    if(type == MemberType.ACOLYTE){
-        MemberData.allAcolytes = members
-    }
-    else if (type == MemberType.COROINHA){
-        MemberData.allCoroinhas = members
-    }
-    */
+function SubmitNewMember(member:Member){
+    MemberData.InsertMemberOnDB(member)
     router.back()
 }
 

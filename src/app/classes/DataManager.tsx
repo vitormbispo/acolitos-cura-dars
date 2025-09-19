@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { GetMemberByID, Member, MemberData } from "./MemberData"
-import { OrganizeMemberArrayAlpha, RandomNumber } from "./Methods"
+import { RandomNumber } from "./Util"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
@@ -82,7 +82,6 @@ export const LoadAcolyteData = async() => {
         if (MemberData.allLineupsAcolytes == null){
             MemberData.allLineupsAcolytes = []
         }
-        OrganizeMemberArrayAlpha(MemberData.allAcolytes)
         PresetsData.VerifyPresetsIntegrity()
     } catch (error) {
         console.error(error)
@@ -109,7 +108,6 @@ export const LoadCoroinhaData = async() => {
             MemberData.allLineupsCoroinhas = []
         }
 
-        OrganizeMemberArrayAlpha(MemberData.allCoroinhas)
         PresetsData.VerifyPresetsIntegrity()
 
     } catch (error) {

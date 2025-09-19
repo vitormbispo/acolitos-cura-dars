@@ -9,7 +9,16 @@ test("Member instancing",()=>{
     expect(newMember.getAvailability().dayAvailability).not.toBeNull()
 })
 
-test("Member insertion on table",() => {
-    
+test("Member cloning",() => {
+    let newMember:Member = new Member(MemberType.ACOLYTE,"João José","João J.","+55(13)98743-9856")
+    let clone = newMember.clone()
+    clone.setName("Lucas José")
+    expect(newMember.getName()).toEqual("João José")
+    expect(clone.getName()).toEqual("Lucas José")
 
+    newMember.availability.placeAvailability.setAvailable("Matriz",false)
+    clone.availability.placeAvailability.setAvailable("Matriz",true)
+
+    expect(newMember.availability.placeAvailability.isAvailable("Matriz")).toEqual(false)
+    expect(clone.availability.placeAvailability.isAvailable("Matriz")).toEqual(true)
 })

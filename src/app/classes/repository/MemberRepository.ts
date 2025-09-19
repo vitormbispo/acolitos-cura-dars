@@ -6,6 +6,7 @@ import migration from "./migrations/json/member_migrations.json"
 import { MemberGenOptions } from "../members/MemberGenOptions"
 import { Availability } from "../members/availability/Availability"
 import { MemberAvailability } from "../members/availability/MemberAvailability"
+import { MemberRotation } from "../members/MemberRotation"
 
 export type MemberObject = {
     id:number
@@ -21,9 +22,10 @@ export type MemberObject = {
 
 export class MemberRepository {
     
-    public static database = SQLite.openDatabaseSync("CURADARS")
+    public static database
     
     public static async InitRepository() {
+        this.database = await SQLite.openDatabaseAsync("CURADARS")
         console.log("Exec")
         this.database.execAsync(`
             PRAGMA journal_mode = WAL;
@@ -45,11 +47,11 @@ export class MemberRepository {
                 console.error("Error opening database: "+e)
             })
         const version:number = await this.database.getFirstAsync("PRAGMA user_version");
-        /*Migrations.Migrate(version["user_version"],migration)
+        Migrations.Migrate(version["user_version"],migration)
             .then(
-                v => { console.log("Migrated from version "+version+" to "+v) },
+                v => { console.log("Migrated from version "+version["user_version"]+" to "+v) },
                 e => { console.error("Error: "+e) }
-            )*/
+            )
     }
 
     // CREATE
@@ -57,14 +59,15 @@ export class MemberRepository {
         const typeName:string = MemberType[member.getType()]
 
         return this.database.runAsync(`
-            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability) VALUES (
+            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability,rotation) VALUES (
                 "${typeName}",
                 "${member.getName()}",
                 "${member.getNick()}",
                 "${member.getContact()}",
                 "${member.getParents()}",
                 '${member.getGenOptions().asJSON()}',
-                '${member.getAvailability().asJSON()}'
+                '${member.getAvailability().asJSON()}',
+                '${member.getRotation().asJSON()}'
             )
             `).then(result => member.setId(result.lastInsertRowId),e => console.error("Error: "+e))
     }
@@ -101,10 +104,11 @@ export class MemberRepository {
             type = "${typeName}", 
             name = "${member.getName()}", 
             nick = "${member.getNick()}",
-            contact = "${member.getContact}",
+            contact = "${member.getContact()}",
             parents = "${member.getParents()}",
-            genOptions = "${member.getGenOptions().asJSON()}",
-            availability = "${member.getAvailability().asJSON()}"
+            genOptions = '${member.genOptions.asJSON()}',
+            availability = '${member.getAvailability().asJSON()}',
+            rotation = '${member.getRotation().asJSON()}'
             WHERE id = ${member.getId()}
             `)
         console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
@@ -129,14 +133,15 @@ export class MemberRepository {
         const typeName:string = MemberType[member.getType()]
         
         let result = this.database.runSync(`
-            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability) VALUES (
+            INSERT INTO members (type,name,nick,contact,parents,genOptions,availability,rotation) VALUES (
                 "${typeName}",
                 "${member.getName()}",
                 "${member.getNick()}",
                 "${member.getContact()}",
                 "${member.getParents()}",
                 '${member.getGenOptions().asJSON()}',
-                '${member.getAvailability().asJSON()}'
+                '${member.getAvailability().asJSON()}',
+                '${member.getRotation().asJSON()}'
             )
             `)
         member.setId(result.lastInsertRowId)
@@ -173,8 +178,11 @@ export class MemberRepository {
             type = "${typeName}", 
             name = "${member.getName()}", 
             nick = "${member.getNick()}",
-            contact = "${member.getContact}",
-            parents = "${member.getParents()}"
+            contact = "${member.getContact()}",
+            parents = "${member.getParents()}",
+            genOptions = '${member.genOptions.asJSON()}',
+            availability = '${member.getAvailability().asJSON()}',
+            rotation = '${member.getRotation().asJSON()}'
             WHERE id = ${member.getId()}
             `)
         console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
@@ -205,9 +213,24 @@ export class MemberRepository {
 
         newMember.setId(obj.id)
         let opt = JSON.parse(obj.genOptions)
+        
         let genOptions:MemberGenOptions = new MemberGenOptions(0,opt.priority,opt.dayPriority,opt.lastWeekend,opt.selectedOnLineups)
         newMember.setGenOptions(genOptions)
-        newMember.setAvailability(MemberAvailability.fromJSON(obj.availability))
+
+        if(obj.availability == "" || obj.availability == null) {
+            newMember.setAvailability(new MemberAvailability())
+        } 
+        else {
+            newMember.setAvailability(MemberAvailability.fromJSON(obj.availability))
+        }
+
+        if(obj.rotation == "" || obj.rotation == null) {
+            newMember.setRotation(new MemberRotation(MemberType[obj.type]))
+        } 
+        else {
+            newMember.setRotation(MemberRotation.fromJSON(obj.rotation))
+        }
+        
             
         return newMember
     }

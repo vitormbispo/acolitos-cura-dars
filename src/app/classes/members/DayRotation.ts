@@ -18,6 +18,17 @@ export class DayRotation extends Rotation{
         return this.map[weekend][day]
     }
 
+    public static fromJSON(json:string):DayRotation {
+            let obj = JSON.parse(json)
+            let availability:DayRotation = new DayRotation()
+    
+            availability.setId(obj.id)
+            availability.setMap(obj.map)
+            availability.setMemberType(obj.memberType)
+            
+            return availability
+        }
+
     public updateMap(): void {
         let rotation:object = {}
         let curMap:object = this.getMap()

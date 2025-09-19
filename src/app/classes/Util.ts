@@ -7,65 +7,6 @@ import { Lineup } from "./Lineup";
 import { Member } from "./members/Member";
 
 
-/**
- * Organiza a *array* de membros em ordem alfabética.
- * @param {Array<Member>} array Lista com os membros
- * @returns 
- */
-export function OrganizeMemberArrayAlpha(array:Array<Member>){
-    let j = array.length-1
-    let aux = array[0]
-    
-    while(j > 0){
-        let index = LastMemberByNameIndex(array.slice(0,j+1))
-        aux = array[index]
-        array[index] = array[j]
-        array[j] = aux
-
-        j--
-    }
-
-    return array
-}
-
-/** Encontra o índice do último membro da *array* na ordem alfabética
- * 
- * @param {Array<Member>} array Lista de membros
- * @returns 
- */
-export function LastMemberByNameIndex(array:Array<Member>){
-    let last = 0
-    for(let i = 0; i < array.length;i++){
-        let curAco = array[i]
-
-        if(curAco.getName().toUpperCase() > array[last].getName().toUpperCase())
-            last = i
-    }
-
-    return last
-}
-
-
-/**
- * Encontra o índice do membro dado na lista geral ou -1 caso o membro não esteja na lista.
- * @param {Member} member membro
- * @param {MemberType} type OPCIONAL: tipo de membro (caso seja indefinido, utilizará o tipo do contexto atual)
- * @returns 
- */
-export function GetMemberTypeIndex(member:Member,type?:MemberType):number{
-    let members:Array<Member> = MemberData.FindMembersByType(type)
-    
-    if(member == null){return -1}
-
-    for(let i = 0; i < members.length;i++){
-        let curMember = members[i]
-
-        if(curMember == member){
-            return i
-        }
-    }
-    return -1
-}
 
 /**
  * Encontra o índice do membro em determinada lista.
@@ -74,16 +15,7 @@ export function GetMemberTypeIndex(member:Member,type?:MemberType):number{
  * @returns 
  */
 export function GetMemberIndex(member:Member,list:Array<Member>){
-    let chosen = -1
-    let i = 0
-
-    while(i < list.length && chosen == -1){
-        if(list[i].getName() == member.getName()){
-            chosen = i
-        } 
-        i++
-    }
-    return chosen
+    return list.findIndex((m:Member) => m.equals(member))
 }
 
 /** Remove um membro da lista.
@@ -350,14 +282,6 @@ export function DeepCopyObject(obj:any):any{
 
 }
 
-/**
- * Salva os dados no AsyncStorage
- * @param key Chave
- * @param data Dados
- */
-//export function SaveData(key:string,data:any) {
-  //  AsyncStorage.setItem(key,JSON.stringify(data))
-//}
 
 /**
  * Retorna uma lista com todos os membros que não possuem disponibilidade

@@ -4,7 +4,7 @@ export class Migrations {
     public static async Migrate(curVersion:number,migration:object) {
         const database = RepositoryManager.database
         const LATEST = Number.parseInt(Object.keys(migration).findLast(()=>true))
-        for(let i = curVersion+1; curVersion <= LATEST; i++) {
+        for(let i = curVersion; curVersion < LATEST; i++) {
             try {
                 database.execSync(migration[i])
                 database.execSync(`PRAGMA user_version=${i}`)

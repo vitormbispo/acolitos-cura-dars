@@ -19,23 +19,23 @@ export abstract class Rotation {
         this.map = {}
     }
 
-    getId():number {return this.id}
-    setId(id:number):void {this.id = id}
+    public getId():number {return this.id}
+    public setId(id:number):void {this.id = id}
     
-    getMap():object { return this.map }
-    setMap(map:object):void { this.map = map }
+    public getMap():object { return this.map }
+    public setMap(map:object):void { this.map = map }
 
-    getRotationType(): RotationTypes { return this.rotationType }
-    setRotationType(type:RotationTypes): void { this.rotationType = type }
+    public getRotationType(): RotationTypes { return this.rotationType }
+    public setRotationType(type:RotationTypes): void { this.rotationType = type }
 
-    abstract getRotation(...args:any): number
-    abstract setRotation(...args:any)
+    public abstract getRotation(...args:any): number
+    public abstract setRotation(...args:any)
 
-    getMemberType():MemberType {
+    public getMemberType():MemberType {
         return this.memberType
     }
 
-    setMemberType(type:MemberType):void {
+    public setMemberType(type:MemberType):void {
         this.memberType = type
     }
     
@@ -43,7 +43,7 @@ export abstract class Rotation {
      * Aumenta o valor do rodízio da chave 'key' em 1
      * @param key Chave
      */
-    increment(key:string):void {
+    public increment(key:string):void {
         this.map[key]+=1
     }
 
@@ -51,7 +51,7 @@ export abstract class Rotation {
      * Diminui o valor do rodízio da chave 'key' em 1
      * @param key Chave
      */
-    decrement(key:string):void {
+    public decrement(key:string):void {
         this.map[key]-=1
     }
 
@@ -59,7 +59,7 @@ export abstract class Rotation {
      * Remove determinada chave 'key' do mapa
      * @param key Chave
      */
-    removeKey(key:string):void {
+    public removeKey(key:string):void {
         delete this.map[key]
     }
 
@@ -67,8 +67,12 @@ export abstract class Rotation {
      * Reinicia o valor da chave 'key' para 0
      * @param key Chave
      */
-    resetKey(key:string):void {
+    public resetKey(key:string):void {
         this.map[key] = 0
+    }
+
+    public asJSON():string {
+        return JSON.stringify(this)
     }
 
     public static defaultRotationMap(keys:Array<string>):object {

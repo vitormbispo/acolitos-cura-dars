@@ -4,12 +4,10 @@ import { useRef, useState } from "react";
 import { menuStore } from "../store/store";
 import { textStyles } from "../styles/GeneralStyles";
 import { MemberData, MemberType } from "../classes/MemberData";
-import { Member } from "../classes/members/Member";
 import { ICONS } from "../classes/AssetManager";
 import { RowMember } from "../components/buttons/RowMember";
 import { UpperBar } from "../components/display/UpperBar";
 import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton";
-import { MemberRepository } from "../classes/repository/MemberRepository";
 
 export class MemberList{
     static scrollPos = 0;

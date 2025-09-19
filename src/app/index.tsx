@@ -5,7 +5,7 @@ import { LoadAcolyteRolesets, LoadCoroinhaRolesets, Roles } from "./classes/Role
 import { Places } from "./classes/Places";
 import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
 import { contextStore } from "./store/store";
-import { DistinctRandomNumbers } from "./classes/Methods";
+import { DistinctRandomNumbers } from "./classes/Util";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "react-native";
@@ -37,6 +37,7 @@ export default function App() {
  * Inicializa a aplicação carregando e validando os dados salvos
  */
 async function InitializeApp(){
+    await MemberRepository.InitRepository()
     await MemberData.LoadMembersFromDatabase()
     // Carrega e valida dados dos membros:
     await LoadAcolyteData().then(()=>{

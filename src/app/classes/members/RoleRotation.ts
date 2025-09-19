@@ -17,6 +17,18 @@ export class RoleRotation extends Rotation{
         return this.map[key]
     }
 
+    public static fromJSON(json:string):RoleRotation {
+            let obj = JSON.parse(json)
+            let availability:RoleRotation = new RoleRotation(obj.memberType)
+    
+            availability.setId(obj.id)
+            availability.setMap(obj.map)
+            availability.setMemberType(obj.memberType)
+            availability.setRotationType(obj.rotationType)
+            
+            return availability
+        }
+
     public updateMap(): void {
         let rotation:object = {}
         let curMap:object = this.getMap()

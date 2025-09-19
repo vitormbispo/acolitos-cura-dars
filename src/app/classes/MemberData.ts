@@ -99,14 +99,24 @@ export class MemberData{
     public static SortMembersList() {
         this.allMembers.sort((a, b) => a.getName().localeCompare(b.getName()))
     }
-
+    
     public static AddNewMember(member:Member,sortList:boolean=true) {
         this.allMembers.push(member)
-        this.SortMembersList()
+        if(sortList) this.SortMembersList()
     }
 
+    public static UpdateMember(member:Member,sortList:boolean=true) {
+        let index = this.allMembers.findIndex((m:Member) => m.equals(member))
+        this.allMembers[index] = member
+        if(sortList) this.SortMembersList()
+    }
     public static RemoveMember(member:Member) {
         let index = this.allMembers.findIndex((m:Member) => m.equals(member))
+        this.allMembers.splice(index,1)
+    }
+
+    public static RemoveMemberByID(id:number) {
+        let index = this.allMembers.findIndex((m:Member) => m.getId() == id)
         this.allMembers.splice(index,1)
     }
 
@@ -117,12 +127,17 @@ export class MemberData{
     public static GetAllMembersCopy() {
         return this.allMembers.slice()
     }
-    
-    public static GetMemberById(id:number): Member {
+
+    public static FindMemberById(id:number): Member {
         let member:Member = this.allMembers.find((m:Member) => m.getId() == id)
         return member
     }
 
+    public static FindMembersByType(type:MemberType):Array<Member> {
+        return this.allMembers.filter((member) => member.getType() == type)
+    }
+
+    // DATABASE
     public static async LoadMembersFromDatabase() {
         MemberRepository.FindAllMembersAsync().then(
             (result) => {
@@ -133,27 +148,43 @@ export class MemberData{
         )
     }
 
-    public static async InsertMemberOnDB(member: Member,updateMemberList:boolean=true) {
-        if(updateMemberList) this.AddNewMember(member)
-        return MemberRepository.InsertMemberAsync(member)
+    public static LoadMembersFromDatabaseSync() {
+        try {
+            this.allMembers = MemberRepository.FindAllMembers()
+            this.SortMembersList()
+        } catch(e) {
+            console.error("Error: "+e)
+        }
     }
 
-    public static async UpdateMemberOnDB(member: Member) {
-        return MemberRepository.UpdateMemberAsync(member)
+    public static InsertMemberOnDB(member: Member, updateMemberList: boolean = true) {
+        if (updateMemberList) this.AddNewMember(member)
+        return MemberRepository.InsertMember(member)
     }
-    /**
-     * Salva todos os dados dos membros
-     */
-    /*
-    static SaveMemberData(){
-        SaveAcolyteData()
-        SaveCoroinhaData()
-    }
-    */
 
-    static FindMembersByType(type:MemberType):Array<Member> {
-        return this.allMembers.filter((member) => member.getType() == type)
+    public static UpdateMemberOnDB(member: Member, updateMemberList: boolean = true) {
+        if (updateMemberList) this.UpdateMember(member)
+        return MemberRepository.UpdateMember(member)
     }
+
+    public static DeleteMemberByIDOnDB(id: number, updateMemberList: boolean = true) {
+        if (updateMemberList) this.RemoveMemberByID(id)
+        return MemberRepository.DeleteMemberById(id)
+    }
+
+
+    // ASYNC
+    public static async InsertMemberOnDBAsync(member: Member, updateMemberList: boolean = true) {
+        if (updateMemberList) this.AddNewMember(member)
+        return await MemberRepository.InsertMemberAsync(member)
+    }
+
+    public static async UpdateMemberOnDBAsync(member: Member, updateMemberList: boolean = true) {
+        if (updateMemberList) this.UpdateMember(member)
+        return await MemberRepository.UpdateMemberAsync(member)
+    }
+
+    
     /**
      * Retorna uma lista com todas as escalas dos acólitos e coroinhas
      * @returns 
@@ -196,28 +227,6 @@ export class MemberData{
         return true
     }
 }
-
-
-
-/**
- * Salva os dados dos acólitos localmente.
- */
-/*
-export function SaveAcolyteData(){
-    AsyncStorage.setItem("AcolyteData",JSON.stringify(MemberData.allAcolytes))
-    AsyncStorage.setItem("AcolyteLineups",JSON.stringify(MemberData.allLineupsAcolytes))
-}
-*/
-/**
- * Salva os dados dos coroinhas localmente.
- */
-/*
-export function SaveCoroinhaData(){
-    AsyncStorage.setItem("CoroinhaData",JSON.stringify(MemberData.allCoroinhas))
-    AsyncStorage.setItem("CoroinhaLineups",JSON.stringify(MemberData.allLineupsCoroinhas))
-}
-*/
-
 
 
 /**

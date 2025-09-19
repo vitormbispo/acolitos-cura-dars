@@ -27,7 +27,24 @@ export class MemberGenOptions {
     public getSelectedOnLineups(): Array<number> { return this.selectedOnLineups }
     public setSelectedOnLineups(selectedOnLineups: Array<number>): void { this.selectedOnLineups = selectedOnLineups }
 
-    public asJSON() {
+    public asJSON():string {
         return JSON.stringify(this)
     }
+
+    public clone():MemberGenOptions {
+        return MemberGenOptions.fromJSON(this.asJSON())
+    }
+    
+    public static fromJSON(json:string):MemberGenOptions {
+        const obj = JSON.parse(json)
+        let newOptions = new MemberGenOptions()
+        newOptions.setScore(obj.score)
+        newOptions.setPriority(obj.priority)
+        newOptions.setDayPriority(obj.dayPriority)
+        newOptions.setLastWeekend(obj.lastWeekend)
+        newOptions.setSelectedOnLineups(obj.selectedOnLineups)
+        return newOptions
+    }
+
+    
 }

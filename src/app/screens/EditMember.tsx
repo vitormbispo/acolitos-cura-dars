@@ -1,11 +1,10 @@
 import { View,Text } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { GetMemberIcon } from "../classes/NewComps";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { AbbreviateText, GetMemberArray, OrganizeMemberArrayAlpha} from "../classes/Methods"
+import { AbbreviateText } from "../classes/Util"
 import { contextStore, menuStore } from "../store/store";
-import { Member, MemberData, MemberType } from "../classes/MemberData";
+import { MemberData, MemberType } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
 import { PlaceAvailability, WeekendAvailability } from "./NewMember";
 import { textStyles} from "../styles/GeneralStyles";
@@ -18,6 +17,7 @@ import { UpperButton } from "../components/buttons/UpperButton";
 import { TextInputBox } from "../components/input/TextInputBox";
 import { DataSection } from "../components/display/DataSection";
 import { ConfirmationModal } from "../components/input/ConfirmationModal";
+import { Member } from "../classes/members/Member";
 
 export class EditMemberScreen{
     static id:number = 0
@@ -28,21 +28,10 @@ export default function EditMember(){
     const { memberID } = contextStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
     
-    let members:Array<Member> = []
+    let members:Array<Member> = MemberData.FindMembersByType(type)
     let typeName:string
 
-    switch (type){
-        case MemberType.ACOLYTE:
-            typeName = "Acólito"
-            members = MemberData.allAcolytes
-            break
-        case MemberType.COROINHA:
-            typeName = "Coroinha"
-            members = MemberData.allCoroinhas
-            break
-    }
-
-    const curMember = useRef(JSON.parse(JSON.stringify(members))[memberID]) // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
+    const curMember = useRef(MemberData.FindMemberById(memberID).clone()) // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
     let availabilities:Array<React.JSX.Element> = []
     for(let i = 0; i < Dates.defaultWeekends.length;i++){
@@ -51,15 +40,15 @@ export default function EditMember(){
         availabilities.push(available)
     }
 
-    const originalName = curMember.current.name
-    const originalNick = curMember.current.nick
+    const originalName = curMember.current.getName()
+    const originalNick = curMember.current.getNick()
     const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
     const [nickAvailable,setNickAvailable] = useState(true) //
 
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.nick,25)}/>
+                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.getNick(),25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{
                     setConfirmDeleteVisible(!confirmDeleteVisible)
                 }}
@@ -68,63 +57,61 @@ export default function EditMember(){
             </View>
 
             <KeyboardAwareScrollView style={{flex:1,flexDirection:"column"}}>
-                
-                
-            {!nameAvailable ? 
-                <Text style={
-                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse nome!</Text>
-                    :
-                    null
-            }
-            <TextInputBox 
-                title={"-Nome: "} 
-                enabled={true} 
-                onChangeText={(text:any)=>curMember.current.name=text.toString()} 
-                placeholder="Nome..."
-                default={curMember.current.name}
-                onBlur={()=>{
-                    if(curMember.current.name != originalName){
-                        setNameAvailable(MemberData.IsNameAvailable(curMember.current.name,members))
-                    }
-                    
-                }}/>
+                {!nameAvailable ? 
+                    <Text style={
+                        [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse nome!</Text>
+                        :
+                        null
+                }
+                <TextInputBox 
+                    title={"-Nome: "} 
+                    enabled={true} 
+                    onChangeText={(text:any)=>curMember.current.setName(text.toString())} 
+                    placeholder="Nome..."
+                    default={curMember.current.getName()}
+                    onBlur={()=>{
+                        if(curMember.current.getName() != originalName){
+                            setNameAvailable(MemberData.IsNameAvailable(curMember.current.getName(),members))
+                        }
+                        
+                    }}/>
 
-            {!nickAvailable ? 
-                <Text style={
-                    [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse apelido!</Text>
-                    :
-                    null
-            }
-            <TextInputBox 
-                title={"-Apelido: "} 
-                enabled={true} 
-                maxLength={20}
-                onChangeText={(text:any)=>curMember.current.nick=text.toString()} 
-                placeholder="Apelido..."
-                default={curMember.current.nick}
-                onBlur={()=>{
-                    if(curMember.current.nick != originalNick){
-                        setNickAvailable(MemberData.IsNickAvailable(curMember.current.nick,members))
-                    }
-                    
-                }}/>
+                {!nickAvailable ? 
+                    <Text style={
+                        [textStyles.dataTitle,{color:theme.reject}]}>Já existe um {typeName.toLocaleLowerCase()} com esse apelido!</Text>
+                        :
+                        null
+                }
 
-    
+                <TextInputBox 
+                    title={"-Apelido: "} 
+                    enabled={true} 
+                    maxLength={20}
+                    onChangeText={(text:any)=>curMember.current.setNick(text.toString())} 
+                    placeholder="Apelido..."
+                    default={curMember.current.getNick()}
+                    onBlur={()=>{
+                        if(curMember.current.getNick() != originalNick){
+                            setNickAvailable(MemberData.IsNickAvailable(curMember.current.getNick(),members))
+                        }
+                        
+                    }}/>
+
                 <TextInputBox 
                     title={"-Responsável: "} 
                     enabled={type == MemberType.COROINHA} 
-                    default={curMember.current.parents}
-                    placeholder={curMember.current.parents}
-                    onChangeText={(text:any)=>curMember.current.parents=text.toString()}/>
+                    default={curMember.current.getParents()}
+                    placeholder={curMember.current.getParents()}
+                    onChangeText={(text:any)=>curMember.current.setParents(text.toString())}/>
     
                 <TextInputBox 
                     title={"-Contato: "} 
-                    enabled={true} placeholder={curMember.current.contact} 
+                    enabled={true} placeholder={curMember.current.getContact()} 
                     keyboardType="numeric"
-                    default={curMember.current.contact}
-                    onChangeText={(text:string)=>curMember.current.contact = text.toString()}/>
+                    default={curMember.current.getContact()}
+                    onChangeText={(text:string)=>curMember.current.setContact(text.toString())}/>
     
-                
+
                 <DataSection text={"- Disponibilidade -"} centered={true} />
                 
                 <Text style={textStyles.dataTitle}>- Local:</Text>
@@ -139,8 +126,9 @@ export default function EditMember(){
     
                     <View style={{flexDirection:"row",alignItems:"center"}}>
                         <Text style={{fontFamily:"Inter-Bold",fontSize:20,padding:10,paddingRight:20}}>-Disponível: </Text>
-                        <CheckBox checked={curMember.current.onLineup}press = {()=>
-                            {curMember.current.onLineup = !curMember.current.onLineup}}/>
+                        <CheckBox checked={curMember.current.availability.isAvailable()} press = {()=>
+                            {curMember.current.availability.setAvailable(!curMember.current.availability.isAvailable())}
+                            }/>
                     </View>
                 </View>         
             </KeyboardAwareScrollView>
@@ -152,8 +140,8 @@ export default function EditMember(){
 
             <ConfirmationModal 
                 visible={confirmDeleteVisible}
-                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.current.nick+"\"?"} 
-                confirmAction={()=>EraseMember(memberID,type)} 
+                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.current.getNick()+"\"?"} 
+                confirmAction={()=>EraseMember(memberID)} 
                 declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
                 requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}
             /> 
@@ -169,22 +157,7 @@ export default function EditMember(){
  * @param type Tipo do membro
  */ 
 export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
-    let storageData:string // Nome da chave do AsyncStorage
-    let members:Array<any> // Lista de todos os acólitos ou coroinhas
-    
-    if(type == MemberType.ACOLYTE){
-        members = MemberData.allAcolytes
-        storageData = "AcolyteData"    
-    }
-    else if(type == MemberType.COROINHA){
-        members = MemberData.allCoroinhas
-        storageData = "CoroinhaData"    
-    }
-    
-    members[memberID] = curMember
-    members = OrganizeMemberArrayAlpha(members)
-
-    AsyncStorage.setItem(storageData,JSON.stringify(members))
+    MemberData.UpdateMemberOnDB(curMember)
     router.back()
                     
 }
@@ -193,20 +166,8 @@ export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
  * @param id índice do membro
  * @param type tipo de membro (MemberType)
  */
-export function EraseMember(id:number,type:MemberType){
-    let members:Array<Member> = GetMemberArray(type)
-    let data:string
-
-    switch (type){
-        case MemberType.ACOLYTE:
-            data = "AcolyteData";break
-        case MemberType.COROINHA:
-            data = "CoroinhaData";break
-    }
-
-    members.splice(id,1)
-    members = OrganizeMemberArrayAlpha(members)
-    AsyncStorage.setItem(data,JSON.stringify(members))
+export function EraseMember(id:number){
+    MemberData.DeleteMemberByIDOnDB(id)
     router.back()
     router.back()
 }

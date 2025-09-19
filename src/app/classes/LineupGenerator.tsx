@@ -1,4 +1,4 @@
-import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Methods";
+import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Util";
 import { Member, MemberData, MemberType } from "./MemberData";
 import { Roles, RoleSet } from "./Roles";
 import { Lineup } from "./Lineup";

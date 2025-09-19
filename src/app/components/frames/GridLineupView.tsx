@@ -4,7 +4,7 @@ import { Lineup } from "../../classes/Lineup"
 import { CompactLineup } from "./CompactLineup"
 import { ActivityIndicator, FlatList, Modal, ScrollView, View } from "react-native"
 import { MembersFromIDs } from "../../classes/MemberData"
-import { GetLineupUnvailableMembers } from "../../classes/Methods"
+import { GetLineupUnvailableMembers } from "../../classes/Util"
 import { MemberSelectModal } from "../input/MemberSelectModal"
 
 type GridLineupViewProps = {

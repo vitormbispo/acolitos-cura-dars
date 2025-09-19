@@ -6,7 +6,7 @@ import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
 import { MemberType } from "../classes/MemberData";
-import { AbbreviateText, DeepCopyObject } from "../classes/Methods";
+import { AbbreviateText, DeepCopyObject } from "../classes/Util";
 import { ImageButton } from "../components/buttons/ImageButton";
 import { RowImageButton } from "../components/buttons/RowImageButton";
 import { TextButton } from "../components/buttons/TextButton";

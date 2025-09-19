@@ -1,5 +1,4 @@
 {
     "0":"",
-    "1":"ALTER TABLE members ADD COLUMN memberAvailability INT;\nALTER TABLE members ADD FOREIGN KEY (memberAvailability) REFERENCES member_availabilities(id);\n",
-    "2":"ALTER TABLE members ADD COLUMN memberRotation INT;\nALTER TABLE members ADD FOREIGN KEY (memberRotation) REFERENCES member_rotations(id);\nPRAGMA user_version=2"
+    "1":"ALTER TABLE members ADD COLUMN memberRotation INT;\nPRAGMA user_version=1;"
 }

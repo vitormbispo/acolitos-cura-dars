@@ -8,7 +8,7 @@ import { contextStore, menuStore } from "../store/store"
 import { Member, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
 import { Roles, RoleSet } from "../classes/Roles"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
-import { GetMemberArray, ResetAllLastWeekend } from "../classes/Methods"
+import { GetMemberArray, ResetAllLastWeekend } from "../classes/Util"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
