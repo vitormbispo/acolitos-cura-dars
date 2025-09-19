@@ -22,7 +22,7 @@ export type MemberObject = {
 
 export class MemberRepository {
     
-    public static database
+    public static database:SQLite.SQLiteDatabase
     
     public static async InitRepository() {
         this.database = await SQLite.openDatabaseAsync("CURADARS")
@@ -57,7 +57,7 @@ export class MemberRepository {
     // CREATE
     public static async InsertMemberAsync(member:Member) {
         const typeName:string = MemberType[member.getType()]
-
+        
         return this.database.runAsync(`
             INSERT INTO members (type,name,nick,contact,parents,genOptions,availability,rotation) VALUES (
                 "${typeName}",
@@ -74,7 +74,12 @@ export class MemberRepository {
 
     //READ
     public static async FindMemberByIdAsync(id:number) {
-        const row:MemberObject = await this.database.getFirstAsync(`SELECT * FROM members WHERE id=${id}`)
+        let row:MemberObject
+
+        this.database.getFirstAsync(`SELECT * FROM members WHERE id=${id}`).then(
+            (result:MemberObject) => { row = result },
+            (e) => console.error("Error: " + e)
+        )
         if(row == null) return Promise.reject(`Member with id:${id} was not found.`)
         
         let foundMember:Member = this.BuildMember(row)
@@ -99,7 +104,10 @@ export class MemberRepository {
     // UPDATE
     public static async UpdateMemberAsync(member:Member) {
         let typeName:string = MemberType[member.getType()]
-        const result = await this.database.runAsync(`
+        let result
+        
+        try {
+            await this.database.runAsync(`
             UPDATE members SET 
             type = "${typeName}", 
             name = "${member.getName()}", 
@@ -111,6 +119,9 @@ export class MemberRepository {
             rotation = '${member.getRotation().asJSON()}'
             WHERE id = ${member.getId()}
             `)
+        } catch(e) {
+            return Promise.reject(e)
+        }
         console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
         return result
     }
