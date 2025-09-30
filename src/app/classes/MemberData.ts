@@ -137,6 +137,10 @@ export class MemberData{
         return this.allMembers.filter((member) => member.getType() == type)
     }
 
+    public static InitializeMemberData() {
+        this.LoadMembersFromDatabaseSync()
+    }
+    
     // DATABASE
     public static async LoadMembersFromDatabase() {
         MemberRepository.FindAllMembersAsync().then(

@@ -76,7 +76,7 @@ export class SetRolesRepository {
         return result
     }
 
-    public static DeleteSetRoleByRoleID(id:number) {
+    public static DeleteByRoleID(id:number) {
         let result:SQLite.SQLiteRunResult
 
         try {
@@ -89,7 +89,7 @@ export class SetRolesRepository {
         return result
     }
 
-    public static DeleteSetRoleBySetID(id:number) {
+    public static DeleteBySetID(id:number) {
         let result:SQLite.SQLiteRunResult
 
         try {
@@ -102,7 +102,7 @@ export class SetRolesRepository {
         return result
     }
 
-    public static DeleteSetRoleByRoleSetID(role_id:number,set_id:number) {
+    public static DeleteByRoleAndSetID(role_id:number,set_id:number) {
         let result:SQLite.SQLiteRunResult
 
         try {
@@ -110,6 +110,19 @@ export class SetRolesRepository {
             console.log(`DELETED set_roles by set_id. ${result.changes} rows affected.`)
         } catch(e) {
             console.error("Delete By Roleset ID Set Role Error: "+e)
+        }
+
+        return result
+    }
+
+    public static DeleteAll() {
+        let result:SQLite.SQLiteRunResult
+
+        try {
+            result = this.database.runSync(`DELETE FROM set_roles;`)
+            console.log(`DELETED ALL set_roles. ${result.changes} rows affected.`)
+        } catch(e) {
+            console.error("Delete all set roles error: "+e)
         }
 
         return result

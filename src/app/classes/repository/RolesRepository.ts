@@ -22,7 +22,7 @@ export class RolesRepository {
 
     public static InsertRole(role:string) {
         let result:SQLite.SQLiteRunResult
-        let id = null
+
         try {
             result = this.database.runSync(`
                 INSERT INTO roles (role) VALUES (
@@ -54,11 +54,6 @@ export class RolesRepository {
                 roleId = result["id"]
                 console.log("Role has been found with ID: "+roleId)
             }
-
-            //roleId = result == null ? 
-                //this.InsertRole(role).lastInsertRowId : 
-                //result.lastInsertRowId
-
         } catch (e) {
             console.error("Error: "+e)
         }
@@ -104,7 +99,7 @@ export class RolesRepository {
         try {
             let roleId = this.database.getFirstSync(`SELECT id FROM roles WHERE role="${role}"`)["id"]
             result = this.database.runSync(`DELETE roles WHERE role=${role}`)
-            SetRolesRepository.DeleteSetRoleByRoleID(roleId)
+            SetRolesRepository.DeleteByRoleID(roleId)
         } catch(e) {
             console.error("Error: "+e)
         }

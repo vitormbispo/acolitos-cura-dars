@@ -1,36 +1,29 @@
 import { MemberType } from "../MemberData"
+import { RoleSetRepository } from "../repository/RoleSetRepository"
+import { RolesData } from "./RolesData"
 import { RoleSet } from "./RoleSet"
 
 export class Roles {
-    /**
-     * Funções padrão dos acólitos
-     */
-    static defaultAcolyteRoles:object = {
-        "Ceroferário 1":0,
-        "Ceroferário 2":0,
-        "Cruciferário":0,
-        "Turiferário":0,
-        "Naveteiro":0,
-        "Librífero":0,
-    }
-    /**
-     * Funções padrão doscoroinhas
-     */
-    static defaultCoroinhaRoles:object = {
-        "Dons D.":0,
-        "Dons E.":0,
-        "Cestinho D.":0,
-        "Cestinho E.":0
-    }
-
-    static acolyteRoleSets:Array<RoleSet> = [] // Conjuntos de funções dos acólitos
-    static coroinhaRoleSets:Array<RoleSet> = [] // Conjuntos de funções dos coroinhas
-
+    public static readonly DEFAULT_ACOLYTE_ROLES:Array<string> = [
+        "Ceroferário 1",
+        "Ceroferário 2",
+        "Cruciferário",
+        "Turiferário",
+        "Naveteiro",
+        "Librífero"]
+    
+    public static readonly DEFAULT_COROINHA_ROLES:Array<string> = [
+        "Dons D.",
+        "Dons E.",
+        "Cestinho D.",
+        "Cestinho E."
+    ]
+    
     /**
      * Retorna o conjunto de funções padrão de determinado tipo de membro
      * @returns RoleSet
      */
-    static GetDefaultRoleset(type:MemberType):RoleSet{
+    public static GetDefaultRoleset(type:MemberType):RoleSet{
         let newSet:RoleSet = new RoleSet("default",type)
         newSet.SetRolesToDefault(false)
         newSet.size = newSet.set.length
@@ -43,53 +36,55 @@ export class Roles {
      * @param roles Funções
      * @param type Tipo de membro
      */
-    static AddRoleSet(name:string,roles:Array<string>,type:MemberType) {    
+    public static AddRoleSet(name:string,roles:Array<string>,type:MemberType,updateOnDB:boolean=true) {    
         let newSet = new RoleSet(name,type,roles)
-        switch(type){
-            case MemberType.ACOLYTE:
-                Roles.acolyteRoleSets.push(newSet)
-                //SaveData("AcolyteRolesets",Roles.acolyteRoleSets)
-                break
-            case MemberType.COROINHA:
-                Roles.coroinhaRoleSets.push(newSet)
-                //SaveData("CoroinhaRolesets",Roles.coroinhaRoleSets)
-                break
-        }
+        RolesData.rolesets.push(newSet)
+        if(updateOnDB) RoleSetRepository.InsertRoleSet(newSet)
     }
 
     /**
-     * Retorna os conjuntos de função padrão dos acólitos
-     * @returns Array<RoleSet>
+     * Retorna uma lista de RoleSets padrão.
+     * @returns lista de RoleSets
      */
-    static GetDefaultAcolyteSet():Array<RoleSet>{
+    public static GetDefaultSets():Array<RoleSet> {
         return [
-            new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.defaultAcolyteRoles),true),
-            new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true)
-        ]
-    }
-
-    /**
-     * Retorna os conjuntos de função padrão dos coroinhas
-     * @returns Array<RoleSet>
-     */
-    static GetDefaultCoroinhaSet():Array<RoleSet>{
-        return[
-            new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.defaultCoroinhaRoles),true),
+            new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true),
+            new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.DEFAULT_ACOLYTE_ROLES),true),
+            new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.DEFAULT_COROINHA_ROLES),true),
             new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
         ]
     }
 
     /**
-     * Inicializa os conjuntos de função com seus respectivos valores padrão
-     * @param type 
+     * Retorna uma lista de RoleSets padrão de um determinado tipo de membro.
+     * @param type tipo de membro
+     * @returns lista de RoleSets
      */
-    static InitializeSets(type:MemberType){
-        switch(type){
+    public static GetDefaultTypeSets(type:MemberType):Array<RoleSet> {
+        switch(type) {
             case MemberType.ACOLYTE:
-                Roles.acolyteRoleSets = this.GetDefaultAcolyteSet(); break
+                return [
+                    new RoleSet("Normal",MemberType.ACOLYTE,["Ceroferário 1","Ceroferário 2","Cruciferário","Librífero"],true),
+                    new RoleSet("Solenidade",MemberType.ACOLYTE,Object.keys(Roles.DEFAULT_ACOLYTE_ROLES),true),
+                ]
             case MemberType.COROINHA:
-                Roles.coroinhaRoleSets = this.GetDefaultCoroinhaSet(); break     
+                return[
+                    new RoleSet("Padrão",MemberType.COROINHA,Object.keys(Roles.DEFAULT_COROINHA_ROLES),true),
+                    new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
+                ]
         }
+    }
+
+    /**
+     * Inicializa os conjuntos de função com seus respectivos valores padrão.
+     * @param updateOnDB (opcional) Se `true`, salva as alterações no banco de dados
+     */
+    public static InitializeSets(updateOnDB:boolean=true){
+        RolesData.rolesets = this.GetDefaultSets()
+
+        if(updateOnDB)
+            RoleSetRepository.DeleteAll()
+            RolesData.rolesets.forEach((set) => RoleSetRepository.InsertRoleSet(set))
     }
     
     /**
@@ -98,45 +93,11 @@ export class Roles {
      * @param type Tipo de membri
      * @returns RoleSet
      */
-    static GetRoleSet(name:string,type:MemberType):RoleSet{
-        let list:Array<RoleSet>
-        switch(type){
-            case MemberType.ACOLYTE:
-                list = Roles.acolyteRoleSets; break
-            case MemberType.COROINHA:
-                list = Roles.coroinhaRoleSets; break
-        }
+    public static GetRoleSet(name:string,type:MemberType):RoleSet{
+        let list:Array<RoleSet> = RolesData.GetRoleSetsByType(type)
 
-        for(let i = 0; i < list.length; i++){
-            if(list[i].name == name){
-                return list[i]
-            }
-        }
-
-        console.error("Roleset \'"+name+"\' not found for member type \'"+type+"\'")
-    }
-
-    /**
-     * Verifica a integridade dos dados dos conjuntos de função
-     */
-    static VerifyRolesIntegrity(){
-        if(this.acolyteRoleSets == null){
-            this.acolyteRoleSets = this.GetDefaultAcolyteSet()
-        }
-
-        if(this.coroinhaRoleSets == null){
-            this.coroinhaRoleSets = this.GetDefaultCoroinhaSet()
-        }
-
-        //SaveData("AcolyteRolesets",this.acolyteRoleSets)
-        //SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
-    }
-
-    /**
-     *  Salva os dados dos conjuntos de função no AsyncStorage
-     */
-    static SaveRolesets(){
-        //SaveData("AcolyteRolesets",this.acolyteRoleSets)
-        //SaveData("CoroinhaRolesets",this.coroinhaRoleSets)
+        let found = list.find((set) => set.name == name)
+        if(found == null) console.error("Roleset \'"+name+"\' not found for member type \'"+type+"\'")
+        return found        
     }
 }

@@ -1,7 +1,6 @@
 import { MemberType } from "../MemberData";
-import { Member } from "./Member";
-import { Roles } from "../Roles";
 import { Rotation, RotationTypes } from "./Rotation";
+import { RoleSet } from "../roles/RoleSet";
 
 export class RoleRotation extends Rotation{
     constructor(memberType:MemberType) {
@@ -34,8 +33,8 @@ export class RoleRotation extends Rotation{
         let curMap:object = this.getMap()
         let roles:Array<string>
         switch(this.getMemberType()) {
-            case MemberType.ACOLYTE: roles = Roles.DEFAULT_ACOLYTE_ROLES; break
-            case MemberType.COROINHA: roles = Roles.DEFAULT_COROINHA_ROLES; break
+            case MemberType.ACOLYTE: roles = RoleSet.DEFAULT_ACOLYTE_ROLES; break
+            case MemberType.COROINHA: roles = RoleSet.DEFAULT_COROINHA_ROLES; break
         }
 
         roles.forEach((role)=> {

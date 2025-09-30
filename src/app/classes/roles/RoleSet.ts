@@ -1,7 +1,9 @@
 import { MemberType } from "../MemberData"
+import { RoleSetRepository } from "../repository/RoleSetRepository"
 import { RolesRepository } from "../repository/RolesRepository"
 import { SetRolesRepository } from "../repository/SetRolesRepository"
 import { Roles } from "./Roles"
+import { RolesData } from "./RolesData"
 
 export class RoleSet{
     private _id:number
@@ -20,6 +22,21 @@ export class RoleSet{
         
     }
     
+    public static readonly DEFAULT_ACOLYTE_ROLES:Array<string> = [
+        "Ceroferário 1",
+        "Ceroferário 2",
+        "Cruciferário",
+        "Turiferário",
+        "Naveteiro",
+        "Librífero"]
+    
+    public static readonly DEFAULT_COROINHA_ROLES:Array<string> = [
+        "Dons D.",
+        "Dons E.",
+        "Cestinho D.",
+        "Cestinho E."
+    ]
+
     public get id() {
         return this._id
     }
@@ -88,7 +105,7 @@ export class RoleSet{
 
         if(updateOnDB) {
             let roleId = RolesRepository.FindOrInsertRole(role)
-            SetRolesRepository.DeleteSetRoleByRoleSetID(roleId, this.id)  
+            SetRolesRepository.DeleteByRoleAndSetID(roleId, this.id)  
         }
 
         return true
@@ -100,24 +117,26 @@ export class RoleSet{
     public SetRolesToDefault(updateOnDB:boolean=true){
         switch(this.type){
             case MemberType.ACOLYTE:
-                this.set = Object.keys(Roles.defaultAcolyteRoles); break
+                this.set = Object.keys(RoleSet.DEFAULT_ACOLYTE_ROLES); break
             case MemberType.COROINHA:
-                this.set = Object.keys(Roles.defaultCoroinhaRoles); break
+                this.set = Object.keys(RoleSet.DEFAULT_COROINHA_ROLES); break
         }
 
-        if(updateOnDB) this.UpdateSetOnDB()
+        if(updateOnDB) {
+            SetRolesRepository.DeleteBySetID(this.id)
+        
+            this.set.forEach(role => {
+                let roleID = RolesRepository.FindOrInsertRole(role)
+                SetRolesRepository.InsertSetRole(roleID,this.id)
+            })
+        }
     }
 
     /**
      * Atualiza todas as funções do conjunto no banco de dados
      */
     public UpdateSetOnDB() {
-        SetRolesRepository.DeleteSetRoleBySetID(this.id)
-        
-        this.set.forEach(role => {
-            let roleID = RolesRepository.FindOrInsertRole(role)
-            SetRolesRepository.InsertSetRole(roleID,this.id)
-        })
+        RoleSetRepository.UpdateRoleSet(this)
     }
 
     /**
