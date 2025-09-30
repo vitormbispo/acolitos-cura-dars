@@ -9,12 +9,24 @@ export class RolesData {
         return this.rolesets.filter((set) => set.type == type)
     }
 
-    public static InitializeRolesData() {
-        this.LoadRolesetsFromDatabaseSync()
+    public static async InitializeRolesData() {
+        await this.LoadRolesetsFromDatabase()
         if(this.rolesets == null || this.rolesets.length == 0) {
             this.InitializeSets()
         }
+        return Promise.resolve()
     }
+
+    public static async LoadRolesetsFromDatabase() {
+        try {
+            this.rolesets = RoleSetRepository.FindAll()
+            return Promise.resolve()
+        } catch(e) {
+            console.error("Error loading RoleSets: "+e)
+            return Promise.reject(e)
+        }
+    }
+
     public static LoadRolesetsFromDatabaseSync():boolean {
         try {
             this.rolesets = RoleSetRepository.FindAll()

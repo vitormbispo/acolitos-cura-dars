@@ -137,10 +137,10 @@ export class MemberData{
         return this.allMembers.filter((member) => member.getType() == type)
     }
 
-    public static InitializeMemberData() {
-        this.LoadMembersFromDatabaseSync()
+    public static async InitializeMemberData() {
+        return this.LoadMembersFromDatabase()
     }
-    
+
     // DATABASE
     public static async LoadMembersFromDatabase() {
         MemberRepository.FindAllMembersAsync().then(
@@ -148,7 +148,7 @@ export class MemberData{
                 this.allMembers = result
                 this.SortMembersList()
             },
-            (e) => console.error("Error: " + e)
+            (e) => console.error("Error loading member data: " + e)
         )
     }
 
@@ -157,7 +157,7 @@ export class MemberData{
             this.allMembers = MemberRepository.FindAllMembers()
             this.SortMembersList()
         } catch(e) {
-            console.error("Error: "+e)
+            console.error("Error loading member data: "+e)
         }
     }
 

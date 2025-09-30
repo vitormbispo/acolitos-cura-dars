@@ -49,9 +49,10 @@ async function InitializeApp(){
     await SetRolesRepository.InitializeRepository().then(() => console.log("SetRoles OK"), e => console.error(e))
     await RoleSetRepository.InitializeRepository().then(() => console.log("RoleSet OK"), e => console.error(e))
 
-    MemberData.InitializeMemberData()
-    RolesData.InitializeRolesData()
+    await MemberData.InitializeMemberData()
+    await RolesData.InitializeRolesData()
 
+    console.log(RolesData.rolesets)
     // Carregando locais
     await Places.LoadPlaceData().then(()=>{
         Places.VerifyPlacesIntegrity()
