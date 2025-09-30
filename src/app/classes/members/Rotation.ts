@@ -1,6 +1,6 @@
 import { MemberType } from "../MemberData"
 import { Member } from "./Member"
-import { Roles } from "./Roles"
+import { Roles } from "../roles/Roles"
 
 export enum RotationTypes {
     DAYS,
@@ -29,7 +29,7 @@ export abstract class Rotation {
     public setRotationType(type:RotationTypes): void { this.rotationType = type }
 
     public abstract getRotation(...args:any): number
-    public abstract setRotation(...args:any)
+    public abstract setRotation(...args:any): void
 
     public getMemberType():MemberType {
         return this.memberType

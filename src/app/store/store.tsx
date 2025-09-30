@@ -1,11 +1,11 @@
-import { Member, MemberType } from '../classes/MemberData'
+import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
 import { Lineup, LineupType } from '../classes/Lineup'
-import { Roles } from '../classes/Roles'
 import { Dates, DateSet } from '../classes/Dates'
 import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
 import { Preset } from '../classes/PresetsData'
+import { Member } from '../classes/members/Member'
 
 
 export enum MenuStyles{
@@ -121,9 +121,9 @@ export const contextStore = create<ContextStates>((set)=>({
             "dayRotation":true,
             "dateset":new DateSet(),
             "places":[],
-            "roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
+            //"roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
             "exclusiveOptions":{},
-            "preset":new Preset(),
+            //"preset":new Preset(),
             "balance":true
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},

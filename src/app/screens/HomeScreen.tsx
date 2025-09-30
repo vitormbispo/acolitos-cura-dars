@@ -8,7 +8,6 @@ import { ImageTextButton, TextPosition } from "../components/buttons/ImageTextBu
 import { TextButton } from "../components/buttons/TextButton";
 import { MemberRepository } from "../classes/repository/MemberRepository";
 import { Member } from "../classes/members/Member";
-import { RotationRepository } from "../classes/repository/RotationRepository";
 import { RoleRotation } from "../classes/members/RoleRotation";
 import { MemberType } from "../classes/MemberData";
 import { RotationTypes } from "../classes/members/Rotation";
@@ -63,7 +62,7 @@ export function AppBody(){
         }}/>
 
         <TextButton text={"Apagar tudo"} press={() => {
-            RotationRepository.DeleteAll().then(()=>{console.log("Finish")})
+            //RotationRepository.DeleteAll().then(()=>{console.log("Finish")})
             MemberRepository.DeleteAll()
         }}/>
 

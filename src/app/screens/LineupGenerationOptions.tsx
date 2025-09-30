@@ -46,11 +46,11 @@ export type GenerationOptionsType = {
     "anyDays":boolean
     "dayRotation":boolean,
     "randomness":number,
-    "roleset":RoleSet,
+    //"roleset":RoleSet,
     "places":Array<string>,
     "dateset":DateSet,
     "exclusiveOptions":object,
-    "preset":Preset,
+    //"preset":Preset,
     "balance":boolean,
 }
 

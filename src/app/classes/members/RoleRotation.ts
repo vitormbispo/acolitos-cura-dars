@@ -1,6 +1,6 @@
 import { MemberType } from "../MemberData";
 import { Member } from "./Member";
-import { Roles } from "./Roles";
+import { Roles } from "../Roles";
 import { Rotation, RotationTypes } from "./Rotation";
 
 export class RoleRotation extends Rotation{

@@ -5,26 +5,62 @@ import { MemberType } from "./MemberData"
  * Conjunto de funções
  */
 export class RoleSet{
-    name:string = "" // Nome
-    type:MemberType = MemberType.ACOLYTE // Tipo de membro
-    set:Array<string> = [] // Lista de funções
-    size:number = 0 // Tamanho do conjunto
-    isDefault:boolean = false // É padrão? (OBS: NÃO permitir criação de conjuntos padrão pelo usuário)
+    private _name:string = "" // Nome
+    private _type:MemberType = MemberType.ACOLYTE // Tipo de membro
+    private _set:Array<string> = [] // Lista de funções
+    private _size:number = 0 // Tamanho do conjunto
+    private readonly _isDefault:boolean = false // É padrão? (OBS: NÃO permitir criação de conjuntos padrão pelo usuário)
 
     constructor(name:string,type:MemberType,set?:Array<string>,isDefault?:boolean){
-        this.name = name
+        this._name = name
         this.type = type
         this.set = set
         this.size = set != undefined ? set.length : 0
-        this.isDefault = isDefault != undefined ? isDefault : false
+        this._isDefault = isDefault != undefined ? isDefault : false
         
     }
     
+    public get name() {
+        return this.name
+    }
+
+    public set name(name:string) {
+        this._name = name
+    }
+    public get type() {
+        return this._type
+    }
+
+    public set type(type: MemberType) {
+        this._type = type
+    }
+
+    public get set() {
+        return this._set
+    }
+
+    public set set(set: Array<string>) {
+        this._set = set
+        this._size = set.length
+    }
+
+    public get size() {
+        return this._size
+    }
+
+    public set size(size: number) {
+        this._size = size
+    }
+
+    public get isDefault() {
+        return this._isDefault
+    }
+
     /**
     * Adiciona uma nova função ao conjunto
      * @param role Função a adicionar
      */
-    AddRole(role:string){
+    public AddRole(role:string){
         this.set.push(role)
     }
     /**
@@ -32,7 +68,7 @@ export class RoleSet{
      * @param role Nome da função a remover
      * @returns 
      */
-    RemoveRole(role:string){
+    public RemoveRole(role:string){
         let index = this.set.indexOf(role)
         if(index == -1){console.error("Role not found");return}
 
@@ -41,7 +77,7 @@ export class RoleSet{
     /**
      * Define o conjunto de funções para o padrão do tipo de membros.
      */
-    SetRolesToDefault(){
+    public SetRolesToDefault(){
         switch(this.type){
             case MemberType.ACOLYTE:
                 this.set = Object.keys(Roles.defaultAcolyteRoles); break
@@ -54,15 +90,32 @@ export class RoleSet{
      * Define o conjunto de funções
      * @param roles Array de strings com as funções
      */
-    setRoles(roles:string[]){
+    public setRoles(roles:string[]){
         this.set = roles
     }
 }
+
+
 
 /**
  * Armazena dados e métodos relacionados à funções
  */
 export class Roles {
+    public static readonly DEFAULT_ACOLYTE_ROLES:Array<string> = [
+        "Ceroferário 1",
+        "Ceroferário 2",
+        "Cruciferário",
+        "Turiferário",
+        "Naveteiro",
+        "Librífero"]
+    
+    public static readonly DEFAULT_COROINHA_ROLES:Array<string> = [
+        "Dons D.",
+        "Dons E.",
+        "Cestinho D.",
+        "Cestinho E."
+    ]
+    
     /**
      * Funções padrão dos acólitos
      */

@@ -1,4 +1,4 @@
-import { Member } from "./MemberData";
+import { Member } from "./members/Member";
 import { RoleSet } from "./Roles";
 
 /**
@@ -13,13 +13,32 @@ export enum LineupType {
  * Classe base de uma escala de acólitos
  */
 export class Lineup{
-    TYPE = LineupType.SINGLE
-    line = {}
-    members:any=[]
-    roleset:RoleSet
-    day:string = ""
-    weekend:string = ""
-    place:string = ""
+    private line:object
+    private members:Array<Member>
+    private roleset:RoleSet
+    private day:string = ""
+    private weekend:string = ""
+    private place:string = ""
+
+    constructor(roleset:RoleSet,day:string="",weekend:string="",place:string="") {
+        this.line = {}
+        this.members = []
+        this.day = day
+        this.weekend = weekend
+        this.place = place
+        this.roleset = roleset
+    }
+
+    public AssignRole(role:string,member:Member) {
+        this.line[role] = member
+        this.members.push(member)
+    }
+
+    public UnassignRole(role:string): Member {
+        const member = this.GetRoleMember(role)
+        delete this.line[role]
+        return member
+    }
 
     /** Retorna o membro relacionado a determinada função dessa escala
     *   @param role Função
@@ -34,8 +53,8 @@ export class Lineup{
     GetMemberRole(member:Member):string{
         let roles = Object.keys(this.line)
         for(let i = 0; i < roles.length; i++){
-            let curAco = this.line[roles[i]]
-            if(curAco.name == member.name){
+            let curAco:Member = this.line[roles[i]]
+            if(curAco.equals(member)){
                 return roles[i]
             }
         }
