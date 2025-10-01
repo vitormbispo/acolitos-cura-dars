@@ -7,7 +7,6 @@ import { router } from "expo-router";
 import { menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
-import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 import { PresetsData } from "../classes/PresetsData";
 import { TextButton } from "../components/buttons/TextButton";

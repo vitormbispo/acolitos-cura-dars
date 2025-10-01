@@ -1,12 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { GetMemberByID, Member, MemberData } from "./MemberData"
+import { GetMemberByID, MemberData, MemberType } from "./MemberData"
 import { RandomNumber } from "./Util"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
-import { Roles, RoleSet } from "./Roles"
+import { RoleSet } from "../classes/roles/RoleSet"
 import { Lineup, StructuredLineup } from "./Lineup"
 import { Preset, PresetsData } from "./PresetsData"
+import { Member } from "./members/Member"
+import { RolesData } from "./roles/RolesData"
 
 export type AppData = {
     "allAcolytes":{name:string,data:Member[]},
@@ -33,9 +35,9 @@ export function RetrieveAppData():AppData{
         "allLineups":{name:"Todas as escalas",data:MemberData.allLineups},
         "allLineupsCoroinhas":{name:"Escalas dos coroinhas",data:MemberData.allLineupsCoroinhas},
         "allLineupsAcolytes":{name:"Escalas dos acólitos",data:MemberData.allLineupsAcolytes},
-        "allMembers":{name:"Todos os membros",data:MemberData.allMembers},
-        "acolyteRoleSets":{name:"Funções dos acólitos",data:Roles.acolyteRoleSets},
-        "coroinhaRoleSets":{name:"Funções dos coroinhas",data:Roles.coroinhaRoleSets},
+        "allMembers":{name:"Todos os membros",data:MemberData.GetAllMembers()},
+        "acolyteRoleSets":{name:"Funções dos acólitos",data:RolesData.GetRoleSetsByType(MemberType.ACOLYTE)},
+        "coroinhaRoleSets":{name:"Funções dos coroinhas",data:RolesData.GetRoleSetsByType(MemberType.COROINHA)},
         "allPlaces":{name:"Locais",data:Places.allPlaces},
         "acolyteGenerationPresets":{name:"Predefinições dos acólitos",data:PresetsData.acolyteGenerationPresets},
         "coroinhaGenerationPresets":{name:"Predefinições dos coroinhas",data:PresetsData.coroinhaGenerationPresets}

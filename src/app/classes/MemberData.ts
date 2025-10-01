@@ -138,18 +138,20 @@ export class MemberData{
     }
 
     public static async InitializeMemberData() {
-        return this.LoadMembersFromDatabase()
+        return await this.LoadMembersFromDatabase()
     }
 
     // DATABASE
     public static async LoadMembersFromDatabase() {
-        MemberRepository.FindAllMembersAsync().then(
+        await MemberRepository.FindAllMembersAsync().then(
             (result) => {
                 this.allMembers = result
                 this.SortMembersList()
             },
             (e) => console.error("Error loading member data: " + e)
         )
+
+        return Promise.resolve()
     }
 
     public static LoadMembersFromDatabaseSync() {

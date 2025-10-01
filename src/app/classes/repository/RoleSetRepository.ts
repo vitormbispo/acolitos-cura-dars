@@ -45,7 +45,8 @@ export class RoleSetRepository {
                 ${roleSet.isDefault ? 1:0}
                 );`)
             setId = result.lastInsertRowId
-
+            roleSet.id = setId
+            
             roleSet.set.forEach(role => {
                 let roleId = RolesRepository.FindOrInsertRole(role)
                 SetRolesRepository.InsertSetRole(roleId,setId)

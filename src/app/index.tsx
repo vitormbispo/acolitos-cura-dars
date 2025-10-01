@@ -16,6 +16,9 @@ import { RoleSetRepository } from "./classes/repository/RoleSetRepository";
 import { SetRolesRepository } from "./classes/repository/SetRolesRepository";
 import { RoleSet } from "./classes/roles/RoleSet";
 import { RolesData } from "./classes/roles/RolesData";
+import { LineupRepository } from "./classes/repository/LineupRepository";
+import { Lineup } from "./classes/lineups/Lineup";
+import { LineupMembersRepository } from "./classes/repository/LineupMembersRepository";
 
 
 export default function App() {
@@ -45,14 +48,18 @@ export default function App() {
 async function InitializeApp(){
     await MemberRepository.InitRepository()
 
+    //await RepositoryManager.database.runAsync(`DROP TABLE lineup_members`).then(_ => console.log("Dropped table lineup_members"))
+    //await RepositoryManager.database.runAsync(`DROP TABLE lineups`).then(_ => console.log("Dropped table lineups"))
+
     await RolesRepository.InitializeRepository().then(() => console.log("Roles OK"), e => console.error(e))
     await SetRolesRepository.InitializeRepository().then(() => console.log("SetRoles OK"), e => console.error(e))
     await RoleSetRepository.InitializeRepository().then(() => console.log("RoleSet OK"), e => console.error(e))
+    await LineupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
+    await LineupMembersRepository.InitializeRepository().then(() => console.log("LineupMembers OK"), e => console.error(e))
 
     await MemberData.InitializeMemberData()
     await RolesData.InitializeRolesData()
-
-    console.log(RolesData.rolesets)
+    
     // Carregando locais
     await Places.LoadPlaceData().then(()=>{
         Places.VerifyPlacesIntegrity()

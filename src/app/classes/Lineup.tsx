@@ -1,5 +1,5 @@
 import { Member } from "./members/Member";
-import { RoleSet } from "./Roles";
+import { RoleSet } from "./roles/RoleSet";
 
 /**
  * Tipo de escala
@@ -30,6 +30,10 @@ export class Lineup{
     }
 
     public AssignRole(role:string,member:Member) {
+        if(!this.roleset.set.includes(role)) {
+            console.error(`Error assigning role "${role}". This role doesn't exist in this lineup's RoleSet!`)
+            return
+        }
         this.line[role] = member
         this.members.push(member)
     }

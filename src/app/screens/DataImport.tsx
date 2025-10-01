@@ -7,7 +7,6 @@ import { router} from "expo-router";
 import { useState } from "react";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { AppData, ConvertDataToClasses, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
-import { Roles } from "../classes/Roles";
 import { Places } from "../classes/Places";
 import { PresetsData } from "../classes/PresetsData";
 import { TextButton } from "../components/buttons/TextButton";

@@ -13,6 +13,7 @@ export enum LineupType {
  * Classe base de uma escala de acólitos
  */
 export class Lineup{
+    private _id:number
     private line:object
     private _members:Array<Member>
     private _roleset:RoleSet
@@ -29,6 +30,13 @@ export class Lineup{
         this.roleset = roleset
     }
 
+    public get id(): number {
+        return this._id
+    }
+
+    public set id(value: number) {
+        this._id = value
+    }
 
     public get members(): Array<Member> {
         return this._members;
@@ -63,6 +71,11 @@ export class Lineup{
     }
 
     public AssignRole(role:string,member:Member) {
+        if(!this.roleset.set.includes(role)) {
+            console.error(`Error assigning role "${role}". This role doesn't exist in this lineup's RoleSet!`)
+            return
+        }
+        
         const assigned:boolean = this.line[role] != null
         this.line[role] = member
 

@@ -1,6 +1,6 @@
 import { GenerationOptionsType } from "../screens/LineupGenerationOptions"
 import { DateSet } from "./Dates"
-import { RoleSet } from "./Roles"
+import { RoleSet } from "./roles/RoleSet"
 
 export class PresetsData {
     static acolyteGenerationPresets:Array<Preset> = []

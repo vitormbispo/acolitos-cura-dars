@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { Roles, RoleSet } from "../classes/Roles";
 import { router } from "expo-router";
 import { MemberType } from "../classes/MemberData";
 import { AbbreviateText, DeepCopyObject } from "../classes/Util";
