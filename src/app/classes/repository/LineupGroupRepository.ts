@@ -3,17 +3,19 @@ import { Lineup } from '../lineups/Lineup'
 import { LineupMemberObject, LineupMembersRepository } from './LineupMembersRepository'
 import { RoleSetRepository } from './RoleSetRepository'
 import { MemberData } from '../MemberData'
+import { GroupPlacesRepository } from './GroupPlacesRepository'
+import { PlacesRepository } from './PlacesRespository'
+import { LineupGroup } from '../lineups/LineupGroup'
+import { LineupRepository } from './LineupRepository'
+import { GroupLineupObject, GroupLineupsRepository } from './GroupLineupsRepository'
 
 
-type LineupObject = {
+type LineupGroupObject = {
     id:number,
-    day:string,
-    weekend:string,
-    place:string,
-    roleset_id:number
+    name:string
 }
 
-export class LineupRepository {
+export class LineupGroupRepository {
     private static database:SQLite.SQLiteDatabase
 
     public static async InitializeRepository() {
@@ -23,7 +25,7 @@ export class LineupRepository {
             PRAGMA journal_mode = WAL;
             PRAGMA foreign_keys = true;
             CREATE TABLE IF NOT EXISTS lineups (
-	            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 day VARCHAR(20),
                 weekend VARCHAR(20),
                 place VARCHAR(100),
@@ -61,8 +63,8 @@ export class LineupRepository {
         return result
     }
     
-    public static FindLineupByID(id:number):Lineup {
-        let result:LineupObject = null
+    public static FindLineupGroupByID(id:number):LineupGroup {
+        let result:LineupGroupObject = null
 
         try{
             result = this.database.getFirstSync(`SELECT * FROM lineups WHERE id=${id}`)
@@ -72,29 +74,54 @@ export class LineupRepository {
             return null
         }
         
-        return this.BuildLineup(result)
+        return this.BuildLineupGroup(result)
     }
 
-    public static BuildLineup(obj:LineupObject): Lineup {
-        const roleset = RoleSetRepository.FindRoleSetByID(obj.roleset_id)
-        const newLine = new Lineup(roleset,obj.day,obj.weekend,obj.place)
-        newLine.id = obj.id
-
-        const lineupMembers:Array<LineupMemberObject> = LineupMembersRepository.FindAllByLineup(obj.id)
+    public static GetGroupPlaces(id:number):Array<string> {
+        let result:Array<string> = []
         
-        lineupMembers.forEach((lineMember:LineupMemberObject) => {
-            const role = lineMember.role
-            const member = MemberData.FindMemberById(lineMember.member_id)
-            newLine.AssignRole(role,member)
-        })
-  
-        return newLine
+        try {
+            const places = GroupPlacesRepository.FindAllByGroupID(id)
+            places.forEach((place) => result.push(PlacesRepository.FindPlaceByID(place.place_id).place))
+        } catch(e) {
+            console.error("Error: ")
+        }
+        return result
     }
 
-    public static BuildAll(objs:Array<LineupObject>): Array<Lineup> {
+    public static GetGroupLineups(id:number):Array<Lineup> {
         let result:Array<Lineup> = []
 
-        objs.forEach((obj) => result.push(this.BuildLineup(obj)))
+        try {
+            const lineups = GroupLineupsRepository.FindAllByGroupID(id)
+            lineups.forEach((line) => result.push(LineupRepository.FindLineupByID(line.lineup_id)))
+
+        } catch(e) {
+            console.error("Error: "+ e)
+        }
+
+        return result
+    }
+
+    public static BuildLineupGroup(obj:LineupGroupObject): LineupGroup {
+        const group = new LineupGroup(obj.name)
+        group.id = obj.id
+        group.places = this.GetGroupPlaces(obj.id)
+        
+        const lineups:Array<GroupLineupObject> = GroupLineupsRepository.FindAllByGroupID(group.id)
+        lineups.forEach((line) => {
+            const lineup = LineupRepository.FindLineupByID(line.lineup_id)
+            group.monthLineupsMap[line.key] = lineup
+            group.lineups.push(lineup)
+        })
+        return group
+        
+    }
+
+    public static BuildAll(objs:Array<LineupGroupObject>): Array<LineupGroup> {
+        let result:Array<LineupGroup> = []
+
+        objs.forEach((obj) => result.push(this.BuildLineupGroup(obj)))
         return result
     }
 }
