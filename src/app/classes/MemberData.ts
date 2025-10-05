@@ -1,5 +1,5 @@
 //import AsyncStorage from "@react-native-async-storage/async-storage"
-import { StructuredLineup } from "./Lineup"
+import { LineupGroup } from "./lineups/LineupGroup"
 import { Member } from "./members/Member"
 import { MemberRepository } from "./repository/MemberRepository"
 
@@ -73,8 +73,8 @@ export class MemberData{
     static allCoroinhas: Member[] = []
     private static allMembers: Member[] = []
     static allLineups = [];
-    static allLineupsAcolytes:Array<StructuredLineup> = []
-    static allLineupsCoroinhas:Array<StructuredLineup> = []
+    static allLineupsAcolytes:Array<LineupGroup> = []
+    static allLineupsCoroinhas:Array<LineupGroup> = []
 
     /**
      * Verifica a integridade dos dados dos membros e salva

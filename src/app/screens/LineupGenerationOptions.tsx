@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Modal, Platform, ToastAndroid} from "react-native"
 import { GetMemberIcon } from "../classes/NewComps"
-import { Lineup, LineupType } from "../classes/Lineup"
+import { Lineup, LineupType } from "../classes/lineups/Lineup"
 import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup, GenerationCache } from "../classes/LineupGenerator"
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"

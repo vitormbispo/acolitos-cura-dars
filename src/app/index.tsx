@@ -50,12 +50,15 @@ async function InitializeApp(){
 
     //await RepositoryManager.database.runAsync(`DROP TABLE lineup_members`).then(_ => console.log("Dropped table lineup_members"))
     //await RepositoryManager.database.runAsync(`DROP TABLE lineups`).then(_ => console.log("Dropped table lineups"))
+    //await RepositoryManager.database.runAsync(`DROP TABLE role_set`).catch((e)=>{console.log("Error: "+e)})
 
     await RolesRepository.InitializeRepository().then(() => console.log("Roles OK"), e => console.error(e))
     await SetRolesRepository.InitializeRepository().then(() => console.log("SetRoles OK"), e => console.error(e))
     await RoleSetRepository.InitializeRepository().then(() => console.log("RoleSet OK"), e => console.error(e))
     await LineupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
-    await LineupMembersRepository.InitializeRepository().then(() => console.log("LineupMembers OK"), e => console.error(e))
+   // await LineupMembersRepository.InitializeRepository().then(() => console.log("LineupMembers OK"), e => console.error(e))
+
+
 
     await MemberData.InitializeMemberData()
     await RolesData.InitializeRolesData()

@@ -102,7 +102,7 @@ export class RoleSet{
         if(index == -1){console.error("Role not found");return false}
 
         this.set.splice(index,1)
-
+        console.log("THIS ID IS "+this.id)
         if(updateOnDB) {
             let roleId = RolesRepository.FindOrInsertRole(role)
             SetRolesRepository.DeleteByRoleAndSetID(roleId, this.id)  
@@ -139,11 +139,10 @@ export class RoleSet{
         RoleSetRepository.UpdateRoleSet(this)
     }
 
-    /**
-     * Define o conjunto de funções
-     * @param roles Array de strings com as funções
-     */
-    public setRoles(roles:string[]){
-        this.set = roles
+    public clone() {
+        let cloned = new RoleSet(this.name,this.type,this.set.slice(),this.isDefault)
+        cloned.id = this.id
+        cloned.size = this.size
+        return cloned
     }
 }

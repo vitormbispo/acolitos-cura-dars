@@ -3,7 +3,7 @@ import { MemberType } from "./MemberData";
 import * as Clipboard from 'expo-clipboard';
 //import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MemberData } from "./MemberData";
-import { Lineup } from "./Lineup";
+import { Lineup } from "./lineups/Lineup";
 import { Member } from "./members/Member";
 
 
@@ -278,6 +278,8 @@ export function AbbreviateText(text:string, maxLen:number):string{
  * @param obj Objeto a ser copiado
  */
 export function DeepCopyObject(obj:any):any{
+    let copied = JSON.parse(JSON.stringify(obj))
+    console.log("Deep copy: "+copied)
     return JSON.parse(JSON.stringify(obj))
 
 }

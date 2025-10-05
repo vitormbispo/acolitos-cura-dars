@@ -1,7 +1,8 @@
 import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Util";
-import { Member, MemberData, MemberType } from "./MemberData";
+import { MemberData, MemberType } from "./MemberData";
+import { Member } from "./members/Member"
 import { RoleSet } from "./roles/RoleSet";
-import { Lineup } from "./Lineup";
+import { Lineup } from "./lineups/Lineup";
 import { useEffect } from "react";
 import { generationStore } from "../store/store";
 

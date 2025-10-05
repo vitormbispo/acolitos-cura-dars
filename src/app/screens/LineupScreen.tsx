@@ -1,7 +1,7 @@
 import { View} from "react-native"
 import { router } from "expo-router"
 import { useState } from "react"
-import { Lineup, StructuredLineup } from "../classes/Lineup"
+import { Lineup } from "../classes/lineups/Lineup"
 import { CopyToClipboard, GenerateLineupPrompt} from "../classes/Util"
 import { menuStore } from "../store/store"
 import { MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"

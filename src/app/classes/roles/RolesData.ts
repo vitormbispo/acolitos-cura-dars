@@ -59,7 +59,20 @@ export class RolesData {
         let list:Array<RoleSet> = RolesData.GetRoleSetsByType(type)
 
         let found = list.find((set) => set.name == name)
+        //console.log("FOUND ROLESET = "+found)
         if(found == null) console.error("Roleset \'"+name+"\' not found for member type \'"+type+"\'")
+        return found        
+    }
+
+    /**
+     * Retorna um conjunto de funções com determinado id.
+     * @param id ID
+     * @returns RoleSet
+     */
+    public static GetRoleSetByID(id:number):RoleSet{
+        let found = this.rolesets.find((set) => set.id == id)
+        console.log("FOUND ROLESET = "+JSON.stringify(found))
+        if(found == null) console.error("Roleset not found")
         return found        
     }
     
@@ -84,6 +97,12 @@ export class RolesData {
         let newSet = new RoleSet(name,type,roles)
         RolesData.rolesets.push(newSet)
         if(updateOnDB) RoleSetRepository.InsertRoleSet(newSet)
+    }
+
+    public static UpdateRoleset(roleset:RoleSet) {
+        let index = this.rolesets.findIndex((set) => set.id == roleset.id)
+        this.rolesets[index] = roleset
+        RoleSetRepository.UpdateRoleSet(roleset)
     }
 
     /**

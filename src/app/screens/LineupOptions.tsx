@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import { textStyles } from "../styles/GeneralStyles"
 import { contextStore, menuStore } from "../store/store"
-import { LineupType } from "../classes/Lineup"
+import { LineupType } from "../classes/lineups/Lineup"
 import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"

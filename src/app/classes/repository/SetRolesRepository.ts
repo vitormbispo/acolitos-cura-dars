@@ -67,8 +67,8 @@ export class SetRolesRepository {
         let result:SQLite.SQLiteRunResult
 
         try {
-            result = this.database.runSync(`DELETE set_roles WHERE id=${id};`)
-            console.log(`DELETED set_roles by id. ${result.changes} rows affected.`)
+            result = this.database.runSync(`DELETE FROM set_roles WHERE id=${id};`)
+            console.log(`DELETED FROM set_roles by id. ${result.changes} rows affected.`)
         } catch(e) {
             console.error("Set Role Error: "+e)
         }
@@ -80,8 +80,8 @@ export class SetRolesRepository {
         let result:SQLite.SQLiteRunResult
 
         try {
-            result = this.database.runSync(`DELETE set_roles WHERE role_id=${id};`)
-            console.log(`DELETED set_roles by role_id. ${result.changes} rows affected.`)
+            result = this.database.runSync(`DELETE FROM set_roles WHERE role_id=${id};`)
+            console.log(`DELETED FROM set_roles by role_id. ${result.changes} rows affected.`)
         } catch(e) {
             console.error("Set Role Error: "+e)
         }
@@ -93,8 +93,8 @@ export class SetRolesRepository {
         let result:SQLite.SQLiteRunResult
 
         try {
-            result = this.database.runSync(`DELETE set_roles WHERE set_id=${id};`)
-            console.log(`DELETED set_roles by set_id. ${result.changes} rows affected.`)
+            result = this.database.runSync(`DELETE FROM set_roles WHERE set_id=${id};`)
+            console.log(`DELETED FROM set_roles by set_id. ${result.changes} rows affected.`)
         } catch(e) {
             console.error("Delete Set Role Error: "+e)
         }
@@ -104,10 +104,10 @@ export class SetRolesRepository {
 
     public static DeleteByRoleAndSetID(role_id:number,set_id:number) {
         let result:SQLite.SQLiteRunResult
-
+        console.log("DELETING ROLE_ID = "+role_id+" SET_ID = "+set_id)
         try {
-            result = this.database.runSync(`DELETE set_roles WHERE role_id=${role_id} AND set_id=${set_id};`)
-            console.log(`DELETED set_roles by set_id. ${result.changes} rows affected.`)
+            result = this.database.runSync(`DELETE FROM set_roles WHERE role_id=${role_id} AND set_id=${set_id};`)
+            console.log(`DELETED FROM set_roles by set_id. ${result.changes} rows affected.`)
         } catch(e) {
             console.error("Delete By Roleset ID Set Role Error: "+e)
         }

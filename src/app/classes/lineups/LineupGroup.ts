@@ -4,6 +4,7 @@ import { Lineup } from "./Lineup"
  * Classe para uma escala montada a ser exibida na tela de escalas.
  */
 export class LineupGroup{
+    private _id:number
     private _name:string
     private _lineups:Array<Lineup>
     private _places:Array<string> // Locais selecionados
@@ -16,6 +17,13 @@ export class LineupGroup{
         this.monthLineupsMap = monthLineupsMap
     }
 
+    public get id(): number {
+        return this._id;
+    }
+
+    public set id(value: number) {
+        this._id = value;
+    }
     public get name(): string {
         return this._name;
     }

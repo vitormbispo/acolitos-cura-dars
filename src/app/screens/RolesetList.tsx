@@ -8,23 +8,22 @@ import { useState } from "react";
 import { ImageButton } from "../components/buttons/ImageButton";
 import { RowImageButton } from "../components/buttons/RowImageButton";
 import { UpperBar } from "../components/display/UpperBar";
+import { RolesData } from "../classes/roles/RolesData";
+import { RoleSetRepository } from "../classes/repository/RoleSetRepository";
+import { RoleSet } from "../classes/roles/RoleSet";
 export default function RolesetList(){
     
     const {type,theme} = menuStore()
     const [rolesets,setRolesets] = useState({set:[]})
     let setsComps = []
-    switch(type){
-        case MemberType.ACOLYTE:
-            rolesets.set = Roles.acolyteRoleSets; break
-        case MemberType.COROINHA:
-            rolesets.set = Roles.coroinhaRoleSets;break
-    }
+
+    rolesets.set = RolesData.GetRoleSetsByType(type)
     
     for(let i = 0; i < rolesets.set.length; i++){
         let newComp = 
-        <RowRoleset name={rolesets.set[i].name} index={i} roleset={rolesets.set[i]} key={rolesets.set[i].name+i} deleteAction={()=>{
+        <RowRoleset name={rolesets.set[i].name} id={rolesets.set[i].id} roleset={rolesets.set[i]} key={rolesets.set[i].name+i} deleteAction={()=>{
             rolesets.set.splice(i,1)
-            Roles.SaveRolesets()
+            RoleSetRepository.DeleteRoleSetByID(rolesets.set[i].id)
             setRolesets({set:rolesets.set})
         }}/>
         setsComps.push(newComp)
@@ -46,7 +45,7 @@ export default function RolesetList(){
 
 type RowRolesetProps = {
     name:string
-    index:number
+    id:number
     roleset:RoleSet
     deleteAction: (...args:any) => any
 }
@@ -54,7 +53,7 @@ function RowRoleset(props:RowRolesetProps){
     const {updateRolesetID} = contextStore()
     return(
         <Pressable style={{alignContent:"center",alignItems:"center",flexDirection:"row",height:"15%",width:"100%",backgroundColor:"#FFFFFF"}} onPress={()=>{
-            updateRolesetID(props.index)
+            updateRolesetID(props.id)
             router.push("/screens/EditRoleset")
         }}>
             <Image style={uiStyles.buttonIcon} source={ICONS.acolito}/>

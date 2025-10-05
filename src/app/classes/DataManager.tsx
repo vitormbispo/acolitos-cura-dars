@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
 import { RoleSet } from "../classes/roles/RoleSet"
-import { Lineup, StructuredLineup } from "./Lineup"
+import { Lineup } from "./lineups/Lineup"
 import { Preset, PresetsData } from "./PresetsData"
 import { Member } from "./members/Member"
 import { RolesData } from "./roles/RolesData"

@@ -26,9 +26,10 @@ export class LineupRepository {
 	            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 day VARCHAR(20),
                 weekend VARCHAR(20),
-                place VARCHAR(100),
+                place_id INTEGER,
                 roleset_id INTEGER,
-                FOREIGN KEY (roleset_id) REFERENCES role_set(id)
+                FOREIGN KEY (roleset_id) REFERENCES role_set(id),
+                FOREIGN KEY (place_id) REFERENCES places(id)
 
             );
             `).then( () => {

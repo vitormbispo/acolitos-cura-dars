@@ -11,6 +11,9 @@ import { RowImageButton } from "../components/buttons/RowImageButton";
 import { TextButton } from "../components/buttons/TextButton";
 import { UpperBar } from "../components/display/UpperBar";
 import { TextInputBox } from "../components/input/TextInputBox";
+import { RoleSet } from "../classes/roles/RoleSet";
+import { RolesData } from "../classes/roles/RolesData";
+import { RoleSetRepository } from "../classes/repository/RoleSetRepository";
 
 export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)
@@ -18,23 +21,18 @@ export default function EditRoleset(){
     const {type,theme} = menuStore()
     const {rolesetID} = contextStore()
     
-    let setsArray:Array<RoleSet>
+    let setsArray:Array<RoleSet> = RolesData.rolesets
 
-    switch (type){
-        case MemberType.ACOLYTE:
-            setsArray = Roles.acolyteRoleSets; break
-        case MemberType.COROINHA:
-            setsArray = Roles.coroinhaRoleSets; break
-    }
-    const [curSet] = useState(DeepCopyObject(setsArray[rolesetID]))  
-    const [newSet,setNewSet] = useState(new RoleSet(curSet.name,curSet.type,curSet.set.slice(),curSet.isDefault))
+    const [curSet] = useState(RolesData.GetRoleSetByID(rolesetID).clone())
+    console.log("Cur set: "+curSet.name)
+    const [newSet,setNewSet] = useState(curSet.clone())
     
     let rolesComps:Array<React.JSX.Element> = []
     
     for(let i = 0; i < newSet.set.length;i++){
         let newComp = <RowRole allRoles={newSet.set} role={newSet.set[i]} index={i} key={i} deleteAction={()=>{
             newSet.RemoveRole(newSet.set[i]);
-            setNewSet(new RoleSet(newSet.name,newSet.type,newSet.set,newSet.isDefault))}}/>
+            setNewSet(newSet.clone())}}/>
         rolesComps.push(newComp)
     }
 
@@ -53,8 +51,7 @@ export default function EditRoleset(){
             </ScrollView>
             
             <TextButton  buttonStyle={{margin:30}}text={"Concluir"} press={()=>{
-                setsArray[rolesetID] = newSet
-                Roles.SaveRolesets()
+                RolesData.UpdateRoleset(newSet)
                 router.back()
             }}/>
         </View>
@@ -99,6 +96,7 @@ function AddModal(props:AddModalProps){
         </Modal>
     )
 }
+
 type RowRoleProps = {
     role:string
     allRoles:Array<string>

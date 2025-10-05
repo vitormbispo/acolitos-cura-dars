@@ -1,7 +1,7 @@
 import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
-import { Lineup, LineupType } from '../classes/Lineup'
+import { Lineup, LineupType } from '../classes/lineups/Lineup'
 import { Dates, DateSet } from '../classes/Dates'
 import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
 import { Preset } from '../classes/PresetsData'

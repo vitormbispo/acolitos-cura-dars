@@ -46,7 +46,7 @@ export class RoleSetRepository {
                 );`)
             setId = result.lastInsertRowId
             roleSet.id = setId
-            
+
             roleSet.set.forEach(role => {
                 let roleId = RolesRepository.FindOrInsertRole(role)
                 SetRolesRepository.InsertSetRole(roleId,setId)
@@ -93,10 +93,10 @@ export class RoleSetRepository {
         try {
             result = this.database.runSync(`UPDATE role_set SET
                 name="${roleset.name}",
-                memberType=${roleset.type}
-                size=${roleset.size}
+                memberType=${roleset.type},
+                size=${roleset.size},
                 isDefault=${roleset.isDefault ? 1:0}
-                `)
+                WHERE id=${roleset.id}`)
             SetRolesRepository.DeleteBySetID(roleset.id)
             roleset.set.forEach((role) => {
                 let roleId = RolesRepository.FindOrInsertRole(role)

@@ -22,7 +22,7 @@ export type MemberObject = {
 
 export class MemberRepository {
     
-    public static database:SQLite.SQLiteDatabase
+    private static database:SQLite.SQLiteDatabase
     
     public static async InitRepository() {
         this.database = await SQLite.openDatabaseAsync("CURADARS")

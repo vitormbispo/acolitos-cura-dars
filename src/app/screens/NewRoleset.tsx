@@ -9,6 +9,7 @@ import { RowImageButton } from "../components/buttons/RowImageButton";
 import { TextButton } from "../components/buttons/TextButton";
 import { UpperBar } from "../components/display/UpperBar";
 import { TextInputBox } from "../components/input/TextInputBox";
+import { RolesData } from "../classes/roles/RolesData";
 
 
 export default function NewRoleset(){
@@ -37,7 +38,7 @@ export default function NewRoleset(){
             </ScrollView>
             
             <TextButton  buttonStyle={{margin:30}}text={"Concluir"} press={()=>{
-                Roles.AddRoleSet(newSet.name,newSet.roles,type)
+                RolesData.AddRoleSet(newSet.name,newSet.roles,type)
                 router.back()
             }}/>
         </View>
