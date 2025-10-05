@@ -5,16 +5,16 @@ import { MemberRepository } from "../app/classes/repository/MemberRepository"
 test("Member instancing",()=>{
 
     let newMember:Member = new Member(MemberType.ACOLYTE,"João José","João J.","+55(13)98743-9856")
-    expect(newMember.getName()).toEqual("João José")
-    expect(newMember.getAvailability().dayAvailability).not.toBeNull()
+    expect(newMember.name).toEqual("João José")
+    expect(newMember.availability.dayAvailability).not.toBeNull()
 })
 
 test("Member cloning",() => {
     let newMember:Member = new Member(MemberType.ACOLYTE,"João José","João J.","+55(13)98743-9856")
     let clone = newMember.clone()
-    clone.setName("Lucas José")
-    expect(newMember.getName()).toEqual("João José")
-    expect(clone.getName()).toEqual("Lucas José")
+    clone.name = "Lucas José"
+    expect(newMember.name).toEqual("João José")
+    expect(clone.name).toEqual("Lucas José")
 
     newMember.availability.placeAvailability.setAvailable("Matriz",false)
     clone.availability.placeAvailability.setAvailable("Matriz",true)

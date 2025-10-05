@@ -56,20 +56,20 @@ export class MemberRepository {
 
     // CREATE
     public static async InsertMemberAsync(member:Member) {
-        const typeName:string = MemberType[member.getType()]
+        const typeName:string = MemberType[member.type]
         
         return this.database.runAsync(`
             INSERT INTO members (type,name,nick,contact,parents,genOptions,availability,rotation) VALUES (
                 "${typeName}",
-                "${member.getName()}",
-                "${member.getNick()}",
-                "${member.getContact()}",
-                "${member.getParents()}",
-                '${member.getGenOptions().asJSON()}',
-                '${member.getAvailability().asJSON()}',
-                '${member.getRotation().asJSON()}'
+                "${member.name}",
+                "${member.nick}",
+                "${member.contact}",
+                "${member.parents}",
+                '${member.genOptions.asJSON()}',
+                '${member.availability.asJSON()}',
+                '${member.rotation.asJSON()}'
             )
-            `).then(result => member.setId(result.lastInsertRowId),e => console.error("Error: "+e))
+            `).then(result => member.id = result.lastInsertRowId,e => console.error("Error: "+e))
     }
 
     //READ
@@ -103,26 +103,26 @@ export class MemberRepository {
 
     // UPDATE
     public static async UpdateMemberAsync(member:Member) {
-        let typeName:string = MemberType[member.getType()]
+        let typeName:string = MemberType[member.type]
         let result
         
         try {
             await this.database.runAsync(`
             UPDATE members SET 
             type = "${typeName}", 
-            name = "${member.getName()}", 
-            nick = "${member.getNick()}",
-            contact = "${member.getContact()}",
-            parents = "${member.getParents()}",
+            name = "${member.name}", 
+            nick = "${member.nick}",
+            contact = "${member.contact}",
+            parents = "${member.parents}",
             genOptions = '${member.genOptions.asJSON()}',
-            availability = '${member.getAvailability().asJSON()}',
-            rotation = '${member.getRotation().asJSON()}'
-            WHERE id = ${member.getId()}
+            availability = '${member.availability.asJSON()}',
+            rotation = '${member.rotation.asJSON()}'
+            WHERE id = ${member.id}
             `)
         } catch(e) {
             return Promise.reject(e)
         }
-        console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
+        console.log(`UPDATED member with id: ${member.id}. ${result.changes} row(s) affected.`)
         return result
     }
 
@@ -141,21 +141,21 @@ export class MemberRepository {
 
     // CREATE
     public static InsertMember(member:Member) {
-        const typeName:string = MemberType[member.getType()]
+        const typeName:string = MemberType[member.type]
         
         let result = this.database.runSync(`
             INSERT INTO members (type,name,nick,contact,parents,genOptions,availability,rotation) VALUES (
                 "${typeName}",
-                "${member.getName()}",
-                "${member.getNick()}",
-                "${member.getContact()}",
-                "${member.getParents()}",
-                '${member.getGenOptions().asJSON()}',
-                '${member.getAvailability().asJSON()}',
-                '${member.getRotation().asJSON()}'
+                "${member.name}",
+                "${member.nick}",
+                "${member.contact}",
+                "${member.parents}",
+                '${member.genOptions.asJSON()}',
+                '${member.availability.asJSON()}',
+                '${member.rotation.asJSON()}'
             )
             `)
-        member.setId(result.lastInsertRowId)
+        member.id = result.lastInsertRowId
     }
 
     //READ
@@ -183,20 +183,20 @@ export class MemberRepository {
 
     // UPDATE
     public static UpdateMember(member:Member): void {
-        let typeName:string = MemberType[member.getType()]
+        let typeName:string = MemberType[member.type]
         const result = this.database.runSync(`
             UPDATE members SET 
             type = "${typeName}", 
-            name = "${member.getName()}", 
-            nick = "${member.getNick()}",
-            contact = "${member.getContact()}",
-            parents = "${member.getParents()}",
+            name = "${member.name}", 
+            nick = "${member.nick}",
+            contact = "${member.contact}",
+            parents = "${member.parents}",
             genOptions = '${member.genOptions.asJSON()}',
-            availability = '${member.getAvailability().asJSON()}',
-            rotation = '${member.getRotation().asJSON()}'
-            WHERE id = ${member.getId()}
+            availability = '${member.availability.asJSON()}',
+            rotation = '${member.rotation.asJSON()}'
+            WHERE id = ${member.id}
             `)
-        console.log(`UPDATED member with id: ${member.getId()}. ${result.changes} row(s) affected.`)
+        console.log(`UPDATED member with id: ${member.id}. ${result.changes} row(s) affected.`)
     }
 
 
@@ -222,24 +222,24 @@ export class MemberRepository {
                 obj.parents
             )
 
-        newMember.setId(obj.id)
+        newMember.id = obj.id
         let opt = JSON.parse(obj.genOptions)
         
         let genOptions:MemberGenOptions = new MemberGenOptions(0,opt.priority,opt.dayPriority,opt.lastWeekend,opt.selectedOnLineups)
-        newMember.setGenOptions(genOptions)
+        newMember.genOptions = genOptions
 
         if(obj.availability == "" || obj.availability == null) {
-            newMember.setAvailability(new MemberAvailability())
+            newMember.availability = new MemberAvailability()
         } 
         else {
-            newMember.setAvailability(MemberAvailability.fromJSON(obj.availability))
+            newMember.availability = MemberAvailability.fromJSON(obj.availability)
         }
 
         if(obj.rotation == "" || obj.rotation == null) {
-            newMember.setRotation(new MemberRotation(MemberType[obj.type]))
+            newMember.rotation = new MemberRotation(MemberType[obj.type])
         } 
         else {
-            newMember.setRotation(MemberRotation.fromJSON(obj.rotation))
+            newMember.rotation = MemberRotation.fromJSON(obj.rotation)
         }
         
             

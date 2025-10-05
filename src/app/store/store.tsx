@@ -6,6 +6,7 @@ import { Dates, DateSet } from '../classes/Dates'
 import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
 import { Preset } from '../classes/PresetsData'
 import { Member } from '../classes/members/Member'
+import { RolesData } from '../classes/roles/RolesData'
 
 
 export enum MenuStyles{
@@ -121,9 +122,9 @@ export const contextStore = create<ContextStates>((set)=>({
             "dayRotation":true,
             "dateset":new DateSet(),
             "places":[],
-            //"roleset":Roles.GetDefaultRoleset(MemberType.ACOLYTE),
+            "roleset":RolesData.GetDefaultRoleset(MemberType.ACOLYTE),
             "exclusiveOptions":{},
-            //"preset":new Preset(),
+            "preset":new Preset(),
             "balance":true
         },
     switchingMember:{role:undefined,lineup:undefined,switching:false,update:undefined},

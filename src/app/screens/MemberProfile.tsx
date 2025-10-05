@@ -28,7 +28,7 @@ export default function MemberProfile() {
     let curMember:Member = MemberData.FindMemberById(memberID)
     
     const parents =  type == MemberType.COROINHA? 
-    <DataDisplay dataTitle={"- Responsável: "} data={curMember.getParents()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
+    <DataDisplay dataTitle={"- Responsável: "} data={curMember.parents} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/> : null
     
 
     const rodizio = []
@@ -71,7 +71,7 @@ export default function MemberProfile() {
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={curMember.getNick()}/>
+                <UpperBar icon={GetMemberIcon()} screenName={curMember.nick}/>
                 <UpperButton img={ICONS.edit} link={"/screens/EditMember"} backgroundColor={theme.accentColor}/>
             </View>
             
@@ -79,12 +79,12 @@ export default function MemberProfile() {
             <ScrollView style={{flex:1}} ref={scrollRef}>
                 <DataSection text={"- Dados pessoais -"} centered={true}/>
                 
-                <DataDisplay dataTitle={"- Nome: "} data={curMember.getName()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
-                <DataDisplay dataTitle={"- Apelido: "} data={curMember.getNick()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Nome: "} data={curMember.name} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Apelido: "} data={curMember.nick} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
                 {parents}
 
-                <DataDisplay dataTitle={"- Contato: "} data={curMember.getContact()} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
+                <DataDisplay dataTitle={"- Contato: "} data={curMember.contact} titleStyle={textStyles.dataTitle} dataStyle={textStyles.dataText}/>
 
                 <DataSection text={"- Disponibilidade -"} centered={true}/>
                 <Text style={textStyles.dataTitle}>- Local:</Text>

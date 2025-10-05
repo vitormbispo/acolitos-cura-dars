@@ -116,7 +116,7 @@ export class MemberData{
     }
 
     public static RemoveMemberByID(id:number) {
-        let index = this.allMembers.findIndex((m:Member) => m.getId() == id)
+        let index = this.allMembers.findIndex((m:Member) => m.id == id)
         this.allMembers.splice(index,1)
     }
 
@@ -129,7 +129,7 @@ export class MemberData{
     }
 
     public static FindMemberById(id:number): Member {
-        let member:Member = this.allMembers.find((m:Member) => m.getId() == id)
+        let member:Member = this.allMembers.find((m:Member) => m.id == id)
         return member
     }
 
@@ -243,7 +243,7 @@ export class MemberData{
 export function MemberIDList(members:Array<Member>):Array<number>{
     let ids = []
     members.forEach((member)=>{
-        ids.push(member.getId())
+        ids.push(member.id)
     })
     return ids
 }
@@ -270,7 +270,7 @@ export function MembersFromIDs(ids:Array<number>):Array<Member>{
  */
 export function GetMemberByID(id:number,members:Array<Member>):Member{
     for(let i = 0; i < members.length; i++){
-        if(members[i].getId() == id) {
+        if(members[i].id == id) {
             return members[i]
         } 
     }

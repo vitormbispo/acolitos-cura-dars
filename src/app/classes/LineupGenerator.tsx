@@ -36,11 +36,8 @@ export class GenerationCache {
     }
 
     static ClearAllMemberCache = ()=>{
-        MemberData.allAcolytes.forEach((acolyte)=>{
-            acolyte.selectedOnLineups = []
-        })
-        MemberData.allCoroinhas.forEach((coroinha)=>{
-            coroinha.selectedOnLineups = []
+        MemberData.GetAllMembers().forEach((member) => {
+            member.genOptions.setSelectedOnLineups([])
         })
     }
     static Reset = ()=>{
@@ -119,7 +116,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
     }
 
     // Escolher funções para cada membro e montar na classe Lineup.
-    let newLineup:Lineup = new Lineup()
+    let newLineup:Lineup = new Lineup(settings.roleset)
 
     for(let i = 0; i < settings.roleset.size; i++){
         let role = settings.roleset.set[i]
@@ -127,7 +124,7 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
         
-        IncreaseAllRoleCooldown(member,1,settings.type,Object.keys(member.rodizio))
+        IncreaseAllRoleCooldown(member,1,settings.type,Object.keys(member.rotation.roleRotation.getMap()))
         member.rodizio[role] = 0
         
         newLineup.line[role] = member

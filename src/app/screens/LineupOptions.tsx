@@ -5,10 +5,10 @@ import { LineupType } from "../classes/lineups/Lineup"
 import { useShallow } from "zustand/react/shallow"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
-import { MemberIDList } from "../classes/MemberData"
-import { GetMemberArray } from "../classes/Util"
+import { MemberData, MemberIDList } from "../classes/MemberData"
 import { UpperBar } from "../components/display/UpperBar"
 import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton"
+import { RolesData } from "../classes/roles/RolesData"
 
 
 export default function LineupOptions(){
@@ -26,10 +26,10 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.SINGLE)
-                        genOptions.roleset = Roles.GetDefaultRoleset(type)
+                        genOptions.roleset = RolesData.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = [Dates.defaultDays.slice()[0]]
-                        genOptions.members = MemberIDList(GetMemberArray(type).slice())
+                        genOptions.members = MemberIDList(MemberData.FindMembersByType(type))
                 }}/>
        
         <LinkRowImageButton textStyle=
@@ -39,11 +39,11 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.WEEKEND)
-                        genOptions.roleset = Roles.GetDefaultRoleset(type)
+                        genOptions.roleset = RolesData.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
                         genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = Dates.defaultDays.slice()
                         updateWeekend(Dates.defaultWeekends.slice()[0])
-                        genOptions.members = MemberIDList(GetMemberArray(type).slice())
+                        genOptions.members = MemberIDList(MemberData.FindMembersByType(type))
 
                 }}/>
         
@@ -54,10 +54,10 @@ export default function LineupOptions(){
                 link="/screens/LineupGenerationOptions"
                 press={()=>{
                         setLineupType(LineupType.MONTH)
-                        genOptions.roleset = Roles.GetDefaultRoleset(type)
+                        genOptions.roleset = RolesData.GetDefaultRoleset(type)
                         genOptions.monthDays = {}  
                         genOptions.monthDays = Dates.DefaultMonthDays()
-                        genOptions.members = MemberIDList(GetMemberArray(type).slice())               
+                        genOptions.members = MemberIDList(MemberData.FindMembersByType(type))              
                 }}/>
         
         <LinkRowImageButton textStyle=

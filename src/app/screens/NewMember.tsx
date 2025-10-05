@@ -58,7 +58,7 @@ export default function NewMember(){
             <TextInputBox 
                 title={"-Nome: "} 
                 enabled={true} 
-                onChangeText={(text:any)=>currentData.current.setName(text.toString())} 
+                onChangeText={(text:any)=>currentData.current.name = text.toString()} 
                 placeholder="Nome..."
                 onBlur={()=>{
                     //setNameAvailable(MemberData.IsNameAvailable(currentData.current.getName(),members))
@@ -74,7 +74,7 @@ export default function NewMember(){
                 title={"-Apelido: "} 
                 enabled={true} 
                 maxLength={20}
-                onChangeText={(text:any)=>currentData.current.setNick(text.toString())} 
+                onChangeText={(text:any)=>currentData.current.nick = text.toString()} 
                 placeholder="Apelido..."
                 onBlur={()=>{
                     //setNickAvailable(MemberData.IsNickAvailable(currentData.current.nick,members))
@@ -83,13 +83,13 @@ export default function NewMember(){
             <TextInputBox 
                 title={"-Responsável: "} 
                 enabled={type == MemberType.COROINHA} 
-                onChangeText={(text:any)=>currentData.current.setParents(text.toString())}
+                onChangeText={(text:any)=>currentData.current.parents = text.toString()}
                 placeholder="Responsável..."/>
             <TextInputBox 
                 title={"-Contato: "} 
                 enabled={true} 
                 keyboardType={"numeric"} 
-                onChangeText={(text:any)=>currentData.current.setContact(text.toString())} 
+                onChangeText={(text:any)=>currentData.current.contact = text.toString()} 
                 placeholder="Contato..."/>
             
             <DataSection text={"- Disponibilidade -"} centered={true}/>

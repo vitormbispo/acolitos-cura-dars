@@ -4,24 +4,23 @@ import { MemberGenOptions } from "./MemberGenOptions"
 import { MemberRotation } from "./MemberRotation"
 
 export class Member {
-    private id:number
-    private type:MemberType
-    private name:string
-    private nick:string
-    private contact:string
-    private parents:string
+    private _id:number
+    private _type:MemberType
+    private _name:string
+    private _nick:string
+    private _contact:string
+    private _parents:string
 
     public rotation:MemberRotation
     public availability:MemberAvailability
-    
     public genOptions:MemberGenOptions
 
     constructor(type:MemberType=MemberType.ACOLYTE,name:string="",nick:string="",contact:string="",parents:string="") {
-        this.type = type
-        this.name = name
-        this.nick = nick
-        this.contact = contact
-        this.parents = parents
+        this._type = type
+        this._name = name
+        this._nick = nick
+        this._contact = contact
+        this._parents = parents
         
         this.rotation = new MemberRotation(type)
         this.availability = new MemberAvailability()
@@ -29,47 +28,39 @@ export class Member {
     }
 
     public equals(other:Member) {
-        return this.id == other.id
+        return this._id == other._id
     }
 
     public clone(): Member {
         let newMember = new Member(
-            this.type,
-            this.name,
-            this.nick,
-            this.contact,
-            this.parents
+            this._type,
+            this._name,
+            this._nick,
+            this._contact,
+            this._parents
         )
-        newMember.setAvailability(this.availability.clone())
-        newMember.setRotation(this.rotation.clone())
-        newMember.setGenOptions(this.genOptions.clone())
-        newMember.setId(this.id)
+        newMember.availability = this.availability.clone()
+        newMember.rotation = this.rotation.clone()
+        newMember.genOptions = this.genOptions.clone()
+        newMember.id = this._id
         return newMember
     }
-    public getId(): number {return this.id}
-    public setId(id:number): void {this.id = id}
 
-    public getType(): MemberType {return this.type}
-    public setType(type:MemberType): void {this.type = type}
+    public get id():number { return this._id }
+    public set id(value:number) { this._id = value }
 
-    public getName(): string { return this.name }
-    public setName(name: string): void { this.name = name }
+    public get type():MemberType { return this._type } 
+    public set type(value:MemberType) { this._type = value }
 
-    public getNick(): string { return this.nick }
-    public setNick(nick: string): void { this.nick = nick }
+    public get name():string { return this._name }
+    public set name(value:string) { this._name = value }
 
-    public getContact(): string { return this.contact }
-    public setContact(contact: string): void { this.contact = contact }
+    public get nick(): string { return this._nick }
+    public set nick(value: string) { this._nick = value }
 
-    public getParents(): string { return this.parents }
-    public setParents(parents: string): void { this.parents = parents }
+    public get contact(): string { return this._contact }
+    public set contact(value: string) { this._contact = value }
 
-    public getGenOptions(): MemberGenOptions { return this.genOptions }
-    public setGenOptions(genOptions: MemberGenOptions) {this.genOptions = genOptions}
-
-    public getRotation(): MemberRotation { return this.rotation }
-    public setRotation(rotation: MemberRotation): void { this.rotation = rotation }
-
-    public getAvailability(): MemberAvailability { return this.availability }
-    public setAvailability(availability: MemberAvailability): void { this.availability = availability }
+    public get parents(): string { return this._parents }
+    public set parents(value: string) { this._parents = value }
 }

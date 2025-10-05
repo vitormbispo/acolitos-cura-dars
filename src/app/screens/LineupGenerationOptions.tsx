@@ -5,9 +5,9 @@ import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup,
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { Member, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
+import { MemberData, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
-import { GetMemberArray, ResetAllLastWeekend } from "../classes/Util"
+import { ResetAllLastWeekend } from "../classes/Util"
 import { Dates, DateSet } from "../classes/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../classes/AssetManager"
@@ -27,6 +27,9 @@ import { MemberSelectModal } from "../components/input/MemberSelectModal"
 import { LoadingModal } from "../components/display/LoadingModal"
 import { TextInputModal } from "../components/input/TextInputModal"
 import { ExpandableView } from "../components/frames/ExpandableView"
+import { RoleSet } from "../classes/roles/RoleSet"
+import { RolesData } from "../classes/roles/RolesData"
+import { Member } from "../classes/members/Member"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 
@@ -45,11 +48,11 @@ export type GenerationOptionsType = {
     "anyDays":boolean
     "dayRotation":boolean,
     "randomness":number,
-    //"roleset":RoleSet,
+    "roleset":RoleSet,
     "places":Array<string>,
     "dateset":DateSet,
     "exclusiveOptions":object,
-    //"preset":Preset,
+    "preset":Preset,
     "balance":boolean,
 }
 
@@ -81,13 +84,7 @@ export default function LineupGenerationOptions(){
     }
 
     // Seleção de RoleSet
-    let rolesets:Array<RoleSet> = []
-    switch(type){
-        case MemberType.ACOLYTE:
-            rolesets = Roles.acolyteRoleSets.slice(); break
-        case MemberType.COROINHA:
-            rolesets = Roles.coroinhaRoleSets.slice(); break
-    }
+    let rolesets:Array<RoleSet> = RolesData.GetRoleSetsByType(type)
 
     let rolesetOptions:Array<string> = []
     let rolesetActions:Array<(...args:any)=>any> = []
@@ -165,6 +162,8 @@ export default function LineupGenerationOptions(){
         presets.splice(curPreset.options.presetID,1)
         setCurPreset(new Preset())
     }
+
+    // Tela
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <UpperBar icon={ICONS.escala} screenName={"Nova escala"} toggleEnabled={false}/>
@@ -388,8 +387,6 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
 
     let generatedLineups:object = {}
     let allLineups:Array<Lineup> = []
-
-    LineupScreenOptions.lineups = []
             
     let weekends = Object.keys(generateOptions.monthDays)
     
@@ -445,7 +442,7 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
         } 
     }
     
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
 
     if(generateOptions.balance){
         BalanceLineups(members)
@@ -468,7 +465,6 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
     finished()
     router.push("/screens/LineupScreen")
 }
-
 
 /**
  * Alterna entre ativado/desativado o dia do fim de semana
@@ -686,13 +682,7 @@ function AdvancedOptions(props:any){
     let weekends = Object.keys(curGenOptions.monthDays)
     let wkButtons = []
    
-    let rolesets:Array<RoleSet> = []
-    switch(type){
-        case MemberType.ACOLYTE:
-            rolesets = Roles.acolyteRoleSets; break
-        case MemberType.COROINHA:
-            rolesets = Roles.coroinhaRoleSets; break
-    }
+    let rolesets:Array<RoleSet> = RolesData.GetRoleSetsByType(type)
 
     for(let i = 0; i < weekends.length; i++){
         let newButton = <TextButton buttonStyle={{padding:0}} text={weekends[i]} press={()=>{

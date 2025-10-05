@@ -40,15 +40,15 @@ export default function EditMember(){
         availabilities.push(available)
     }
 
-    const originalName = curMember.current.getName()
-    const originalNick = curMember.current.getNick()
+    const originalName = curMember.current.name
+    const originalNick = curMember.current.nick
     const [nameAvailable,setNameAvailable] = useState(true) // Estado apenas para avisos de nome indisponível
     const [nickAvailable,setNickAvailable] = useState(true) //
 
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row'}}>
-                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.getNick(),25)}/>
+                <UpperBar icon={GetMemberIcon()} screenName={AbbreviateText("Editando - "+curMember.current.nick,25)}/>
                 <UpperButton img={ICONS.delete} press={()=>{
                     setConfirmDeleteVisible(!confirmDeleteVisible)
                 }}
@@ -66,12 +66,12 @@ export default function EditMember(){
                 <TextInputBox 
                     title={"-Nome: "} 
                     enabled={true} 
-                    onChangeText={(text:any)=>curMember.current.setName(text.toString())} 
+                    onChangeText={(text:any)=>curMember.current.name = text.toString()} 
                     placeholder="Nome..."
-                    default={curMember.current.getName()}
+                    default={curMember.current.name}
                     onBlur={()=>{
-                        if(curMember.current.getName() != originalName){
-                            setNameAvailable(MemberData.IsNameAvailable(curMember.current.getName(),members))
+                        if(curMember.current.name != originalName){
+                            setNameAvailable(MemberData.IsNameAvailable(curMember.current.name,members))
                         }
                         
                     }}/>
@@ -87,12 +87,12 @@ export default function EditMember(){
                     title={"-Apelido: "} 
                     enabled={true} 
                     maxLength={20}
-                    onChangeText={(text:any)=>curMember.current.setNick(text.toString())} 
+                    onChangeText={(text:any)=>curMember.current.nick = text.toString()} 
                     placeholder="Apelido..."
-                    default={curMember.current.getNick()}
+                    default={curMember.current.nick}
                     onBlur={()=>{
-                        if(curMember.current.getNick() != originalNick){
-                            setNickAvailable(MemberData.IsNickAvailable(curMember.current.getNick(),members))
+                        if(curMember.current.nick != originalNick){
+                            setNickAvailable(MemberData.IsNickAvailable(curMember.current.nick,members))
                         }
                         
                     }}/>
@@ -100,16 +100,16 @@ export default function EditMember(){
                 <TextInputBox 
                     title={"-Responsável: "} 
                     enabled={type == MemberType.COROINHA} 
-                    default={curMember.current.getParents()}
-                    placeholder={curMember.current.getParents()}
-                    onChangeText={(text:any)=>curMember.current.setParents(text.toString())}/>
+                    default={curMember.current.parents}
+                    placeholder={curMember.current.parents}
+                    onChangeText={(text:any)=>curMember.current.parents = text.toString()}/>
     
                 <TextInputBox 
                     title={"-Contato: "} 
-                    enabled={true} placeholder={curMember.current.getContact()} 
+                    enabled={true} placeholder={curMember.current.contact} 
                     keyboardType="numeric"
-                    default={curMember.current.getContact()}
-                    onChangeText={(text:string)=>curMember.current.setContact(text.toString())}/>
+                    default={curMember.current.contact}
+                    onChangeText={(text:string)=>curMember.current.contact = text.toString()}/>
     
 
                 <DataSection text={"- Disponibilidade -"} centered={true} />
@@ -140,7 +140,7 @@ export default function EditMember(){
 
             <ConfirmationModal 
                 visible={confirmDeleteVisible}
-                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.current.getNick()+"\"?"} 
+                confirmationText={"Deseja excluir o acólito \n"+"\""+curMember.current.nick+"\"?"} 
                 confirmAction={()=>EraseMember(memberID)} 
                 declineAction={()=>{setConfirmDeleteVisible(!confirmDeleteVisible)}}
                 requestClose={()=>(setConfirmDeleteVisible(!confirmDeleteVisible))}
