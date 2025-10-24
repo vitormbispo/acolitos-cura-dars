@@ -4,39 +4,39 @@ import { Places } from "../Places";
 export class PlaceAvailability extends Availability {
     constructor() {
         super()
-        this.setAvailabilityType(AvailabilityTypes.PLACES)
+        this.availabilityType = AvailabilityTypes.PLACES
     }
 
     public setAvailable(place:string,available:boolean): void {
-        this.getMap()[place] = available
+        this.map[place] = available
     }
 
     public isAvailable(place:string): boolean {
-        return this.getMap()[place]
+        return this.map[place]
     }
     
     public static fromJSON(json:string):Availability {
         let obj = JSON.parse(json)
         let availability:PlaceAvailability = new PlaceAvailability()
 
-        availability.setId(obj.id)
-        availability.setMap(obj.map)
-        availability.setMemberType(obj.memberType)
-        availability.setMemberId(obj.memberId)
+        availability.id = obj.id
+        availability.map = obj.map
+        availability.memberType = obj.memberType
+        availability.memberID = obj.memberId
         
         return availability
     }
 
     updateMap(): void {
         let availability:object = {}
-        let curMap:object = this.getMap()
+        let curMap:object = this.map
         let places:Array<string> = Places.getPlaces()
         
         places.forEach((place)=> {
             availability[place] = Object.keys(curMap).includes(place) ? curMap[place] : true
         })
 
-        this.setMap(availability)
+        this.map = availability
     }
 
     

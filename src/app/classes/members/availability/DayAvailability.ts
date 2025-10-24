@@ -4,25 +4,28 @@ import { Dates } from "../Dates";
 export class DayAvailability extends Availability{
     constructor() {
             super()
-            this.setAvailabilityType(AvailabilityTypes.DAYS)
+            this.availabilityType = AvailabilityTypes.DAYS
         }
     
     public setAvailable(weekend:string, day:string, available:boolean): void {
-        this.getMap()[weekend][day] = available
+        this.map[weekend][day] = available
     }
 
     public isAvailable(weekend:string,day:string): boolean {
-        return this.getMap()[weekend][day]
+        if(this.map[weekend][day] == undefined) {
+            return true
+        }
+        return this.map[weekend][day]
     }
     
-    public static fromJSON(json:string):Availability {
+    public static fromJSON(json:string):DayAvailability {
         let obj = JSON.parse(json)
         let availability:DayAvailability = new DayAvailability()
 
-        availability.setId(obj.id)
-        availability.setMap(obj.map)
-        availability.setMemberType(obj.memberType)
-        availability.setMemberId(obj.memberId)
+        availability.id = obj.id
+        availability.map = obj.map
+        availability.memberType = obj.memberType
+        availability.memberID = obj.memberId
         
         return availability
     }
@@ -33,7 +36,7 @@ export class DayAvailability extends Availability{
 
     updateMap(): void {
         let availability:object = {}
-                let curMap:object = this.getMap()
+                let curMap:object = this.map
         
                 Dates.weekends.forEach(weekend => {
                     Dates.days.forEach(day => {
@@ -44,10 +47,10 @@ export class DayAvailability extends Availability{
                     })
                 })
         
-                this.setMap(availability)
+                this.map = availability
     }
 
     public isDayAvailable(weekend: string,day:string): boolean {
-        return this.getMap()[weekend][day]
+        return this.map[weekend][day]
     }
 }

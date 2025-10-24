@@ -1,10 +1,12 @@
-import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray, GetMemberArray } from "./Util";
+import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray } from "./Util";
 import { MemberData, MemberType } from "./MemberData";
 import { Member } from "./members/Member"
 import { RoleSet } from "./roles/RoleSet";
 import { Lineup } from "./lineups/Lineup";
 import { useEffect } from "react";
 import { generationStore } from "../store/store";
+import { RolesData } from "./roles/RolesData";
+import { RoleRotation } from "./members/RoleRotation";
 
 /**
  *  Armazena dados temporários da geração de escalas
@@ -37,7 +39,7 @@ export class GenerationCache {
 
     static ClearAllMemberCache = ()=>{
         MemberData.GetAllMembers().forEach((member) => {
-            member.genOptions.setSelectedOnLineups([])
+            member.genOptions.selectedOnLineups = []
         })
     }
     static Reset = ()=>{
@@ -123,15 +125,15 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
         
         let chosenForRole:Array<Member> = GetRolePrioritizedMembers(chosenMembers,role)
         let member:Member = GetRandom(chosenForRole)
+        let rotation:RoleRotation = member.rotation.roleRotation
         
-        IncreaseAllRoleCooldown(member,1,settings.type,Object.keys(member.rotation.roleRotation.getMap()))
-        member.rodizio[role] = 0
+        IncreaseAllRoleCooldown(member,1,settings.type,Object.keys(rotation.getMap()))
+        rotation.setRotation(role,0)
         
-        newLineup.line[role] = member
-        newLineup.members.push(member)
+        newLineup.AssignRole(role,member)
 
         // Relacionando índice da escala ao membro
-        member.selectedOnLineups.push(GenerationCache.curIndex) 
+        member.genOptions.selectedOnLineups.push(GenerationCache.curIndex) 
 
         RemoveMember(member,chosenMembers)
 
@@ -140,15 +142,15 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
             break;
         }
     }
-    
+
     newLineup.day = settings.day
     newLineup.weekend = settings.weekend
     newLineup.roleset = settings.roleset
     newLineup.place = settings.place
     newLineup.members.forEach((member:Member) => {
-        member.priority = 0
-        member.weekendPriority[settings.day] = 0
-        member.lastWeekend = settings.weekend
+        member.genOptions.priority = 0
+        member.rotation.dayRotation.setRotation(settings.day,0)
+        member.genOptions.lastWeekend = settings.weekend
     });
 
     // Ajustar prioridades
@@ -179,26 +181,24 @@ export function GenerateLineup(settings:GeneratorSettings):Lineup|null{
  * @returns {Lineup} Uma nova escala aleatória
  */
 export function GenerateRandomLineup(roleset:RoleSet,type?:MemberType,weekend:string="Outro",day:string="Outro",place?:string):Lineup{  
-    let members:Array<Member> = GetMemberArray(type).slice()
+    let members:Array<Member> = MemberData.FindMembersByType(type)
 
     let availableMembers = []
 
     availableMembers = RemoveUnvailable(members,"Outro","Outro",place)
 
-    let generatedLineup = new Lineup()
+    let generatedLineup = new Lineup(roleset)
     for(let i = 0; i < roleset.size;i++){
         let curRole:string = roleset.set[i]
         let curMemberIndex:number = RandomNumber(0,availableMembers.length-1)
         let curMember:Member = availableMembers[curMemberIndex]
-        
-        generatedLineup.line[curRole] = curMember
-        generatedLineup.members.push(curMember)
+
+        generatedLineup.AssignRole(curRole,curMember)
         availableMembers.splice(curMemberIndex,1)
     }
 
     generatedLineup.day = day
     generatedLineup.weekend = weekend
-    generatedLineup.roleset = roleset
     generatedLineup.place = place
     return generatedLineup
 }
@@ -212,10 +212,10 @@ export function GenerateRandomLineup(roleset:RoleSet,type?:MemberType,weekend:st
 export function CalculateScore(member:Member,day:string){
     let finalScore:number = 0
     
-    finalScore += member.priority**2
-    finalScore += member.weekendPriority[day]
+    finalScore += member.genOptions.priority**2
+    finalScore += member.rotation.dayRotation.getRotation(day)
 
-    member.score = finalScore;
+    member.genOptions.score = finalScore;
 }
 
 /**
@@ -234,7 +234,7 @@ export function InsertSortedByScore(member:Member,array:Array<Member>){
     }
 
     for(let i = 0; i < array.length; i ++){
-        if(member.score > array[i].score){ // Encontrou primeira posição menor.
+        if(member.genOptions.score > array[i].genOptions.score){ // Encontrou primeira posição menor.
             insertPos = i
             break
         }
@@ -258,12 +258,14 @@ function RemoveUnvailable(members:Array<Member>,day:string,weekend:string,place:
     let availableMembers = []
 
     for(let i = 0; i < members.length;i++){
-        let curMember = members[i]
+        const curMember = members[i]
+        const dayAvailability = curMember.availability.dayAvailability
+        const placeAvailability = curMember.availability.placeAvailability
 
-        if(curMember.onLineup){
+        if(curMember.availability.isAvailable()){
             if(day != "Outro" && weekend != "Outro"){
-                if(curMember.disp[weekend][day]){
-                    if( (place == undefined) || (place != undefined && curMember.placeDisp[place])){
+                if(dayAvailability.isAvailable(weekend,day)){
+                    if( (place == undefined) || (place != undefined && placeAvailability.isAvailable(place))){
                         availableMembers.push(curMember)
                         continue
                     }
@@ -298,7 +300,7 @@ function RemoveIfAlreadyOnWeekend(members:Array<Member>,weekend:string,min:numbe
     let available:Array<Member> = []
     
     members.forEach((member:Member) =>{
-        if(member.lastWeekend == weekend){
+        if(member.genOptions.lastWeekend == weekend){
             removed.push(member)
         }
         else{
@@ -335,20 +337,16 @@ function RemoveIfAlreadyOnWeekend(members:Array<Member>,weekend:string,min:numbe
  */
 function GetRolePrioritizedMembers(members:Array<Member>,role:string):Array<Member>{
     let prioritized:Array<Member> = []
-    let greatest:number = members[0].rodizio[role]
+    let greatest:number = members[0].rotation.roleRotation.getRotation(role)
 
     members.forEach((member) => { // Encontra o maior número (prioridade)
-        let prio = member.rodizio[role]
-        if(prio > greatest){
-            greatest = prio
+        const priority = member.rotation.roleRotation.getRotation(role)
+        if(priority > greatest){
+            greatest = priority
         }
     })
 
-    members.forEach((member)=>{
-        if(member.rodizio[role] == greatest){ // Adiciona todos os membros com maior prioridade ao array
-            prioritized.push(member)
-        }
-    })
+    prioritized = members.filter((member) => member.rotation.roleRotation.getRotation(role) == greatest)
 
     return prioritized
 }
@@ -362,13 +360,10 @@ function GetRolePrioritizedMembers(members:Array<Member>,role:string):Array<Memb
  */
 function IncreaseAllRoleCooldown(member:Member,weight:number,type:MemberType,roles?:Array<string>){
     if(roles == undefined){
-        switch(type) {
-            case MemberType.ACOLYTE:  roles = Object.keys(Roles.defaultAcolyteRoles); break
-            case MemberType.COROINHA: roles = Object.keys(Roles.defaultCoroinhaRoles); break
-        }
+        roles = RolesData.GetDefaultRolesByType(type)
     }
     roles.forEach((role) => {
-        member.rodizio[role]+=weight
+        member.rotation.roleRotation.increment(role,weight)
     })
 }
 /** Aumenta a prioridade geral de todos os membros, salvo exceções, por determinado peso
@@ -378,13 +373,13 @@ function IncreaseAllRoleCooldown(member:Member,weight:number,type:MemberType,rol
  * @param type OPCIONAL: tipo de membro
  */
 function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type?:MemberType){
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
 
     for(let i = 0; i < members.length;i++){
         let curMember = members[i]
 
         if(!HasMember(curMember,exceptions)){
-            curMember.priority += weight
+            curMember.genOptions.priority += weight
         }
     }
 }
@@ -397,13 +392,13 @@ function IncreaseAllGeneralPriority(exceptions:Array<Member>,weight:number,type?
  * @param type OPCIONAL: tipo de membro
  */
 function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:number,type?:MemberType) {
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
 
     for(let i = 0; i < members.length;i++) {
         let curMember = members[i]
 
         if(!HasMember(curMember,exceptions)){
-            curMember.weekendPriority[day]+=weight
+            curMember.rotation.dayRotation.increment(day,weight)
         }
     }
 }
@@ -417,13 +412,13 @@ function IncreaseAllDayPriority(exceptions:Array<Member>,day:string,weight:numbe
  * @param type tipo de membro
  */
 function IncreaseAllPlacePriority(exceptions:Array<Member>,place:string,weight:number,type?:MemberType) {
-    let members:Array<Member> = GetMemberArray(type)
+    let members:Array<Member> = MemberData.FindMembersByType(type)
 
     for(let i = 0; i < members.length;i++) {
         let curMember = members[i]
 
         if(!HasMember(curMember,exceptions)){
-            curMember.placeRotation[place]+=weight
+            curMember.rotation.placeRotation.increment(place,weight)
         }
     }
 }
@@ -435,17 +430,17 @@ function IncreaseAllPlacePriority(exceptions:Array<Member>,place:string,weight:n
  */
 function GetPrioritizedMembers(members:Array<Member>):Array<Member>{
     let prioritized:Array<Member> = []
-    let smallest:number = members[0].priority
+    let smallest:number = members[0].genOptions.priority
 
     members.forEach((member) => {
-        let prio = member.priority
+        let prio = member.genOptions.priority
         if(prio < smallest){
             smallest = prio
         }
     })
 
     members.forEach((member)=>{
-        if(member.priority == smallest){
+        if(member.genOptions.priority == smallest){
             prioritized.push(member)
         }
     })
@@ -461,12 +456,7 @@ function GetPrioritizedMembers(members:Array<Member>):Array<Member>{
  * @returns 
  */
 function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
-    let emptyLine = new Lineup()
-    emptyLine.day = day
-    emptyLine.weekend = weekend
-    emptyLine.roleset = roleset
-    
-    return emptyLine
+    return new Lineup(roleset,day,weekend)
 }
 
 /** 
@@ -476,10 +466,12 @@ function EmptyLineup(day:string, weekend:string, roleset:RoleSet):Lineup{
  * @param lineup Escala
  */
 function IsMemberAvailable(member:Member,lineup:Lineup){
-    return member.onLineup && 
+    const dayAvailability = member.availability.dayAvailability
+    const placeAvailability = member.availability.placeAvailability
+    return member.availability.isAvailable() && 
     !lineup.members.includes(member) &&
-    ((lineup.weekend == "Outro" && lineup.day == "Outro") || member.disp[lineup.weekend][lineup.day]) && 
-    (lineup.place == undefined || member.placeDisp[lineup.place])
+    ((lineup.weekend == "Outro" && lineup.day == "Outro") || dayAvailability.isAvailable(lineup.weekend,lineup.day)) && 
+    (lineup.place == undefined || placeAvailability.isAvailable(lineup.place))
 }
 
 /**
@@ -540,7 +532,7 @@ function SortByTimesSelected(members:Array<Member>,removeZero?:boolean):object{
         
         //if(!curMember.onLineup){continue}
 
-        let selected = curMember.selectedOnLineups.length
+        let selected = curMember.genOptions.selectedOnLineups.length
 
         if(timesSelected[selected] == undefined){
             timesSelected[selected] = [curMember]
@@ -572,14 +564,14 @@ function BalanceTwoClasses(least:Array<Member>,most:Array<Member>) {
 
         for(let h = 0; h < most.length;h++){
             let toReplace:Member = most[h]
-            let lineupsToCompare = toReplace.selectedOnLineups
+            let lineupsToCompare = toReplace.genOptions.selectedOnLineups
 
             for(let j = 0; j < lineupsToCompare.length; j++){
                 let curLine:Lineup = GenerationCache.lineups[lineupsToCompare[j]]
                 if(IsMemberAvailable(replacing,curLine)){
                     curLine.ReplaceMember(curLine.GetMemberRole(toReplace),replacing)
-                    toReplace.selectedOnLineups.splice(toReplace.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
-                    replacing.selectedOnLineups.push(lineupsToCompare[j])
+                    toReplace.genOptions.selectedOnLineups.splice(toReplace.genOptions.selectedOnLineups.indexOf(lineupsToCompare[j]),1)
+                    replacing.genOptions.selectedOnLineups.push(lineupsToCompare[j])
                     
                     least.splice(least.indexOf(replacing),1)
                     most.splice(most.indexOf(toReplace),1)
@@ -604,14 +596,14 @@ export function BalanceDiscarded(members:Array<Member>) {
             
             if(replacing.name == toReplace.name){continue} // Se for o mesmo membro, continua.
 
-            let lineupsToReplace = toReplace.selectedOnLineups
-            if((lineupsToReplace.length - replacing.selectedOnLineups.length) >= 2) {
+            let lineupsToReplace = toReplace.genOptions.selectedOnLineups
+            if((lineupsToReplace.length - replacing.genOptions.selectedOnLineups.length) >= 2) {
                 for(let k = 0; k < lineupsToReplace.length; k++){
                     let curLine:Lineup = GenerationCache.lineups[lineupsToReplace[k]]
                     if(IsMemberAvailable(replacing,curLine)){
                         curLine.ReplaceMember(curLine.GetMemberRole(toReplace),replacing)
-                        toReplace.selectedOnLineups.splice(toReplace.selectedOnLineups.indexOf(lineupsToReplace[j]),1)
-                        replacing.selectedOnLineups.push(lineupsToReplace[j])
+                        toReplace.genOptions.selectedOnLineups.splice(toReplace.genOptions.selectedOnLineups.indexOf(lineupsToReplace[j]),1)
+                        replacing.genOptions.selectedOnLineups.push(lineupsToReplace[j])
                     }
                 }
             }

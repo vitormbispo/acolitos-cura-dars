@@ -1,3 +1,4 @@
+import { MemberType } from "../MemberData"
 import { Lineup } from "./Lineup"
 
 /**
@@ -8,6 +9,7 @@ export class LineupGroup{
     private _name:string
     private _lineups:Array<Lineup>
     private _places:Array<string> // Locais selecionados
+    private _type:MemberType
     private _monthLineupsMap:object // Ex.: "1stWE":[Lineup,Lineup,Lineup]
 
     constructor(name:string,lineups:Array<Lineup>=[],places:Array<string>=[],monthLineupsMap:object={}) {
@@ -46,6 +48,14 @@ export class LineupGroup{
 
     public set places(value: Array<string>) {
         this._places = value;
+    }
+
+    public get type(): MemberType{
+        return this._type;
+    }
+
+    public set type(value: MemberType) {
+        this._type = value;
     }
 
     public get monthLineupsMap(): object {

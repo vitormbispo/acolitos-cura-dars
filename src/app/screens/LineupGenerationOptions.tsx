@@ -452,7 +452,7 @@ function BeginGeneration(generateOptions:GenerationOptionsType,type:MemberType,f
     
     LineupScreenOptions.monthLineups = generatedLineups
     LineupScreenOptions.lineups = allLineups
-    LineupScreenOptions.loaded = false
+    LineupScreenOptions.isLoaded = false
 
     if(members == null || members.length == 0){
         console.error("Unable to generate lineup. Members is empty.")

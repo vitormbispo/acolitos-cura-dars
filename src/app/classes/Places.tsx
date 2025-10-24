@@ -156,7 +156,7 @@ export class Places {
         allMembers.forEach((member)=>{
             const availability = member.availability.placeAvailability
             const rotation = member.rotation.placeRotation
-            let memberPlaces:Array<string> = Object.keys(availability.getMap())
+            let memberPlaces:Array<string> = Object.keys(availability.map)
             
             // Deletar locais
             memberPlaces.forEach((place=>{

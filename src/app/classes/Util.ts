@@ -208,7 +208,7 @@ export function HasMember(member:Member,array:Array<Member>):boolean {
  */
 export function ResetAllLastWeekend(members:Array<Member>){
     members.forEach((member) => {
-        member.genOptions.setLastWeekend("")
+        member.genOptions.lastWeekend = ""
     })
 }
 
@@ -252,7 +252,7 @@ export function GetIndexFromArray(obj:any,array:Array<any>){
  */
 export function ShufflePriorities(members:Array<Member>){
     members.forEach((member) => {
-        member.genOptions.setPriority(RandomNumber(0,4))
+        member.genOptions.priority = RandomNumber(0,4)
     })
 }
 
@@ -298,6 +298,7 @@ export function GetLineupUnvailableMembers(lineup:Lineup,type:MemberType):Array<
     let unvailable:Array<Member> = []
 
     members.forEach((member)=>{
+        console.log("XXXXXX PLACE ="+lineup.place+" "+lineup.place == null+" "+lineup.place == undefined)
         const dayAvailability = member.availability.dayAvailability
         const placeAvailability = member.availability.placeAvailability
         if(!dayAvailability.isAvailable(lineup.weekend,lineup.day) ||

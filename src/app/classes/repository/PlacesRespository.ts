@@ -72,7 +72,7 @@ export class PlacesRepository {
         return result
     }
 
-    public static UpdateRole(id:number,newPlace:string) {
+    public static UpdatePlace(id:number,newPlace:string) {
         let result:SQLite.SQLiteRunResult
         try {
             result = this.database.runSync(`UPDATE places SET place="${newPlace}" WHERE id=${id}`)

@@ -1,31 +1,32 @@
 export class MemberGenOptions {
-    private score:number
-    private priority:number
-    private dayPriority:object
-    private lastWeekend:string
-    private selectedOnLineups:Array<number>
+    private _score:number
+    private _priority:number
+    private _dayPriority:object
+    private _lastWeekend:string
+    private _selectedOnLineups:Array<number>
 
     constructor(score:number=0,priority:number=0,dayPriority:object={},lastWeekend:string="",selectedOnLineups:Array<number>=[]) {
-        this.score = score
-        this.priority = priority
-        this.dayPriority = dayPriority
-        this.lastWeekend = lastWeekend
-        this.selectedOnLineups = selectedOnLineups
+        this._score = score
+        this._priority = priority
+        this._dayPriority = dayPriority
+        this._lastWeekend = lastWeekend
+        this._selectedOnLineups = selectedOnLineups
     }
-    public getScore(): number { return this.score }
-    public setScore(score: number): void {this.score = score}
 
-    public getPriority(): number { return this.priority }
-    public setPriority(priority: number): void { this.priority = priority }
+    public get score():number { return this._score }
+    public set score(value:number) {this._score = value}
 
-    public getDayPriority(): object { return this.dayPriority }
-    public setDayPriority(dayPriority: object): void { this.dayPriority = dayPriority }
+    public get priority(): number { return this._priority }
+    public set priority(value: number) { this._priority = value }
 
-    public getLastWeekend(): string { return this.lastWeekend }
-    public setLastWeekend(lastWeekend: string): void { this.lastWeekend = lastWeekend }
+    public get dayPriority(): object { return this._dayPriority }
+    public set dayPriority(value: object) { this._dayPriority = value }
 
-    public getSelectedOnLineups(): Array<number> { return this.selectedOnLineups }
-    public setSelectedOnLineups(selectedOnLineups: Array<number>): void { this.selectedOnLineups = selectedOnLineups }
+    public get lastWeekend(): string { return this._lastWeekend }
+    public set lastWeekend(value: string) { this._lastWeekend = value }
+
+    public get selectedOnLineups(): Array<number> { return this._selectedOnLineups }
+    public set selectedOnLineups(value: Array<number>) { this._selectedOnLineups = value }
 
     public asJSON():string {
         return JSON.stringify(this)
@@ -38,11 +39,11 @@ export class MemberGenOptions {
     public static fromJSON(json:string):MemberGenOptions {
         const obj = JSON.parse(json)
         let newOptions = new MemberGenOptions()
-        newOptions.setScore(obj.score)
-        newOptions.setPriority(obj.priority)
-        newOptions.setDayPriority(obj.dayPriority)
-        newOptions.setLastWeekend(obj.lastWeekend)
-        newOptions.setSelectedOnLineups(obj.selectedOnLineups)
+        newOptions.score = obj.score
+        newOptions.priority = obj.priority
+        newOptions.dayPriority = obj.dayPriority
+        newOptions.lastWeekend = obj.lastWeekend
+        newOptions.selectedOnLineups = obj.selectedOnLineups
         return newOptions
     }
 

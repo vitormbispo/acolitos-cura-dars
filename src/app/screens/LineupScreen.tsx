@@ -4,13 +4,16 @@ import { useState } from "react"
 import { Lineup } from "../classes/lineups/Lineup"
 import { CopyToClipboard, GenerateLineupPrompt} from "../classes/Util"
 import { menuStore } from "../store/store"
-import { MemberData, MemberType, SaveAcolyteData, SaveCoroinhaData } from "../classes/MemberData"
+import { MemberData, MemberType } from "../classes/MemberData"
 import {ICONS} from "../classes/AssetManager"
 import { TextButton } from "../components/buttons/TextButton"
 import { UpperBar } from "../components/display/UpperBar"
 import { UpperButton } from "../components/buttons/UpperButton"
 import { GridLineupView } from "../components/frames/GridLineupView"
 import { ConfirmationModal } from "../components/input/ConfirmationModal"
+import { LineupGroup } from "../classes/lineups/LineupGroup"
+import { LineupData } from "../classes/lineups/LineupData"
+import { LineupGroupRepository } from "../classes/repository/LineupGroupRepository"
 
 export class LineupScreenOptions{
     static name = "Nova escala"
@@ -19,19 +22,30 @@ export class LineupScreenOptions{
     static places = [] // Locais selecionados
     static monthLineups:object = {} // Ex.: "1stWE":[Lineup,Lineup,Lineup]
 
-    static loaded:boolean = false; // A escala exibida é carregada?
+    static isLoaded:boolean = false; // A escala exibida é carregada?
     static loadedLineIndex:number = 0; // Índice da escala carregada
 
     /**
      * Salva os dados da lineup
-     * @returns StructuredLineup
+     * @returns LineupGroup
      */
-    public static SaveLineup():StructuredLineup{
-        let line = new StructuredLineup()
+    public static SaveLineup(type?:MemberType):LineupGroup{
+        let line = new LineupGroup(LineupScreenOptions.name)
     
         line.lineups = LineupScreenOptions.lineups
-        line.monthLineups = LineupScreenOptions.monthLineups
-        line.name = LineupScreenOptions.name
+        line.places = LineupScreenOptions.places
+        line.monthLineupsMap = LineupScreenOptions.monthLineups
+        line.type = type
+
+        if(LineupScreenOptions.isLoaded) {
+            let loaded = LineupData.savedLineups[LineupScreenOptions.loadedLineIndex]
+            console.log("Index: ")
+            console.log(LineupScreenOptions.loadedLineIndex)
+            console.log("Saved: ")
+            console.log(LineupData.savedLineups)
+            console.log("Loaded: "+ loaded)
+            line.id = loaded.id
+        }
 
         return line;
     }
@@ -40,28 +54,32 @@ export class LineupScreenOptions{
      * Carrega os dados da lineup:
      * @param line 
      */
-    public static LoadLineup(line:StructuredLineup){
+    public static LoadLineup(line:LineupGroup){
         LineupScreenOptions.lineups = line.lineups
-        LineupScreenOptions.monthLineups = line.monthLineups
+        LineupScreenOptions.monthLineups = line.monthLineupsMap
         LineupScreenOptions.name = line.name
+        LineupScreenOptions.places = line.places
     }
 }
 
 export default function LineupScreen(){
     const {type, theme} = menuStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
-    const upperBtn = LineupScreenOptions.loaded ? 
+    const upperBtn = LineupScreenOptions.isLoaded ? 
     <UpperButton img={ICONS.delete} press={()=>{
         setConfirmDeleteVisible(!confirmDeleteVisible)
     }}/>:
     null
 
+    console.log("INDEX IS: ")
+    console.log(LineupScreenOptions.loadedLineIndex)
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row', backgroundColor:theme.accentColor}}>
                 <UpperBar icon={ICONS.escala} screenName={"Escala:"}/>
                 {upperBtn}
             </View>
+
             <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
             
             <View style={{flexDirection:"row",justifyContent:"center"}}>
@@ -92,17 +110,19 @@ export default function LineupScreen(){
  * @param index Índice a ser excluído
  */
 function EraseLineup(index:number,type:MemberType){
-    let lineupsList:Array<StructuredLineup>
+    let lineupsList:Array<LineupGroup>
     switch (type){
         case MemberType.ACOLYTE:lineupsList = MemberData.allLineupsAcolytes;break
         case MemberType.COROINHA:lineupsList = MemberData.allLineupsCoroinhas;break
     }
     lineupsList.splice(index,1)
     
+    /*
     switch(type){
         case MemberType.ACOLYTE:SaveAcolyteData();break
         case MemberType.COROINHA:SaveCoroinhaData();break
     }
+        */
 }
 
 /**
@@ -110,34 +130,33 @@ function EraseLineup(index:number,type:MemberType){
  * @param type Tipo de membro
  */
 function SaveAllLineups(type:MemberType){
-    if(!LineupScreenOptions.loaded){
+    if(!LineupScreenOptions.isLoaded){
+        let saved:LineupGroup
+        let savedId:number = -1
+
         switch(type){
             case MemberType.ACOLYTE:
-                LineupScreenOptions.name = "Escala | Acólitos "+(MemberData.allLineupsAcolytes.length+1)
-                MemberData.allLineupsAcolytes = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsAcolytes) // Inserindo nova escala no início. Poupa um sort
-                SaveAcolyteData()
+                LineupScreenOptions.name = "Escala | Acólitos "+(LineupData.FindLineupsByType(type).length+1)
                 break
             case MemberType.COROINHA:
-                LineupScreenOptions.name = "Escala | Coroinhas "+(MemberData.allLineupsCoroinhas.length+1)
-                MemberData.allLineupsCoroinhas = [LineupScreenOptions.SaveLineup()].concat(MemberData.allLineupsCoroinhas)
-                SaveCoroinhaData()
+                LineupScreenOptions.name = "Escala | Coroinhas "+(LineupData.FindLineupsByType(type).length+1)
                 break
         }
 
-        LineupScreenOptions.loaded = true
+        
+        saved = LineupScreenOptions.SaveLineup(type)
+        savedId = LineupGroupRepository.Insert(saved).lastInsertRowId
+        saved.id = savedId
+        LineupData.AddLineups(saved)
+        
+        LineupScreenOptions.isLoaded = true
         LineupScreenOptions.loadedLineIndex = 0
     }
     else{
-        switch(type){
-            case MemberType.ACOLYTE:
-                MemberData.allLineupsAcolytes[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
-                SaveAcolyteData()
-                break
-            case MemberType.COROINHA:
-                MemberData.allLineupsCoroinhas[LineupScreenOptions.loadedLineIndex] = LineupScreenOptions.SaveLineup()
-                SaveCoroinhaData()
-                break
-        }
+        let saved = LineupScreenOptions.SaveLineup(type)
+
+        LineupData.UpdateLineupsByIndex(LineupScreenOptions.loadedLineIndex,saved)
+        LineupGroupRepository.Update(saved)
     }
 }
 

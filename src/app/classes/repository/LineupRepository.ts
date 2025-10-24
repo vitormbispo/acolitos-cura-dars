@@ -52,7 +52,7 @@ export class LineupRepository {
             
             lineup.roleset.set.forEach((role) => {
                 let member = lineup.GetRoleMember(role)
-                LineupMembersRepository.InsertLineupMember(role,member.getId(),lineup.id)
+                LineupMembersRepository.InsertLineupMember(role,member.id,lineup.id)
             })
             
         } catch(e) {

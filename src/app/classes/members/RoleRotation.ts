@@ -7,7 +7,7 @@ export class RoleRotation extends Rotation{
         super(memberType)
         this.rotationType = RotationTypes.ROLES
     }
-    
+
     public setRotation(key:string,value:number=0) {
         this.map[key] = value
     }

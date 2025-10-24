@@ -40,19 +40,19 @@ export abstract class Rotation {
     }
     
     /**
-     * Aumenta o valor do rodízio da chave 'key' em 1
+     * Aumenta o valor do rodízio da chave 'key' em 1 ou um valor determinado
      * @param key Chave
      */
-    public increment(key:string):void {
-        this.map[key]+=1
+    public increment(key:string,value:number=1):void {
+        this.map[key]+=value
     }
 
     /**
-     * Diminui o valor do rodízio da chave 'key' em 1
+     * Diminui o valor do rodízio da chave 'key' em 1 ou umm valor determinado
      * @param key Chave
      */
-    public decrement(key:string):void {
-        this.map[key]-=1
+    public decrement(key:string,value:number=1):void {
+        this.map[key]-=value
     }
 
     /**

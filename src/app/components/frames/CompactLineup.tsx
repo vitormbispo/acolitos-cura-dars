@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import { contextStore, menuStore } from "../../store/store"
-import { Member } from "../../classes/MemberData"
 import { View, Text } from "react-native"
 import { ImageButton } from "../buttons/ImageButton"
 import { ICONS } from "../../classes/AssetManager"
-import { Lineup } from "../../classes/Lineup"
+import { Member } from "../../classes/members/Member"
+import { Lineup } from "../../classes/lineups/Lineup"
 
 type CompactLineupProps = {
   line:Lineup
@@ -21,15 +21,12 @@ export function CompactLineup(props:CompactLineupProps){
 
   const BuildComponents = ()=>{
     let comps = []
-    for(let i = 0; i < lineup.members.length; i++){
-    
-      let role = Object.keys(lineup.line)[i]
+    lineup.roleset.set.forEach((role) => {
       let member:Member = lineup.GetRoleMember(role)
-  
       let component = 
-      <View style={{flexDirection:"row", alignItems:"center"}} key={i}>
+      <View style={{flexDirection:"row", alignItems:"center"}} key={role}>
         <Text style={{fontFamily:"Inter-Bold",fontSize:10,flex:1/2}}>{role+""}</Text>
-        <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member.nick}</Text>
+        <Text style={{fontFamily:"Inter-Regular",fontSize:10,flex:1/2}}>{member != null ? member.nick : "-Sem escala-"}</Text>
         
         
         <ImageButton img={ICONS.switch} imgStyle={{width:24,height:24,resizeMode:"contain"}}
@@ -40,12 +37,12 @@ export function CompactLineup(props:CompactLineupProps){
           press={()=>{
             Replace(role)
           }}
-        />
-        
-        </View>
-  
+        />  
+      </View>
+
       comps.push(component)
-    }
+    })
+    
     return comps
   }
 
@@ -79,7 +76,7 @@ export function CompactLineup(props:CompactLineupProps){
     newState.role = role
     newState.lineup = props.line
     newState.replacing = true
-    newState.member = props.line.line[role]
+    newState.member = props.line.GetRoleMember(role)
     newState.update = ()=>{setRoles(BuildComponents())}
     updateReplacingMember(newState)
   }

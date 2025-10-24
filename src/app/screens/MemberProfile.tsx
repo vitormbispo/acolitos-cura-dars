@@ -103,7 +103,7 @@ export default function MemberProfile() {
                  </View>
 
                 <DataSection text={"- Rodízio -"} centered={true}/>
-                <DataDisplay dataTitle={"Geral: "} data={curMember.genOptions.getPriority().toString()}
+                <DataDisplay dataTitle={"Geral: "} data={curMember.genOptions.priority.toString()}
                              titleStyle={{fontFamily:"Inter-Bold",fontSize:30,alignSelf:"center"}}
                              dataStyle={{fontFamily:"Inter-Regular",fontSize:20,alignSelf:"center"}}/>
                 

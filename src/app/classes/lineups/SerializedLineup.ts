@@ -1,23 +1,21 @@
-import { Member } from "../members/Member";
-import { RoleSet } from "../roles/RoleSet";
-import { Lineup } from "./Lineup";
+import { MemberType } from "../MemberData"
 
-/**
- * Tipo de escala
- */
-export enum setupType {
-    SINGLE,
-    WEEKEND,
-    MONTH
-}
 /**
  * Classe base de uma escala de acólitos
  */
+export type SerializedMember = {
+    id:number
+    name:string
+    type?:MemberType
+}
+
 export class SerializedLineup{
     private _id:number
     private _name:string
+    private _day:string
+    private _weekend:string
+    private _type:MemberType
     private _place:string
-    private _members:Array<string>
     private _line:object
 
     constructor(name: string="", place: string="", line: object={}) {
@@ -42,12 +40,36 @@ export class SerializedLineup{
         this._name = value;
     }
 
+    public get day(): string {
+        return this._day
+    }
+
+    public set day(value:string) {
+        this._day = value
+    }
+
+    public get weekend(): string {
+        return this._weekend
+    }
+
+    public set weekend(value:string) {
+        this._weekend = value
+    }
+
     public get place(): string {
         return this._place;
     }
 
     public set place(value: string) {
         this._place = value;
+    }
+
+    public get type(): MemberType {
+        return this._type;
+    }
+
+    public set type(value: MemberType) {
+        this._type = value;
     }
 
     public get line(): object {
@@ -58,33 +80,12 @@ export class SerializedLineup{
         this._line = value;
     }
 
-    public get members(): Array<string> {
-        return this._members;
-    }
-
-    public set members(value: Array<string>) {
-        this._members = value;
-    }
-
-    public AssignRole(role:string,member:string) {
+    public AssignRole(role:string,member:SerializedMember) {
         this.line[role] = member
-        
-        const assigned:boolean = this.line[role] != null
-        this.line[role] = member
-
-        if(assigned) {
-            const index = this.members.indexOf(member)
-            this.members[index] = member
-        }
-        else {
-            this.members.push(member)
-        }
     }
 
-    public UnassignRole(role:string): string {
+    public UnassignRole(role:string): SerializedMember {
         const member = this.GetRoleMember(role)
-        const index = this.members.indexOf(member)
-        this.members.splice(index,1)
         delete this.line[role]
         return member
     }
@@ -92,7 +93,7 @@ export class SerializedLineup{
     /** Retorna o membro relacionado a determinada função dessa escala
     *   @param role Função
     */ 
-    public GetRoleMember(role:string):string{
+    public GetRoleMember(role:string):SerializedMember{
         return this.line[role]
     }
 
@@ -140,24 +141,22 @@ export class SerializedLineup{
      * @param newMember Membro substituto
      * @param update Função para atualizar o componente após substituição
      */
-    public ReplaceMember(replaceRole:string,newMember:string,update?:any){
+    public ReplaceMember(replaceRole:string,newMember:SerializedMember,update?:any){
         this.AssignRole(replaceRole,newMember)
-        let originalIndex = this.members.indexOf(this.GetRoleMember(replaceRole))
-        this.members[originalIndex] = newMember
-        this.line[replaceRole] = newMember
+        update()
     }
 
-    public static Serialize(lineup:Lineup):SerializedLineup {
-        let serialized:SerializedLineup = new SerializedLineup()
-        serialized.name = `${lineup.weekend} ${lineup.day}`
-        serialized.place = lineup.place
-        lineup.members.forEach((member) => {
-            const name = member.getName()
-            const role = lineup.GetMemberRole(member)
+    public asJSON():string {
+        return JSON.stringify(this)
+    }
 
-            serialized.AssignRole(role,name)
-        }
-    )
-        return serialized
+    public static fromJSON(json:string):SerializedLineup {
+        let obj = JSON.parse(json)
+        let newLineup = new SerializedLineup(obj.name,obj.place,obj.line)
+        newLineup.day = obj.day
+        newLineup.weekend = obj.weekend
+        newLineup.id = obj.id
+        return newLineup
+
     }
 }

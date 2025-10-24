@@ -2,11 +2,11 @@ import { FlatList, Modal, Pressable, View, Image, Text } from "react-native"
 import { TextButton } from "../buttons/TextButton"
 import { CheckBox } from "./CheckBox"
 import { useState } from "react"
-import { Member, MemberIDList } from "../../classes/MemberData"
-import { GetMemberArray } from "../../classes/Util"
+import { MemberData, MemberIDList } from "../../classes/MemberData"
 import { menuStore } from "../../store/store"
 import { GetMemberIcon } from "../../classes/NewComps"
 import { textStyles, uiStyles } from "../../styles/GeneralStyles"
+import { Member } from "../../classes/members/Member"
 
 type MemberSelectModalProps = {
   visible:boolean
@@ -30,8 +30,9 @@ type MemberSelectModalProps = {
  */
 export function MemberSelectModal(props:MemberSelectModalProps){
   const {theme,type} = menuStore()
-  let members:Array<Member> = GetMemberArray(type)
+  let members:Array<Member> = MemberData.FindMembersByType(type)
   let membersIDs:Array<number> = MemberIDList(members)
+  
   if(props.selectedMembersIDs == undefined){props.selectedMembersIDs = []}
 
   const [selected,setSelected] = useState(props.allSelected ? membersIDs.slice(): (props.selectedMembersIDs != null ? props.selectedMembersIDs : []))

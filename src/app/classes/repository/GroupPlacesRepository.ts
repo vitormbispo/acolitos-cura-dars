@@ -14,15 +14,19 @@ export class GroupPlacesRepository {
 
     public static async InitializeRepository() {
         this.database = RepositoryManager.database
-        let result = this.database.execAsync(`CREATE TABLE IF NOT EXISTS group_places (
+        let result = this.database.execAsync(`
+            PRAGMA foreign_keys=true;
+            CREATE TABLE IF NOT EXISTS group_places (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             group_id INTEGER,
-            place_id INTEGER
+            place_id INTEGER,
+            FOREIGN KEY (group_id) REFERENCES lineup_group(id),
+            FOREIGN KEY (place_id) REFERENCES places(id)
         );`).then((_) => { return Promise.resolve(true) }, (e) => { return Promise.reject(e) })
         return result
     }
 
-    public static InsertGroupPlace(group_id: number, place_id: number) {
+    public static Insert(group_id: number, place_id: number) {
         let result: SQLite.SQLiteRunResult
 
         try {
@@ -83,6 +87,18 @@ export class GroupPlacesRepository {
         } catch (e) {
             console.error("Error: " + e)
         }
+
+        return result
+    }
+
+    public static DeleteAllByGroupID(group_id: number): SQLite.SQLiteRunResult{
+        let result:SQLite.SQLiteRunResult = null
+
+        try {
+            this.database.runSync(`DELETE FROM group_places WHERE group_id=${group_id}`)
+        } catch(e) {
+            console.error("Error deleting group places by group ID: "+e)
+        } 
 
         return result
     }

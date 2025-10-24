@@ -1,13 +1,16 @@
 import * as SQLite from 'expo-sqlite'
 import { RepositoryManager } from './RepositoryManager'
 import { SerializedLineup } from '../lineups/SerializedLineup'
+import { MemberType } from '../MemberData'
 
 
 export type SerializedLineupObject = {
     id:number,
     name:string,
+    day:string,
+    weekend:string,
     place:string,
-    set:string
+    line:string
 }
 
 export class SerializedLineupRepository {
@@ -20,20 +23,26 @@ export class SerializedLineupRepository {
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 name VARCHAR(50),
                 place VARCHAR(100),
-                set TEXT
+                day VARCHAR(50),
+                weekend VARCHAR(10),
+                line TEXT
             );`)
         
     }
 
     public static Insert(lineup:SerializedLineup) {
         let result:SQLite.SQLiteRunResult
-
+        console.log("Inserting")
         try {
-            result = this.database.runSync(`INSERT INTO serialized_lineups (name,place,set) VALUES (
+            let query:string = `INSERT INTO serialized_lineups (name,place,day,weekend,line) VALUES (
                 "${lineup.name}",
                 "${lineup.place}",
-                "${JSON.stringify(lineup.line)}"
-                )`)
+                "${lineup.day}",
+                "${lineup.weekend}",
+                '${JSON.stringify(lineup.line)}'
+                )`
+            console.log("Query: "+query)
+            result = this.database.runSync(query)
         } catch(e) {
             console.error("Error inserting serialized lineup: "+e)
         }
@@ -46,6 +55,7 @@ export class SerializedLineupRepository {
 
         try {
             result = this.database.getFirstSync(`SELECT * FROM serialized_lineups WHERE id=${id}`)
+            console.log("Query suceeded "+JSON.stringify(result))
         } catch(e) {
             console.error("Error finding serialized lineup with id: "+id+": "+e)
             return null
@@ -74,7 +84,10 @@ export class SerializedLineupRepository {
             result = this.database.runSync(
                 `UPDATE serialized_lineups SET 
                     name = "${lineup.name}", 
-                    place = "${lineup.place}", 
+                    place = "${lineup.place}",
+                    day = "${lineup.day}",
+                    weekend = "${lineup.weekend}",
+                    type = ${lineup.type} 
                     set = "${JSON.stringify(lineup.line)}"
                 WHERE id = ${lineup.id}`
             );
@@ -102,10 +115,11 @@ export class SerializedLineupRepository {
     }
 
     private static BuildSerializedLineup(obj:SerializedLineupObject):SerializedLineup {
-        const serialized = new SerializedLineup(obj.name,obj.place,JSON.parse(obj.set))
+        const serialized = new SerializedLineup(obj.name,obj.place,JSON.parse(obj.line))
+        serialized.place = serialized.place == "null" ? null : serialized.place
+        serialized.day = serialized.day == "null" ? null : obj.day
+        serialized.weekend = serialized.weekend == "null" ? null : obj.weekend
         serialized.id = obj.id
-        serialized.members = Object.values(serialized.line)
-
         return serialized
     }
 

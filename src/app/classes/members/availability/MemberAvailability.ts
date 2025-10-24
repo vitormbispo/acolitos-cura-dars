@@ -5,7 +5,7 @@ import { PlaceAvailability } from "./PlaceAvailability";
 
 export class MemberAvailability {
     private available:boolean
-    public dayAvailability:Availability
+    public dayAvailability:DayAvailability
     public placeAvailability:Availability
     
 

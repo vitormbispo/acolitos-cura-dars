@@ -19,6 +19,12 @@ import { RolesData } from "./classes/roles/RolesData";
 import { LineupRepository } from "./classes/repository/LineupRepository";
 import { Lineup } from "./classes/lineups/Lineup";
 import { LineupMembersRepository } from "./classes/repository/LineupMembersRepository";
+import { LineupGroupRepository } from "./classes/repository/LineupGroupRepository";
+import { LineupData } from "./classes/lineups/LineupData";
+import { GroupPlacesRepository } from "./classes/repository/GroupPlacesRepository";
+import { GroupLineupsRepository } from "./classes/repository/GroupLineupsRepository";
+import { SerializedLineupRepository } from "./classes/repository/SerializedLineupRepository";
+import { PlacesRepository } from "./classes/repository/PlacesRespository";
 
 
 export default function App() {
@@ -52,10 +58,20 @@ async function InitializeApp(){
     //await RepositoryManager.database.runAsync(`DROP TABLE lineups`).then(_ => console.log("Dropped table lineups"))
     //await RepositoryManager.database.runAsync(`DROP TABLE role_set`).catch((e)=>{console.log("Error: "+e)})
 
+    //await RepositoryManager.database.runAsync(`DROP TABLE group_lineups`).catch((e)=>{console.log("Error: "+e)})
+    //await RepositoryManager.database.runAsync(`DROP TABLE group_places`).catch((e)=>{console.log("Error: "+e)})
+    //await RepositoryManager.database.runAsync(`DROP TABLE lineup_group`).catch((e)=>{console.log("Error: "+e)})
+    //await RepositoryManager.database.runAsync(`DROP TABLE serialized_lineups`).catch((e)=>{console.log("Error: "+e)})
+
     await RolesRepository.InitializeRepository().then(() => console.log("Roles OK"), e => console.error(e))
+    await PlacesRepository.InitializeRepository().then(() => console.log("Places OK"), e => console.error(e))
     await SetRolesRepository.InitializeRepository().then(() => console.log("SetRoles OK"), e => console.error(e))
     await RoleSetRepository.InitializeRepository().then(() => console.log("RoleSet OK"), e => console.error(e))
     await LineupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
+    await LineupGroupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
+    await GroupPlacesRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
+    await GroupLineupsRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
+    await SerializedLineupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
    // await LineupMembersRepository.InitializeRepository().then(() => console.log("LineupMembers OK"), e => console.error(e))
 
 
@@ -81,6 +97,7 @@ async function InitializeApp(){
         Roles.InitializeSets(MemberType.COROINHA)
     } 
     */
+   LineupData.InitializeLineupData()
     
     return Promise.resolve()
 }

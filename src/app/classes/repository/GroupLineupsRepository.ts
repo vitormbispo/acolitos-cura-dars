@@ -7,7 +7,7 @@ export type GroupLineupObject = {
     id:number,
     key:string
     group_id:number,
-    lineup_id:number
+    serialized_lineup_id:number
 } 
 
 export class GroupLineupsRepository {
@@ -17,20 +17,18 @@ export class GroupLineupsRepository {
         this.database = RepositoryManager.database
         let result = this.database.execAsync(`CREATE TABLE IF NOT EXISTS group_lineups (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            key VARCHAR(20),
             group_id INTEGER,
-            lineup_id INTEGER
+            serialized_lineup_id INTEGER
             );`).then((_) => {return Promise.resolve(true)}, (e) => {return Promise.reject(e)})
         return result
     }
 
-    public static InsertGroupLineup(key:string,group_id:number,lineup_id:number) {
+    public static Insert(group_id:number,lineup_id:number) {
         let result:SQLite.SQLiteRunResult
 
         try {
             result = this.database.runSync(`
-                INSERT INTO group_lineups (key, group_id, lineup_id) VALUES (
-                "${key}",
+                INSERT INTO group_lineups (group_id, serialized_lineup_id) VALUES (
                 ${group_id},
                 ${lineup_id}
             )`)
@@ -52,13 +50,12 @@ export class GroupLineupsRepository {
         return result
     }
 
-    public static UpdateGroup(id:number,key:string,group_id:number,lineup_id:number) {
+    public static UpdateGroup(id:number,group_id:number,lineup_id:number) {
         let result:SQLite.SQLiteRunResult
         try {
             result = this.database.runSync(`UPDATE group_lineups SET 
-                key="${key}",
                 group_id=${group_id},
-                lineup_id=${lineup_id} 
+                serialized_lineup_id=${lineup_id} 
             WHERE id=${id}`)
         } catch(e) {
             console.error("Error: "+e)
@@ -90,11 +87,22 @@ export class GroupLineupsRepository {
         return result
     }
 
-    public static async InsertGroupLineupAsync(key: string, group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
+     public static DeleteAllByGroupID(group_id: number): SQLite.SQLiteRunResult{
+        let result:SQLite.SQLiteRunResult = null
+
+        try {
+            this.database.runSync(`DELETE FROM group_lineups WHERE group_id=${group_id}`)
+        } catch(e) {
+            console.error("Error deleting group places by group ID: "+e)
+        }
+
+        return result
+    }
+
+    public static async InsertGroupLineupAsync(group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
         try {
             return await this.database.runAsync(`
-                INSERT INTO group_lineups (key, group_id, lineup_id) VALUES (
-                "${key}",
+                INSERT INTO group_lineups (group_id, serialized_lineup_id) VALUES (
                 ${group_id},
                 ${lineup_id}
             )`);
@@ -114,12 +122,11 @@ export class GroupLineupsRepository {
         }
     }
 
-    public static async UpdateGroupAsync(id: number, key: string, group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
+    public static async UpdateGroupAsync(id: number, group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
         try {
             return await this.database.runAsync(`UPDATE group_lineups SET 
-                key="${key}",
                 group_id=${group_id},
-                lineup_id=${lineup_id} 
+                serialized_lineup_id=${lineup_id} 
             WHERE id=${id}`);
         } catch (e) {
             console.error("Error: " + e);

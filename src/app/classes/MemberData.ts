@@ -97,7 +97,7 @@ export class MemberData{
     }
 
     public static SortMembersList() {
-        this.allMembers.sort((a, b) => a.getName().localeCompare(b.getName()))
+        this.allMembers.sort((a, b) => a.name.localeCompare(b.name))
     }
     
     public static AddNewMember(member:Member,sortList:boolean=true) {
@@ -134,7 +134,7 @@ export class MemberData{
     }
 
     public static FindMembersByType(type:MemberType):Array<Member> {
-        return this.allMembers.filter((member) => member.getType() == type)
+        return this.allMembers.filter((member) => member.type == type)
     }
 
     public static async InitializeMemberData() {
@@ -211,7 +211,7 @@ export class MemberData{
      */
     static IsNameAvailable(name:string,members:Array<Member>):boolean{
         for(let i = 0; i < members.length; i++){
-            if(members[i].getName() == name){
+            if(members[i].name == name){
                 return false
             }
         }
@@ -226,7 +226,7 @@ export class MemberData{
      */
     static IsNickAvailable(nick:string,members:Array<Member>):boolean{
         for(let i = 0; i < members.length; i++){
-            if(members[i].getNick() == nick){
+            if(members[i].nick == nick){
                 return false
             }
         }

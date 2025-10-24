@@ -1,6 +1,7 @@
 import { MemberType } from "../MemberData";
 import { DayRotation } from "./DayRotation";
 import { Member } from "./Member";
+import { PlaceRotation } from "./PlaceRotation";
 import { RoleRotation } from "./RoleRotation";
 import { Rotation } from "./Rotation";
 
@@ -14,13 +15,12 @@ export class MemberRotation {
     constructor(memberType:MemberType){
         this.memberType = memberType
         this.dayRotation = new DayRotation(memberType)
-        //this.placeRotation = new Rotation()
+        this.placeRotation = new PlaceRotation(memberType)
         this.roleRotation = new RoleRotation(memberType)
-
-
 
         this.dayRotation.updateMap()
         this.roleRotation.updateMap()
+        this.placeRotation.updateMap()
     }
 
     public asJSON():string {

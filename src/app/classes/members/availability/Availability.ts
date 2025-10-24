@@ -9,31 +9,30 @@ export enum AvailabilityTypes {
 }
 
 export abstract class Availability {
-    private id:number
-    private map:object
-    private memberType:MemberType
-    private availabilityType:AvailabilityTypes
-    private memberId:number
+    private _id:number
+    private _map:object
+    private _memberType:MemberType
+    private _availabilityType:AvailabilityTypes
+    private _memberID:number
 
     constructor() {
-        this.map = {}
+        this._map = {}
     }
 
+    public get id():number { return this._id }
+    public set id(value:number) { this._id = value }
 
-    public getId(): number { return this.id }
-    public setId(id:number): void { this.id = id }
+    public get map(): object { return this._map }
+    public set map(value: object) { this._map = value }
 
-    public getMemberId(): number { return this.memberId }
-    public setMemberId(id:number): void { this.memberId = id }
+    public get memberType(): MemberType { return this._memberType }
+    public set memberType(value: MemberType) { this._memberType = value }
 
-    public getMap(): object { return this.map }
-    public setMap(map:object) :void { this.map = map }
+    public get availabilityType(): AvailabilityTypes { return this._availabilityType }
+    public set availabilityType(value: AvailabilityTypes) { this._availabilityType = value }
 
-    public getMemberType(): MemberType { return this.memberType}
-    public setMemberType(memberType:MemberType): void {this.memberType = memberType}
-
-    public getAvailabilityType(): AvailabilityTypes { return this.availabilityType}
-    public setAvailabilityType(availabilityType:AvailabilityTypes): void {this.availabilityType = availabilityType}
+    public get memberID(): number { return this._memberID }
+    public set memberID(value: number) { this._memberID = value }
 
     /**
      * Verifica se há disponibilidade para determinada chave
@@ -55,7 +54,7 @@ export abstract class Availability {
      * @param value Valor
      */
     public setAll(value:boolean) {
-        Object.keys(this.map).forEach((key) => { this.map[key] = value })
+        Object.keys(this._map).forEach((key) => { this._map[key] = value })
     }
 
     /**
@@ -63,7 +62,7 @@ export abstract class Availability {
      * @param key Chave
      */
     removeKey(key:string):void {
-        delete this.map[key]
+        delete this._map[key]
     }
 
     public asJSON():string {

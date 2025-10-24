@@ -2,17 +2,22 @@ import * as SQLite from 'expo-sqlite'
 import { Lineup } from '../lineups/Lineup'
 import { LineupMemberObject, LineupMembersRepository } from './LineupMembersRepository'
 import { RoleSetRepository } from './RoleSetRepository'
-import { MemberData } from '../MemberData'
+import { MemberData, MemberType } from '../MemberData'
 import { GroupPlacesRepository } from './GroupPlacesRepository'
 import { PlacesRepository } from './PlacesRespository'
 import { LineupGroup } from '../lineups/LineupGroup'
 import { LineupRepository } from './LineupRepository'
 import { GroupLineupObject, GroupLineupsRepository } from './GroupLineupsRepository'
+import { Places } from '../members/Places'
+import { SerializedLineupRepository } from './SerializedLineupRepository'
+import { SerializedLineup } from '../lineups/SerializedLineup'
+import { LineupData } from '../lineups/LineupData'
 
 
 type LineupGroupObject = {
     id:number,
-    name:string
+    name:string,
+    type:number
 }
 
 export class LineupGroupRepository {
@@ -24,14 +29,11 @@ export class LineupGroupRepository {
         this.database.execAsync(`
             PRAGMA journal_mode = WAL;
             PRAGMA foreign_keys = true;
-            CREATE TABLE IF NOT EXISTS lineups (
+            CREATE TABLE IF NOT EXISTS lineup_group (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                day VARCHAR(20),
-                weekend VARCHAR(20),
-                place VARCHAR(100),
-                roleset_id INTEGER,
-                FOREIGN KEY (roleset_id) REFERENCES role_set(id)
-
+                name VARCHAR(50),
+                type INTEGER,
+                map TEXT
             );
             `).then( () => {
                 console.log("Database succefully started.")
@@ -40,49 +42,102 @@ export class LineupGroupRepository {
             })
     }
 
-    public static InsertLineup(lineup:Lineup) {
+    public static Insert(group:LineupGroup) {
         let result:SQLite.SQLiteRunResult = null
+        console.log("GRUPO: "+group)
         try {
-            result = this.database.runSync(`INSERT INTO lineups (day,weekend,place,roleset_id) VALUES ( 
-                "${lineup.day}",
-                "${lineup.weekend}",
-                "${lineup.place}",
-                ${lineup.roleset.id}
+            result = this.database.runSync(`INSERT INTO lineup_group (name,type,map) VALUES ( 
+                '${group.name}',
+                ${group.type},
+                '${JSON.stringify(group.monthLineupsMap)}'
             )`)
-            lineup.id = result.lastInsertRowId
+            group.id = result.lastInsertRowId
             
-            lineup.roleset.set.forEach((role) => {
-                let member = lineup.GetRoleMember(role)
-                LineupMembersRepository.InsertLineupMember(role,member.getId(),lineup.id)
+            group.places.forEach((place) => {
+                GroupPlacesRepository.Insert(group.id,PlacesRepository.FindOrInsertPlace(place))
             })
-            
+
+            group.lineups.forEach((line) => {
+                console.log("Linee")
+                let line_id = SerializedLineupRepository.Insert(LineupData.Serialize(line)).lastInsertRowId
+                console.log(group.id)
+                GroupLineupsRepository.Insert(group.id,line_id)
+            })
+
         } catch(e) {
-            console.error("Error inserting lineup: "+e)
+            console.error("Error inserting lineup group: "+e)
         }
 
         return result
     }
     
+    public static Update(group:LineupGroup) {
+        let result:SQLite.SQLiteRunResult = null
+        console.log("GRUPO: "+group)
+        try {
+            result = this.database.runSync(`UPDATE lineup_group SET
+                name='${group.name}',
+                type=${group.type}
+                WHERE id=${group.id}
+            `)
+            
+            GroupPlacesRepository.DeleteAllByGroupID(group.id)
+            group.places.forEach((place) => {
+                GroupPlacesRepository.Insert(group.id,PlacesRepository.FindOrInsertPlace(place))
+            })
+
+            GroupLineupsRepository.DeleteAllByGroupID(group.id)
+            group.lineups.forEach((line) => {
+                console.log("Linee")
+                let line_id = SerializedLineupRepository.Insert(LineupData.Serialize(line)).lastInsertRowId
+                console.log(group.id)
+                GroupLineupsRepository.Insert(group.id,line_id)
+            })
+
+        } catch(e) {
+            console.error("Error updating lineup group: "+e)
+        }
+
+        return result
+    }
+
     public static FindLineupGroupByID(id:number):LineupGroup {
         let result:LineupGroupObject = null
 
         try{
-            result = this.database.getFirstSync(`SELECT * FROM lineups WHERE id=${id}`)
+            result = this.database.getFirstSync(`SELECT * FROM lineup_group WHERE id=${id}`)
 
         } catch(e) {
-            console.error("Error finding lineup by ID: "+e)
+            console.error("Error finding lineup group by ID: "+e)
             return null
         }
         
         return this.BuildLineupGroup(result)
     }
 
+    public static FindAllLineupGroups():Array<LineupGroup> {
+        let result:Array<LineupGroupObject> = []
+
+        try{
+            result = this.database.getAllSync(`SELECT * FROM lineup_group`)
+
+        } catch(e) {
+            console.error("Error finding lineup groups: "+e)
+            return []
+        }
+        
+        return this.BuildAll(result)
+    }
+
     public static GetGroupPlaces(id:number):Array<string> {
         let result:Array<string> = []
         
         try {
-            const places = GroupPlacesRepository.FindAllByGroupID(id)
-            places.forEach((place) => result.push(PlacesRepository.FindPlaceByID(place.place_id).place))
+            const groupPlaces = GroupPlacesRepository.FindAllByGroupID(id)
+            groupPlaces.forEach((group) => { 
+                let place:string = PlacesRepository.FindPlaceByID(group.place_id).place
+                result.push(place == "null" ? null : place) 
+            })
         } catch(e) {
             console.error("Error: ")
         }
@@ -94,7 +149,7 @@ export class LineupGroupRepository {
 
         try {
             const lineups = GroupLineupsRepository.FindAllByGroupID(id)
-            lineups.forEach((line) => result.push(LineupRepository.FindLineupByID(line.lineup_id)))
+            lineups.forEach((line) => result.push(LineupRepository.FindLineupByID(line.serialized_lineup_id)))
 
         } catch(e) {
             console.error("Error: "+ e)
@@ -106,13 +161,18 @@ export class LineupGroupRepository {
     public static BuildLineupGroup(obj:LineupGroupObject): LineupGroup {
         const group = new LineupGroup(obj.name)
         group.id = obj.id
+        group.name = obj.name
+        group.type = obj.type as MemberType
         group.places = this.GetGroupPlaces(obj.id)
         
         const lineups:Array<GroupLineupObject> = GroupLineupsRepository.FindAllByGroupID(group.id)
         lineups.forEach((line) => {
-            const lineup = LineupRepository.FindLineupByID(line.lineup_id)
-            group.monthLineupsMap[line.key] = lineup
-            group.lineups.push(lineup)
+            console.log("Lineup object: "+line)
+            const lineup = SerializedLineupRepository.FindByID(line.serialized_lineup_id)
+            console.log("Found serializable: "+JSON.stringify(lineup))
+            group.monthLineupsMap[lineup.weekend] = lineup
+            group.lineups.push(LineupData.Deserialize(lineup))
+            console.log("OK")
         })
         return group
         

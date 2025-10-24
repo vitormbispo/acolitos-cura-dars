@@ -10,12 +10,12 @@ export class DayRotation extends Rotation{
         
     }
 
-    public setRotation(weekend:string,day:string,value:number=0) {
-        this.map[weekend][day] = value
+    public setRotation(day:string,value:number=0) {
+        this.map[day] = value
     }
 
-    public getRotation(weekend:string,day:string): number{
-        return this.map[weekend][day]
+    public getRotation(day:string): number{
+        return this.map[day]
     }
 
     public static fromJSON(json:string):DayRotation {

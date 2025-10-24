@@ -13,11 +13,11 @@ export class RoleSet{
     private _size:number = 0 // Tamanho do conjunto
     private readonly _isDefault:boolean = false // É padrão? (OBS: NÃO permitir criação de conjuntos padrão pelo usuário)
 
-    constructor(name:string,type:MemberType,set?:Array<string>,isDefault?:boolean){
+    constructor(name:string,type:MemberType,set:Array<string>=[],isDefault:boolean=false){
         this._name = name
-        this.type = type
-        this.set = set
-        this.size = set != undefined ? set.length : 0
+        this._type = type
+        this._set = set
+        this._size = set != undefined ? set.length : 0
         this._isDefault = isDefault != undefined ? isDefault : false
         
     }
@@ -88,8 +88,11 @@ export class RoleSet{
         this.set.push(role)
 
         if(updateOnDB) {
+            console.log("updating on db")
             let roleId = RolesRepository.FindOrInsertRole(role)
             SetRolesRepository.InsertSetRole(roleId,this.id)
+        } else {
+            console.log("Everything ok")
         }
     }
     /**
@@ -117,9 +120,9 @@ export class RoleSet{
     public SetRolesToDefault(updateOnDB:boolean=true){
         switch(this.type){
             case MemberType.ACOLYTE:
-                this.set = Object.keys(RoleSet.DEFAULT_ACOLYTE_ROLES); break
+                this.set = RoleSet.DEFAULT_ACOLYTE_ROLES; break
             case MemberType.COROINHA:
-                this.set = Object.keys(RoleSet.DEFAULT_COROINHA_ROLES); break
+                this.set = RoleSet.DEFAULT_COROINHA_ROLES; break
         }
 
         if(updateOnDB) {

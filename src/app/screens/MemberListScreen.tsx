@@ -43,7 +43,7 @@ export default function List() {
 
     console.log("Members = "+members)
     for(let i =0;i < members.length;i++){
-        membersComponents.push(<RowMember nick={members[i].getNick()} id={members[i].id} img={ICONS.acolito} key={i} 
+        membersComponents.push(<RowMember nick={members[i].nick} id={members[i].id} img={ICONS.acolito} key={i} 
         textStyle={textStyles.names}
         />)
     }

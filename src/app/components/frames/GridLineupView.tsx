@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { contextStore, menuStore } from "../../store/store"
-import { Lineup } from "../../classes/Lineup"
+import { Lineup } from "../../classes/lineups/Lineup"
 import { CompactLineup } from "./CompactLineup"
 import { ActivityIndicator, FlatList, Modal, ScrollView, View } from "react-native"
 import { MembersFromIDs } from "../../classes/MemberData"
@@ -17,7 +17,7 @@ type GridLineupViewProps = {
  * @param props allLineups = lista de escalas; multiplePlace = organizar por local?
  * @returns 
  */
-export function GridLineupView(props:GridLineupViewProps){
+export function   GridLineupView(props:GridLineupViewProps){
     // OBS: Esse componente utiliza renderização em etapas
     const {type} = menuStore()
     const isRendering = useRef(false) // Está renderizando?
@@ -101,7 +101,7 @@ export function GridLineupView(props:GridLineupViewProps){
         { replacingMember.replacing ? 
           <MemberSelectModal 
           visible={replacingMember.replacing} 
-          title={"Substituindo: "+replacingMember.member.nick+"\n"+replacingMember.role} 
+          title={"Substituindo: "+ (replacingMember.member != undefined ? replacingMember.member.nick : "") +"\n"+replacingMember.role} 
           exceptions={replacingMember.lineup.members}
           unvailable={GetLineupUnvailableMembers(replacingMember.lineup,type)}
           returnCallback={Replace}

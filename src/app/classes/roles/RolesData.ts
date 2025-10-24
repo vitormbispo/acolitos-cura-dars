@@ -1,4 +1,5 @@
 import { MemberType } from "../MemberData";
+import { Member } from "../members/Member";
 import { RoleSetRepository } from "../repository/RoleSetRepository";
 import { RoleSet } from "../roles/RoleSet";
 
@@ -135,6 +136,13 @@ export class RolesData {
                     new RoleSet("Padrão",MemberType.COROINHA,Object.keys(RoleSet.DEFAULT_COROINHA_ROLES),true),
                     new RoleSet("Reduzida",MemberType.COROINHA,["Dons D.","Dons E."],true)
                 ]
+        }
+    }
+
+    public static GetDefaultRolesByType(type:MemberType):Array<string> {
+        switch(type) {
+            case MemberType.ACOLYTE: return RoleSet.DEFAULT_ACOLYTE_ROLES
+            case MemberType.COROINHA: return RoleSet.DEFAULT_COROINHA_ROLES
         }
     }
 }
