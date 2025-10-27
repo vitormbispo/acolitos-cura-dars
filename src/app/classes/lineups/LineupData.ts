@@ -13,7 +13,6 @@ export class LineupData {
         this.savedLineups = LineupGroupRepository.FindAllLineupGroups()
     }
 
-
     public static Serialize(lineup:Lineup):SerializedLineup {
         let serialized:SerializedLineup = new SerializedLineup()
         serialized.name = `${lineup.weekend} ${lineup.day}`
@@ -22,18 +21,15 @@ export class LineupData {
         serialized.place = lineup.place
 
         lineup.roleset.set.forEach((role) => {
-            console.log("AAAAAA TO LOCO")
             const member = lineup.GetRoleMember(role)
             const name = member != undefined ? member.nick : "-- Sem escala --"
 
             serialized.AssignRole(role,{name:name,id:member != undefined ? member.id : -1})
         })
-        console.log("TA SERTO MANOOo")
         return serialized
     }
 
     public static Deserialize(lineup:SerializedLineup):Lineup {
-        console.log("Day:" +lineup.day)
         let newLineup = new Lineup(null,lineup.day,lineup.weekend,lineup.place)
         let newRoleSet = new RoleSet(lineup.name,lineup.type)
         newLineup.roleset = newRoleSet
@@ -74,4 +70,25 @@ export class LineupData {
         return this.savedLineups.filter((line)=>line.type == type)
     }
 
+    public static RemoveGroup(group:LineupGroup) {
+        let index = this.savedLineups.indexOf(group)
+        if(index == -1) {
+            console.error("This group doesn't exist!")
+            return
+        }
+
+        this.savedLineups.splice(index,1)
+        LineupGroupRepository.Delete(group.id)
+    }
+
+    public static RemoveGroupByIndex(index:number) {
+        if(index == -1) {
+            console.error("This group doesn't exist!")
+            return
+        }
+        
+        let group = this.savedLineups[index]
+        LineupGroupRepository.Delete(group.id)
+        this.savedLineups.splice(index,1)
+    }
 }

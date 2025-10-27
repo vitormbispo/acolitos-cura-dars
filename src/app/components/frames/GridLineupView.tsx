@@ -9,12 +9,14 @@ import { MemberSelectModal } from "../input/MemberSelectModal"
 
 type GridLineupViewProps = {
     allLineups:Array<Lineup>
-    multiplePlace:boolean
+    multiplePlaces:boolean
 }
 
 /**
  * Exibe todas as escalas de uma lista em formato de grade.
- * @param props allLineups = lista de escalas; multiplePlace = organizar por local?
+ * @param props 
+ * allLineups = lista de escalas; 
+ * multiplePlaces = organizar por local?
  * @returns 
  */
 export function   GridLineupView(props:GridLineupViewProps){
@@ -33,7 +35,7 @@ export function   GridLineupView(props:GridLineupViewProps){
     const BuildComponents = ()=>{
       for(let i = 0; i < props.allLineups.length; i++){
         let curLine:Lineup = props.allLineups[i] // Escala
-        let mapKey = props.multiplePlace ? curLine.weekend+curLine.day : curLine.weekend
+        let mapKey = props.multiplePlaces ? curLine.weekend+curLine.day : curLine.weekend
 
         if(sortedLines[mapKey] == undefined){
             sortedLines[mapKey] = []
@@ -71,23 +73,23 @@ export function   GridLineupView(props:GridLineupViewProps){
     }
 
     useEffect(()=>{
-        if(!isRendering.current){
-            BuildComponents()
-            isRendering.current = true
-            setTimeout(()=>{         
-                components.push(rows[renderPhase.current])
+      if(!isRendering.current){
+        BuildComponents()
+        isRendering.current = true
+        setTimeout(()=>{         
+            components.push(rows[renderPhase.current])
 
-                if(renderPhase.current < rows.length){
-                    renderPhase.current += 1
-                    isRendering.current = false
-                }
-                else{
-                    setRenderComplete(true)
-                }
-                
-                setComponents(components.slice())
-            },20)
-        }
+            if(renderPhase.current < rows.length){
+                renderPhase.current += 1
+                isRendering.current = false
+            }
+            else{
+                setRenderComplete(true)
+            }
+            
+            setComponents(components.slice())
+        },20)
+      }
     })
     
     return(

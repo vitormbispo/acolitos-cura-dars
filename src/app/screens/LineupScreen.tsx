@@ -1,4 +1,4 @@
-import { View} from "react-native"
+import { ToastAndroid, View} from "react-native"
 import { router } from "expo-router"
 import { useState } from "react"
 import { Lineup } from "../classes/lineups/Lineup"
@@ -16,20 +16,20 @@ import { LineupData } from "../classes/lineups/LineupData"
 import { LineupGroupRepository } from "../classes/repository/LineupGroupRepository"
 
 export class LineupScreenOptions{
-    static name = "Nova escala"
+    public static name = "Nova escala"
 
-    static lineups:Array<Lineup> = []
-    static places = [] // Locais selecionados
-    static monthLineups:object = {} // Ex.: "1stWE":[Lineup,Lineup,Lineup]
+    public static lineups:Array<Lineup> = []
+    public static places = [] // Locais selecionados
+    public static monthLineups:object = {} // Ex.: "1stWE":[Lineup,Lineup,Lineup]
 
-    static isLoaded:boolean = false; // A escala exibida é carregada?
-    static loadedLineIndex:number = 0; // Índice da escala carregada
+    public static isLoaded:boolean = false; // A escala exibida é carregada?
+    public static loadedLineIndex:number = 0; // Índice da escala carregada
 
     /**
      * Salva os dados da lineup
      * @returns LineupGroup
      */
-    public static SaveLineup(type?:MemberType):LineupGroup{
+    public static SaveLineup(type:MemberType):LineupGroup{
         let line = new LineupGroup(LineupScreenOptions.name)
     
         line.lineups = LineupScreenOptions.lineups
@@ -39,11 +39,6 @@ export class LineupScreenOptions{
 
         if(LineupScreenOptions.isLoaded) {
             let loaded = LineupData.savedLineups[LineupScreenOptions.loadedLineIndex]
-            console.log("Index: ")
-            console.log(LineupScreenOptions.loadedLineIndex)
-            console.log("Saved: ")
-            console.log(LineupData.savedLineups)
-            console.log("Loaded: "+ loaded)
             line.id = loaded.id
         }
 
@@ -65,22 +60,18 @@ export class LineupScreenOptions{
 export default function LineupScreen(){
     const {type, theme} = menuStore()
     const [confirmDeleteVisible,setConfirmDeleteVisible] = useState(false)
-    const upperBtn = LineupScreenOptions.isLoaded ? 
-    <UpperButton img={ICONS.delete} press={()=>{
-        setConfirmDeleteVisible(!confirmDeleteVisible)
-    }}/>:
-    null
 
-    console.log("INDEX IS: ")
-    console.log(LineupScreenOptions.loadedLineIndex)
     return(
         <View style={{flex:1,backgroundColor:theme.backgroundColor}}>
             <View style={{flexDirection:'row', backgroundColor:theme.accentColor}}>
                 <UpperBar icon={ICONS.escala} screenName={"Escala:"}/>
-                {upperBtn}
+                {LineupScreenOptions.isLoaded ?
+                 <UpperButton img={ICONS.delete} press={()=>{
+                     setConfirmDeleteVisible(!confirmDeleteVisible)
+                }}/>:null}
             </View>
 
-            <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlace={LineupScreenOptions.places.length > 1}/>
+            <GridLineupView allLineups={LineupScreenOptions.lineups} multiplePlaces={LineupScreenOptions.places.length > 1}/>
             
             <View style={{flexDirection:"row",justifyContent:"center"}}>
                 <TextButton text={"Salvar escalas"} press={()=>{
@@ -96,7 +87,7 @@ export default function LineupScreen(){
                 visible={confirmDeleteVisible} 
                 confirmationText={"Deseja excluir a escala: \""+LineupScreenOptions.name+"\"?"} 
                 confirmAction={() => {
-                    EraseLineup(LineupScreenOptions.loadedLineIndex,type)
+                    EraseLineup(LineupScreenOptions.loadedLineIndex)
                     router.back()}}  
                 declineAction={()=>{
                     setConfirmDeleteVisible(!confirmDeleteVisible)
@@ -109,20 +100,8 @@ export default function LineupScreen(){
  * Exclui uma escala da lista do histórico de escalas dado o índice.
  * @param index Índice a ser excluído
  */
-function EraseLineup(index:number,type:MemberType){
-    let lineupsList:Array<LineupGroup>
-    switch (type){
-        case MemberType.ACOLYTE:lineupsList = MemberData.allLineupsAcolytes;break
-        case MemberType.COROINHA:lineupsList = MemberData.allLineupsCoroinhas;break
-    }
-    lineupsList.splice(index,1)
-    
-    /*
-    switch(type){
-        case MemberType.ACOLYTE:SaveAcolyteData();break
-        case MemberType.COROINHA:SaveCoroinhaData();break
-    }
-        */
+function EraseLineup(index:number) {
+    LineupData.RemoveGroupByIndex(index)
 }
 
 /**
@@ -142,7 +121,6 @@ function SaveAllLineups(type:MemberType){
                 LineupScreenOptions.name = "Escala | Coroinhas "+(LineupData.FindLineupsByType(type).length+1)
                 break
         }
-
         
         saved = LineupScreenOptions.SaveLineup(type)
         savedId = LineupGroupRepository.Insert(saved).lastInsertRowId
@@ -151,12 +129,14 @@ function SaveAllLineups(type:MemberType){
         
         LineupScreenOptions.isLoaded = true
         LineupScreenOptions.loadedLineIndex = 0
+        ToastAndroid.show("Escalas salvas!",2)
     }
     else{
         let saved = LineupScreenOptions.SaveLineup(type)
 
         LineupData.UpdateLineupsByIndex(LineupScreenOptions.loadedLineIndex,saved)
         LineupGroupRepository.Update(saved)
+        ToastAndroid.show("Escalas salvas!",2)
     }
 }
 

@@ -2,7 +2,6 @@ import { ScrollView, View } from "react-native";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";
-import { MemberData, MemberType } from "../classes/MemberData";
 import { ICONS } from "../classes/AssetManager";
 import { RowImageButton } from "../components/buttons/RowImageButton";
 import { UpperBar } from "../components/display/UpperBar";

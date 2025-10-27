@@ -18,7 +18,10 @@ export class GroupLineupsRepository {
         let result = this.database.execAsync(`CREATE TABLE IF NOT EXISTS group_lineups (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             group_id INTEGER,
-            serialized_lineup_id INTEGER
+            serialized_lineup_id INTEGER,
+
+            CONSTRAINT FK_GroupGL FOREIGN KEY (group_id) REFERENCES lineup_group(id),
+            CONSTRAINT FK_SerialLineupGL FOREIGN KEY (serialized_lineup_id) REFERENCES serialized_lineups(id)
             );`).then((_) => {return Promise.resolve(true)}, (e) => {return Promise.reject(e)})
         return result
     }
@@ -33,7 +36,7 @@ export class GroupLineupsRepository {
                 ${lineup_id}
             )`)
         } catch (e) {
-            console.error("Error: "+e)
+            console.error("Error inserting group lineup: "+e)
         }
         return result
     }
@@ -44,13 +47,13 @@ export class GroupLineupsRepository {
         try {
             result = this.database.getFirstSync(`SELECT * FROM group_lineups WHERE id=${id}`)
         } catch(e) {
-            console.error("Error: " + e)
+            console.error("Error finding group lineup by ID: " + e)
         }
 
         return result
     }
 
-    public static UpdateGroup(id:number,group_id:number,lineup_id:number) {
+    public static Update(id:number,group_id:number,lineup_id:number) {
         let result:SQLite.SQLiteRunResult
         try {
             result = this.database.runSync(`UPDATE group_lineups SET 
@@ -58,17 +61,17 @@ export class GroupLineupsRepository {
                 serialized_lineup_id=${lineup_id} 
             WHERE id=${id}`)
         } catch(e) {
-            console.error("Error: "+e)
+            console.error("Error updating group lineup: "+e)
         }
     }
 
-    public static DeleteGroupLineup(id:number) {
+    public static Delete(id:number) {
         let result:SQLite.SQLiteRunResult
 
         try {
             result = this.database.runSync(`DELETE group_lineups WHERE id=${id}`)
         } catch(e) {
-            console.error("Error: "+e)
+            console.error("Error deleting group lineup: "+e)
         }
 
         return result
@@ -81,7 +84,7 @@ export class GroupLineupsRepository {
             this.database.getAllSync(`SELECT * FROM group_lineups WHERE group_id=${group_id}`)
                 .forEach((obj:GroupLineupObject) => result.push(obj))
         } catch(e) {
-            console.error("Error: "+e)
+            console.error("Error finding all by group ID: "+e)
         }
 
         return result
@@ -97,60 +100,5 @@ export class GroupLineupsRepository {
         }
 
         return result
-    }
-
-    public static async InsertGroupLineupAsync(group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`
-                INSERT INTO group_lineups (group_id, serialized_lineup_id) VALUES (
-                ${group_id},
-                ${lineup_id}
-            )`);
-        } catch (e: any) {
-            console.error("Error #" + e.code + ":" + e);
-            return undefined;
-        }
-    }
-
-    public static async FindByIDAsync(id: number): Promise<GroupLineupObject | undefined> {
-        try {
-            const result: GroupLineupObject = await this.database.getFirstAsync(`SELECT * FROM group_lineups WHERE id=${id}`);
-            return result;
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async UpdateGroupAsync(id: number, group_id: number, lineup_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`UPDATE group_lineups SET 
-                group_id=${group_id},
-                serialized_lineup_id=${lineup_id} 
-            WHERE id=${id}`);
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async DeleteGroupLineupAsync(id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`DELETE FROM group_lineups WHERE id=${id}`);
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async FindAllByGroupIDAsync(group_id: number): Promise<Array<GroupLineupObject>> {
-        const result: Array<GroupLineupObject> = [];
-        try {
-            const lineups = await this.database.getAllAsync(`SELECT * FROM group_lineups WHERE group_id=${group_id}`);
-            lineups.forEach((obj: GroupLineupObject) => result.push(obj));
-        } catch (e) {
-            console.error("Error " + e);
-        }
-        return result;
     }
 }

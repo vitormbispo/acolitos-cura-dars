@@ -10,7 +10,7 @@ export default function TestScreen(){
     return(
         <View style={{flex:1}}>
             <UpperBar icon={ICONS.escala} screenName={"- Escala"}/>
-            <GridLineupView allLineups={MemberData.allLineupsAcolytes[0].lineups} multiplePlace={false}/>
+            <GridLineupView allLineups={MemberData.allLineupsAcolytes[0].lineups} multiplePlaces={false}/>
         </View>
         
     )

@@ -20,8 +20,8 @@ export class GroupPlacesRepository {
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             group_id INTEGER,
             place_id INTEGER,
-            FOREIGN KEY (group_id) REFERENCES lineup_group(id),
-            FOREIGN KEY (place_id) REFERENCES places(id)
+            CONSTRAINT FK_GroupGP FOREIGN KEY (group_id) REFERENCES lineup_group(id),
+            CONSTRAINT FK_PlaceGP FOREIGN KEY (place_id) REFERENCES places(id)
         );`).then((_) => { return Promise.resolve(true) }, (e) => { return Promise.reject(e) })
         return result
     }
@@ -36,7 +36,7 @@ export class GroupPlacesRepository {
                 ${place_id}
             )`)
         } catch (e) {
-            console.error("Error: " + e)
+            console.error("Error inserting group place: " + e)
         }
         return result
     }
@@ -47,13 +47,13 @@ export class GroupPlacesRepository {
         try {
             result = this.database.getFirstSync(`SELECT * FROM group_places WHERE id=${id}`)
         } catch (e) {
-            console.error("Error: " + e)
+            console.error("Error finding group place by ID: " + e)
         }
 
         return result
     }
 
-    public static UpdateGroupPlace(id: number, group_id: number, place_id: number) {
+    public static Update(id: number, group_id: number, place_id: number) {
         let result: SQLite.SQLiteRunResult
         try {
             result = this.database.runSync(`UPDATE group_places SET 
@@ -61,18 +61,18 @@ export class GroupPlacesRepository {
                 place_id=${place_id} 
             WHERE id=${id}`)
         } catch (e) {
-            console.error("Error: " + e)
+            console.error("Error updating group place: " + e)
         }
         return result
     }
 
-    public static DeleteGroupPlace(id: number) {
+    public static Delete(id: number) {
         let result: SQLite.SQLiteRunResult
 
         try {
             result = this.database.runSync(`DELETE FROM group_places WHERE id=${id}`)
         } catch (e) {
-            console.error("Error: " + e)
+            console.error("Error deleting group place: " + e)
         }
 
         return result
@@ -85,7 +85,7 @@ export class GroupPlacesRepository {
             this.database.getAllSync(`SELECT * FROM group_places WHERE group_id=${group_id}`)
                 .forEach((obj: GroupPlacesObject) => result.push(obj))
         } catch (e) {
-            console.error("Error: " + e)
+            console.error("Error finding all group places by group ID: " + e)
         }
 
         return result
@@ -101,60 +101,5 @@ export class GroupPlacesRepository {
         } 
 
         return result
-    }
-
-    public static async InsertGroupPlaceAsync(group_id: number, place_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`
-                INSERT INTO group_places (group_id, place_id) VALUES (
-                ${group_id},
-                ${place_id}
-            )`);
-        } catch (e: any) {
-            console.error("Error #" + e.code + ":" + e);
-            return undefined;
-        }
-    }
-
-    public static async FindByIDAsync(id: number): Promise<GroupPlacesObject | undefined> {
-        try {
-            const result: GroupPlacesObject = await this.database.getFirstAsync(`SELECT * FROM group_places WHERE id=${id}`);
-            return result;
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async UpdateGroupPlaceAsync(id: number, group_id: number, place_id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`UPDATE group_places SET 
-                group_id=${group_id},
-                place_id=${place_id} 
-            WHERE id=${id}`);
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async DeleteGroupPlaceAsync(id: number): Promise<SQLite.SQLiteRunResult | undefined> {
-        try {
-            return await this.database.runAsync(`DELETE FROM group_places WHERE id=${id}`);
-        } catch (e) {
-            console.error("Error: " + e);
-            return undefined;
-        }
-    }
-
-    public static async FindAllByGroupIDAsync(group_id: number): Promise<Array<GroupPlacesObject>> {
-        const result: Array<GroupPlacesObject> = [];
-        try {
-            const places = await this.database.getAllAsync(`SELECT * FROM group_places WHERE group_id=${group_id}`);
-            places.forEach((obj: GroupPlacesObject) => result.push(obj));
-        } catch (e) {
-            console.error("Error " + e);
-        }
-        return result;
     }
 }
