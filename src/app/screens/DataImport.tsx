@@ -1,17 +1,17 @@
 import { Modal, View, Image, Text, Platform, ToastAndroid } from "react-native";
-import { ICONS } from "../classes/AssetManager";
-import { MemberData} from "../classes/MemberData";
+import { ICONS } from "../../classes/AssetManager";
+import { MemberData} from "../../classes/MemberData";
 import { DataSelectors } from "./DataExport";
-import { menuStore } from "../store/store";
+import { menuStore } from "../../store/store";
 import { router} from "expo-router";
 import { useState } from "react";
-import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { AppData, ConvertDataToClasses, SaveDataFile, VerifyMembersIntegrity } from "../classes/DataManager";
-import { Places } from "../classes/Places";
-import { PresetsData } from "../classes/PresetsData";
-import { TextButton } from "../components/buttons/TextButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { DataSection } from "../components/display/DataSection";
+import { textStyles, uiStyles } from "../../styles/GeneralStyles";
+import { AppData, ConvertDataToClasses, SaveDataFile, VerifyMembersIntegrity } from "../../classes/DataManager";
+import { Places } from "../../classes/Places";
+import { PresetsData } from "../../classes/PresetsData";
+import { TextButton } from "../../components/buttons/TextButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { DataSection } from "../../components/display/DataSection";
 
 
 export class DataImportOptions{

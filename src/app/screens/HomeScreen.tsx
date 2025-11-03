@@ -1,14 +1,14 @@
 import { View} from "react-native";
-import { GetMemberIcon } from "../classes/NewComps";
-import { uiStyles} from "../styles/GeneralStyles";
-import { contextStore, menuStore} from "@/src/app/store/store";
-import { ICONS } from "../classes/AssetManager";
-import { UpperBar } from "../components/display/UpperBar";
-import { ImageTextButton, TextPosition } from "../components/buttons/ImageTextButton";
-import { TextButton } from "../components/buttons/TextButton";
-import { MemberRepository } from "../classes/repository/MemberRepository";
-import { Member } from "../classes/members/Member";
-import { RepositoryManager } from "../classes/repository/RepositoryManager";
+import { GetMemberIcon } from "../../classes/NewComps";
+import { uiStyles} from "../../styles/GeneralStyles";
+import { contextStore, menuStore} from "@/src/store/store";
+import { ICONS } from "../../classes/AssetManager";
+import { UpperBar } from "../../components/display/UpperBar";
+import { ImageTextButton, TextPosition } from "../../components/buttons/ImageTextButton";
+import { TextButton } from "../../components/buttons/TextButton";
+import { MemberRepository } from "../../classes/repository/MemberRepository";
+import { Member } from "../../classes/members/Member";
+import { RepositoryManager } from "../../classes/repository/RepositoryManager";
 
 // Tela//
 export default function Home(){

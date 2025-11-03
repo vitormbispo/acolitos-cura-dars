@@ -1,12 +1,12 @@
 import { ScrollView, View } from "react-native";
 import { LineupScreenOptions } from "./LineupScreen";
 import { router } from "expo-router";
-import { menuStore } from "../store/store";
-import { ICONS } from "../classes/AssetManager";
-import { RowImageButton } from "../components/buttons/RowImageButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { LineupGroup } from "../classes/lineups/LineupGroup";
-import { LineupData } from "../classes/lineups/LineupData";
+import { menuStore } from "../../store/store";
+import { ICONS } from "../../classes/AssetManager";
+import { RowImageButton } from "../../components/buttons/RowImageButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { LineupGroup } from "../../classes/lineups/LineupGroup";
+import { LineupData } from "../../classes/lineups/LineupData";
 
 export class LineupList{
     static lines = [];

@@ -1,15 +1,15 @@
 import { View, Image, Text, Pressable } from "react-native";
-import { ICONS } from "../classes/AssetManager";
-import { contextStore, menuStore } from "../store/store";
+import { ICONS } from "../../classes/AssetManager";
+import { contextStore, menuStore } from "../../store/store";
 import { router } from "expo-router";
-import { uiStyles } from "../styles/GeneralStyles";
+import { uiStyles } from "../../styles/GeneralStyles";
 import { useState } from "react";
-import { ImageButton } from "../components/buttons/ImageButton";
-import { RowImageButton } from "../components/buttons/RowImageButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { RolesData } from "../classes/roles/RolesData";
-import { RoleSetRepository } from "../classes/repository/RoleSetRepository";
-import { RoleSet } from "../classes/roles/RoleSet";
+import { ImageButton } from "../../components/buttons/ImageButton";
+import { RowImageButton } from "../../components/buttons/RowImageButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { RolesData } from "../../classes/roles/RolesData";
+import { RoleSetRepository } from "../../classes/repository/RoleSetRepository";
+import { RoleSet } from "../../classes/roles/RoleSet";
 export default function RolesetList(){
     
     const {type,theme} = menuStore()

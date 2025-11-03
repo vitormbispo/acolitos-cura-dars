@@ -1,24 +1,24 @@
 import { View,Text } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { GetMemberIcon } from "../classes/NewComps";
+import { GetMemberIcon } from "../../classes/NewComps";
 import { router } from "expo-router";
-import { AbbreviateText } from "../classes/Util"
-import { contextStore, menuStore } from "../store/store";
-import { MemberData } from "../classes/MemberData";
-import { Dates } from "../classes/Dates";
+import { AbbreviateText } from "../../classes/Util"
+import { contextStore, menuStore } from "../../store/store";
+import { MemberData } from "../../classes/MemberData";
+import { Dates } from "../../classes/Dates";
 import { PlaceAvailability, WeekendAvailability } from "./NewMember";
-import { textStyles} from "../styles/GeneralStyles";
-import { ICONS } from "../classes/AssetManager";
+import { textStyles} from "../../styles/GeneralStyles";
+import { ICONS } from "../../classes/AssetManager";
 import { useRef, useState } from "react";
-import { TextButton } from "../components/buttons/TextButton";
-import { CheckBox } from "../components/input/CheckBox";
-import { UpperBar } from "../components/display/UpperBar";
-import { UpperButton } from "../components/buttons/UpperButton";
-import { TextInputBox } from "../components/input/TextInputBox";
-import { DataSection } from "../components/display/DataSection";
-import { ConfirmationModal } from "../components/input/ConfirmationModal";
-import { Member } from "../classes/members/Member";
-import { MemberType } from "../classes/members/MemberType";
+import { TextButton } from "../../components/buttons/TextButton";
+import { CheckBox } from "../../components/input/CheckBox";
+import { UpperBar } from "../../components/display/UpperBar";
+import { UpperButton } from "../../components/buttons/UpperButton";
+import { TextInputBox } from "../../components/input/TextInputBox";
+import { DataSection } from "../../components/display/DataSection";
+import { ConfirmationModal } from "../../components/input/ConfirmationModal";
+import { Member } from "../../classes/members/Member";
+import { MemberType } from "../../classes/members/MemberType";
 
 export class EditMemberScreen{
     static id:number = 0

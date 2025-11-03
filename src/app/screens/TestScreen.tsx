@@ -1,9 +1,9 @@
 import { ScrollView, View, Text, VirtualizedList, Modal, ActivityIndicator } from "react-native";
-import { MemberData } from "../classes/MemberData";
-import { ICONS } from "../classes/AssetManager";
+import { MemberData } from "../../classes/MemberData";
+import { ICONS } from "../../classes/AssetManager";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { UpperBar } from "../components/display/UpperBar";
-import { GridLineupView } from "../components/frames/GridLineupView";
+import { UpperBar } from "../../components/display/UpperBar";
+import { GridLineupView } from "../../components/frames/GridLineupView";
 
 export default function TestScreen(){
      

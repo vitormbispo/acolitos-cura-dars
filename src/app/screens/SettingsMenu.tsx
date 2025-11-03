@@ -1,8 +1,8 @@
 import { View } from "react-native";
-import { ICONS } from "../classes/AssetManager";
-import { menuStore } from "../store/store";
-import { UpperBar } from "../components/display/UpperBar";
-import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton";
+import { ICONS } from "../../classes/AssetManager";
+import { menuStore } from "../../store/store";
+import { UpperBar } from "../../components/display/UpperBar";
+import { LinkRowImageButton } from "../../components/buttons/LinkRowImageButton";
 export default function SettingsMenu(){
     const {theme} = menuStore()
     return(

@@ -1,4 +1,4 @@
-import { MemberGenOptions } from "../app/classes/members/MemberGenOptions";
+import { MemberGenOptions } from "../classes/members/MemberGenOptions";
 
 test('Gen Options as JSON', () => {
     let options: MemberGenOptions = new MemberGenOptions()

@@ -1,21 +1,21 @@
 import { View,Text} from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { GetMemberAddIcon } from "../classes/NewComps";
+import { GetMemberAddIcon } from "../../classes/NewComps";
 import { router } from "expo-router";
-import { menuStore } from "../store/store";
-import { MemberData } from "../classes/MemberData";
-import { Member } from "../classes/members/Member"
-import { Dates } from "../classes/Dates";
-import { textStyles } from "../styles/GeneralStyles";
-import { Places } from "../classes/Places";
+import { menuStore } from "../../store/store";
+import { MemberData } from "../../classes/MemberData";
+import { Member } from "../../classes/members/Member"
+import { Dates } from "../../classes/Dates";
+import { textStyles } from "../../styles/GeneralStyles";
+import { Places } from "../../classes/Places";
 import { useRef, useState } from "react";
-import { TextButton } from "../components/buttons/TextButton";
-import { CheckBox } from "../components/input/CheckBox";
-import { TextCheckBox } from "../components/input/TextCheckBox";
-import { UpperBar } from "../components/display/UpperBar";
-import { DataSection } from "../components/display/DataSection";
-import { TextInputBox } from "../components/input/TextInputBox";
-import { MemberType } from "../classes/members/MemberType";
+import { TextButton } from "../../components/buttons/TextButton";
+import { CheckBox } from "../../components/input/CheckBox";
+import { TextCheckBox } from "../../components/input/TextCheckBox";
+import { UpperBar } from "../../components/display/UpperBar";
+import { DataSection } from "../../components/display/DataSection";
+import { TextInputBox } from "../../components/input/TextInputBox";
+import { MemberType } from "../../classes/members/MemberType";
 
 export default function NewMember(){
     const {theme, type} = menuStore()

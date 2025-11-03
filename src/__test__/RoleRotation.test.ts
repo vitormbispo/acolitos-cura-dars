@@ -1,5 +1,5 @@
-import { MemberType } from "../app/classes/MemberData";
-import { RoleRotation } from "../app/classes/members/RoleRotation";
+import { MemberType } from "../classes/MemberData";
+import { RoleRotation } from "../classes/members/RoleRotation";
 
 
 test('update acolyte RoleRotation map', () => {

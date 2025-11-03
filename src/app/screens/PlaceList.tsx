@@ -1,14 +1,14 @@
 import { Pressable, ScrollView, View, Text, Image, Modal } from "react-native";
-import { uiStyles } from "../styles/GeneralStyles";
-import { ICONS } from "../classes/AssetManager";
-import { Places } from "../classes/Places";
+import { uiStyles } from "../../styles/GeneralStyles";
+import { ICONS } from "../../classes/AssetManager";
+import { Places } from "../../classes/Places";
 import { useRef, useState } from "react";
-import { menuStore } from "../store/store";
-import { ImageButton } from "../components/buttons/ImageButton";
-import { RowImageButton } from "../components/buttons/RowImageButton";
-import { TextButton } from "../components/buttons/TextButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { TextInputBox } from "../components/input/TextInputBox";
+import { menuStore } from "../../store/store";
+import { ImageButton } from "../../components/buttons/ImageButton";
+import { RowImageButton } from "../../components/buttons/RowImageButton";
+import { TextButton } from "../../components/buttons/TextButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { TextInputBox } from "../../components/input/TextInputBox";
 
 export default function PlaceList(){
     const {theme} = menuStore()

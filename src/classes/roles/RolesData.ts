@@ -1,6 +1,6 @@
 import { MemberType } from "../members/MemberType";
 import { RoleSetRepository } from "../repository/RoleSetRepository";
-import { RoleSet } from "../roles/RoleSet";
+import { RoleSet } from "./RoleSet";
 
 export class RolesData {
     public static rolesets:Array<RoleSet> = []

@@ -1,5 +1,5 @@
-import { Dates } from "../app/classes/members/Dates";
-import {DayRotation} from "../app/classes/members/DayRotation"
+import { Dates } from "../classes/members/Dates";
+import {DayRotation} from "../classes/members/DayRotation"
 
 
 test('update DayRotation map', () => {

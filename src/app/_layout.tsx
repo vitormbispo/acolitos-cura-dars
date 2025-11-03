@@ -2,7 +2,7 @@ import { useFonts } from 'expo-font';
 import { Slot, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { menuStore } from './store/store';
+import { menuStore } from '../store/store';
 import { StackRouter } from '@react-navigation/native';
 import { View } from 'react-native';
 

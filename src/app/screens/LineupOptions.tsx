@@ -1,14 +1,14 @@
 import { View } from "react-native"
-import { textStyles } from "../styles/GeneralStyles"
-import { contextStore, menuStore } from "../store/store"
-import { LineupType } from "../classes/lineups/Lineup"
+import { textStyles } from "../../styles/GeneralStyles"
+import { contextStore, menuStore } from "../../store/store"
+import { LineupType } from "../../classes/lineups/Lineup"
 import { useShallow } from "zustand/react/shallow"
-import { Dates } from "../classes/Dates"
-import { ICONS } from "../classes/AssetManager"
-import { MemberData, MemberIDList } from "../classes/MemberData"
-import { UpperBar } from "../components/display/UpperBar"
-import { LinkRowImageButton } from "../components/buttons/LinkRowImageButton"
-import { RolesData } from "../classes/roles/RolesData"
+import { Dates } from "../../classes/Dates"
+import { ICONS } from "../../classes/AssetManager"
+import { MemberData, MemberIDList } from "../../classes/MemberData"
+import { UpperBar } from "../../components/display/UpperBar"
+import { LinkRowImageButton } from "../../components/buttons/LinkRowImageButton"
+import { RolesData } from "../../classes/roles/RolesData"
 
 
 export default function LineupOptions(){

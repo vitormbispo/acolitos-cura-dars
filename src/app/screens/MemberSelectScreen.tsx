@@ -1,13 +1,13 @@
 import { View,Image,Text, ScrollView, TouchableOpacity } from "react-native";
-import { GetMemberIcon } from "../classes/NewComps";
+import { GetMemberIcon } from "../../classes/NewComps";
 import { useState } from "react";
-import { Lineup } from "../classes/lineups/Lineup";
-import { MemberData } from "../classes/MemberData";
-import { Member } from "../classes/members/Member"
-import { menuStore } from "../store/store";
-import { VisualCheckBox } from "../components/input/VisualCheckBox";
-import { UpperBar } from "../components/display/UpperBar";
-import { MemberType } from "../classes/members/MemberType";
+import { Lineup } from "../../classes/lineups/Lineup";
+import { MemberData } from "../../classes/MemberData";
+import { Member } from "../../classes/members/Member"
+import { menuStore } from "../../store/store";
+import { VisualCheckBox } from "../../components/input/VisualCheckBox";
+import { UpperBar } from "../../components/display/UpperBar";
+import { MemberType } from "../../classes/members/MemberType";
 
 export class MemberSelectScreenOptions{
     static excludedMembers:Array<Member> = []

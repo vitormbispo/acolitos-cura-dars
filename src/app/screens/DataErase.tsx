@@ -1,17 +1,17 @@
 import { Modal, Platform, ToastAndroid, View, Image, Text} from "react-native";
-import { ICONS } from "../classes/AssetManager";
+import { ICONS } from "../../classes/AssetManager";
 import { DataSelectors } from "./DataExport";
-import { MemberData} from "../classes/MemberData";
+import { MemberData} from "../../classes/MemberData";
 import { useRef, useState } from "react";
 import { router } from "expo-router";
-import { menuStore } from "../store/store";
-import { textStyles, uiStyles } from "../styles/GeneralStyles";
-import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../classes/DataManager";
-import { Places } from "../classes/Places";
-import { PresetsData } from "../classes/PresetsData";
-import { TextButton } from "../components/buttons/TextButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { DataSection } from "../components/display/DataSection";
+import { menuStore } from "../../store/store";
+import { textStyles, uiStyles } from "../../styles/GeneralStyles";
+import { RetrieveAppData, RetrieveAppDataProperties, SaveDataFile } from "../../classes/DataManager";
+import { Places } from "../../classes/Places";
+import { PresetsData } from "../../classes/PresetsData";
+import { TextButton } from "../../components/buttons/TextButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { DataSection } from "../../components/display/DataSection";
 
 export default function DataErase(){
     const [confirmationVisible, setConfirmationVisible] = useState(false)

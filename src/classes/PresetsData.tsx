@@ -1,4 +1,4 @@
-import { GenerationOptionsType } from "../screens/LineupGenerationOptions"
+import { GenerationOptionsType } from "../app/screens/LineupGenerationOptions"
 import { DateSet } from "./Dates"
 import { RoleSet } from "./roles/RoleSet"
 

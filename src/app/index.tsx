@@ -1,23 +1,23 @@
 import  Home  from "./screens/HomeScreen"
 
-import { MemberData } from "./classes/MemberData";
-import { Places } from "./classes/Places";
-import { contextStore } from "./store/store";
+import { MemberData } from "../classes/MemberData";
+import { Places } from "../classes/Places";
+import { contextStore } from "../store/store";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { MemberRepository } from "./classes/repository/MemberRepository";
-import { RolesRepository } from "./classes/repository/RolesRepository";
-import { RoleSetRepository } from "./classes/repository/RoleSetRepository";
-import { SetRolesRepository } from "./classes/repository/SetRolesRepository";
-import { RolesData } from "./classes/roles/RolesData";
-import { LineupRepository } from "./classes/repository/LineupRepository";
-import { LineupGroupRepository } from "./classes/repository/LineupGroupRepository";
-import { LineupData } from "./classes/lineups/LineupData";
-import { GroupPlacesRepository } from "./classes/repository/GroupPlacesRepository";
-import { GroupLineupsRepository } from "./classes/repository/GroupLineupsRepository";
-import { SerializedLineupRepository } from "./classes/repository/SerializedLineupRepository";
-import { PlacesRepository } from "./classes/repository/PlacesRespository";
-import { RepositoryManager } from "./classes/repository/RepositoryManager";
+import { MemberRepository } from "../classes/repository/MemberRepository";
+import { RolesRepository } from "../classes/repository/RolesRepository";
+import { RoleSetRepository } from "../classes/repository/RoleSetRepository";
+import { SetRolesRepository } from "../classes/repository/SetRolesRepository";
+import { RolesData } from "../classes/roles/RolesData";
+import { LineupRepository } from "../classes/repository/LineupRepository";
+import { LineupGroupRepository } from "../classes/repository/LineupGroupRepository";
+import { LineupData } from "../classes/lineups/LineupData";
+import { GroupPlacesRepository } from "../classes/repository/GroupPlacesRepository";
+import { GroupLineupsRepository } from "../classes/repository/GroupLineupsRepository";
+import { SerializedLineupRepository } from "../classes/repository/SerializedLineupRepository";
+import { PlacesRepository } from "../classes/repository/PlacesRespository";
+import { RepositoryManager } from "../classes/repository/RepositoryManager";
 
 export default function App() {
     const {appStarted,updateAppStarted} = contextStore()
@@ -64,9 +64,6 @@ async function InitializeApp(){
     await GroupPlacesRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
     await GroupLineupsRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
     await SerializedLineupRepository.InitializeRepository().then(() => console.log("Lineup OK"), e => console.error(e))
-   // await LineupMembersRepository.InitializeRepository().then(() => console.log("LineupMembers OK"), e => console.error(e))
-
-
 
     await MemberData.InitializeMemberData()
     await RolesData.InitializeRolesData()

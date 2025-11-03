@@ -1,6 +1,6 @@
-import { MemberType } from "../app/classes/MemberData"
-import { Member } from "../app/classes/members/Member"
-import { MemberRepository } from "../app/classes/repository/MemberRepository"
+import { MemberType } from "../classes/MemberData"
+import { Member } from "../classes/members/Member"
+import { MemberRepository } from "../classes/repository/MemberRepository"
 
 test("Member instancing",()=>{
 

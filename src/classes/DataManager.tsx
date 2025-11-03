@@ -4,7 +4,7 @@ import { RandomNumber } from "./Util"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"
 import { Platform, ToastAndroid } from "react-native"
-import { RoleSet } from "../classes/roles/RoleSet"
+import { RoleSet } from "./roles/RoleSet"
 import { Lineup } from "./lineups/Lineup"
 import { Preset, PresetsData } from "./PresetsData"
 import { Member } from "./members/Member"

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { MemberData } from "@/src/app/classes/MemberData"
+import { MemberData } from "@/src/classes/MemberData"
 //import { SaveData } from "./Methods"
 
 export class Places {

@@ -1,17 +1,17 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { useRef, useState } from "react";
-import { ICONS } from "../classes/AssetManager";
-import { contextStore, menuStore } from "../store/store";
-import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { ICONS } from "../../classes/AssetManager";
+import { contextStore, menuStore } from "../../store/store";
+import { textStyles, uiStyles } from "../../styles/GeneralStyles";
 import { router } from "expo-router";
-import { AbbreviateText } from "../classes/Util";
-import { ImageButton } from "../components/buttons/ImageButton";
-import { RowImageButton } from "../components/buttons/RowImageButton";
-import { TextButton } from "../components/buttons/TextButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { TextInputBox } from "../components/input/TextInputBox";
-import { RoleSet } from "../classes/roles/RoleSet";
-import { RolesData } from "../classes/roles/RolesData";
+import { AbbreviateText } from "../../classes/Util";
+import { ImageButton } from "../../components/buttons/ImageButton";
+import { RowImageButton } from "../../components/buttons/RowImageButton";
+import { TextButton } from "../../components/buttons/TextButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { TextInputBox } from "../../components/input/TextInputBox";
+import { RoleSet } from "../../classes/roles/RoleSet";
+import { RolesData } from "../../classes/roles/RolesData";
 
 export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)

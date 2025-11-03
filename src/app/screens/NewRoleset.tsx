@@ -1,15 +1,15 @@
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { useRef, useState } from "react";
-import { ICONS } from "../classes/AssetManager";
-import { menuStore } from "../store/store";
-import { textStyles, uiStyles } from "../styles/GeneralStyles";
+import { ICONS } from "../../classes/AssetManager";
+import { menuStore } from "../../store/store";
+import { textStyles, uiStyles } from "../../styles/GeneralStyles";
 import { router } from "expo-router";
-import { ImageButton } from "../components/buttons/ImageButton";
-import { RowImageButton } from "../components/buttons/RowImageButton";
-import { TextButton } from "../components/buttons/TextButton";
-import { UpperBar } from "../components/display/UpperBar";
-import { TextInputBox } from "../components/input/TextInputBox";
-import { RolesData } from "../classes/roles/RolesData";
+import { ImageButton } from "../../components/buttons/ImageButton";
+import { RowImageButton } from "../../components/buttons/RowImageButton";
+import { TextButton } from "../../components/buttons/TextButton";
+import { UpperBar } from "../../components/display/UpperBar";
+import { TextInputBox } from "../../components/input/TextInputBox";
+import { RolesData } from "../../classes/roles/RolesData";
 
 
 export default function NewRoleset(){
