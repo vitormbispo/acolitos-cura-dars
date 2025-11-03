@@ -1,6 +1,5 @@
-import { MemberType } from "../MemberData";
 import { DayRotation } from "./DayRotation";
-import { Member } from "./Member";
+import { MemberType } from "./MemberType";
 import { PlaceRotation } from "./PlaceRotation";
 import { RoleRotation } from "./RoleRotation";
 import { Rotation } from "./Rotation";

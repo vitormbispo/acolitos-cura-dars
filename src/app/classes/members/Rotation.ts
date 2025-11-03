@@ -1,6 +1,4 @@
-import { MemberType } from "../MemberData"
-import { Member } from "./Member"
-import { Roles } from "../roles/Roles"
+import { MemberType } from "./MemberType"
 
 export enum RotationTypes {
     DAYS,

@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite'
 import { RepositoryManager } from './RepositoryManager'
-import { SetRolesRepository } from './SetRolesRepository'
 
 
 export type RoleObject = {
@@ -99,7 +98,6 @@ export class RolesRepository {
         try {
             let roleId = this.database.getFirstSync(`SELECT id FROM roles WHERE role="${role}"`)["id"]
             result = this.database.runSync(`DELETE roles WHERE role=${role}`)
-            SetRolesRepository.DeleteByRoleID(roleId)
         } catch(e) {
             console.error("Error: "+e)
         }

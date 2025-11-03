@@ -20,8 +20,8 @@ export class GroupLineupsRepository {
             group_id INTEGER,
             serialized_lineup_id INTEGER,
 
-            CONSTRAINT FK_GroupGL FOREIGN KEY (group_id) REFERENCES lineup_group(id),
-            CONSTRAINT FK_SerialLineupGL FOREIGN KEY (serialized_lineup_id) REFERENCES serialized_lineups(id)
+            CONSTRAINT FK_GroupGL FOREIGN KEY (group_id) REFERENCES lineup_group(id) ON DELETE CASCADE,
+            CONSTRAINT FK_SerialLineupGL FOREIGN KEY (serialized_lineup_id) REFERENCES serialized_lineups(id) ON DELETE CASCADE
             );`).then((_) => {return Promise.resolve(true)}, (e) => {return Promise.reject(e)})
         return result
     }

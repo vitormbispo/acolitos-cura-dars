@@ -18,7 +18,9 @@ export class SetRolesRepository {
             CREATE TABLE IF NOT EXISTS set_roles (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             role_id INTEGER,
-            set_id INTEGER
+            set_id INTEGER,
+            CONSTRAINT FKSR_Role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+            CONSTRAINT FKSR_Set FOREIGN KEY (set_id) REFERENCES role_set(id) ON DELETE CASCADE
             );`).then((_) => {return Promise.resolve(true)}, (e) => {return Promise.reject(e)})
         return result
     }

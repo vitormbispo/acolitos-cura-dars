@@ -1,6 +1,3 @@
-import { MemberData } from "../MemberData"
-import { Member } from "./Member"
-
 export class Places {
     
     private static readonly DEFAULT_PLACES:Array<string> = [
@@ -22,9 +19,6 @@ export class Places {
 
     static AddPlace(place:string):void{
         this.places.push(place)
-
-        let allMembers = MemberData.GetAllMembers()
-        allMembers.forEach(member => {})
     }
 
     /**
@@ -38,15 +32,6 @@ export class Places {
         if(index == -1){console.error("Place not found!");return}
 
         this.places.splice(index,1)
-
-        let allMembers = MemberData.GetAllMembers()
-        allMembers.forEach((member)=>{
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
-        })
-
-        //SaveData("AllPlaces",this.places)
-        //MemberData.SaveMemberData()
     }
 
     /**
@@ -59,22 +44,8 @@ export class Places {
     static RenamePlace(place:string,newPlace:string):void{
         let index = this.places.indexOf(place)
         if(index == -1){console.error("Place not found!");return}
-
-        let allMembers = MemberData.GetAllMembers()
-        allMembers.forEach((member)=>{
-            // Cria a chave com os dados da antiga
-            member.placeDisp[newPlace] = member.placeDisp[place]
-            member.placeRotation[newPlace] = member.placeRotation[place]
-
-            // Deleta as chaves antigas
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
-        })
         
         this.places[index] = newPlace
-
-        //SaveData("AllPlaces",this.places)
-        //MemberData.SaveMemberData()
     }
 
     /**
@@ -86,24 +57,7 @@ export class Places {
      */
     static RenamePlaceIndex(placeIndex:number,newPlace:string):void{
         if(placeIndex > this.places.length){console.error("Place index out of range.");return}
-        
-        let allMembers = MemberData.GetAllMembers()
-        let place = this.places[placeIndex]
-
-        allMembers.forEach((member)=>{
-            // Cria a chave com os dados da antiga
-            member.placeDisp[newPlace] = member.placeDisp[place]
-            member.placeRotation[newPlace] = member.placeRotation[place]
-
-            // Deleta as chaves antigas
-            delete member.placeDisp[place]
-            delete member.placeRotation[place]
-        })
-
         this.places[placeIndex] = newPlace
-
-        //SaveData("AllPlaces",this.places)
-        //MemberData.SaveMemberData()
     }
 
     /**
@@ -149,32 +103,7 @@ export class Places {
      */
     static ResetToDefault(){
         this.places = this.PlacesArray()
-        let allMembers = MemberData.GetAllMembers()
-
         this.VerifyPlacesIntegrity()
-          
-        allMembers.forEach((member)=>{
-            let memberPlaces:Array<string> = Object.keys(member.placeDisp)
-            
-            // Deletar locais
-            memberPlaces.forEach((place=>{
-                if(!this.places.includes(place)){ // Caso exista um local que não é padrão
-                    delete member.placeDisp[place]
-                    delete member.placeRotation[place]
-                }
-            }))
-            
-            // Adicionar locais padrão
-            this.places.forEach((place)=>{
-                if(!memberPlaces.includes(place)){ // Caso não exista um dos locais padrão
-                    member.placeDisp[place] = true
-                    member.placeRotation[place] = 0
-                }
-            })
-        })
-            
-        //MemberData.SaveMemberData()
-        
     }
 
     /**
@@ -184,7 +113,6 @@ export class Places {
         if(this.places == null){
             this.places = []
         }
-        //SaveData("AllPlaces",this.places)
     }
 
     /**

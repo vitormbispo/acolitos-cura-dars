@@ -1,7 +1,6 @@
 import { View, Image, Text, Pressable } from "react-native";
 import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
-import { MemberType } from "../classes/MemberData";
 import { router } from "expo-router";
 import { uiStyles } from "../styles/GeneralStyles";
 import { useState } from "react";

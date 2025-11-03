@@ -1,70 +1,8 @@
-//import AsyncStorage from "@react-native-async-storage/async-storage"
 import { LineupGroup } from "./lineups/LineupGroup"
 import { Member } from "./members/Member"
+import { MemberType } from "./members/MemberType"
 import { MemberRepository } from "./repository/MemberRepository"
 
-/**
- * Tipo de membro
- */
-export enum MemberType{
-    ACOLYTE,
-    COROINHA
-}
-
-/**
- * Classe base dos membros
- */
-/*
-export class Member {
-    id:number // Chave primária de até 4 dígitos
-    TYPE:MemberType = MemberType.ACOLYTE // Tipo de membro
-    
-    name:string="" // Nome
-    nick:string="" // Apelido
-    
-    rodizio:object={"cero1":0, // Rodízio de função
-    "cero2":0,
-    "cruci":0,
-    "turib":0,
-    "navet":0,
-    "libri":0,
-    }
-
-    oldRodizio:object={"cero1":0, // Velho rodízio de função (controle)
-    "cero2":0,
-    "cruci":0,
-    "turib":0,
-    "navet":0,
-    "libri":0,
-    }
-
-    disp:object={ // Disponibilidade
-        "1º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
-        "2º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
-        "3º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
-        "4º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true},
-        "5º":{"Sábado - 19h":true,"Domingo - 08h":true,"Domingo - 19h":true}
-    }
-
-    placeDisp:object
-    placeRotation:object
-
-    contact:string="" // Contato
-    parents:string=""
-
-    score:number = 0
-    priority=0 // Prioridade geral
-    oldPriority=0 // Velha prioridade geral (controle)
-    
-    weekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Prioridade de dia
-    oldWeekendPriority={"Sábado - 19h":0,"Domingo - 08h":0,"Domingo - 19h":0} // Velha prioridade de dia (controle)
-    
-    onLineup = true // Disponível
-
-    lastWeekend = "" // Último fim de semana servido
-    selectedOnLineups = []          
-}
-*/
 /**
  *  Dados armazenados dos Membros
  */
@@ -135,6 +73,26 @@ export class MemberData{
 
     public static FindMembersByType(type:MemberType):Array<Member> {
         return this.allMembers.filter((member) => member.type == type)
+    }
+
+    public static UpdatePlaceMaps() {
+        this.allMembers.forEach((member) => {
+            member.availability.placeAvailability.updateMap()
+            member.rotation.placeRotation.updateMap()
+        })
+    }
+
+    public static UpdateDayMaps() {
+        this.allMembers.forEach((member) => {
+            member.availability.dayAvailability.updateMap()
+            member.rotation.dayRotation.updateMap()
+        })
+    }
+
+    public static UpdateRolesMaps() {
+        this.allMembers.forEach((member) => {
+            member.rotation.roleRotation.updateMap()
+        })
     }
 
     public static async InitializeMemberData() {

@@ -1,7 +1,7 @@
 import { View,Text, ScrollView } from "react-native"
 import { GetMemberIcon } from "../classes/NewComps"
 import { contextStore, menuStore } from "../store/store"
-import { MemberData, MemberType } from "../classes/MemberData"
+import { MemberData } from "../classes/MemberData"
 import { textStyles, uiStyles} from "../styles/GeneralStyles"
 import { Dates } from "../classes/Dates"
 import { ICONS } from "../classes/AssetManager"
@@ -15,8 +15,8 @@ import { UpperButton } from "../components/buttons/UpperButton"
 import { DataDisplay } from "../components/display/DataDisplay"
 import { DataSection } from "../components/display/DataSection"
 import { ExpandableView } from "../components/frames/ExpandableView"
-import { MemberRepository } from "../classes/repository/MemberRepository"
 import { Member } from "../classes/members/Member"
+import { MemberType } from "../classes/members/MemberType"
 
 export default function MemberProfile() {
     const {type,name,theme} = menuStore()

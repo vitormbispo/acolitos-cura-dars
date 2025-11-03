@@ -1,4 +1,3 @@
-import { MemberType } from '../classes/MemberData'
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
 import { Lineup, LineupType } from '../classes/lineups/Lineup'
@@ -7,6 +6,7 @@ import { GenerationOptionsType } from '../screens/LineupGenerationOptions'
 import { Preset } from '../classes/PresetsData'
 import { Member } from '../classes/members/Member'
 import { RolesData } from '../classes/roles/RolesData'
+import { MemberType } from '../classes/members/MemberType'
 
 
 export enum MenuStyles{

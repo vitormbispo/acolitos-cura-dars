@@ -1,10 +1,8 @@
 import * as SQLite from 'expo-sqlite'
-import { RepositoryManager } from './RepositoryManager'
-import { MemberType } from '../MemberData'
 import { SetRolesRepository } from './SetRolesRepository'
 import { RolesRepository } from './RolesRepository'
 import { RoleSet } from '../roles/RoleSet'
-import { Role } from 'react-native'
+import { MemberType } from '../members/MemberType'
 
 type RoleSetObject = {
     id:number,
@@ -19,7 +17,7 @@ export class RoleSetRepository {
     private static database:SQLite.SQLiteDatabase
 
     public static async InitializeRepository() {
-        this.database = RepositoryManager.database
+        this.database = SQLite.openDatabaseSync("CURADARS")
         let result = this.database.execAsync(`CREATE TABLE IF NOT EXISTS role_set(
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(50),

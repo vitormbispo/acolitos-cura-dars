@@ -20,8 +20,8 @@ export class GroupPlacesRepository {
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             group_id INTEGER,
             place_id INTEGER,
-            CONSTRAINT FK_GroupGP FOREIGN KEY (group_id) REFERENCES lineup_group(id),
-            CONSTRAINT FK_PlaceGP FOREIGN KEY (place_id) REFERENCES places(id)
+            CONSTRAINT FK_GroupGP FOREIGN KEY (group_id) REFERENCES lineup_group(id) ON DELETE CASCADE,
+            CONSTRAINT FK_PlaceGP FOREIGN KEY (place_id) REFERENCES places(id) ON DELETE CASCADE
         );`).then((_) => { return Promise.resolve(true) }, (e) => { return Promise.reject(e) })
         return result
     }

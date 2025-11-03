@@ -1,12 +1,11 @@
 import * as SQLite from "expo-sqlite"
 import { Member } from "../members/Member"
-import { MemberType } from "../MemberData"
 import { Migrations } from "./migrations/Migrations"
 import migration from "./migrations/json/member_migrations.json"
 import { MemberGenOptions } from "../members/MemberGenOptions"
-import { Availability } from "../members/availability/Availability"
 import { MemberAvailability } from "../members/availability/MemberAvailability"
 import { MemberRotation } from "../members/MemberRotation"
+import { MemberType } from "../members/MemberType"
 
 export type MemberObject = {
     id:number

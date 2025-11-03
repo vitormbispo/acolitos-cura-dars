@@ -1,9 +1,4 @@
-import { MemberType } from "../MemberData"
-import { RoleSetRepository } from "../repository/RoleSetRepository"
-import { RolesRepository } from "../repository/RolesRepository"
-import { SetRolesRepository } from "../repository/SetRolesRepository"
-import { Roles } from "./Roles"
-import { RolesData } from "./RolesData"
+import { MemberType } from "../members/MemberType"
 
 export class RoleSet{
     private _id:number
@@ -84,16 +79,8 @@ export class RoleSet{
     * Adiciona uma nova função ao conjunto
      * @param role Função a adicionar
      */
-    public AddRole(role:string, updateOnDB:boolean=true){
+    public AddRole(role:string){
         this.set.push(role)
-
-        if(updateOnDB) {
-            console.log("updating on db")
-            let roleId = RolesRepository.FindOrInsertRole(role)
-            SetRolesRepository.InsertSetRole(roleId,this.id)
-        } else {
-            console.log("Everything ok")
-        }
     }
     /**
      * Exclui determinada função do conjunto
@@ -105,11 +92,6 @@ export class RoleSet{
         if(index == -1){console.error("Role not found");return false}
 
         this.set.splice(index,1)
-        console.log("THIS ID IS "+this.id)
-        if(updateOnDB) {
-            let roleId = RolesRepository.FindOrInsertRole(role)
-            SetRolesRepository.DeleteByRoleAndSetID(roleId, this.id)  
-        }
 
         return true
     }
@@ -117,29 +99,13 @@ export class RoleSet{
     /**
      * Define o conjunto de funções para o padrão do tipo de membros.
      */
-    public SetRolesToDefault(updateOnDB:boolean=true){
+    public SetRolesToDefault(){
         switch(this.type){
             case MemberType.ACOLYTE:
                 this.set = RoleSet.DEFAULT_ACOLYTE_ROLES; break
             case MemberType.COROINHA:
                 this.set = RoleSet.DEFAULT_COROINHA_ROLES; break
         }
-
-        if(updateOnDB) {
-            SetRolesRepository.DeleteBySetID(this.id)
-        
-            this.set.forEach(role => {
-                let roleID = RolesRepository.FindOrInsertRole(role)
-                SetRolesRepository.InsertSetRole(roleID,this.id)
-            })
-        }
-    }
-
-    /**
-     * Atualiza todas as funções do conjunto no banco de dados
-     */
-    public UpdateSetOnDB() {
-        RoleSetRepository.UpdateRoleSet(this)
     }
 
     public clone() {

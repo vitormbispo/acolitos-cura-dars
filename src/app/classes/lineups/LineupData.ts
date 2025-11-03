@@ -1,5 +1,6 @@
-import { MemberData, MemberType } from "../MemberData";
+import { MemberData } from "../MemberData";
 import { Member } from "../members/Member";
+import { MemberType } from "../members/MemberType";
 import { LineupGroupRepository } from "../repository/LineupGroupRepository";
 import { RoleSet } from "../roles/RoleSet";
 import { Lineup } from "./Lineup";
@@ -37,7 +38,7 @@ export class LineupData {
         Object.keys(lineup.line).forEach((role) => {
             let serialized:SerializedMember = lineup.line[role]
             let foundMember:Member = MemberData.FindMemberById(serialized.id)
-            newLineup.roleset.AddRole(role,false)
+            newLineup.roleset.AddRole(role)
 
             if(foundMember == undefined) {
                 let newMember = new Member(serialized.type,serialized.name,serialized.name)

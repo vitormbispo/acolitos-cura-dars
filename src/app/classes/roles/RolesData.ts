@@ -1,5 +1,4 @@
-import { MemberType } from "../MemberData";
-import { Member } from "../members/Member";
+import { MemberType } from "../members/MemberType";
 import { RoleSetRepository } from "../repository/RoleSetRepository";
 import { RoleSet } from "../roles/RoleSet";
 

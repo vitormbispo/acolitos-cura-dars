@@ -1,31 +1,23 @@
 import  Home  from "./screens/HomeScreen"
 
-import { MemberData, MemberType} from "./classes/MemberData";
+import { MemberData } from "./classes/MemberData";
 import { Places } from "./classes/Places";
-import { ConvertDataToClasses, LoadAcolyteData, LoadCoroinhaData, VerifyMembersIntegrity } from "./classes/DataManager";
 import { contextStore } from "./store/store";
-import { DistinctRandomNumbers } from "./classes/Util";
 import { useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "react-native";
 import { MemberRepository } from "./classes/repository/MemberRepository";
 import { RolesRepository } from "./classes/repository/RolesRepository";
-import { RepositoryManager } from "./classes/repository/RepositoryManager";
-import { Roles } from "./classes/roles/Roles";
 import { RoleSetRepository } from "./classes/repository/RoleSetRepository";
 import { SetRolesRepository } from "./classes/repository/SetRolesRepository";
-import { RoleSet } from "./classes/roles/RoleSet";
 import { RolesData } from "./classes/roles/RolesData";
 import { LineupRepository } from "./classes/repository/LineupRepository";
-import { Lineup } from "./classes/lineups/Lineup";
-import { LineupMembersRepository } from "./classes/repository/LineupMembersRepository";
 import { LineupGroupRepository } from "./classes/repository/LineupGroupRepository";
 import { LineupData } from "./classes/lineups/LineupData";
 import { GroupPlacesRepository } from "./classes/repository/GroupPlacesRepository";
 import { GroupLineupsRepository } from "./classes/repository/GroupLineupsRepository";
 import { SerializedLineupRepository } from "./classes/repository/SerializedLineupRepository";
 import { PlacesRepository } from "./classes/repository/PlacesRespository";
-
+import { RepositoryManager } from "./classes/repository/RepositoryManager";
 
 export default function App() {
     const {appStarted,updateAppStarted} = contextStore()
@@ -57,7 +49,7 @@ async function InitializeApp(){
     //await RepositoryManager.database.runAsync(`DROP TABLE lineup_members`).then(_ => console.log("Dropped table lineup_members"))
     //await RepositoryManager.database.runAsync(`DROP TABLE lineups`).then(_ => console.log("Dropped table lineups"))
     //await RepositoryManager.database.runAsync(`DROP TABLE role_set`).catch((e)=>{console.log("Error: "+e)})
-
+    
     //await RepositoryManager.database.runAsync(`DROP TABLE group_lineups`).catch((e)=>{console.log("Error: "+e)})
     //await RepositoryManager.database.runAsync(`DROP TABLE group_places`).catch((e)=>{console.log("Error: "+e)})
     //await RepositoryManager.database.runAsync(`DROP TABLE lineup_group`).catch((e)=>{console.log("Error: "+e)})

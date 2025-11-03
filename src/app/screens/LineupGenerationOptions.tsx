@@ -5,7 +5,7 @@ import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup,
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../store/store"
-import { MemberData, MemberIDList, MembersFromIDs, MemberType } from "../classes/MemberData"
+import { MemberData, MemberIDList, MembersFromIDs } from "../classes/MemberData"
 import { textStyles, uiStyles } from "../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../classes/Util"
 import { Dates, DateSet } from "../classes/Dates"
@@ -30,6 +30,7 @@ import { ExpandableView } from "../components/frames/ExpandableView"
 import { RoleSet } from "../classes/roles/RoleSet"
 import { RolesData } from "../classes/roles/RolesData"
 import { Member } from "../classes/members/Member"
+import { MemberType } from "../classes/members/MemberType"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 

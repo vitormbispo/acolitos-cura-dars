@@ -1,4 +1,4 @@
-import { MemberType } from "../MemberData"
+import { MemberType } from "../members/MemberType"
 
 /**
  * Classe base de uma escala de acólitos

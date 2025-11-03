@@ -3,7 +3,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { GetMemberAddIcon } from "../classes/NewComps";
 import { router } from "expo-router";
 import { menuStore } from "../store/store";
-import { MemberData, MemberType } from "../classes/MemberData";
+import { MemberData } from "../classes/MemberData";
 import { Member } from "../classes/members/Member"
 import { Dates } from "../classes/Dates";
 import { textStyles } from "../styles/GeneralStyles";
@@ -15,6 +15,7 @@ import { TextCheckBox } from "../components/input/TextCheckBox";
 import { UpperBar } from "../components/display/UpperBar";
 import { DataSection } from "../components/display/DataSection";
 import { TextInputBox } from "../components/input/TextInputBox";
+import { MemberType } from "../classes/members/MemberType";
 
 export default function NewMember(){
     const {theme, type} = menuStore()

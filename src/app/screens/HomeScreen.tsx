@@ -8,9 +8,6 @@ import { ImageTextButton, TextPosition } from "../components/buttons/ImageTextBu
 import { TextButton } from "../components/buttons/TextButton";
 import { MemberRepository } from "../classes/repository/MemberRepository";
 import { Member } from "../classes/members/Member";
-import { RoleRotation } from "../classes/members/RoleRotation";
-import { MemberType } from "../classes/MemberData";
-import { RotationTypes } from "../classes/members/Rotation";
 import { RepositoryManager } from "../classes/repository/RepositoryManager";
 
 // Tela//

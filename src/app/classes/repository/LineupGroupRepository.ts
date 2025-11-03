@@ -1,14 +1,13 @@
 import * as SQLite from 'expo-sqlite'
 import { Lineup } from '../lineups/Lineup'
-import { MemberType } from '../MemberData'
 import { GroupPlacesRepository } from './GroupPlacesRepository'
 import { PlacesRepository } from './PlacesRespository'
 import { LineupGroup } from '../lineups/LineupGroup'
 import { LineupRepository } from './LineupRepository'
 import { GroupLineupObject, GroupLineupsRepository } from './GroupLineupsRepository'
 import { SerializedLineupRepository } from './SerializedLineupRepository'
-import { LineupData } from '../lineups/LineupData'
-
+import { MemberType } from '../members/MemberType'
+import { LineupConversion } from '../lineups/LineupConversion'
 
 type LineupGroupObject = {
     id:number,
@@ -52,7 +51,7 @@ export class LineupGroupRepository {
             })
 
             group.lineups.forEach((line) => {
-                let line_id = SerializedLineupRepository.Insert(LineupData.Serialize(line)).lastInsertRowId
+                let line_id = SerializedLineupRepository.Insert(LineupConversion.Serialize(line)).lastInsertRowId
                 GroupLineupsRepository.Insert(group.id,line_id)
             })
 
@@ -80,7 +79,7 @@ export class LineupGroupRepository {
 
             GroupLineupsRepository.DeleteAllByGroupID(group.id)
             group.lineups.forEach((line) => {
-                let line_id = SerializedLineupRepository.Insert(LineupData.Serialize(line)).lastInsertRowId
+                let line_id = SerializedLineupRepository.Insert(LineupConversion.Serialize(line)).lastInsertRowId
                 GroupLineupsRepository.Insert(group.id,line_id)
             })
 
@@ -152,8 +151,6 @@ export class LineupGroupRepository {
         let result:SQLite.SQLiteRunResult = null
 
         try {
-            GroupLineupsRepository.DeleteAllByGroupID(id)
-            GroupPlacesRepository.DeleteAllByGroupID(id)
             result = this.database.runSync(`DELETE FROM lineup_group WHERE id=${id}`)
             
         } catch(e) {
@@ -174,7 +171,7 @@ export class LineupGroupRepository {
         lineups.forEach((line) => {
             const lineup = SerializedLineupRepository.FindByID(line.serialized_lineup_id)
             group.monthLineupsMap[lineup.weekend] = lineup
-            group.lineups.push(LineupData.Deserialize(lineup))
+            group.lineups.push(LineupConversion.Deserialize(lineup))
         })
         return group
         

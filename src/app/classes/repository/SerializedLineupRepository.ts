@@ -1,8 +1,6 @@
 import * as SQLite from 'expo-sqlite'
 import { RepositoryManager } from './RepositoryManager'
 import { SerializedLineup } from '../lineups/SerializedLineup'
-import { MemberType } from '../MemberData'
-
 
 export type SerializedLineupObject = {
     id:number,
@@ -32,17 +30,14 @@ export class SerializedLineupRepository {
 
     public static Insert(lineup:SerializedLineup) {
         let result:SQLite.SQLiteRunResult
-        console.log("Inserting")
         try {
-            let query:string = `INSERT INTO serialized_lineups (name,place,day,weekend,line) VALUES (
+            result = this.database.runSync(`INSERT INTO serialized_lineups (name,place,day,weekend,line) VALUES (
                 "${lineup.name}",
                 "${lineup.place}",
                 "${lineup.day}",
                 "${lineup.weekend}",
                 '${JSON.stringify(lineup.line)}'
-                )`
-            console.log("Query: "+query)
-            result = this.database.runSync(query)
+                )`)
         } catch(e) {
             console.error("Error inserting serialized lineup: "+e)
         }
@@ -55,7 +50,6 @@ export class SerializedLineupRepository {
 
         try {
             result = this.database.getFirstSync(`SELECT * FROM serialized_lineups WHERE id=${id}`)
-            console.log("Query suceeded "+JSON.stringify(result))
         } catch(e) {
             console.error("Error finding serialized lineup with id: "+id+": "+e)
             return null

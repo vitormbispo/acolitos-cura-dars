@@ -1,7 +1,5 @@
 import * as SQLite from 'expo-sqlite'
 import { RepositoryManager } from './RepositoryManager'
-import { RolesRepository } from './RolesRepository'
-
 
 export type LineupMemberObject = {
     id:number,
@@ -41,8 +39,6 @@ export class LineupMembersRepository {
 
         return result
     }
-
-
 
     public static FindLineupMemberByID(id:number):object {
         let result:object

@@ -4,8 +4,7 @@ import { ICONS } from "../classes/AssetManager";
 import { contextStore, menuStore } from "../store/store";
 import { textStyles, uiStyles } from "../styles/GeneralStyles";
 import { router } from "expo-router";
-import { MemberType } from "../classes/MemberData";
-import { AbbreviateText, DeepCopyObject } from "../classes/Util";
+import { AbbreviateText } from "../classes/Util";
 import { ImageButton } from "../components/buttons/ImageButton";
 import { RowImageButton } from "../components/buttons/RowImageButton";
 import { TextButton } from "../components/buttons/TextButton";
@@ -13,15 +12,12 @@ import { UpperBar } from "../components/display/UpperBar";
 import { TextInputBox } from "../components/input/TextInputBox";
 import { RoleSet } from "../classes/roles/RoleSet";
 import { RolesData } from "../classes/roles/RolesData";
-import { RoleSetRepository } from "../classes/repository/RoleSetRepository";
 
 export default function EditRoleset(){
     const [modalVisible,setModalVisible] = useState(false)
     
-    const {type,theme} = menuStore()
+    const {theme} = menuStore()
     const {rolesetID} = contextStore()
-    
-    let setsArray:Array<RoleSet> = RolesData.rolesets
 
     const [curSet] = useState(RolesData.GetRoleSetByID(rolesetID).clone())
     console.log("Cur set: "+curSet.name)

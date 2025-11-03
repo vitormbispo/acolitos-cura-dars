@@ -4,7 +4,7 @@ import { GetMemberIcon } from "../classes/NewComps";
 import { router } from "expo-router";
 import { AbbreviateText } from "../classes/Util"
 import { contextStore, menuStore } from "../store/store";
-import { MemberData, MemberType } from "../classes/MemberData";
+import { MemberData } from "../classes/MemberData";
 import { Dates } from "../classes/Dates";
 import { PlaceAvailability, WeekendAvailability } from "./NewMember";
 import { textStyles} from "../styles/GeneralStyles";
@@ -18,6 +18,7 @@ import { TextInputBox } from "../components/input/TextInputBox";
 import { DataSection } from "../components/display/DataSection";
 import { ConfirmationModal } from "../components/input/ConfirmationModal";
 import { Member } from "../classes/members/Member";
+import { MemberType } from "../classes/members/MemberType";
 
 export class EditMemberScreen{
     static id:number = 0

@@ -1,7 +1,7 @@
 import { MemberAvailability } from "./availability/MemberAvailability"
-import { MemberType } from "../MemberData"
 import { MemberGenOptions } from "./MemberGenOptions"
 import { MemberRotation } from "./MemberRotation"
+import { MemberType } from "./MemberType"
 
 export class Member {
     private _id:number

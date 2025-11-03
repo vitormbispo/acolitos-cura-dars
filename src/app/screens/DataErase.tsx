@@ -87,9 +87,6 @@ function EraseSelectedData(selectedData:Array<string>){
         if(MemberData[data] != undefined){
             MemberData[data] = null
         }
-        else if(Roles[data] != undefined){
-            Roles[data] = null
-        }
         else if(Places[data] != undefined){
             Places[data] = null
         }
@@ -101,7 +98,6 @@ function EraseSelectedData(selectedData:Array<string>){
     })
     MemberData.VerifyMemberDataIntegrity()
     Places.VerifyPlacesIntegrity()
-    Roles.VerifyRolesIntegrity()
     MemberData.SaveMemberData()
     PresetsData.VerifyPresetsIntegrity()
 }

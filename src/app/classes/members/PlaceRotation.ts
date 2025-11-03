@@ -1,8 +1,6 @@
-import { Member } from "./Member";
-import { Dates } from "./Dates";
 import { Rotation, RotationTypes } from "./Rotation";
-import { MemberType } from "../MemberData";
 import { Places } from "./Places";
+import { MemberType } from "./MemberType";
 
 export class PlaceRotation extends Rotation{
     constructor(memberType:MemberType=MemberType.ACOLYTE) {
