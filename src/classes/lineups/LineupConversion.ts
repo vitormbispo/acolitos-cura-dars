@@ -4,7 +4,15 @@ import { RoleSet } from "../roles/RoleSet"
 import { Lineup } from "./Lineup"
 import { SerializedLineup, SerializedMember } from "./SerializedLineup"
 
+/**
+ * Conversão de escalas entre serializadas e normais
+ */
 export class LineupConversion {
+    /**
+     * Converte uma escala convencional em uma escala serializada
+     * @param lineup Escala convencional
+     * @returns Escala convertida a serializada
+     */
     public static Serialize(lineup:Lineup):SerializedLineup {
         let serialized:SerializedLineup = new SerializedLineup()
         serialized.name = `${lineup.weekend} ${lineup.day}`
@@ -21,6 +29,11 @@ export class LineupConversion {
         return serialized
     }
     
+    /**
+     * Converte uma escala serializada em uma escala convencional
+     * @param lineup Escala serializada
+     * @returns Escala convertida a convencional
+     */
     public static Deserialize(lineup:SerializedLineup):Lineup {
         let newLineup = new Lineup(null,lineup.day,lineup.weekend,lineup.place)
         let newRoleSet = new RoleSet(lineup.name,lineup.type)

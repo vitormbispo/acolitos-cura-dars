@@ -1,7 +1,7 @@
 import { MemberType } from "../members/MemberType"
 
 /**
- * Classe base de uma escala de acólitos
+ * Tipo de membro serializado
  */
 export type SerializedMember = {
     id:number
@@ -9,6 +9,9 @@ export type SerializedMember = {
     type?:MemberType
 }
 
+/**
+ * Classe serializada de uma escala de acólitos
+ */
 export class SerializedLineup{
     private _id:number
     private _name:string
@@ -24,66 +27,42 @@ export class SerializedLineup{
         this._line = line;
     }
 
-    public get id(): number {
-        return this._id;
-    }
+    public get id(): number { return this._id; }
+    public set id(value: number) { this._id = value; }
 
-    public set id(value: number) {
-        this._id = value;
-    }
+    public get name(): string { return this._name; }
+    public set name(value: string) { this._name = value; }
 
-    public get name(): string {
-        return this._name;
-    }
+    public get day(): string { return this._day; }
+    public set day(value: string) { this._day = value; }
 
-    public set name(value: string) {
-        this._name = value;
-    }
+    public get weekend(): string { return this._weekend; }
+    public set weekend(value: string) { this._weekend = value; }
 
-    public get day(): string {
-        return this._day
-    }
+    public get place(): string { return this._place; }
+    public set place(value: string) { this._place = value; }
 
-    public set day(value:string) {
-        this._day = value
-    }
+    public get type(): MemberType { return this._type; }
+    public set type(value: MemberType) { this._type = value; }
 
-    public get weekend(): string {
-        return this._weekend
-    }
+    public get line(): object { return this._line; }
+    public set line(value: object) { this._line = value; }
 
-    public set weekend(value:string) {
-        this._weekend = value
-    }
-
-    public get place(): string {
-        return this._place;
-    }
-
-    public set place(value: string) {
-        this._place = value;
-    }
-
-    public get type(): MemberType {
-        return this._type;
-    }
-
-    public set type(value: MemberType) {
-        this._type = value;
-    }
-
-    public get line(): object {
-        return this._line;
-    }
-
-    public set line(value: object) {
-        this._line = value;
-    }
-
+    /**
+     * Atribui um membro a uma determinada função da escala
+     * @param role Função
+     * @param member Escala
+     */
     public AssignRole(role:string,member:SerializedMember) {
         this.line[role] = member
     }
 
+     /**
+     * Remove um membro de uma determinada função da escala
+     * @param role Função
+     * @param member Escala
+     * @returns o objeto do membro removido
+     */
     public UnassignRole(role:string): SerializedMember {
         const member = this.GetRoleMember(role)
         delete this.line[role]

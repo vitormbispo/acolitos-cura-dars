@@ -30,46 +30,28 @@ export class Lineup{
         this.roleset = roleset
     }
 
-    public get id(): number {
-        return this._id
-    }
+    public get id(): number { return this._id; }
+    public set id(value: number) { this._id = value; }
 
-    public set id(value: number) {
-        this._id = value
-    }
+    public get members(): Array<Member> { return this._members; }
 
-    public get members(): Array<Member> {
-        return this._members;
-    }
+    public get roleset(): RoleSet { return this._roleset; }
+    public set roleset(value: RoleSet) { this._roleset = value; }
 
-    public get roleset(): RoleSet {
-        return this._roleset;
-    }
-    public set roleset(value: RoleSet) {
-        this._roleset = value;
-    }
+    public get day(): string { return this._day; }
+    public set day(value: string) { this._day = value; }
 
-    public get day(): string {
-        return this._day;
-    }
-    public set day(value: string) {
-        this._day = value;
-    }
+    public get weekend(): string { return this._weekend; }
+    public set weekend(value: string) { this._weekend = value; }
 
-    public get weekend(): string {
-        return this._weekend;
-    }
-    public set weekend(value: string) {
-        this._weekend = value;
-    }
+    public get place(): string { return this._place; }
+    public set place(value: string) { this._place = value; }
 
-    public get place(): string {
-        return this._place;
-    }
-    public set place(value: string) {
-        this._place = value;
-    }
-
+    /**
+     * Atribui um membro a uma determinada função da escala
+     * @param role Função
+     * @param member Escala
+     */
     public AssignRole(role:string,member:Member) {
         if(!this.roleset.set.includes(role)) {
             console.error(`Error assigning role "${role}". This role doesn't exist in this lineup's RoleSet!`)
@@ -88,6 +70,12 @@ export class Lineup{
         }
     }
 
+    /**
+     * Remove um membro de uma determinada função da escala
+     * @param role Função
+     * @param member Escala
+     * @returns o objeto do membro removido
+     */
     public UnassignRole(role:string): Member {
         const member = this.GetRoleMember(role)
         const index = this.members.indexOf(member)
