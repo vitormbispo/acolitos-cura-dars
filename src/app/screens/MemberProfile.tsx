@@ -1,9 +1,9 @@
 import { View,Text, ScrollView } from "react-native"
 import { GetMemberIcon } from "../../classes/NewComps"
 import { contextStore, menuStore } from "../../store/store"
-import { MemberData } from "../../classes/MemberData"
+import { MemberData } from "../../classes/members/MemberData"
 import { textStyles, uiStyles} from "../../styles/GeneralStyles"
-import { Dates } from "../../classes/Dates"
+import { Dates } from "../../classes/dates/Dates"
 import { ICONS } from "../../classes/AssetManager"
 import { Places } from "../../classes/Places"
 import { useRef, useState } from "react"
@@ -57,8 +57,8 @@ export default function MemberProfile() {
     })
     
     let availabilities:Array<React.JSX.Element> = []
-    for(let i = 0; i < Dates.defaultWeekends.length;i++){
-        let curWeekend:string = Dates.defaultWeekends[i]
+    for(let i = 0; i < Dates.DEFAULT_WEEKENDS.length;i++){
+        let curWeekend:string = Dates.DEFAULT_WEEKENDS[i]
         let available:React.JSX.Element = <VisualWeekendAvailability member={curMember} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
@@ -132,10 +132,10 @@ type VisualWeekendAvailabilityProps = {
 
 export function VisualWeekendAvailability(props:VisualWeekendAvailabilityProps){
     let checks = []
-    let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
+    let isFirstWeekend = Dates.DEFAULT_WEEKENDS[0] == props.weekend
 
-    for(let i = 0; i < Dates.defaultDays.length;i++){
-        let curDay = Dates.defaultDays[i]
+    for(let i = 0; i < Dates.DEFAULT_DAYS.length;i++){
+        let curDay = Dates.DEFAULT_DAYS[i]
         let check = 
         <VisualCheckBox 
             enabled={props.member.availability.dayAvailability.isAvailable(props.weekend,curDay)} 

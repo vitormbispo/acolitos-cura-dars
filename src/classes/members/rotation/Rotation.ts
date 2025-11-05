@@ -1,4 +1,4 @@
-import { MemberType } from "./MemberType"
+import { MemberType } from "../MemberType"
 
 export enum RotationTypes {
     DAYS,
@@ -6,6 +6,9 @@ export enum RotationTypes {
     ROLES
 }
 
+/**
+ * Classe para armazenar rodízios
+ */
 export abstract class Rotation {
     protected id:number
     protected map:object
@@ -29,13 +32,8 @@ export abstract class Rotation {
     public abstract getRotation(...args:any): number
     public abstract setRotation(...args:any): void
 
-    public getMemberType():MemberType {
-        return this.memberType
-    }
-
-    public setMemberType(type:MemberType):void {
-        this.memberType = type
-    }
+    public getMemberType():MemberType { return this.memberType }
+    public setMemberType(type:MemberType):void { this.memberType = type }
     
     /**
      * Aumenta o valor do rodízio da chave 'key' em 1 ou um valor determinado
@@ -69,16 +67,31 @@ export abstract class Rotation {
         this.map[key] = 0
     }
 
+    /**
+     * Converte esse objeto em formato JSON
+     * @returns Uma `string` JSON desse objeto
+     */
     public asJSON():string {
         return JSON.stringify(this)
     }
 
+    /**
+     * Cria um mapa de rodízio a partir de determinadas chaves
+     * @param keys Chaves do mapa
+     * @returns Objeto de rodízio
+     */
     public static defaultRotationMap(keys:Array<string>):object {
         let map:object = {}
         keys.forEach(key => map[key] = 0)
         return map
     }
 
+    /**
+     * Cria um novo mapa de rodízio de dias e fins de semana
+     * @param days Dias
+     * @param weekends Fins de semana
+     * @returns 
+     */
     public static dayRotationMap(days:Array<string>,weekends:Array<string>):object {
         let map:object = {}
 
@@ -86,11 +99,14 @@ export abstract class Rotation {
             weekend => days.forEach(
                 day => {
                     if(map[weekend] == undefined) map[weekend] = {}
-                    map[weekend][day] = 1
+                    map[weekend][day] = 0
                 }
             ))
         return map
     }
 
+    /**
+     * Atualiza o mapa que armazena o rodízio
+     */
     abstract updateMap():void
 }

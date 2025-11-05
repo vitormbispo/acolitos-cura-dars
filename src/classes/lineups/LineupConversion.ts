@@ -1,4 +1,4 @@
-import { MemberData } from "../MemberData"
+import { MemberData } from "../members/MemberData"
 import { Member } from "../members/Member"
 import { RoleSet } from "../roles/RoleSet"
 import { Lineup } from "./Lineup"

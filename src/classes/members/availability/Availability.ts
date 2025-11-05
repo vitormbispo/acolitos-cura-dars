@@ -1,6 +1,4 @@
-import { PlaceAvailability } from "./PlaceAvailability"
-import { MemberType } from "../../MemberData"
-import { DayAvailability } from "./DayAvailability"
+import { MemberType } from "../MemberType"
 
 export enum AvailabilityTypes {
     DAYS,
@@ -65,9 +63,16 @@ export abstract class Availability {
         delete this._map[key]
     }
 
+    /**
+     * Converte esse objeto em formato JSON
+     * @returns Uma `string` JSON desse objeto
+     */
     public asJSON():string {
         return JSON.stringify(this)
     }
-
+    
+    /**
+     * Atualiza o mapa que armazena as disponibilidades
+     */
     public abstract updateMap():void
 }

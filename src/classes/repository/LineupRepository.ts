@@ -2,7 +2,7 @@ import * as SQLite from 'expo-sqlite'
 import { Lineup } from '../lineups/Lineup'
 import { LineupMemberObject, LineupMembersRepository } from './LineupMembersRepository'
 import { RoleSetRepository } from './RoleSetRepository'
-import { MemberData } from '../MemberData'
+import { MemberData } from '../members/MemberData'
 
 
 type LineupObject = {

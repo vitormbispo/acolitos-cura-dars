@@ -1,7 +1,7 @@
-import { LineupGroup } from "./lineups/LineupGroup"
-import { Member } from "./members/Member"
-import { MemberType } from "./members/MemberType"
-import { MemberRepository } from "./repository/MemberRepository"
+import { LineupGroup } from "../lineups/LineupGroup"
+import { Member } from "./Member"
+import { MemberType } from "./MemberType"
+import { MemberRepository } from "../repository/MemberRepository"
 
 /**
  *  Dados armazenados dos Membros
@@ -34,47 +34,105 @@ export class MemberData{
         //this.SaveMemberData()
     }
 
+    /**
+     * Organiza a lista de membros por nome
+     */
     public static SortMembersList() {
         this.allMembers.sort((a, b) => a.name.localeCompare(b.name))
     }
     
-    public static AddNewMember(member:Member,sortList:boolean=true) {
+    /**
+     * Adiciona um novo membro a lista
+     * Pode opcionalmente atualizar o banco de dados e organizar a lista 
+     * @param member Membro a ser adicionado
+     * @param updateDB Quando `true` atualiza o banco de dados. (padrão: `false`)
+     * @param sortList Quando `true` organiza a lista de membros. (padrão: `true`)
+     */
+    public static AddNewMember(member:Member, updateDB:boolean=false, sortList:boolean=true) {
         this.allMembers.push(member)
         if(sortList) this.SortMembersList()
+        if(updateDB) MemberRepository.InsertMember(member)
     }
 
-    public static UpdateMember(member:Member,sortList:boolean=true) {
+    /**
+     * Atualiza um membro da lista
+     * Pode opcionalmente atualizar o banco de dados e organizar a lista 
+     * @param member Membro a ser atualizado
+     * @param updateDB Quando `true` atualiza o banco de dados. (padrão: `false`)
+     * @param sortList Quando `true` organiza a lista de membros. (padrão: `true`)
+     */
+    public static UpdateMember(member:Member,updateDB:boolean=false,sortList:boolean=true) {
         let index = this.allMembers.findIndex((m:Member) => m.equals(member))
         this.allMembers[index] = member
         if(sortList) this.SortMembersList()
+        if(updateDB) MemberRepository.UpdateMember(member)
     }
-    public static RemoveMember(member:Member) {
+
+    /**
+     * Remove um membro da lista
+     * Pode opcionalmente atualizar o banco de dados e organizar a lista 
+     * @param member Membro a ser removido
+     * @param updateDB Quando `true` atualiza o banco de dados. (padrão: `false`)
+     * @param sortList Quando `true` organiza a lista de membros. (padrão: `true`)
+     */
+    public static RemoveMember(member:Member,updateDB:boolean=false) {
         let index = this.allMembers.findIndex((m:Member) => m.equals(member))
         this.allMembers.splice(index,1)
+        if(updateDB) MemberRepository.DeleteMemberById(member.id)
     }
 
-    public static RemoveMemberByID(id:number) {
+    /**
+     * Remove um membro da lista pelo seu ID
+     * Pode opcionalmente atualizar o banco de dados e organizar a lista 
+     * @param id ID do membro a ser removido
+     * @param updateDB Quando `true` atualiza o banco de dados. (padrão: `false`)
+     * @param sortList Quando `true` organiza a lista de membros. (padrão: `true`)
+     */
+    public static RemoveMemberByID(id:number,updateDB:boolean=false) {
         let index = this.allMembers.findIndex((m:Member) => m.id == id)
         this.allMembers.splice(index,1)
+        if(updateDB) MemberRepository.DeleteMemberById(id)
     }
 
+    /**
+     * Retorna a lista com todos os membros
+     * @returns Lista com todos os membros
+     */
     public static GetAllMembers() {
         return this.allMembers
     }
 
-    public static GetAllMembersCopy() {
+    /**
+     * Retorna uma cópia da lista com todos os membros
+     * @returns Cópia da lista com todos os membros
+     */
+    public static GetAllMembersCopy():Array<Member> {
         return this.allMembers.slice()
     }
 
+    /**
+     * Retorna o membro com determinado ID
+     * @param id ID do membro
+     * @returns Objeto `Member` com o ID requisitado
+     */
     public static FindMemberById(id:number): Member {
         let member:Member = this.allMembers.find((m:Member) => m.id == id)
         return member
     }
 
+    /**
+     * Retorna uma lista com todos os membros de determinado tipo
+     * @param type Tipo de membro
+     * @returns `Array<Member>` com os membros do tipo
+     */
     public static FindMembersByType(type:MemberType):Array<Member> {
         return this.allMembers.filter((member) => member.type == type)
     }
 
+    /**
+     * Atualiza os mapas de disponibilidade e rotação de locais
+     * de todos os membros
+     */
     public static UpdatePlaceMaps() {
         this.allMembers.forEach((member) => {
             member.availability.placeAvailability.updateMap()
@@ -82,6 +140,10 @@ export class MemberData{
         })
     }
 
+    /**
+     * Atualiza os mapas de disponibilidade e rotação de dias
+     * de todos os membros
+     */
     public static UpdateDayMaps() {
         this.allMembers.forEach((member) => {
             member.availability.dayAvailability.updateMap()
@@ -89,17 +151,29 @@ export class MemberData{
         })
     }
 
+     /**
+     * Atualiza os mapas de rotação de funções
+     * de todos os membros
+     */
     public static UpdateRolesMaps() {
         this.allMembers.forEach((member) => {
             member.rotation.roleRotation.updateMap()
         })
     }
 
-    public static async InitializeMemberData() {
+    /**
+     * Inicializa os dados dos membros
+     * @returns `Promise`
+     */
+    public static async InitializeMemberData(): Promise<void>{
         return await this.LoadMembersFromDatabase()
     }
 
     // DATABASE
+    /**
+     * Carrega os membros armazenados no banco de dados
+     * @returns `Promise`
+     */
     public static async LoadMembersFromDatabase() {
         await MemberRepository.FindAllMembersAsync().then(
             (result) => {
@@ -112,6 +186,10 @@ export class MemberData{
         return Promise.resolve()
     }
 
+     /**
+     * Carrega os membros armazenados no banco de dados
+     * @returns `Promise`
+     */
     public static LoadMembersFromDatabaseSync() {
         try {
             this.allMembers = MemberRepository.FindAllMembers()
@@ -120,34 +198,6 @@ export class MemberData{
             console.error("Error loading member data: "+e)
         }
     }
-
-    public static InsertMemberOnDB(member: Member, updateMemberList: boolean = true) {
-        if (updateMemberList) this.AddNewMember(member)
-        return MemberRepository.InsertMember(member)
-    }
-
-    public static UpdateMemberOnDB(member: Member, updateMemberList: boolean = true) {
-        if (updateMemberList) this.UpdateMember(member)
-        return MemberRepository.UpdateMember(member)
-    }
-
-    public static DeleteMemberByIDOnDB(id: number, updateMemberList: boolean = true) {
-        if (updateMemberList) this.RemoveMemberByID(id)
-        return MemberRepository.DeleteMemberById(id)
-    }
-
-
-    // ASYNC
-    public static async InsertMemberOnDBAsync(member: Member, updateMemberList: boolean = true) {
-        if (updateMemberList) this.AddNewMember(member)
-        return await MemberRepository.InsertMemberAsync(member)
-    }
-
-    public static async UpdateMemberOnDBAsync(member: Member, updateMemberList: boolean = true) {
-        if (updateMemberList) this.UpdateMember(member)
-        return await MemberRepository.UpdateMemberAsync(member)
-    }
-
     
     /**
      * Retorna uma lista com todas as escalas dos acólitos e coroinhas
@@ -191,7 +241,6 @@ export class MemberData{
         return true
     }
 }
-
 
 /**
  * Retorna uma lista com os IDs dos membros presentes em uma lista

@@ -1,4 +1,4 @@
-import { MemberData } from "../MemberData";
+import { MemberData } from "../members/MemberData";
 import { Member } from "../members/Member";
 import { MemberType } from "../members/MemberType";
 import { LineupGroupRepository } from "../repository/LineupGroupRepository";

@@ -3,9 +3,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { GetMemberAddIcon } from "../../classes/NewComps";
 import { router } from "expo-router";
 import { menuStore } from "../../store/store";
-import { MemberData } from "../../classes/MemberData";
+import { MemberData } from "../../classes/members/MemberData";
 import { Member } from "../../classes/members/Member"
-import { Dates } from "../../classes/Dates";
+import { Dates } from "../../classes/dates/Dates";
 import { textStyles } from "../../styles/GeneralStyles";
 import { Places } from "../../classes/Places";
 import { useRef, useState } from "react";
@@ -120,7 +120,7 @@ export default function NewMember(){
 }
 
 function SubmitNewMember(member:Member){
-    MemberData.InsertMemberOnDB(member)
+    MemberData.AddNewMember(member,true)
     router.back()
 }
 
@@ -132,10 +132,10 @@ type WeekendAvailabilityProps = {
 
 export function WeekendAvailability(props:WeekendAvailabilityProps){
     let checks = []
-    let isFirstWeekend = Dates.defaultWeekends[0] == props.weekend
+    let isFirstWeekend = Dates.DEFAULT_WEEKENDS[0] == props.weekend
     const availability = props.member.availability.dayAvailability
-    for(let i = 0; i < Dates.defaultDays.length;i++){
-        let curDay = Dates.defaultDays[i]
+    for(let i = 0; i < Dates.DEFAULT_DAYS.length;i++){
+        let curDay = Dates.DEFAULT_DAYS[i]
         
         let check = 
             <CheckBox 

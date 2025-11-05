@@ -1,5 +1,5 @@
 import { GenerationOptionsType } from "../app/screens/LineupGenerationOptions"
-import { DateSet } from "./Dates"
+import { DateSet } from "./dates/DatesSet"
 import { RoleSet } from "./roles/RoleSet"
 
 export class PresetsData {

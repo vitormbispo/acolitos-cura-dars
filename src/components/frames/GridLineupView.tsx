@@ -3,7 +3,7 @@ import { contextStore, menuStore } from "../../store/store"
 import { Lineup } from "../../classes/lineups/Lineup"
 import { CompactLineup } from "./CompactLineup"
 import { ActivityIndicator, FlatList, Modal, ScrollView, View } from "react-native"
-import { MembersFromIDs } from "../../classes/MemberData"
+import { MembersFromIDs } from "../../classes/members/MemberData"
 import { GetLineupUnvailableMembers } from "../../classes/Util"
 import { MemberSelectModal } from "../input/MemberSelectModal"
 

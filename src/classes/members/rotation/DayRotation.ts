@@ -1,5 +1,5 @@
-import { Dates } from "./Dates";
-import { MemberType } from "./MemberType";
+import { Dates } from "../../dates/Dates";
+import { MemberType } from "../MemberType";
 import { Rotation, RotationTypes } from "./Rotation";
 
 export class DayRotation extends Rotation{
@@ -17,6 +17,11 @@ export class DayRotation extends Rotation{
         return this.map[day]
     }
 
+    /**
+     * Cria um objeto `DayRotation` a partir de um JSON
+     * @param json JSON
+     * @returns `DayRotation` referente ao JSON
+     */
     public static fromJSON(json:string):DayRotation {
             let obj = JSON.parse(json)
             let availability:DayRotation = new DayRotation()

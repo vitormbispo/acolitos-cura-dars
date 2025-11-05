@@ -3,9 +3,9 @@ import { textStyles } from "../../styles/GeneralStyles"
 import { contextStore, menuStore } from "../../store/store"
 import { LineupType } from "../../classes/lineups/Lineup"
 import { useShallow } from "zustand/react/shallow"
-import { Dates } from "../../classes/Dates"
+import { Dates } from "../../classes/dates/Dates"
 import { ICONS } from "../../classes/AssetManager"
-import { MemberData, MemberIDList } from "../../classes/MemberData"
+import { MemberData, MemberIDList } from "../../classes/members/MemberData"
 import { UpperBar } from "../../components/display/UpperBar"
 import { LinkRowImageButton } from "../../components/buttons/LinkRowImageButton"
 import { RolesData } from "../../classes/roles/RolesData"
@@ -28,7 +28,7 @@ export default function LineupOptions(){
                         setLineupType(LineupType.SINGLE)
                         genOptions.roleset = RolesData.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
-                        genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = [Dates.defaultDays.slice()[0]]
+                        genOptions.monthDays[Dates.DEFAULT_WEEKENDS.slice()[0]] = [Dates.DEFAULT_DAYS.slice()[0]]
                         genOptions.members = MemberIDList(MemberData.FindMembersByType(type))
                 }}/>
        
@@ -41,8 +41,8 @@ export default function LineupOptions(){
                         setLineupType(LineupType.WEEKEND)
                         genOptions.roleset = RolesData.GetDefaultRoleset(type)
                         genOptions.monthDays = {}
-                        genOptions.monthDays[Dates.defaultWeekends.slice()[0]] = Dates.defaultDays.slice()
-                        updateWeekend(Dates.defaultWeekends.slice()[0])
+                        genOptions.monthDays[Dates.DEFAULT_WEEKENDS.slice()[0]] = Dates.DEFAULT_DAYS.slice()
+                        updateWeekend(Dates.DEFAULT_WEEKENDS.slice()[0])
                         genOptions.members = MemberIDList(MemberData.FindMembersByType(type))
 
                 }}/>

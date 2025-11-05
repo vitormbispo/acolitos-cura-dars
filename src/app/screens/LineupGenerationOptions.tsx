@@ -5,10 +5,10 @@ import { BalanceDiscarded, BalanceLineups, GenerateLineup, GenerateRandomLineup,
 import { router } from "expo-router"
 import { LineupScreenOptions } from "./LineupScreen"
 import { contextStore, menuStore } from "../../store/store"
-import { MemberData, MemberIDList, MembersFromIDs } from "../../classes/MemberData"
+import { MemberData, MemberIDList, MembersFromIDs } from "../../classes/members/MemberData"
 import { textStyles, uiStyles } from "../../styles/GeneralStyles"
 import { ResetAllLastWeekend } from "../../classes/Util"
-import { Dates, DateSet } from "../../classes/Dates"
+import { Dates } from "../../classes/dates/Dates"
 import { useShallow } from 'zustand/react/shallow'
 import { ICONS } from "../../classes/AssetManager"
 import { useEffect, useRef, useState } from "react"
@@ -31,6 +31,7 @@ import { RoleSet } from "../../classes/roles/RoleSet"
 import { RolesData } from "../../classes/roles/RolesData"
 import { Member } from "../../classes/members/Member"
 import { MemberType } from "../../classes/members/MemberType"
+import { DateSet } from "@/src/classes/dates/DatesSet"
 
 // TODO Ajustar pra reiniciar as exclusiveOptions
 
@@ -768,7 +769,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     
 
     let key = props.genOptionsKey.weekend
-        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
+        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.DEFAULT_DAYS[0]
         key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     let baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions
     const options = useRef({members:MemberIDList(baseOptions.members.slice()),places:baseOptions.places.slice(),roleset:baseOptions.roleset,randomness:baseOptions.randomness,allRandom:baseOptions.allRandom,dayExceptions:[],anyDays:baseOptions.anyDays})
@@ -810,7 +811,7 @@ function ExclusiveOptions(props:ExclusiveOptionsProps){
     // Atualiza os dados quando a chave da opção exclusiva é alterada (outras opções exclusivas são selecionadas).
     useEffect(()=>{
         let key = props.genOptionsKey.weekend
-        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.defaultDays[0]
+        key += props.genOptionsKey.day != undefined ? props.genOptionsKey.day : Dates.DEFAULT_DAYS[0]
         key += props.genOptionsKey.place != undefined ? props.genOptionsKey.place : ""
     
         baseOptions = curGenOptions.exclusiveOptions[key] != undefined ? curGenOptions.exclusiveOptions[key] : curGenOptions

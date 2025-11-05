@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { GetMemberByID, MemberData, MemberType } from "./MemberData"
+import { GetMemberByID, MemberData, MemberType } from "./members/MemberData"
 import { RandomNumber } from "./Util"
 import * as FileSystem from 'expo-file-system'
 import { Places } from "./Places"

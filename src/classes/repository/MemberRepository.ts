@@ -4,7 +4,7 @@ import { Migrations } from "./migrations/Migrations"
 import migration from "./migrations/json/member_migrations.json"
 import { MemberGenOptions } from "../members/MemberGenOptions"
 import { MemberAvailability } from "../members/availability/MemberAvailability"
-import { MemberRotation } from "../members/MemberRotation"
+import { MemberRotation } from "../members/rotation/MemberRotation"
 import { MemberType } from "../members/MemberType"
 
 export type MemberObject = {
@@ -23,7 +23,7 @@ export class MemberRepository {
     
     private static database:SQLite.SQLiteDatabase
     
-    public static async InitRepository() {
+    public static async InitializeRepository() {
         this.database = await SQLite.openDatabaseAsync("CURADARS")
         console.log("Exec")
         this.database.execAsync(`

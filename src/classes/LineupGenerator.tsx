@@ -1,12 +1,11 @@
 import { DistinctRandomNumbers, GetRandom, RandomNumber, RemoveMemberFromList as RemoveMember, HasMember, ShuffleArray } from "./Util";
-import { MemberData, MemberType } from "./MemberData";
+import { MemberData } from "./members/MemberData";
 import { Member } from "./members/Member"
 import { RoleSet } from "./roles/RoleSet";
 import { Lineup } from "./lineups/Lineup";
-import { useEffect } from "react";
-import { generationStore } from "../store/store";
 import { RolesData } from "./roles/RolesData";
-import { RoleRotation } from "./members/RoleRotation";
+import { RoleRotation } from "./members/rotation/RoleRotation";
+import { MemberType } from "./members/MemberType";
 
 /**
  *  Armazena dados temporários da geração de escalas

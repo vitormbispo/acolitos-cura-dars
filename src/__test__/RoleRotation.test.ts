@@ -1,4 +1,4 @@
-import { MemberType } from "../classes/MemberData";
+import { MemberType } from "../classes/members/MemberData";
 import { RoleRotation } from "../classes/members/RoleRotation";
 
 

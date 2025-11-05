@@ -1,6 +1,6 @@
 import { Rotation, RotationTypes } from "./Rotation";
-import { Places } from "./Places";
-import { MemberType } from "./MemberType";
+import { Places } from "../../places/Places";
+import { MemberType } from "../MemberType";
 
 export class PlaceRotation extends Rotation{
     constructor(memberType:MemberType=MemberType.ACOLYTE) {
@@ -17,6 +17,11 @@ export class PlaceRotation extends Rotation{
         return this.map[place]
     }
 
+    /**
+     * Cria um objeto `PlaceRotation` a partir de um JSON
+     * @param json JSON
+     * @returns `PlaceRotation` referente ao JSON
+     */
     public static fromJSON(json:string):PlaceRotation {
             let obj = JSON.parse(json)
             let availability:PlaceRotation = new PlaceRotation()

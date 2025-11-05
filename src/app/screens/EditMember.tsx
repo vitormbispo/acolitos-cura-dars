@@ -4,8 +4,8 @@ import { GetMemberIcon } from "../../classes/NewComps";
 import { router } from "expo-router";
 import { AbbreviateText } from "../../classes/Util"
 import { contextStore, menuStore } from "../../store/store";
-import { MemberData } from "../../classes/MemberData";
-import { Dates } from "../../classes/Dates";
+import { MemberData } from "../../classes/members/MemberData";
+import { Dates } from "../../classes/dates/Dates";
 import { PlaceAvailability, WeekendAvailability } from "./NewMember";
 import { textStyles} from "../../styles/GeneralStyles";
 import { ICONS } from "../../classes/AssetManager";
@@ -35,8 +35,8 @@ export default function EditMember(){
     const curMember = useRef(MemberData.FindMemberById(memberID).clone()) // É necessário criar uma cópia para edição. As mudanças só são aplicadas quando o usuário clica em "Concluir"
 
     let availabilities:Array<React.JSX.Element> = []
-    for(let i = 0; i < Dates.defaultWeekends.length;i++){
-        let curWeekend:string = Dates.defaultWeekends[i]
+    for(let i = 0; i < Dates.DEFAULT_WEEKENDS.length;i++){
+        let curWeekend:string = Dates.DEFAULT_WEEKENDS[i]
         let available:React.JSX.Element = <WeekendAvailability member={curMember.current} weekend={curWeekend} key={curWeekend+i}/>
         availabilities.push(available)
     }
@@ -158,7 +158,7 @@ export default function EditMember(){
  * @param type Tipo do membro
  */ 
 export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
-    MemberData.UpdateMemberOnDB(curMember)
+    MemberData.UpdateMember(curMember,true)
     router.back()
                     
 }
@@ -168,7 +168,7 @@ export function SaveChanges(curMember:Member,memberID:number,type:MemberType){
  * @param type tipo de membro (MemberType)
  */
 export function EraseMember(id:number){
-    MemberData.DeleteMemberByIDOnDB(id)
+    MemberData.RemoveMemberByID(id)
     router.back()
     router.back()
 }

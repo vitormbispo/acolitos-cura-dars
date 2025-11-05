@@ -1,5 +1,5 @@
 import { Availability, AvailabilityTypes } from "./Availability";
-import { Places } from "../Places";
+import { Places } from "../../places/Places";
 
 export class PlaceAvailability extends Availability {
     constructor() {
@@ -15,6 +15,11 @@ export class PlaceAvailability extends Availability {
         return this.map[place]
     }
     
+    /**
+     * Cria um objeto `PlaceAvailability` a partir de um JSON
+     * @param json JSON
+     * @returns `PlaceAvailability` referente ao JSON
+     */
     public static fromJSON(json:string):Availability {
         let obj = JSON.parse(json)
         let availability:PlaceAvailability = new PlaceAvailability()

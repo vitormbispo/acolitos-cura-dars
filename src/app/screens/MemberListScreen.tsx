@@ -3,7 +3,7 @@ import { GetMemberIcon, GetMemberAddIcon} from "../../classes/NewComps";
 import { useRef, useState } from "react";
 import { menuStore } from "../../store/store";
 import { textStyles } from "../../styles/GeneralStyles";
-import { MemberData } from "../../classes/MemberData";
+import { MemberData } from "../../classes/members/MemberData";
 import { ICONS } from "../../classes/AssetManager";
 import { RowMember } from "../../components/buttons/RowMember";
 import { UpperBar } from "../../components/display/UpperBar";

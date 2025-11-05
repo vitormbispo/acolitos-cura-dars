@@ -1,6 +1,6 @@
 import { Modal, View, Image, Text, Platform, ToastAndroid } from "react-native";
 import { ICONS } from "../../classes/AssetManager";
-import { MemberData} from "../../classes/MemberData";
+import { MemberData} from "../../classes/members/MemberData";
 import { DataSelectors } from "./DataExport";
 import { menuStore } from "../../store/store";
 import { router} from "expo-router";

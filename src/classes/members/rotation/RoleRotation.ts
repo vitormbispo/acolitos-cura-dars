@@ -1,6 +1,6 @@
 import { Rotation, RotationTypes } from "./Rotation";
-import { MemberType } from "./MemberType";
-import { Roles } from "../roles/Roles";
+import { MemberType } from "../MemberType";
+import { Roles } from "../../roles/Roles";
 
 export class RoleRotation extends Rotation{
     constructor(memberType:MemberType) {
@@ -16,6 +16,11 @@ export class RoleRotation extends Rotation{
         return this.map[key]
     }
 
+    /**
+     * Cria um objeto `RoleRotation` a partir de um JSON
+     * @param json JSON
+     * @returns `RoleRotation` referente ao JSON
+     */
     public static fromJSON(json:string):RoleRotation {
             let obj = JSON.parse(json)
             let availability:RoleRotation = new RoleRotation(obj.memberType)

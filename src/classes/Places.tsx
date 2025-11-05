@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { MemberData } from "@/src/classes/MemberData"
+import { MemberData } from "@/src/classes/members/MemberData"
 //import { SaveData } from "./Methods"
 
 export class Places {
@@ -22,7 +22,7 @@ export class Places {
         allMembers.forEach((member)=>{
             member.availability.placeAvailability.setAvailable(place,0)
             member.rotation.placeRotation.setRotation(place)
-            MemberData.UpdateMemberOnDB(member)
+            MemberData.UpdateMember(member,true)
 
         })
     }
@@ -43,7 +43,7 @@ export class Places {
         allMembers.forEach((member)=>{
             member.availability.placeAvailability.removeKey(place)
             member.rotation.placeRotation.removeKey(place)
-            MemberData.UpdateMemberOnDB(member)
+            MemberData.UpdateMember(member,true)
         })
     }
 
@@ -70,7 +70,7 @@ export class Places {
             availability.removeKey(place)
             rotation.removeKey(place)
             
-            MemberData.UpdateMemberOnDB(member)
+            MemberData.UpdateMember(member,true)
         })
         
         this.allPlaces[index] = newPlace
@@ -100,7 +100,7 @@ export class Places {
             availability.removeKey(place)
             rotation.removeKey(place)
             
-            MemberData.UpdateMemberOnDB(member)
+            MemberData.UpdateMember(member,true)
         })
 
         this.allPlaces[placeIndex] = newPlace

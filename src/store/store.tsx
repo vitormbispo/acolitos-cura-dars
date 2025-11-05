@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { acolyteLight, coroinhaLight} from '../styles/Themes'
 import { Lineup, LineupType } from '../classes/lineups/Lineup'
-import { Dates, DateSet } from '../classes/Dates'
+import { Dates } from '../classes/dates/Dates'
 import { GenerationOptionsType } from '../app/screens/LineupGenerationOptions'
 import { Preset } from '../classes/PresetsData'
 import { Member } from '../classes/members/Member'
 import { RolesData } from '../classes/roles/RolesData'
 import { MemberType } from '../classes/members/MemberType'
+import { DateSet } from '../classes/dates/DatesSet'
 
 
 export enum MenuStyles{
@@ -106,8 +107,8 @@ export const contextStore = create<ContextStates>((set)=>({
     memberID:0,
     rolesetID:0,
     lineupType:LineupType.SINGLE,
-    curWeekend:Dates.defaultWeekends.slice()[0],
-    curDay:Dates.defaultDays.slice()[0],
+    curWeekend:Dates.DEFAULT_WEEKENDS.slice()[0],
+    curDay:Dates.DEFAULT_DAYS.slice()[0],
     curGenOptions:{
             "members":[],
             "weekend":"1stWE",

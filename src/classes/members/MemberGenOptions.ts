@@ -28,14 +28,27 @@ export class MemberGenOptions {
     public get selectedOnLineups(): Array<number> { return this._selectedOnLineups }
     public set selectedOnLineups(value: Array<number>) { this._selectedOnLineups = value }
 
+    /**
+     * Converte esse objeto em formato JSON
+     * @returns Uma `string` JSON desse objeto
+     */
     public asJSON():string {
         return JSON.stringify(this)
     }
 
+    /**
+     * Retorna uma cópia do objeto
+     * @returns Cópia desse objeto
+     */
     public clone():MemberGenOptions {
         return MemberGenOptions.fromJSON(this.asJSON())
     }
     
+    /**
+     * Cria um objeto `MemberGenOptions` a partir de um JSON
+     * @param json JSON
+     * @returns `MemberGenOptions` referente ao JSON
+     */
     public static fromJSON(json:string):MemberGenOptions {
         const obj = JSON.parse(json)
         let newOptions = new MemberGenOptions()
@@ -46,6 +59,4 @@ export class MemberGenOptions {
         newOptions.selectedOnLineups = obj.selectedOnLineups
         return newOptions
     }
-
-    
 }

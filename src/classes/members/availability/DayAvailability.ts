@@ -1,5 +1,5 @@
 import { Availability, AvailabilityTypes } from "./Availability";
-import { Dates } from "../Dates";
+import { Dates } from "../../dates/Dates";
 
 export class DayAvailability extends Availability{
     constructor() {
@@ -18,6 +18,11 @@ export class DayAvailability extends Availability{
         return this.map[weekend][day]
     }
     
+    /**
+     * Cria um objeto `DayAvailability` a partir de um JSON
+     * @param json JSON
+     * @returns `DayAvailability` referente ao JSON
+     */
     public static fromJSON(json:string):DayAvailability {
         let obj = JSON.parse(json)
         let availability:DayAvailability = new DayAvailability()
@@ -30,9 +35,6 @@ export class DayAvailability extends Availability{
         return availability
     }
     
-    public setDayAvailable(weekend:string,day:string, available: boolean): void {
-        
-    }
 
     updateMap(): void {
         let availability:object = {}
@@ -50,6 +52,12 @@ export class DayAvailability extends Availability{
                 this.map = availability
     }
 
+    /**
+     * Verifica a disponibilidade de um dia específico
+     * @param weekend Fim de semana
+     * @param day Dia
+     * @returns `true` se houver disponibilidade
+     */
     public isDayAvailable(weekend: string,day:string): boolean {
         return this.map[weekend][day]
     }

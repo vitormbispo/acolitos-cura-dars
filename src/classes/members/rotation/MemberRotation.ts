@@ -1,5 +1,5 @@
 import { DayRotation } from "./DayRotation";
-import { MemberType } from "./MemberType";
+import { MemberType } from "../MemberType";
 import { PlaceRotation } from "./PlaceRotation";
 import { RoleRotation } from "./RoleRotation";
 import { Rotation } from "./Rotation";
@@ -22,6 +22,10 @@ export class MemberRotation {
         this.placeRotation.updateMap()
     }
 
+    /**
+     * Converte esse objeto em formato JSON
+     * @returns Uma `string` JSON desse objeto
+     */
     public asJSON():string {
             let obj:object = {
                 "memberType":this.memberType,
@@ -31,21 +35,30 @@ export class MemberRotation {
             return JSON.stringify(obj)
         }
     
-        public static fromJSON(json:string):MemberRotation {
-            let obj = JSON.parse(json)
-            let rotation = new MemberRotation(obj.memberType)
+    /**
+     * Cria um objeto `MemberRotation` a partir de um JSON
+     * @param json JSON
+     * @returns `MemberRotation` referente ao JSON
+     */
+    public static fromJSON(json:string):MemberRotation {
+        let obj = JSON.parse(json)
+        let rotation = new MemberRotation(obj.memberType)
 
-            rotation.dayRotation = DayRotation.fromJSON(obj.dayRotation)
-            rotation.roleRotation = RoleRotation.fromJSON(obj.roleRotation)
-    
-            rotation.dayRotation.updateMap()
-            rotation.roleRotation.updateMap()
-    
-            return rotation
-        }
-    
-        public clone() {
-            return MemberRotation.fromJSON(this.asJSON())
-        }
+        rotation.dayRotation = DayRotation.fromJSON(obj.dayRotation)
+        rotation.roleRotation = RoleRotation.fromJSON(obj.roleRotation)
+
+        rotation.dayRotation.updateMap()
+        rotation.roleRotation.updateMap()
+
+        return rotation
+    }
+
+    /**
+     * Copia o objeto
+     * @returns Um novo objeto copiando este
+     */
+    public clone() {
+        return MemberRotation.fromJSON(this.asJSON())
+    }
 
 }

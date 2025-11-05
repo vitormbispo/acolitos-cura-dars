@@ -1,4 +1,4 @@
-import { MemberType } from "../classes/MemberData"
+import { MemberType } from "../classes/members/MemberData"
 import { Member } from "../classes/members/Member"
 import { MemberRepository } from "../classes/repository/MemberRepository"
 

@@ -82,7 +82,7 @@ export class RolesData {
      */
     public static GetDefaultRoleset(type:MemberType):RoleSet{
         let newSet:RoleSet = new RoleSet("default",type)
-        newSet.SetRolesToDefault(false)
+        newSet.SetRolesToDefault()
         newSet.size = newSet.set.length
         return newSet
     }

@@ -1,6 +1,6 @@
 import  Home  from "./screens/HomeScreen"
 
-import { MemberData } from "../classes/MemberData";
+import { MemberData } from "../classes/members/MemberData";
 import { Places } from "../classes/Places";
 import { contextStore } from "../store/store";
 import { useEffect } from "react";
@@ -44,7 +44,6 @@ export default function App() {
  * Inicializa a aplicação carregando e validando os dados salvos
  */
 async function InitializeApp(){
-    await MemberRepository.InitRepository()
 
     //await RepositoryManager.database.runAsync(`DROP TABLE lineup_members`).then(_ => console.log("Dropped table lineup_members"))
     //await RepositoryManager.database.runAsync(`DROP TABLE lineups`).then(_ => console.log("Dropped table lineups"))
@@ -55,6 +54,8 @@ async function InitializeApp(){
     //await RepositoryManager.database.runAsync(`DROP TABLE lineup_group`).catch((e)=>{console.log("Error: "+e)})
     //await RepositoryManager.database.runAsync(`DROP TABLE serialized_lineups`).catch((e)=>{console.log("Error: "+e)})
 
+    //await RepositoryManager.database.runAsync(`DROP TABLE members`).catch((e)=>{console.log("Error: "+e)})
+    await MemberRepository.InitializeRepository().then(() => console.log("Members OK"), e => console.error(e))
     await RolesRepository.InitializeRepository().then(() => console.log("Roles OK"), e => console.error(e))
     await PlacesRepository.InitializeRepository().then(() => console.log("Places OK"), e => console.error(e))
     await SetRolesRepository.InitializeRepository().then(() => console.log("SetRoles OK"), e => console.error(e))

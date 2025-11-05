@@ -1,8 +1,8 @@
-import { MemberType } from "./MemberData";
+import { MemberType } from "./members/MemberType";
 
 import * as Clipboard from 'expo-clipboard';
 //import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MemberData } from "./MemberData";
+import { MemberData } from "./members/MemberData";
 import { Lineup } from "./lineups/Lineup";
 import { Member } from "./members/Member";
 

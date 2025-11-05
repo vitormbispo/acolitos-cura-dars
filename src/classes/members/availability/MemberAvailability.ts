@@ -21,6 +21,10 @@ export class MemberAvailability {
     public setAvailable(isAvailable:boolean): void { this.available = isAvailable }
     public isAvailable(): boolean {return this.available}
 
+    /**
+     * Converte esse objeto em formato JSON
+     * @returns Uma `string` JSON desse objeto
+     */
     public asJSON():string {
         let obj:object = {
             "available":this.available,
@@ -30,6 +34,11 @@ export class MemberAvailability {
         return JSON.stringify(obj)
     }
 
+    /**
+     * Cria um objeto `MemberAvailability` a partir de um JSON
+     * @param json JSON
+     * @returns `MemberAvailability` referente ao JSON
+     */
     public static fromJSON(json:string):MemberAvailability {
         let obj = JSON.parse(json)
         let availability = new MemberAvailability()
@@ -42,7 +51,10 @@ export class MemberAvailability {
 
         return availability
     }
-
+    /**
+     * Copia o objeto
+     * @returns Um novo objeto copiando este
+     */
     public clone(): MemberAvailability {
         return MemberAvailability.fromJSON(this.asJSON())
     }
